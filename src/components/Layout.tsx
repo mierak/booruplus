@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Layout, Menu, Icon, Input, Affix } from 'antd';
 import { Post } from '../../types/gelbooruTypes';
-import { getPostsForTags } from '../apiService';
+import { getPostsForTags } from '../../service/apiService';
 import { State } from '../../store/main';
 import { setPosts } from '../../store/posts';
 import { View, setActiveView } from '../../store/system';

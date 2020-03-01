@@ -16,5 +16,15 @@
 		},
 		"strict": true
 	},
-	"include": ["src/**/*", "types/**/*", "src/preload.js", "window.d.ts"]
+	"include": [
+		"src/**/*",
+		"types/**/*",
+		"store/**/*",
+		"service/**/*",
+		"db/**/*",
+		"electron/preload.js",
+		"window.d.ts",
+		"service/apiService.ts",
+		"electron/index.ts"
+	]
 }

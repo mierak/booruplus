@@ -13,13 +13,13 @@ interface Props extends PropsFromRedux {
 }
 
 interface CardProps {
-	readonly postIndex: number;
-	readonly activePostIndex: number | undefined;
+	readonly postindex: number;
+	readonly activepostindex: number | undefined;
 }
 
 const StyledCard = styled.div<CardProps>`
 	border: ${(props): false | 0 | 'dashed 1px black' | undefined =>
-		props.activePostIndex !== undefined && props.postIndex === props.activePostIndex && 'dashed 1px black'};
+		props.activepostindex !== undefined && props.postindex === props.activepostindex && 'dashed 1px black'};
 `;
 
 const Thumbnail = (props: Props): React.ReactElement => {
@@ -34,8 +34,8 @@ const Thumbnail = (props: Props): React.ReactElement => {
 				as={Card}
 				style={{ width: '170px', height: '170px', display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}
 				bodyStyle={{ padding: '10px' }}
-				postIndex={props.index}
-				activePostIndex={props.activePostIndex}
+				postindex={props.index}
+				activepostindex={props.activePostIndex}
 			>
 				<img
 					src={`https://gelbooru.com/thumbnails/${props.post.directory}/thumbnail_${props.post.hash}.jpg`}

@@ -95,6 +95,8 @@
 	"dependencies": {
 		"@types/pouchdb": "^6.4.0",
 		"antd": "^3.26.12",
+		"dexie": "^2.0.4",
+		"dexie-export-import": "^1.0.0-rc.1",
 		"electron-squirrel-startup": "^1.0.0",
 		"react": "^16.12.0",
 		"react-dom": "^16.12.0",

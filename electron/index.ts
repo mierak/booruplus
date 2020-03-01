@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
-// import PouchDB from 'pouchdb';
+import path from 'path';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 
 // const db = new PouchDB('database');
@@ -29,7 +29,7 @@ const createWindow = (): void => {
 		webPreferences: {
 			webSecurity: false,
 			contextIsolation: true,
-			preload: __dirname + '/preload.js'
+			preload: path.resolve(__dirname, 'preload.js')
 		}
 	});
 
