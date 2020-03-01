@@ -17,7 +17,7 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 	const [searchTag, setSearchTag] = useState('kawakami_rokkaku holo');
 
 	async function fetchData(): Promise<void> {
-		const posts = await getPostsForTags(searchTag);
+		const posts: Post[] = await getPostsForTags([searchTag]);
 		props.setPosts(posts);
 	}
 

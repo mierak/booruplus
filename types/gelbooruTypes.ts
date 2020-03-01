@@ -17,3 +17,13 @@ export interface Post {
 	created_at: Date;
 	image: string;
 }
+
+export type TagType = 'copyright' | 'tag' | 'artist' | 'metadata';
+
+export interface Tag {
+	id: number;
+	tag: string;
+	count: number;
+	type: TagType;
+	ambiguous: number;
+}
