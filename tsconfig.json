@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+		"allowJs": true,
+		"module": "commonjs",
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"noImplicitAny": true,
+		"sourceMap": true,
+		"baseUrl": ".",
+		"outDir": "dist",
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"jsx": "react",
+		"paths": {
+			"*": ["node_modules/*"]
+		},
+		"strict": true
+	},
+	"include": ["src/**/*", "types/**/*", "src/preload.js", "window.d.ts"]
+}

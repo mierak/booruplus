@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Lolinizer</title>
+		<script>
+			if (global === undefined) {
+				var global = window;
+			}
+		</script>
+		<script>
+			window.api.receive('fromMain', (data) => {
+				console.log(`Received ${data} from main process`);
+			});
+		</script>
+		<meta name="referrer" content="no-referrer" />
+	</head>
+	<body>
+		<div id="root"></div>
+	</body>
+</html>
