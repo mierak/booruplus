@@ -20,6 +20,8 @@ export interface Post {
 
 export type TagType = 'copyright' | 'tag' | 'artist' | 'metadata' | 'character';
 
+export type Rating = 'any' | 'safe' | 'questionable' | 'explicit';
+
 export interface Tag {
 	id: number;
 	tag: string;

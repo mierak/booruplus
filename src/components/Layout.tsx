@@ -1,32 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Layout, Menu, Icon, Affix, Drawer } from 'antd';
 import { Post } from '../../types/gelbooruTypes';
-import { getTagsByPattern } from '../../service/apiService';
 import { State } from '../../store/main';
 import { setPosts } from '../../store/posts';
 import { View, setActiveView, setSearchFormDrawerVisible } from '../../store/system';
-import { SelectValue } from 'antd/lib/select';
 import SearchForm from './SearchForm';
 
-const { Content, Footer, Sider } = Layout;
+const { Content, Sider } = Layout;
 
 interface Props extends PropsFromRedux {
 	children?: React.ReactNode;
 }
 
 const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
-	const [options, setOptions] = useState<string[]>([]);
-
-	async function fetchData(): Promise<void> {
-		// const posts: Post[] = await getPostsForTags([searchTag]);
-		// props.setPosts(posts);
-	}
-
-	useEffect(() => {
-		fetchData();
-	}, []);
-
 	const setActiveView = (view: View): void => {
 		props.setActiveView(view);
 	};

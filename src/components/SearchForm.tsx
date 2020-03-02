@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/main';
-import { setSearchFormDrawerVisible } from '../../store/system';
+import { setSearchFormDrawerVisible, setActiveView } from '../../store/system';
+import { setPostCount, addTag, removeTag, clearTags, setRating, setPage } from '../../store/searchForm';
 import styled from 'styled-components';
 import { getTagsByPattern, getPostsForTags } from '../../service/apiService';
-import { Card, Select, Button, Form, Tag as AntTag, InputNumber, Input } from 'antd';
+import { Card, Select, Button, Form, Tag as AntTag, InputNumber, Col, Input } from 'antd';
 import { SelectValue } from 'antd/lib/select';
-import { Tag } from '../../types/gelbooruTypes';
+import { Tag, Rating } from '../../types/gelbooruTypes';
 import TagSelectOption from './TagSelectOption';
 import { getTagColor } from '../../util/utils';
 import { setPosts } from '../../store/posts';
-import { setActiveView } from '../../store/system';
 
 interface Props extends PropsFromRedux {
 	className?: string;
@@ -22,10 +22,7 @@ const StyledCard = styled(Card)`
 
 const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	const [options, setOptions] = useState<Tag[]>([]);
-	const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
 	const [selectValue] = useState('');
-	const [postCount, setPostCount] = useState(100);
-	const [rating, setRating] = useState('any');
 
 	const handleChange = async (e: SelectValue): Promise<void> => {
 		const tags = await getTagsByPattern(e.toString());
@@ -34,35 +31,37 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 
 	const handleSelect = (e: SelectValue): void => {
 		const tag = options.find((t: Tag) => t.tag === e.toString());
-		if (tag) {
-			if (!selectedTags.includes(tag)) {
-				setSelectedTags((opts) => [...opts, tag]);
-			} else {
-				console.log('tag already selected');
-			}
-		}
+		tag && props.addTag(tag);
+	};
+
+	const handleRatingSelect = (val: Rating): void => {
+		props.setRating(val);
 	};
 
 	const handlePostCountChange = (value: number | undefined): void => {
-		value && setPostCount(value);
+		value && props.setPostCount(value);
+	};
+
+	const handlePageChange = (value: number | undefined): void => {
+		value && props.setPage(value);
 	};
 
 	const handleTagClose = (tag: Tag): void => {
-		setSelectedTags((tags) => tags.filter((el) => el.id !== tag.id));
+		props.removeTag(tag);
 	};
 
 	const handleSubmit = async (): Promise<void> => {
-		const searchString = selectedTags.map((tag) => tag.tag);
-		const posts = await getPostsForTags(searchString);
+		const searchString = props.selectedTags.map((tag) => tag.tag);
+		const posts = await getPostsForTags(searchString, { rating: props.rating, limit: props.postCount, page: props.page });
 		props.setActiveView('thumbnails');
 		props.setSearchFormDrawerVisible(false);
 		props.setPosts(posts);
 	};
 
 	const handleClear = (): void => {
-		setSelectedTags([]);
-		setPostCount(100);
-		setRating('any');
+		props.clearTags();
+		props.setPostCount(100);
+		props.setRating('any');
 	};
 
 	const handleClose = (): void => {
@@ -78,7 +77,7 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const renderSelectedTags = (): JSX.Element[] => {
-		return selectedTags.map((tag: Tag) => (
+		return props.selectedTags.map((tag: Tag) => (
 			<AntTag
 				key={tag.id}
 				color={getTagColor(tag)}
@@ -102,23 +101,39 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 				<StyledCard bodyStyle={{ padding: '11px', minHeight: '48px' }}>{renderSelectedTags()}</StyledCard>
 			</Form.Item>
 			<Form.Item label="Rating">
-				<Select defaultValue={rating} value={rating} onChange={(val: string): void => setRating(val)}>
+				<Select defaultValue={props.rating} value={props.rating} onChange={handleRatingSelect}>
 					<Select.Option key="any">Any</Select.Option>
 					<Select.Option key="safe">Safe</Select.Option>
 					<Select.Option key="questionable">Questionable</Select.Option>
-					<Select.Option key="eexplicit">Explicit</Select.Option>
+					<Select.Option key="explicit">Explicit</Select.Option>
 				</Select>
 			</Form.Item>
-			<Form.Item label="Post Count">
-				<InputNumber
-					min={1}
-					max={100}
-					defaultValue={postCount}
-					style={{ width: '100%' }}
-					onChange={handlePostCountChange}
-					value={postCount}
-				></InputNumber>
-			</Form.Item>
+			<Input.Group>
+				<Col span={12} style={{ paddingRight: 0 }}>
+					<Form.Item label="Post Count" labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}>
+						<InputNumber
+							min={1}
+							max={100}
+							defaultValue={props.postCount}
+							style={{ width: '100%' }}
+							onChange={handlePostCountChange}
+							value={props.postCount}
+						></InputNumber>
+					</Form.Item>
+				</Col>
+				<Col span={12}>
+					<Form.Item label="Page" labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
+						<InputNumber
+							min={0}
+							max={1000}
+							defaultValue={props.page}
+							style={{ width: '100%' }}
+							onChange={handlePageChange}
+							value={props.page}
+						></InputNumber>
+					</Form.Item>
+				</Col>
+			</Input.Group>
 			<Form.Item wrapperCol={{ span: 19, offset: 5 }}>
 				<Button type="primary" htmlType="submit" onClick={(): Promise<void> => handleSubmit()}>
 					Submit
@@ -134,14 +149,30 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	);
 };
 
-interface StateFromProps {}
+interface StateFromProps {
+	postCount: number;
+	rating: Rating;
+	page: number;
+	selectedTags: Tag[];
+}
 
-const mapState = (state: State): StateFromProps => ({});
+const mapState = (state: State): StateFromProps => ({
+	postCount: state.searchForm.postCount,
+	rating: state.searchForm.rating,
+	selectedTags: state.searchForm.selectedTags,
+	page: state.searchForm.page
+});
 
 const mapDispatch = {
 	setPosts,
 	setActiveView,
-	setSearchFormDrawerVisible
+	setSearchFormDrawerVisible,
+	setPostCount,
+	setPage,
+	addTag,
+	clearTags,
+	removeTag,
+	setRating
 };
 
 const connector = connect(mapState, mapDispatch);

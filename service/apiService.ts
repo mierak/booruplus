@@ -1,13 +1,23 @@
-import { Post, Tag } from '../types/gelbooruTypes';
+import { Post, Tag, Rating } from '../types/gelbooruTypes';
 import database from '../db/database';
 
 const BASE_URL = 'https://gelbooru.com/index.php?page=dapi&q=index&json=1';
 const BASE_TAG_URL = `${BASE_URL}&s=tag`;
 const BASE_POST_URL = `${BASE_URL}&s=post`;
 
-export const getPostsForTags = async (tags: string[], limit = 100): Promise<Post[]> => {
+interface Options {
+	limit?: number;
+	rating?: Rating;
+	page?: number;
+}
+
+export const getPostsForTags = async (tags: string[], options: Options = {}): Promise<Post[]> => {
+	let url = `${BASE_POST_URL}&limit=${options.limit}&tags=${tags.join(' ')}`;
+	if (!options.limit) options.limit = 100;
+	if (options.rating && options.rating !== 'any') tags.push(`rating:${options.rating}`);
+	if (options.page) url += `&pid=${options.page}`;
 	try {
-		const response = await fetch(`${BASE_POST_URL}&limit=${limit}&tags=${tags.join(' ')}`);
+		const response = await fetch(url);
 		const posts: Post[] = await response.json();
 		posts.forEach((post: Post) => {
 			database.posts.put(post);
