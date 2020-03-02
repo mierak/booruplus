@@ -13,7 +13,7 @@ const makeStore = () => {
 const App = (): React.ReactElement => {
 	return (
 		<Provider store={makeStore()}>
-			<Page></Page>
+			<Page />
 		</Provider>
 	);
 };

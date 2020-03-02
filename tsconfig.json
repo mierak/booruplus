@@ -21,6 +21,7 @@
 		"types/**/*",
 		"store/**/*",
 		"service/**/*",
+		"util/**/*",
 		"db/**/*",
 		"electron/preload.js",
 		"window.d.ts",

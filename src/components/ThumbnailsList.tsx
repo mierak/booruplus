@@ -17,7 +17,8 @@ const Container = styled.div`
 	grid-gap: 10px;
 	margin: 10px;
 	overflow-y: auto;
-	height: calc(100vh - 64px);
+	overflow-x: hidden;
+	height: 100vh;
 `;
 
 const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {

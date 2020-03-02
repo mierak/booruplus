@@ -18,7 +18,7 @@ export interface Post {
 	image: string;
 }
 
-export type TagType = 'copyright' | 'tag' | 'artist' | 'metadata';
+export type TagType = 'copyright' | 'tag' | 'artist' | 'metadata' | 'character';
 
 export interface Tag {
 	id: number;

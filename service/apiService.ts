@@ -78,7 +78,7 @@ export const getTagsByNames = async (...names: string[]): Promise<Tag[]> => {
 export const getTagsByPattern = async (pattern: string): Promise<Tag[]> => {
 	if (pattern.length <= 3) return [];
 	try {
-		const response = await fetch(`${BASE_TAG_URL}&name_pattern=${pattern}`);
+		const response = await fetch(`${BASE_TAG_URL}&name_pattern=${pattern}&limit=5`);
 		const tags: Tag[] = await response.json();
 		return tags;
 	} catch (err) {

@@ -7,6 +7,7 @@ import ThumbnailsList from './ThumbnailsList';
 import { Post } from '../../types/gelbooruTypes';
 import AppLayout from './Layout';
 import ImageView from './ImageView';
+import SearchForm from './SearchForm';
 
 interface Props extends PropsFromRedux {
 	className?: string;
@@ -18,6 +19,8 @@ const renderView = (activeView: View): React.ReactNode => {
 			return <ThumbnailsList />;
 		case 'image':
 			return <ImageView />;
+		case 'online-search':
+			return <SearchForm />;
 		default:
 			return null;
 	}
