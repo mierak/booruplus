@@ -1,14 +1,16 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect } from 'react';
 import { State } from '../../store/main';
 import styled from 'styled-components';
 import Thumbnail from './Thumbnail';
 import { Post, Tag, Rating } from '../../types/gelbooruTypes';
 import { connect, ConnectedProps } from 'react-redux';
-import { View } from '../../store/system';
+import { View, setSearchFormDrawerVisible } from '../../store/system';
 import { setPage, setLoading } from '../../store/searchForm';
 import { addPosts } from '../../store/posts';
 import { Button } from 'antd';
 import { getPostsForTags } from '../../service/apiService';
+import EmptyThumbnails from './EmptyThumbnails';
 
 interface Props extends PropsFromRedux {
 	className?: string;
@@ -24,6 +26,19 @@ const Container = styled.div`
 	overflow-y: auto;
 	overflow-x: hidden;
 	height: calc(100vh - 15px);
+`;
+
+const StyledEmptyThumbnails = styled(EmptyThumbnails)`
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translateY(-50%);
+`;
+
+const StyledLoadMoreButton = styled(Button)`
+	width: 100%;
+	grid-column: 1/-1;
+	margin-bottom: 10px;
 `;
 
 const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
@@ -43,16 +58,31 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 		props.setLoading(false);
 	};
 
+	const renderThumbnails = (): JSX.Element[] => {
+		const arr = props.posts.map((post, index) => {
+			return <Thumbnail key={post.id} post={post} index={index}></Thumbnail>;
+		});
+		arr.push(
+			<StyledLoadMoreButton onClick={handleLoadMore} disabled={props.loading}>
+				Load More
+			</StyledLoadMoreButton>
+		);
+		return arr;
+	};
+
+	const renderNoData = (): JSX.Element => {
+		return (
+			<StyledEmptyThumbnails
+				handleButtonClick={(): void => {
+					props.setSearchFormDrawerVisible(true);
+				}}
+			/>
+		);
+	};
+
 	return (
 		<Container className={props.className} id="thumbnails-list">
-			{props.posts.map((post, index) => {
-				return <Thumbnail key={post.id} post={post} index={index}></Thumbnail>;
-			})}
-			{props.posts.length > 0 && (
-				<Button style={{ width: '100%', gridColumn: '1/-1', marginBottom: '10px' }} onClick={handleLoadMore} disabled={props.loading}>
-					Load More
-				</Button>
-			)}
+			{props.posts.length === 0 ? renderNoData() : renderThumbnails()}
 		</Container>
 	);
 };
@@ -82,7 +112,8 @@ const mapState = (state: State): StateFromProps => ({
 const mapDispatch = {
 	setPage,
 	addPosts,
-	setLoading
+	setLoading,
+	setSearchFormDrawerVisible
 };
 
 const connector = connect(mapState, mapDispatch);
