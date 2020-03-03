@@ -1,17 +1,32 @@
 import React from 'react';
 import { Empty, Button } from 'antd';
+import { ConnectedProps, connect } from 'react-redux';
+import { setSearchFormDrawerVisible } from '../../store/system';
 
-interface Props {
+interface Props extends PropsFromRedux {
 	className?: string;
-	handleButtonClick(): void;
 }
 
 const EmptyThumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	return (
 		<Empty className={props.className} description="No Posts To Show">
-			<Button onClick={(): void => props.handleButtonClick()}>Open Search Form</Button>
+			<Button
+				onClick={(): void => {
+					props.setSearchFormDrawerVisible(true);
+				}}
+			>
+				Open Search Form
+			</Button>
 		</Empty>
 	);
 };
 
-export default EmptyThumbnails;
+const mapDispatch = {
+	setSearchFormDrawerVisible
+};
+
+const connector = connect(null, mapDispatch);
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export default connector(EmptyThumbnails);

@@ -1,9 +1,6 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
-import path from 'path';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
-
-// const db = new PouchDB('database');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 
@@ -28,13 +25,13 @@ const createWindow = (): void => {
 		height: 900,
 		webPreferences: {
 			webSecurity: false,
-			contextIsolation: true,
-			preload: path.resolve(__dirname, 'preload.js')
+			contextIsolation: true
 		}
 	});
 
 	// and load the index.html of the app.
 
+	// mainWindow.removeMenu();
 	mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
 	// Open the DevTools.
@@ -75,20 +72,3 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 
 // code. You can also put them in separate files and import them here.
-ipcMain.on('toMain', (event, args) => {
-	console.log(args);
-	ipcMain.emit('fromMain', 'from Main data');
-});
-ipcMain.on('createWindow', (event, args) => {
-	const win = new BrowserWindow({
-		height: 600,
-
-		width: 800,
-		webPreferences: {
-			webSecurity: false,
-			contextIsolation: true,
-			preload: __dirname + '/preload.js'
-		}
-	});
-	win.loadURL('https://google.com');
-});

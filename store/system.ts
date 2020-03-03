@@ -1,6 +1,7 @@
 //types
 const SET_ACTIVE_VIEW = 'lolinizer/system/SET_ACTIVE_VIEW';
 const SET_SEARCH_FORM_DRAWER_VISIBLE = 'lolinizer/system/SET_SEARCH_FORM_DRAWER_VISIBLE';
+const SET_IMAGE_VIEW_THUMBNAILS_COLLAPSED = 'lolinizer/system/SET_IMAGE_VIEW_THUMBNAILS_COLLAPSED';
 
 //action interfaces
 export type View = 'thumbnails' | 'image' | 'dashboard' | 'online-search';
@@ -15,7 +16,12 @@ interface SetSearchFormDrawerVisible {
 	visible: boolean;
 }
 
-export type SystemAction = SetActiveView | SetSearchFormDrawerVisible;
+interface SetImageViewThumbnailsCollapsed {
+	type: typeof SET_IMAGE_VIEW_THUMBNAILS_COLLAPSED;
+	collapsed: boolean;
+}
+
+export type SystemAction = SetActiveView | SetSearchFormDrawerVisible | SetImageViewThumbnailsCollapsed;
 
 //action creators
 export const setActiveView = (view: View): SetActiveView => {
@@ -32,16 +38,25 @@ export const setSearchFormDrawerVisible = (visible: boolean): SetSearchFormDrawe
 	};
 };
 
+export const setImageViewThumbnailsCollapsed = (collapsed: boolean): SetImageViewThumbnailsCollapsed => {
+	return {
+		type: SET_IMAGE_VIEW_THUMBNAILS_COLLAPSED,
+		collapsed
+	};
+};
+
 //state interface
 export interface SystemState {
 	activeView: View;
 	searchFormDrawerVsibile: boolean;
+	imageViewThumbnailsCollapsed: boolean;
 }
 
 //initial state
 const initialState: SystemState = {
 	activeView: 'thumbnails',
-	searchFormDrawerVsibile: false
+	searchFormDrawerVsibile: false,
+	imageViewThumbnailsCollapsed: true
 };
 
 //reducer
@@ -56,6 +71,11 @@ export default function reducer(state: SystemState = initialState, action: Syste
 			return {
 				...state,
 				searchFormDrawerVsibile: action.visible
+			};
+		case SET_IMAGE_VIEW_THUMBNAILS_COLLAPSED:
+			return {
+				...state,
+				imageViewThumbnailsCollapsed: action.collapsed
 			};
 		default:
 			return state;

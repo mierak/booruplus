@@ -1,5 +1,5 @@
-import { Post, Tag, Rating } from '../types/gelbooruTypes';
-import database from '../db/database';
+import { Post, PostDto, Tag, Rating } from '../types/gelbooruTypes';
+import * as db from '../db/database';
 
 const BASE_URL = 'https://gelbooru.com/index.php?page=dapi&q=index&json=1';
 const BASE_TAG_URL = `${BASE_URL}&s=tag`;
@@ -12,15 +12,21 @@ interface Options {
 }
 
 export const getPostsForTags = async (tags: string[], options: Options = {}): Promise<Post[]> => {
+	//construct API URL
 	let url = `${BASE_POST_URL}&limit=${options.limit}&tags=${tags.join(' ')}`;
+	//handle Optional params
 	if (!options.limit) options.limit = 100;
 	if (options.rating && options.rating !== 'any') tags.push(`rating:${options.rating}`);
 	if (options.page) url += `&pid=${options.page}`;
+
 	try {
 		const response = await fetch(url);
-		const posts: Post[] = await response.json();
-		posts.forEach((post: Post) => {
-			database.posts.put(post);
+		const responsePosts: PostDto[] = await response.json();
+		const posts: Post[] = [];
+		responsePosts.forEach((postDto: PostDto) => {
+			const post = new Post(postDto);
+			db.saveOrUpdatePost(post);
+			posts.push(post);
 		});
 		return posts;
 	} catch (err) {

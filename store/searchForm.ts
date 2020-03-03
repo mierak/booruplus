@@ -102,7 +102,7 @@ export interface SearchFormState {
 
 export const initialState: SearchFormState = {
 	selectedTags: [],
-	postCount: 100,
+	postCount: 10,
 	rating: 'any',
 	page: 0,
 	loading: false

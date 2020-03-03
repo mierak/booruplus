@@ -8,6 +8,7 @@ import { Post } from '../../types/gelbooruTypes';
 import AppLayout from './Layout';
 import ImageView from './ImageView';
 import SearchForm from './SearchForm';
+import database from '../../db/database';
 
 interface Props extends PropsFromRedux {
 	className?: string;
@@ -16,7 +17,7 @@ interface Props extends PropsFromRedux {
 const renderView = (activeView: View): React.ReactNode => {
 	switch (activeView) {
 		case 'thumbnails':
-			return <ThumbnailsList />;
+			return <ThumbnailsList emptyDataLogoCentered={true} />;
 		case 'image':
 			return <ImageView />;
 		case 'online-search':
@@ -27,6 +28,13 @@ const renderView = (activeView: View): React.ReactNode => {
 };
 
 const Page: React.FunctionComponent<Props> = (props: Props) => {
+	database.posts
+		.where('favorite')
+		.equals(1)
+		.each((c) => {
+			console.log(c);
+		});
+
 	const handleKeyPress = (event: KeyboardEvent): void => {
 		if (props.activePostIndex !== undefined) {
 			switch (event.keyCode) {

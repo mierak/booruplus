@@ -3,14 +3,17 @@ import { connect, ConnectedProps } from 'react-redux';
 import styled from 'styled-components';
 import { State } from '../../store/main';
 import { setActivePostIndex } from '../../store/posts';
+import { setImageViewThumbnailsCollapsed } from '../../store/system';
 import { Post } from '../../types/gelbooruTypes';
 import ThumbnailsList from './ThumbnailsList';
+import { Layout } from 'antd';
+import EmptyThumbnails from './EmptyThumbnails';
 
 interface Props extends PropsFromRedux {
 	className?: string;
 }
 
-const Container = styled.div`
+const Container = styled(Layout)`
 	width: 100%;
 	align-items: center;
 `;
@@ -24,7 +27,7 @@ const Image = styled.img`
 `;
 
 const ImageContainer = styled.div`
-	width: calc(100% - 200px);
+	width: 100%;
 	display: block;
 	float: left;
 	min-height: 1px;
@@ -38,12 +41,27 @@ const StyledThumbnailsList = styled(ThumbnailsList)`
 const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 	return (
 		<Container>
-			<ImageContainer>
-				{props.activePostIndex !== undefined && props.posts[props.activePostIndex] && (
-					<Image src={props.posts[props.activePostIndex].file_url} />
-				)}
-			</ImageContainer>
-			<StyledThumbnailsList />
+			<Layout>
+				<ImageContainer>
+					{props.activePostIndex !== undefined && props.posts[props.activePostIndex] ? (
+						<Image src={props.posts[props.activePostIndex].fileUrl} />
+					) : (
+						<EmptyThumbnails />
+					)}
+				</ImageContainer>
+			</Layout>
+			<Layout.Sider
+				theme="light"
+				collapsible
+				reverseArrow
+				collapsedWidth={0}
+				collapsed={!props.thumbnailsListvisible}
+				onCollapse={(): void => {
+					props.setImageViewThumbnailsCollapsed(!props.thumbnailsListvisible);
+				}}
+			>
+				<StyledThumbnailsList />
+			</Layout.Sider>
 		</Container>
 	);
 };
@@ -51,15 +69,18 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 interface StateFromProps {
 	activePostIndex: number | undefined;
 	posts: Post[];
+	thumbnailsListvisible: boolean;
 }
 
 const mapState = (state: State): StateFromProps => ({
 	activePostIndex: state.posts.activePostIndex,
-	posts: state.posts.posts
+	posts: state.posts.posts,
+	thumbnailsListvisible: state.system.imageViewThumbnailsCollapsed
 });
 
 const mapDispatch = {
-	setActivePostIndex
+	setActivePostIndex,
+	setImageViewThumbnailsCollapsed
 };
 
 const connector = connect(mapState, mapDispatch);

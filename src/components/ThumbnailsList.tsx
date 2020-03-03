@@ -15,6 +15,7 @@ import EmptyThumbnails from './EmptyThumbnails';
 interface Props extends PropsFromRedux {
 	className?: string;
 	posts: Post[];
+	emptyDataLogoCentered?: boolean;
 }
 
 const Container = styled.div`
@@ -28,10 +29,14 @@ const Container = styled.div`
 	height: calc(100vh - 15px);
 `;
 
+interface StyledEmptyThumbnailsProps {
+	centered?: boolean;
+}
+
 const StyledEmptyThumbnails = styled(EmptyThumbnails)`
 	position: absolute;
 	top: 50%;
-	left: 50%;
+	left: ${(props: StyledEmptyThumbnailsProps): string => (props.centered ? '50%' : '0')};
 	transform: translateY(-50%);
 `;
 
@@ -63,7 +68,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 			return <Thumbnail key={post.id} post={post} index={index}></Thumbnail>;
 		});
 		arr.push(
-			<StyledLoadMoreButton onClick={handleLoadMore} disabled={props.loading}>
+			<StyledLoadMoreButton onClick={handleLoadMore} disabled={props.loading} key="thumbnails-list-load-more-button">
 				Load More
 			</StyledLoadMoreButton>
 		);
@@ -71,13 +76,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const renderNoData = (): JSX.Element => {
-		return (
-			<StyledEmptyThumbnails
-				handleButtonClick={(): void => {
-					props.setSearchFormDrawerVisible(true);
-				}}
-			/>
-		);
+		return <StyledEmptyThumbnails centered={props.emptyDataLogoCentered} />;
 	};
 
 	return (

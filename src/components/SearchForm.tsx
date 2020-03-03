@@ -43,7 +43,7 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handlePageChange = (value: number | undefined): void => {
-		value && props.setPage(value);
+		value !== undefined && props.setPage(value);
 	};
 
 	const handleTagClose = (tag: Tag): void => {
