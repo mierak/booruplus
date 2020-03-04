@@ -11,8 +11,9 @@ import AppLayout from './Layout';
 import ImageView from './ImageView';
 import SearchForm from './SearchForm';
 import SavedSearches from './SavedSearches';
-import database, * as db from '../../db/database';
+import database from '../../db/database';
 import Favorites from './Favorites';
+import Tags from './Tags';
 
 interface Props extends PropsFromRedux {
 	className?: string;
@@ -37,6 +38,8 @@ const Page: React.FunctionComponent<Props> = (props: Props) => {
 				return <SavedSearches />;
 			case 'favorites':
 				return <Favorites />;
+			case 'tag-list':
+				return <Tags />;
 			default:
 				return null;
 		}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/main';
 import styled from 'styled-components';
@@ -25,7 +25,7 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 
 	return (
 		<Container className={props.className}>
-			<ThumbnailsList posts={props.posts} />
+			<ThumbnailsList posts={props.posts} emptyDataLogoCentered={true} />
 		</Container>
 	);
 };

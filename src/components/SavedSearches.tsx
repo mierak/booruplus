@@ -8,6 +8,8 @@ import { getTagColor } from '../../util/utils';
 import { getPostsForTags } from '../../service/apiService';
 import { setActiveView } from '../../store/system';
 import { setActivePost, setPosts } from '../../store/posts';
+import { removeSavedSearch } from '../../store/savedSearches';
+import { deleteSavedSearch } from '../../db/database';
 
 const { Column } = Table;
 
@@ -34,6 +36,11 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 		props.setPosts(posts);
 	};
 
+	const handleDelete = (savedSearch: SavedSearch): void => {
+		props.removeSavedSearch(savedSearch);
+		deleteSavedSearch(savedSearch);
+	};
+
 	const renderActions = (_: unknown, record: SavedSearch): JSX.Element => {
 		return (
 			<div>
@@ -47,7 +54,7 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 				<br />
 				<a>Offline Search</a>
 				<br />
-				<a>Delete</a>
+				<a onClick={(): void => handleDelete(record)}>Delete</a>
 			</div>
 		);
 	};
@@ -83,7 +90,8 @@ const mapState = (state: State): StateFromProps => ({
 const mapDispatch = {
 	setActivePost,
 	setActiveView,
-	setPosts
+	setPosts,
+	removeSavedSearch
 };
 
 const connector = connect(mapState, mapDispatch);

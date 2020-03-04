@@ -3,10 +3,10 @@ import { connect, ConnectedProps } from 'react-redux';
 import styled from 'styled-components';
 import { State } from '../../store/main';
 import { setActiveView } from '../../store/system';
-import { setActivePostIndex, setActivePost, setPostFavorite } from '../../store/posts';
+import { setActivePost, setPostFavorite } from '../../store/posts';
 import { Card } from 'antd';
 import { Post } from '../../types/gelbooruTypes';
-import { EditOutlined, EllipsisOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
+import { EditOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
 import { updatePost } from '../../db/database';
 
 interface Props extends PropsFromRedux {

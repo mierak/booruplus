@@ -60,7 +60,7 @@ export default function reducer(state: SavedSearchesState = initialState, action
 		case REMOVE_SAVED_SEARCH:
 			return {
 				...state,
-				savedSearches: state.savedSearches.filter((s) => s.id === action.savedSearch.id)
+				savedSearches: state.savedSearches.filter((s) => s.id !== action.savedSearch.id)
 			};
 		case SET_SAVED_SEARCHES:
 			return {

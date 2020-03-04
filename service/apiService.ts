@@ -102,6 +102,7 @@ export const getTagsByPattern = async (pattern: string): Promise<Tag[]> => {
 	try {
 		const response = await fetch(`${BASE_TAG_URL}&name_pattern=${pattern}&limit=30`);
 		const tags: Tag[] = await response.json();
+		db.saveTags(tags);
 		return tags;
 	} catch (err) {
 		console.error(err);
