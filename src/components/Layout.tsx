@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Layout, Menu, Icon, Affix, Drawer } from 'antd';
+import { Layout, Menu, Affix, Drawer } from 'antd';
 import { Post } from '../../types/gelbooruTypes';
 import { State } from '../../store/main';
 import { setPosts } from '../../store/posts';
@@ -33,19 +33,31 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 					<div className="logo" />
 					<Menu theme="dark" defaultSelectedKeys={['thumbnails']} mode="inline" selectedKeys={[props.activeView]}>
 						<Menu.Item key="dashboard" onClick={(): void => setActiveView('dashboard')}>
-							<Icon type="dashboard" />
+							{/* <Icon type="dashboard" /> */}
 							<span>Dashboard</span>
 						</Menu.Item>
 						<Menu.Item key="thumbnails" onClick={(): void => setActiveView('thumbnails')}>
-							<Icon type="unordered-list" />
+							{/* <Icon type="unordered-list" /> */}
 							<span>Thumbnails</span>
 						</Menu.Item>
 						<Menu.Item key="image" onClick={(): void => setActiveView('image')}>
-							<Icon type="file-image" />
+							{/* <Icon type="file-image" /> */}
 							<span>Image View</span>
 						</Menu.Item>
+						<Menu.Item key="saved-searches" onClick={(): void => setActiveView('saved-searches')}>
+							{/* <Icon type="file-image" /> */}
+							<span>Saved Searches</span>
+						</Menu.Item>
+						<Menu.Item key="favorites" onClick={(): void => setActiveView('favorites')}>
+							{/* <Icon type="file-image" /> */}
+							<span>Favorites</span>
+						</Menu.Item>
+						<Menu.Item key="tag-list" onClick={(): void => setActiveView('tag-list')}>
+							{/* <Icon type="file-image" /> */}
+							<span>Tag List</span>
+						</Menu.Item>
 						<Menu.Item key="online-search-drawer" onClick={handleSearchFormDrawerOpen}>
-							<Icon type="file-image" />
+							{/* <Icon type="file-image" /> */}
 							<span>Online Search</span>
 						</Menu.Item>
 					</Menu>

@@ -76,3 +76,11 @@ export interface Tag {
 	type: TagType;
 	ambiguous: number;
 }
+
+export type SavedSearchType = 'online' | 'offline';
+
+export interface SavedSearch {
+	id?: number;
+	tags: Tag[];
+	type: SavedSearchType;
+}

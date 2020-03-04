@@ -1,39 +1,46 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/main';
 import { View } from '../../store/system';
 import { setActivePostIndex, setPosts } from '../../store/posts';
+import { setSavedSearches } from '../../store/savedSearches';
 import ThumbnailsList from './ThumbnailsList';
 import { Post } from '../../types/gelbooruTypes';
 import AppLayout from './Layout';
 import ImageView from './ImageView';
 import SearchForm from './SearchForm';
-import database from '../../db/database';
+import SavedSearches from './SavedSearches';
+import database, * as db from '../../db/database';
+import Favorites from './Favorites';
 
 interface Props extends PropsFromRedux {
 	className?: string;
 }
 
-const renderView = (activeView: View): React.ReactNode => {
-	switch (activeView) {
-		case 'thumbnails':
-			return <ThumbnailsList emptyDataLogoCentered={true} />;
-		case 'image':
-			return <ImageView />;
-		case 'online-search':
-			return <SearchForm />;
-		default:
-			return null;
-	}
-};
-
 const Page: React.FunctionComponent<Props> = (props: Props) => {
-	database.posts
-		.where('favorite')
-		.equals(1)
-		.each((c) => {
-			console.log(c);
-		});
+	const hydrate = async (): Promise<void> => {
+		const savedSearches = await database.savedSearches.toArray();
+		props.setSavedSearches(savedSearches);
+	};
+	hydrate();
+
+	const renderView = (activeView: View): React.ReactNode => {
+		switch (activeView) {
+			case 'thumbnails':
+				return <ThumbnailsList emptyDataLogoCentered={true} posts={props.posts} />;
+			case 'image':
+				return <ImageView />;
+			case 'online-search':
+				return <SearchForm />;
+			case 'saved-searches':
+				return <SavedSearches />;
+			case 'favorites':
+				return <Favorites />;
+			default:
+				return null;
+		}
+	};
 
 	const handleKeyPress = (event: KeyboardEvent): void => {
 		if (props.activePostIndex !== undefined) {
@@ -81,7 +88,8 @@ const mapState = (state: State): StateFromProps => ({
 
 const mapDispatch = {
 	setActivePostIndex,
-	setPosts
+	setPosts,
+	setSavedSearches
 };
 
 const connector = connect(mapState, mapDispatch);

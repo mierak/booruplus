@@ -21,7 +21,7 @@ interface Props extends PropsFromRedux {
 const Container = styled.div`
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-	grid-template-rows: repeat(auto-fit, 170px);
+	grid-template-rows: repeat(auto-fit, 220px);
 	grid-gap: 10px;
 	margin: 10px 0 0 10px;
 	overflow-y: auto;
@@ -50,7 +50,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	useEffect(() => {
 		if (props.activeView === 'image') {
 			const list = document.getElementById('thumbnails-list');
-			props.activePostIndex && list?.scrollTo(0, 180 * props.activePostIndex - list.clientHeight / 2 + 90);
+			props.activePostIndex && list?.scrollTo(0, 222 * props.activePostIndex - list.clientHeight / 2 + 90);
 		}
 	});
 
@@ -87,7 +87,6 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 };
 
 interface StateFromProps {
-	posts: Post[];
 	activePostIndex: number | undefined;
 	activeView: View;
 	page: number;
@@ -98,7 +97,6 @@ interface StateFromProps {
 }
 
 const mapState = (state: State): StateFromProps => ({
-	posts: state.posts.posts,
 	activePostIndex: state.posts.activePostIndex,
 	activeView: state.system.activeView,
 	page: state.searchForm.page,

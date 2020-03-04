@@ -4,7 +4,7 @@ const SET_SEARCH_FORM_DRAWER_VISIBLE = 'lolinizer/system/SET_SEARCH_FORM_DRAWER_
 const SET_IMAGE_VIEW_THUMBNAILS_COLLAPSED = 'lolinizer/system/SET_IMAGE_VIEW_THUMBNAILS_COLLAPSED';
 
 //action interfaces
-export type View = 'thumbnails' | 'image' | 'dashboard' | 'online-search';
+export type View = 'thumbnails' | 'image' | 'dashboard' | 'online-search' | 'saved-searches' | 'favorites' | 'tag-list';
 
 interface SetActiveView {
 	type: typeof SET_ACTIVE_VIEW;

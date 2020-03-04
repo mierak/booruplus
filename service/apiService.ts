@@ -11,6 +11,17 @@ interface Options {
 	page?: number;
 }
 
+const checkPostsAgainstDb = async (postDtos: PostDto[]): Promise<Post[]> => {
+	const posts: Post[] = await Promise.all(
+		postDtos.map(async (postDto: PostDto) => {
+			const post = new Post(postDto);
+			const updatedPost = await db.saveOrUpdatePostFromApi(post);
+			return updatedPost;
+		})
+	);
+	return posts;
+};
+
 export const getPostsForTags = async (tags: string[], options: Options = {}): Promise<Post[]> => {
 	//construct API URL
 	let url = `${BASE_POST_URL}&limit=${options.limit}&tags=${tags.join(' ')}`;
@@ -22,12 +33,7 @@ export const getPostsForTags = async (tags: string[], options: Options = {}): Pr
 	try {
 		const response = await fetch(url);
 		const responsePosts: PostDto[] = await response.json();
-		const posts: Post[] = [];
-		responsePosts.forEach((postDto: PostDto) => {
-			const post = new Post(postDto);
-			db.saveOrUpdatePost(post);
-			posts.push(post);
-		});
+		const posts = await checkPostsAgainstDb(responsePosts);
 		return posts;
 	} catch (err) {
 		console.error(err);

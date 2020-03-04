@@ -42,13 +42,7 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 	return (
 		<Container>
 			<Layout>
-				<ImageContainer>
-					{props.activePostIndex !== undefined && props.posts[props.activePostIndex] ? (
-						<Image src={props.posts[props.activePostIndex].fileUrl} />
-					) : (
-						<EmptyThumbnails />
-					)}
-				</ImageContainer>
+				<ImageContainer>{props.activePost ? <Image src={props.activePost.fileUrl} /> : <EmptyThumbnails />}</ImageContainer>
 			</Layout>
 			<Layout.Sider
 				theme="light"
@@ -60,21 +54,21 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 					props.setImageViewThumbnailsCollapsed(!props.thumbnailsListvisible);
 				}}
 			>
-				<StyledThumbnailsList />
+				<StyledThumbnailsList posts={props.posts} />
 			</Layout.Sider>
 		</Container>
 	);
 };
 
 interface StateFromProps {
-	activePostIndex: number | undefined;
+	activePost: Post | undefined;
 	posts: Post[];
 	thumbnailsListvisible: boolean;
 }
 
 const mapState = (state: State): StateFromProps => ({
-	activePostIndex: state.posts.activePostIndex,
 	posts: state.posts.posts,
+	activePost: state.posts.activePost,
 	thumbnailsListvisible: state.system.imageViewThumbnailsCollapsed
 });
 
