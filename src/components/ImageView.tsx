@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import styled from 'styled-components';
 import { State } from '../../store/main';
@@ -39,6 +39,12 @@ const StyledThumbnailsList = styled(ThumbnailsList)`
 `;
 
 const ImageView: React.FunctionComponent<Props> = (props: Props) => {
+	useEffect(() => {
+		if (props.activePost === undefined && props.posts.length > 0) {
+			props.setActivePostIndex(0);
+		}
+	}, []);
+
 	return (
 		<Container>
 			<Layout>

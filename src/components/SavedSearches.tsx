@@ -5,6 +5,9 @@ import styled from 'styled-components';
 import { SavedSearch, Tag as GelbooruTag } from '../../types/gelbooruTypes';
 import { Table, Tag } from 'antd';
 import { getTagColor } from '../../util/utils';
+import { getPostsForTags } from '../../service/apiService';
+import { setActiveView } from '../../store/system';
+import { setActivePost, setPosts } from '../../store/posts';
 
 const { Column } = Table;
 
@@ -23,49 +26,47 @@ const StyledTag = styled(Tag)`
 `;
 
 const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
+	const handleSubmit = async (savedSearch: SavedSearch): Promise<void> => {
+		const searchString = savedSearch.tags.map((tag: GelbooruTag) => tag.tag);
+		const posts = await getPostsForTags(searchString);
+		props.setActiveView('thumbnails');
+		props.setActivePost(undefined);
+		props.setPosts(posts);
+	};
+
+	const renderActions = (_: unknown, record: SavedSearch): JSX.Element => {
+		return (
+			<div>
+				<a
+					onClick={(): void => {
+						handleSubmit(record);
+					}}
+				>
+					Online Search
+				</a>
+				<br />
+				<a>Offline Search</a>
+				<br />
+				<a>Delete</a>
+			</div>
+		);
+	};
+
+	const renderTags = (tags: GelbooruTag[]): JSX.Element => (
+		<span key={`container${tags}`}>
+			{tags.map((tag: GelbooruTag, index: number) => (
+				<StyledTag key={tag.id + index} color={getTagColor(tag)}>
+					{tag.tag}
+				</StyledTag>
+			))}
+		</span>
+	);
+
 	return (
 		<Container className={props.className}>
-			<Table
-				dataSource={props.savedSearches}
-				rowKey="id"
-				pagination={false}
-				bordered
-				sortDirections={['ascend', 'descend']}
-				// scroll={{ y: 0 }}
-				size="small"
-				// style={{ height: '100vh' }}
-			>
-				{/* <Column title="ID" dataIndex="id" key="idCol" /> */}
-				{/* <Column title="Type" dataIndex="type" key="typeCol" /> */}
-				<Column
-					title="Tags"
-					dataIndex="tags"
-					key="tagsCol"
-					render={(tags: GelbooruTag[]): JSX.Element => (
-						<span key={`container${tags}`}>
-							{tags.map((tag: GelbooruTag, index: number) => (
-								<StyledTag key={tag.id + index} color={getTagColor(tag)}>
-									{tag.tag}
-								</StyledTag>
-							))}
-						</span>
-					)}
-				/>
-				<Column
-					title="Actions"
-					dataIndex=""
-					key="action"
-					width={120}
-					render={(): JSX.Element => (
-						<div>
-							<a>Online Search</a>
-							<br />
-							<a>Offline Search</a>
-							<br />
-							<a>Delete</a>
-						</div>
-					)}
-				/>
+			<Table dataSource={props.savedSearches} rowKey="id" pagination={false} bordered sortDirections={['ascend', 'descend']} size="small">
+				<Column title="Tags" dataIndex="tags" key="tagsCol" render={renderTags} />
+				<Column title="Actions" dataIndex="" key="action" width={120} render={renderActions} />
 			</Table>
 		</Container>
 	);
@@ -79,7 +80,11 @@ const mapState = (state: State): StateFromProps => ({
 	savedSearches: state.savedSearches.savedSearches
 });
 
-const mapDispatch = {};
+const mapDispatch = {
+	setActivePost,
+	setActiveView,
+	setPosts
+};
 
 const connector = connect(mapState, mapDispatch);
 

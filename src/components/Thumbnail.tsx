@@ -25,7 +25,7 @@ const StyledCard = styled(Card)<CardProps>`
 `;
 
 const Thumbnail = (props: Props): React.ReactElement => {
-	const [favorite, setFavoriteState] = useState(props.post.favorite); //TODO replace this thumbnails action hack
+	const [_, setFavoriteState] = useState(props.post.favorite); //TODO replace this thumbnails action hack
 
 	const handleThumbnailClick = (): void => {
 		props.setActivePost(props.post);
