@@ -74,14 +74,16 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	const handleSaveSearch = async (): Promise<void> => {
 		const savedSearch: SavedSearch = {
 			type: 'online',
-			tags: props.selectedTags
+			tags: props.selectedTags,
+			rating: props.rating
 		};
 		const id = await saveSearch(savedSearch);
 		if (id !== undefined) {
 			props.addSavedSearch({
 				id: id,
 				type: 'online',
-				tags: props.selectedTags
+				tags: props.selectedTags,
+				rating: props.rating
 			});
 		}
 	};

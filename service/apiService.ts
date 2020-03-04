@@ -23,11 +23,12 @@ const checkPostsAgainstDb = async (postDtos: PostDto[]): Promise<Post[]> => {
 };
 
 export const getPostsForTags = async (tags: string[], options: Options = {}): Promise<Post[]> => {
-	//construct API URL
-	let url = `${BASE_POST_URL}&limit=${options.limit}&tags=${tags.join(' ')}`;
 	//handle Optional params
 	if (!options.limit) options.limit = 100;
 	if (options.rating && options.rating !== 'any') tags.push(`rating:${options.rating}`);
+
+	//construct API URL
+	let url = `${BASE_POST_URL}&limit=${options.limit}&tags=${tags.join(' ')}`;
 	if (options.page) url += `&pid=${options.page}`;
 
 	try {

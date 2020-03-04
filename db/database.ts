@@ -12,7 +12,7 @@ class Database extends Dexie {
 		this.version(1).stores({
 			posts:
 				'id, source, directory, hash, height, width, owner, parent_id, rating, sample, sample_height, sample_width, score, tags, file_url, created_at, image, favorite',
-			savedSearches: '++id, tags, type',
+			savedSearches: '++id, tags, type, rating, lastSearched',
 			tags: 'id, tag, count, type, ambiguous'
 		});
 		this.posts = this.table('posts');

@@ -83,4 +83,6 @@ export interface SavedSearch {
 	id?: number;
 	tags: Tag[];
 	type: SavedSearchType;
+	rating: Rating;
+	lastSearched?: Date;
 }
