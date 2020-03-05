@@ -8,7 +8,7 @@ import { setImageViewThumbnailsCollapsed } from '../../store/system';
 import { Post } from '../../types/gelbooruTypes';
 import ThumbnailsList from './ThumbnailsList';
 import { Layout } from 'antd';
-import EmptyThumbnails from './EmptyThumbnails';
+import EmptyThumbnails from '../components/EmptyThumbnails';
 
 interface Props extends PropsFromRedux {
 	className?: string;

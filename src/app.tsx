@@ -2,7 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import { mainReducer } from '../store/main';
-import Page from './components/Page';
+import Page from './pages/Page';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
 const makeStore = () => {

@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { State } from '../../store/main';
 import styled from 'styled-components';
-import Thumbnail from './Thumbnail';
+import Thumbnail from '../components/Thumbnail';
 import { Post, Tag, Rating } from '../../types/gelbooruTypes';
 import { connect, ConnectedProps } from 'react-redux';
 import { View, setSearchFormDrawerVisible } from '../../store/system';
@@ -10,7 +10,7 @@ import { setPage, setLoading } from '../../store/searchForm';
 import { addPosts } from '../../store/posts';
 import { Button } from 'antd';
 import { getPostsForTags } from '../../service/apiService';
-import EmptyThumbnails from './EmptyThumbnails';
+import EmptyThumbnails from '../components/EmptyThumbnails';
 
 interface Props extends PropsFromRedux {
 	className?: string;

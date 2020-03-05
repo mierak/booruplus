@@ -7,6 +7,9 @@
 			if (global === undefined) {
 				var global = window;
 			}
+			window.api.receive('fromMain', (data) => {
+				console.log(`Received ${data} from main process`);
+			});
 		</script>
 		<meta name="referrer" content="no-referrer" />
 	</head>
