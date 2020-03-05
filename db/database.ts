@@ -29,30 +29,49 @@ database.open().catch((err) => {
 
 //Tag
 export const saveTag = async (tag: Tag): Promise<number | void> => {
-	return database.tags.put(tag).catch((err) => console.error(err));
+	return database.tags.put(tag).catch((err) => {
+		console.error(err);
+		throw err;
+	});
 };
 
 export const saveTags = async (tags: Tag[]): Promise<number | void> => {
-	return database.tags.bulkAdd(tags).catch((err) => console.error(err));
+	return database.tags.bulkAdd(tags).catch((err) => {
+		console.error(err);
+		throw err;
+	});
 };
 
 export const loadTags = async (): Promise<Tag[] | void> => {
-	const tags = await database.tags.toArray().catch((err) => console.error(err));
+	const tags = await database.tags.toArray().catch((err) => {
+		console.error(err);
+		throw err;
+	});
 	return tags;
 };
 
 //SavedSearch
 export const saveSearch = async (savedSearch: SavedSearch): Promise<number | void> => {
-	return database.savedSearches.put(savedSearch).catch((err) => console.error(err));
+	return database.savedSearches.put(savedSearch).catch((err) => {
+		console.error(err);
+		throw err;
+	});
 };
 
 export const getSavedSearches = async (): Promise<SavedSearch[] | void> => {
-	const savedSearches = await database.savedSearches.toArray().catch((err) => console.error(err));
+	const savedSearches = await database.savedSearches.toArray().catch((err) => {
+		console.error(err);
+		throw err;
+	});
 	return savedSearches;
 };
 
 export const deleteSavedSearch = async (savedSearch: SavedSearch): Promise<void> => {
-	savedSearch.id && database.savedSearches.delete(savedSearch.id).catch((err) => console.log(err));
+	savedSearch.id &&
+		database.savedSearches.delete(savedSearch.id).catch((err) => {
+			console.error(err);
+			throw err;
+		});
 };
 
 //Post
@@ -61,19 +80,29 @@ export const saveOrUpdatePostFromApi = async (post: Post): Promise<Post> => {
 	if (savedPost) {
 		post.favorite = savedPost.favorite;
 	}
-	database.posts.put(post);
+	database.posts.put(post).catch((err) => {
+		console.error(err);
+		throw err;
+	});
 	return post;
 };
 
 export const updatePost = async (post: Post): Promise<number | void> => {
-	return database.posts.update(post.id, post).catch((err) => console.error(err));
+	return database.posts.update(post.id, post).catch((err) => {
+		console.error(err);
+		throw err;
+	});
 };
 
 export const getFavoritePosts = async (): Promise<Post[]> => {
 	return database.posts
 		.where('favorite')
 		.equals(1)
-		.toArray();
+		.toArray()
+		.catch((err) => {
+			console.error(err);
+			throw err;
+		});
 };
 
 export default database;
