@@ -85,7 +85,19 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 
 	return (
 		<Container className={props.className}>
-			<Table dataSource={props.savedSearches} rowKey="id" pagination={false} bordered sortDirections={['ascend', 'descend']} size="small">
+			<Table
+				dataSource={props.savedSearches}
+				rowKey="id"
+				pagination={false}
+				bordered
+				sortDirections={['ascend', 'descend']}
+				size="small"
+				rowClassName={(record, index) => (index % 2 === 0 ? 'table-row-light' : 'table-row-dark')}
+				expandable={{
+					rowExpandable: (record: SavedSearch) => record.lastSearched !== undefined
+				}}
+				expandedRowRender={(record) => <span>EXPANDED12</span>}
+			>
 				<Column title="Tags" dataIndex="tags" key="tagsCol" render={renderTags} />
 				<Column title="Rating" dataIndex="rating" key="ratingCol" />
 				<Column title="Last Searched" dataIndex="lastSearched" key="lastSearchedCol" render={renderLastSearched} />

@@ -17,6 +17,8 @@ export interface PostDto {
 	created_at: Date;
 	image: string;
 	favorite?: 0 | 1;
+	blacklisted?: 0 | 1;
+	downloaded?: 0 | 1;
 }
 
 export class Post {
@@ -38,6 +40,8 @@ export class Post {
 	readonly createdAt: Date;
 	readonly image: string;
 	favorite: 0 | 1;
+	blacklisted: 0 | 1;
+	downloaded: 0 | 1;
 
 	constructor(params: PostDto) {
 		this.source = params.source;
@@ -57,11 +61,9 @@ export class Post {
 		this.fileUrl = params.file_url;
 		this.createdAt = params.created_at;
 		this.image = params.image;
-		if (params.favorite !== undefined) {
-			this.favorite = params.favorite;
-		} else {
-			this.favorite = 0;
-		}
+		this.favorite = params.favorite !== undefined ? params.favorite : 0;
+		this.blacklisted = params.blacklisted !== undefined ? params.blacklisted : 0;
+		this.downloaded = params.downloaded !== undefined ? params.downloaded : 0;
 	}
 }
 

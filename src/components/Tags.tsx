@@ -40,12 +40,23 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 
 	return (
 		<Container className={props.className}>
-			<Table size="small" dataSource={tags} pagination={false} rowKey="id">
-				<Column title="Id" dataIndex="id" />
-				<Column title="Tag" dataIndex="tag" />
-				<Column title="Type" dataIndex="type" />
-				<Column title="Count" dataIndex="count" />
-				<Column title="Ambiguous" dataIndex="ambiguous" render={(text, record: Tag) => (record.ambiguous == 0 ? 'false' : 'true')} />
+			<Table
+				size="small"
+				dataSource={tags}
+				pagination={false}
+				rowKey="id"
+				rowClassName={(record, index) => (index % 2 === 0 ? 'table-row-light' : 'table-row-dark')}
+			>
+				<Column title="Id" dataIndex="id" width={100} />
+				<Column title="Tag" dataIndex="tag" ellipsis />
+				<Column title="Type" dataIndex="type" width={100} />
+				<Column title="Count" dataIndex="count" width={100} />
+				<Column
+					title="Ambiguous"
+					dataIndex="ambiguous"
+					width={100}
+					render={(text, record: Tag) => (record.ambiguous == 0 ? 'false' : 'true')}
+				/>
 				<Column title="Actions" dataIndex="" width={240} render={renderActions} />
 			</Table>
 		</Container>

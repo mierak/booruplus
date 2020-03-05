@@ -6,7 +6,7 @@ import { setActiveView } from '../../store/system';
 import { setActivePost, setPostFavorite } from '../../store/posts';
 import { Card } from 'antd';
 import { Post } from '../../types/gelbooruTypes';
-import { EditOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
+import { HeartOutlined, HeartFilled, DownloadOutlined, DeleteOutlined } from '@ant-design/icons';
 import { updatePost } from '../../db/database';
 
 interface Props extends PropsFromRedux {
@@ -25,6 +25,7 @@ const StyledCard = styled(Card)<CardProps>`
 `;
 
 const Thumbnail = (props: Props): React.ReactElement => {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [_, setFavoriteState] = useState(props.post.favorite); //TODO replace this thumbnails action hack
 
 	const handleThumbnailClick = (): void => {
@@ -59,7 +60,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 				/>
 			);
 		}
-		arr.push(<EditOutlined key="edit" />, <EditOutlined key="edit" />, <EditOutlined key="edit" />);
+		arr.push(<DownloadOutlined key="download" />, <DeleteOutlined key="delete" />);
 		return arr;
 	};
 

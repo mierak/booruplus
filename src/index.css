@@ -3,3 +3,10 @@ body {
 	margin: auto;
 	overflow: hidden;
 }
+
+.table-row-light {
+	background-color: #ffffff;
+}
+.table-row-dark {
+	background-color: #fbfbfb;
+}

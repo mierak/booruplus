@@ -34,8 +34,8 @@ const ImageContainer = styled.div`
 `;
 
 const StyledThumbnailsList = styled(ThumbnailsList)`
-	max-width: 200px;
-	margin: 0px;
+	max-width: 220px;
+	margin: 0 0 0 7px;
 `;
 
 const ImageView: React.FunctionComponent<Props> = (props: Props) => {

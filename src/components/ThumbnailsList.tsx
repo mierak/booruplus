@@ -20,10 +20,11 @@ interface Props extends PropsFromRedux {
 
 const Container = styled.div`
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
 	grid-template-rows: repeat(auto-fit, 220px);
 	grid-gap: 10px;
 	margin: 10px 0 0 10px;
+	padding: 10 10px 10px 10;
 	overflow-y: auto;
 	overflow-x: hidden;
 	height: calc(100vh - 15px);
@@ -43,7 +44,7 @@ const StyledEmptyThumbnails = styled(EmptyThumbnails)`
 const StyledLoadMoreButton = styled(Button)`
 	width: 100%;
 	grid-column: 1/-1;
-	margin-bottom: 10px;
+	padding-right: 10px;
 `;
 
 const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
