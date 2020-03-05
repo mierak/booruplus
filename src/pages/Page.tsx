@@ -14,6 +14,7 @@ import SavedSearches from './SavedSearches';
 import database from '../../db/database';
 import Favorites from './Favorites';
 import Tags from './Tags';
+import Dashboard from './Dashboard';
 
 interface Props extends PropsFromRedux {
 	className?: string;
@@ -28,6 +29,8 @@ const Page: React.FunctionComponent<Props> = (props: Props) => {
 
 	const renderView = (activeView: View): React.ReactNode => {
 		switch (activeView) {
+			case 'dashboard':
+				return <Dashboard />;
 			case 'thumbnails':
 				return <ThumbnailsList emptyDataLogoCentered={true} posts={props.posts} />;
 			case 'image':
