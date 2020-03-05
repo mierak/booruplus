@@ -48,7 +48,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 				rowClassName={(record, index) => (index % 2 === 0 ? 'table-row-light' : 'table-row-dark')}
 			>
 				<Column title="Id" dataIndex="id" width={100} />
-				<Column title="Tag" dataIndex="tag" ellipsis />
+				<Column title="Tag" dataIndex="tag" ellipsis filterDropdownVisible={true} />
 				<Column title="Type" dataIndex="type" width={100} />
 				<Column title="Count" dataIndex="count" width={100} />
 				<Column

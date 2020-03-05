@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import styled from 'styled-components';
@@ -45,10 +46,25 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 		}
 	}, []);
 
+	const renderImage = (): JSX.Element => {
+		if (props.activePost) {
+			if (props.activePost.fileUrl.includes('webm')) {
+				return (
+					<Image as="video" key={props.activePost.id} controls autoPlay muted>
+						<source src={props.activePost.fileUrl} type="video/webm" />
+					</Image>
+				);
+			} else {
+				return <Image src={props.activePost.fileUrl} />;
+			}
+		}
+		return <EmptyThumbnails />;
+	};
+
 	return (
 		<Container>
 			<Layout>
-				<ImageContainer>{props.activePost ? <Image src={props.activePost.fileUrl} /> : <EmptyThumbnails />}</ImageContainer>
+				<ImageContainer>{renderImage()}</ImageContainer>
 			</Layout>
 			<Layout.Sider
 				theme="light"
