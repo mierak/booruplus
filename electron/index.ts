@@ -1,7 +1,11 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, IpcMainEvent } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
+import { SavePostDto, LoadPostDto } from '../types/processDto';
+import { prefixDataWithContentType, getImageExtensionFromFilename } from '../util/utils';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+
+import fs from 'fs';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 
@@ -74,10 +78,6 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 
 // code. You can also put them in separate files and import them here.
-ipcMain.on('toMain', (event, args) => {
-	console.log(args);
-	ipcMain.emit('fromMain', 'from Main data');
-});
 ipcMain.on('createWindow', (event, args) => {
 	const win = new BrowserWindow({
 		height: 600,
@@ -90,4 +90,41 @@ ipcMain.on('createWindow', (event, args) => {
 		}
 	});
 	win.loadURL('https://google.com');
+});
+
+//TODO Change to async call
+ipcMain.on('save-image', async (event: IpcMainEvent, dto: SavePostDto) => {
+	if (dto.data) {
+		const data = dto.data.split(';base64,').pop();
+		await fs.promises.mkdir(`C:/lolinizer/${dto.directory}`, { recursive: true }).catch((err) => {
+			console.error(err);
+			event.reply('error');
+			//TODO handle gracefully
+			throw err;
+		});
+		await fs.promises.writeFile(`C:/lolinizer/${dto.directory}/${dto.name}`, data, { encoding: 'base64' }).catch((err) => {
+			console.error(err);
+			event.reply('error');
+			//TODO handle gracefuly
+			throw err;
+		});
+		event.reply('image-saved', dto);
+		console.log(`ipcMain: image-saved | id: ${dto.id}`);
+	} else {
+		event.reply('error');
+	}
+});
+
+//TODO Download image if not found
+ipcMain.on('load-image', async (event: IpcMainEvent, dto: LoadPostDto) => {
+	const data = await fs.promises.readFile(`C:/lolinizer/${dto.directory}/${dto.name}`, { encoding: 'base64' }).catch((err) => {
+		console.error(err);
+		//TODO Handle gracefuly
+		event.reply('error');
+		throw err;
+	});
+	const extension = getImageExtensionFromFilename(dto.name);
+	const dataUri = prefixDataWithContentType(data, extension);
+	event.reply('image-loaded', { data: dataUri });
+	console.log(`ipcMaic: image-loaded | id: ${dto.id}`);
 });

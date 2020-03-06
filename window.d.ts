@@ -2,7 +2,9 @@ export declare global {
 	interface Window {
 		api: {
 			send(channel: string, data: unknown): void;
-			receive(channel: string, data: Function): void;
+			on(channel: string, data: Function): void;
+			removeListener(channel: string, listener: unknown): void;
+			removeAllListeners(channel: string): void;
 		};
 	}
 }

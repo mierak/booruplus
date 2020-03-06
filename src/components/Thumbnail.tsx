@@ -26,7 +26,7 @@ const StyledCard = styled(Card)<CardProps>`
 
 const Thumbnail = (props: Props): React.ReactElement => {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const [_, setFavoriteState] = useState(props.post.favorite); //TODO replace this thumbnails action hack
+	const [_, setFavoriteState] = useState(props.post.favorite); //TODO replace this thumbnails action hack(icon refresh)
 
 	const handleThumbnailClick = (): void => {
 		props.setActivePost(props.post);
@@ -78,11 +78,11 @@ const Thumbnail = (props: Props): React.ReactElement => {
 			postindex={props.index}
 			activepostindex={props.activePostIndex}
 			actions={renderActions()}
+			onClick={(): void => handleThumbnailClick()}
 		>
 			<img
 				src={`https://gelbooru.com/thumbnails/${props.post.directory}/thumbnail_${props.post.hash}.jpg`}
 				style={{ maxWidth: '150px', maxHeight: '150px' }}
-				onClick={(): void => handleThumbnailClick()}
 			></img>
 		</StyledCard>
 	);

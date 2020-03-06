@@ -1,14 +1,16 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import styled from 'styled-components';
 import { State } from '../../store/main';
 import { setActivePostIndex } from '../../store/posts';
 import { setImageViewThumbnailsCollapsed } from '../../store/system';
 import { Post } from '../../types/gelbooruTypes';
+import { LoadPostDto, LoadedImageDto, SavePostDto } from '../../types/processDto';
 import ThumbnailsList from './ThumbnailsList';
 import { Layout } from 'antd';
 import EmptyThumbnails from '../components/EmptyThumbnails';
+import { useSaveImage, useLoadImage } from '../hooks/useImageBus';
 
 interface Props extends PropsFromRedux {
 	className?: string;
@@ -21,7 +23,7 @@ const Container = styled(Layout)`
 
 const Image = styled.img`
 	max-width: 100%;
-	max-height: 100vh;
+	max-height: 50vh;
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
@@ -40,6 +42,18 @@ const StyledThumbnailsList = styled(ThumbnailsList)`
 `;
 
 const ImageView: React.FunctionComponent<Props> = (props: Props) => {
+	const [p, setP] = useState<string>('');
+	const [loadImage, registerLoadListener] = useLoadImage();
+	const [saveImage, registerSaveListener] = useSaveImage();
+
+	registerSaveListener((dto: SavePostDto) => {
+		loadImage({ directory: dto.directory, id: dto.id, name: dto.name });
+	});
+
+	registerLoadListener((data: string) => {
+		setP(data);
+	});
+
 	useEffect(() => {
 		if (props.activePost === undefined && props.posts.length > 0) {
 			props.setActivePostIndex(0);
@@ -55,7 +69,14 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 					</Image>
 				);
 			} else {
-				return <Image src={props.activePost.fileUrl} />;
+				return (
+					<Image
+						src={props.activePost.fileUrl}
+						onClick={(): void => {
+							props.activePost && saveImage(props.activePost);
+						}}
+					/>
+				);
 			}
 		}
 		return <EmptyThumbnails />;
@@ -65,6 +86,7 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 		<Container>
 			<Layout>
 				<ImageContainer>{renderImage()}</ImageContainer>
+				<Image src={p}></Image>;
 			</Layout>
 			<Layout.Sider
 				theme="light"
