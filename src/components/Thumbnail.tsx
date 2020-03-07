@@ -23,6 +23,23 @@ interface CardProps {
 const StyledCard = styled(Card)<CardProps>`
 	border: ${(props): false | 0 | 'dashed 1px black' | undefined =>
 		props.activepostindex !== undefined && props.postindex === props.activepostindex && 'dashed 1px black'};
+	width: 170px;
+	height: 222px;
+`;
+
+const StyledImageContainer = styled.div`
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	align-content: center;
+	padding: 10px;
+`;
+
+const StyledThumbnailImage = styled.img`
+	max-width: 150px;
+	max-height: 150px;
 `;
 
 const Thumbnail = (props: Props): React.ReactElement => {
@@ -72,24 +89,16 @@ const Thumbnail = (props: Props): React.ReactElement => {
 
 	return (
 		<StyledCard
-			style={{ width: '170px', height: '222px' }}
-			bodyStyle={{
-				height: '172px',
-				padding: '10px',
-				display: 'flex',
-				justifyContent: 'center',
-				alignItems: 'center',
-				alignContent: 'center'
-			}}
+			bodyStyle={{ height: '172px', padding: '0' }}
 			postindex={props.index}
 			activepostindex={props.activePostIndex}
 			actions={renderActions()}
-			onClick={(): void => handleThumbnailClick()}
 		>
-			<img
-				src={`https://gelbooru.com/thumbnails/${props.post.directory}/thumbnail_${props.post.hash}.jpg`}
-				style={{ maxWidth: '150px', maxHeight: '150px' }}
-			></img>
+			<StyledImageContainer onClick={(): void => handleThumbnailClick()}>
+				<StyledThumbnailImage
+					src={`https://gelbooru.com/thumbnails/${props.post.directory}/thumbnail_${props.post.hash}.jpg`}
+				></StyledThumbnailImage>
+			</StyledImageContainer>
 		</StyledCard>
 	);
 };

@@ -1,6 +1,7 @@
 import Dexie from 'dexie';
 import 'dexie-export-import';
 import { Post, SavedSearch, Tag } from '../types/gelbooruTypes';
+import { intersection } from '../util/utils';
 
 class Database extends Dexie {
 	posts: Dexie.Table<Post, number>;
@@ -11,7 +12,7 @@ class Database extends Dexie {
 		super(databaseName);
 		this.version(1).stores({
 			posts:
-				'id, source, directory, hash, height, width, owner, parent_id, rating, sample, sample_height, sample_width, score, tags, file_url, created_at, image, favorite',
+				'id, source, directory, hash, height, width, owner, parent_id, rating, sample, sample_height, sample_width, score, *tags, file_url, created_at, image, favorite',
 			savedSearches: '++id, tags, type, rating, lastSearched',
 			tags: 'id, tag, count, type, ambiguous'
 		});
@@ -36,7 +37,7 @@ export const saveTag = async (tag: Tag): Promise<number | void> => {
 };
 
 export const saveTags = async (tags: Tag[]): Promise<number | void> => {
-	return database.tags.bulkAdd(tags).catch((err) => {
+	return database.tags.bulkPut(tags).catch((err) => {
 		console.error(err);
 		throw err;
 	});
@@ -103,6 +104,28 @@ export const getFavoritePosts = async (): Promise<Post[]> => {
 			console.error(err);
 			throw err;
 		});
+};
+
+export const getPostsForTags = async (...tags: string[]): Promise<Post[]> => {
+	const arrays: Post[][] = await Promise.all(
+		tags.map(async (tag) => {
+			const posts = database.posts
+				.where('tags')
+				.equals(tag)
+				.filter((post) => post.downloaded === 1)
+				.toArray();
+			return posts;
+		})
+	);
+	const result: Post[] = intersection(...arrays);
+	return result;
+};
+
+export const getPostCountForTag = async (tag: string): Promise<number> => {
+	return database.posts
+		.where('tags')
+		.equals(tag)
+		.count();
 };
 
 export default database;

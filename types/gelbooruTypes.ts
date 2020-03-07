@@ -1,3 +1,7 @@
+export interface Entity {
+	id: number;
+}
+
 export interface PostDto {
 	source: string;
 	directory: string;
@@ -21,7 +25,7 @@ export interface PostDto {
 	downloaded?: 0 | 1;
 }
 
-export class Post {
+export class Post implements Entity {
 	readonly source: string;
 	readonly directory: string;
 	readonly hash: string;
@@ -35,7 +39,7 @@ export class Post {
 	readonly sampleHeight: number;
 	readonly sampleWidth: number;
 	readonly score: number;
-	readonly tags: string;
+	readonly tags: string[];
 	readonly fileUrl: string;
 	readonly createdAt: Date;
 	readonly image: string;
@@ -57,13 +61,14 @@ export class Post {
 		this.sampleHeight = params.sample_height;
 		this.sampleWidth = params.sample_width;
 		this.score = params.score;
-		this.tags = params.tags;
 		this.fileUrl = params.file_url;
 		this.createdAt = params.created_at;
 		this.image = params.image;
 		this.favorite = params.favorite !== undefined ? params.favorite : 0;
 		this.blacklisted = params.blacklisted !== undefined ? params.blacklisted : 0;
 		this.downloaded = params.downloaded !== undefined ? params.downloaded : 0;
+
+		this.tags = params.tags.split(' ');
 	}
 }
 
@@ -71,7 +76,7 @@ export type TagType = 'copyright' | 'tag' | 'artist' | 'metadata' | 'character';
 
 export type Rating = 'any' | 'safe' | 'questionable' | 'explicit';
 
-export interface Tag {
+export interface Tag extends Entity {
 	id: number;
 	tag: string;
 	count: number;
