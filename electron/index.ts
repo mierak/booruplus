@@ -1,7 +1,9 @@
-import { app, BrowserWindow, ipcMain, IpcMainEvent } from 'electron';
+import { app, BrowserWindow, ipcMain, IpcMainEvent, IpcMainInvokeEvent } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
-import { SavePostDto, LoadPostDto } from '../types/processDto';
+import { SavePostDto } from '../types/processDto';
+import { Post } from '../types/gelbooruTypes';
 import { prefixDataWithContentType, getImageExtensionFromFilename } from '../util/utils';
+import { ImageForPostNotFoundError } from '../types/error';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
@@ -92,39 +94,33 @@ ipcMain.on('createWindow', (event, args) => {
 	win.loadURL('https://google.com');
 });
 
-//TODO Change to async call
-ipcMain.on('save-image', async (event: IpcMainEvent, dto: SavePostDto) => {
+ipcMain.handle('save-image', async (event: IpcMainInvokeEvent, dto: SavePostDto) => {
 	if (dto.data) {
 		const data = dto.data.split(';base64,').pop();
-		await fs.promises.mkdir(`C:/lolinizer/${dto.directory}`, { recursive: true }).catch((err) => {
+		await fs.promises.mkdir(`C:/lolinizer/${dto.post.directory}`, { recursive: true }).catch((err) => {
 			console.error(err);
-			event.reply('error');
 			//TODO handle gracefully
 			throw err;
 		});
-		await fs.promises.writeFile(`C:/lolinizer/${dto.directory}/${dto.name}`, data, { encoding: 'base64' }).catch((err) => {
+		await fs.promises.writeFile(`C:/lolinizer/${dto.post.directory}/${dto.post.image}`, data, { encoding: 'base64' }).catch((err) => {
 			console.error(err);
-			event.reply('error');
 			//TODO handle gracefuly
 			throw err;
 		});
-		event.reply('image-saved', dto);
-		console.log(`ipcMain: image-saved | id: ${dto.id}`);
+		console.log(`ipcMain: image-saved | id: ${dto.post.id}`);
+		return dto.post;
 	} else {
-		event.reply('error');
+		throw 'No data to save supplied';
 	}
 });
 
-//TODO Download image if not found
-ipcMain.on('load-image', async (event: IpcMainEvent, dto: LoadPostDto) => {
-	const data = await fs.promises.readFile(`C:/lolinizer/${dto.directory}/${dto.name}`, { encoding: 'base64' }).catch((err) => {
-		console.error(err);
-		//TODO Handle gracefuly
-		event.reply('error');
-		throw err;
-	});
-	const extension = getImageExtensionFromFilename(dto.name);
-	const dataUri = prefixDataWithContentType(data, extension);
-	event.reply('image-loaded', { data: dataUri });
-	console.log(`ipcMaic: image-loaded | id: ${dto.id}`);
+ipcMain.handle('load-image', async (event: IpcMainInvokeEvent, post: Post) => {
+	try {
+		const data = fs.readFileSync(`C:/lolinizer/${post.directory}/${post.image}`, { encoding: 'base64' });
+		const extension = getImageExtensionFromFilename(post.image);
+		const dataUri = prefixDataWithContentType(data, extension);
+		return { data: dataUri, post };
+	} catch (err) {
+		return { data: undefined, post };
+	}
 });

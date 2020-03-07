@@ -1,16 +1,15 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import styled from 'styled-components';
 import { State } from '../../store/main';
 import { setActivePostIndex } from '../../store/posts';
 import { setImageViewThumbnailsCollapsed } from '../../store/system';
 import { Post } from '../../types/gelbooruTypes';
-import { LoadPostDto, LoadedImageDto, SavePostDto } from '../../types/processDto';
 import ThumbnailsList from './ThumbnailsList';
 import { Layout } from 'antd';
 import EmptyThumbnails from '../components/EmptyThumbnails';
-import { useSaveImage, useLoadImage } from '../hooks/useImageBus';
+import { useLoadImage } from '../../src/hooks/useImageBus';
 
 interface Props extends PropsFromRedux {
 	className?: string;
@@ -23,7 +22,7 @@ const Container = styled(Layout)`
 
 const Image = styled.img`
 	max-width: 100%;
-	max-height: 50vh;
+	max-height: 100vh;
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
@@ -42,17 +41,9 @@ const StyledThumbnailsList = styled(ThumbnailsList)`
 `;
 
 const ImageView: React.FunctionComponent<Props> = (props: Props) => {
-	const [p, setP] = useState<string>('');
-	const [loadImage, registerLoadListener] = useLoadImage();
-	const [saveImage, registerSaveListener] = useSaveImage();
-
-	registerSaveListener((dto: SavePostDto) => {
-		loadImage({ directory: dto.directory, id: dto.id, name: dto.name });
-	});
-
-	registerLoadListener((data: string) => {
-		setP(data);
-	});
+	const videoRef = useRef<HTMLVideoElement>(null);
+	const [imageUrl, setImageUrl] = useState<string>('');
+	const loadImage = useLoadImage();
 
 	useEffect(() => {
 		if (props.activePost === undefined && props.posts.length > 0) {
@@ -60,18 +51,63 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 		}
 	}, []);
 
+	const setVideo = (src: string): void => {
+		if (videoRef.current) {
+			const source = document.createElement('source');
+			source.setAttribute('src', src);
+			videoRef.current.appendChild(source);
+			videoRef.current.load();
+			videoRef.current.play();
+		}
+	};
+
+	const handleLoadResponse = (src: string, url: string): void => {
+		if (url.includes('webm')) {
+			setVideo(src);
+		} else {
+			setImageUrl(src);
+		}
+	};
+
+	useEffect(() => {
+		if (props.activePost) {
+			loadImage(
+				props.activePost,
+				(response) => {
+					handleLoadResponse(response.data, response.post.fileUrl);
+				},
+				(response) => {
+					handleLoadResponse(response.fileUrl, response.fileUrl);
+				}
+			);
+		}
+	}, [props.activePost]);
+
+	const saveImage = (post: Post): void => {
+		props.activePost && window.api.invoke('save-image', post);
+	};
+
 	const renderImage = (): JSX.Element => {
 		if (props.activePost) {
 			if (props.activePost.fileUrl.includes('webm')) {
 				return (
-					<Image as="video" key={props.activePost.id} controls autoPlay muted>
-						<source src={props.activePost.fileUrl} type="video/webm" />
-					</Image>
+					<Image
+						as="video"
+						ref={videoRef}
+						key={props.activePost.id}
+						controls
+						autoPlay
+						loop
+						muted
+						onClick={(): void => {
+							props.activePost && saveImage(props.activePost);
+						}}
+					></Image>
 				);
 			} else {
 				return (
 					<Image
-						src={props.activePost.fileUrl}
+						src={imageUrl}
 						onClick={(): void => {
 							props.activePost && saveImage(props.activePost);
 						}}
@@ -86,7 +122,6 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 		<Container>
 			<Layout>
 				<ImageContainer>{renderImage()}</ImageContainer>
-				<Image src={p}></Image>;
 			</Layout>
 			<Layout.Sider
 				theme="light"
@@ -125,4 +160,4 @@ const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export default connector(ImageView);
+export default connector(React.memo(ImageView));

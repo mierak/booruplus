@@ -11,7 +11,7 @@ contextBridge.exposeInMainWorld('api', {
 		}
 	},
 	on: (channel, func) => {
-		const validChannels = ['fromMain', 'image-loaded', 'image-saved', 'error'];
+		const validChannels = ['fromMain', 'image-loaded', 'image-load-fail', 'image-saved', 'error'];
 		if (validChannels.includes(channel)) {
 			// Deliberately strip event as it includes `sender`
 			ipcRenderer.on(channel, (event, ...args) => func(...args));
@@ -22,5 +22,15 @@ contextBridge.exposeInMainWorld('api', {
 	},
 	removeAllListeners: (channel) => {
 		ipcRenderer.removeAllListeners(channel);
+	},
+	invoke: (channel, data) => {
+		const validChannels = ['toMain', 'createWindow', 'save-image', 'load-image'];
+		if (validChannels.includes(channel)) {
+			try {
+				return ipcRenderer.invoke(channel, data);
+			} catch (err) {
+				console.log('invoker error');
+			}
+		}
 	}
 });

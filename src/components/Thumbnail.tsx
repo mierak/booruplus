@@ -8,6 +8,7 @@ import { Card } from 'antd';
 import { Post } from '../../types/gelbooruTypes';
 import { HeartOutlined, HeartFilled, DownloadOutlined, DeleteOutlined } from '@ant-design/icons';
 import { updatePost } from '../../db/database';
+import { useSaveImage } from '../../src/hooks/useImageBus';
 
 interface Props extends PropsFromRedux {
 	post: Post;
@@ -27,6 +28,7 @@ const StyledCard = styled(Card)<CardProps>`
 const Thumbnail = (props: Props): React.ReactElement => {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [_, setFavoriteState] = useState(props.post.favorite); //TODO replace this thumbnails action hack(icon refresh)
+	const saveImage = useSaveImage();
 
 	const handleThumbnailClick = (): void => {
 		props.setActivePost(props.post);
@@ -37,6 +39,10 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		props.setPostFavorite(props.post, favorite);
 		updatePost(props.post);
 		setFavoriteState(favorite);
+	};
+
+	const handleSave = (): void => {
+		saveImage(props.post);
 	};
 
 	const renderActions = (): JSX.Element[] => {
@@ -60,7 +66,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 				/>
 			);
 		}
-		arr.push(<DownloadOutlined key="download" />, <DeleteOutlined key="delete" />);
+		arr.push(<DownloadOutlined key="download" onClick={handleSave} />, <DeleteOutlined key="delete" />);
 		return arr;
 	};
 

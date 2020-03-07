@@ -1,17 +1,16 @@
-export interface LoadPostDto {
-	id: number;
-	name: string;
-	directory: string;
-}
+import { Post } from './gelbooruTypes';
 
 export interface SavePostDto {
-	id: number;
 	data: string;
-	name: string;
-	directory: string;
+	post: Post;
 }
 
-export interface LoadedImageDto {
-	id: number;
+export interface LoadPostResponse {
+	data?: string;
+	post: Post;
+}
+
+export interface SuccessfulLoadPostResponse {
 	data: string;
+	post: Post;
 }
