@@ -97,6 +97,7 @@
 	},
 	"dependencies": {
 		"@types/pouchdb": "^6.4.0",
+		"@welldone-software/why-did-you-render": "^4.0.5",
 		"antd": "^4.0.0",
 		"dexie": "^2.0.4",
 		"dexie-export-import": "^1.0.0-rc.1",

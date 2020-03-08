@@ -88,7 +88,7 @@ export const saveOrUpdatePostFromApi = async (post: Post): Promise<Post> => {
 	return post;
 };
 
-export const updatePost = async (post: Post): Promise<number | void> => {
+export const updatePostInDb = async (post: Post): Promise<number | void> => {
 	return database.posts.update(post.id, post).catch((err) => {
 		console.error(err);
 		throw err;

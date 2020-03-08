@@ -5,6 +5,15 @@ import { Post } from '../../types/gelbooruTypes';
 import { State } from '../../store/main';
 import { setPosts } from '../../store/posts';
 import { View, setActiveView, setSearchFormDrawerVisible } from '../../store/system';
+import {
+	DashboardOutlined,
+	UnorderedListOutlined,
+	FileImageOutlined,
+	HeartOutlined,
+	TagsOutlined,
+	FormOutlined,
+	SaveOutlined
+} from '@ant-design/icons';
 import SearchForm from './SearchForm';
 
 const { Content, Sider } = Layout;
@@ -33,31 +42,31 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 					<div className="logo" />
 					<Menu theme="dark" defaultSelectedKeys={['thumbnails']} mode="inline" selectedKeys={[props.activeView]}>
 						<Menu.Item key="dashboard" onClick={(): void => setActiveView('dashboard')}>
-							{/* <Icon type="dashboard" /> */}
+							<DashboardOutlined />
 							<span>Dashboard</span>
 						</Menu.Item>
 						<Menu.Item key="thumbnails" onClick={(): void => setActiveView('thumbnails')}>
-							{/* <Icon type="unordered-list" /> */}
+							<UnorderedListOutlined />
 							<span>Thumbnails</span>
 						</Menu.Item>
 						<Menu.Item key="image" onClick={(): void => setActiveView('image')}>
-							{/* <Icon type="file-image" /> */}
+							<FileImageOutlined />
 							<span>Image View</span>
 						</Menu.Item>
 						<Menu.Item key="saved-searches" onClick={(): void => setActiveView('saved-searches')}>
-							{/* <Icon type="file-image" /> */}
+							<SaveOutlined />
 							<span>Saved Searches</span>
 						</Menu.Item>
 						<Menu.Item key="favorites" onClick={(): void => setActiveView('favorites')}>
-							{/* <Icon type="file-image" /> */}
+							<HeartOutlined />
 							<span>Favorites</span>
 						</Menu.Item>
 						<Menu.Item key="tag-list" onClick={(): void => setActiveView('tag-list')}>
-							{/* <Icon type="file-image" /> */}
+							<TagsOutlined />
 							<span>Tag List</span>
 						</Menu.Item>
 						<Menu.Item key="online-search-drawer" onClick={handleSearchFormDrawerOpen}>
-							{/* <Icon type="file-image" /> */}
+							<FormOutlined />
 							<span>Online Search</span>
 						</Menu.Item>
 					</Menu>

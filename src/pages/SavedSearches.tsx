@@ -1,14 +1,17 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../store/main';
 import styled from 'styled-components';
 import { SavedSearch, Tag as GelbooruTag } from '../../types/gelbooruTypes';
-import { Table, Tag, Row, Col } from 'antd';
+import { Table, Tag, Row, Col, Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 import { getTagColor } from '../../util/utils';
 import { getPostsForTags } from '../../service/apiService';
 import { setActiveView } from '../../store/system';
-import { setActivePost, setPosts } from '../../store/posts';
+import { setActivePostIndex, setPosts } from '../../store/posts';
 import { removeSavedSearch } from '../../store/savedSearches';
+import { setLoading, setSelectedTags } from '../../store/searchForm';
 import { deleteSavedSearch, saveSearch } from '../../db/database';
 
 const { Column } = Table;
@@ -27,15 +30,25 @@ const StyledTag = styled(Tag)`
 	margin-bottom: 5px;
 `;
 
+const StyledSpin = styled(Spin)`
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(0, -50%);
+`;
+
 const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 	const handleOnlineSearch = async (savedSearch: SavedSearch): Promise<void> => {
+		props.setLoading(true);
 		const searchString = savedSearch.tags.map((tag: GelbooruTag) => tag.tag);
+		props.setSelectedTags(savedSearch.tags);
 		const posts = await getPostsForTags(searchString, { rating: savedSearch.rating });
-		props.setActiveView('thumbnails');
-		props.setActivePost(undefined);
+		props.setActivePostIndex(undefined);
 		props.setPosts(posts);
 		savedSearch.lastSearched = new Date();
 		saveSearch(savedSearch);
+		props.setLoading(false);
+		props.setActiveView('thumbnails');
 	};
 
 	const handleDelete = (savedSearch: SavedSearch): void => {
@@ -83,8 +96,8 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 		}
 	};
 
-	return (
-		<Container className={props.className}>
+	const renderTable = (): JSX.Element => {
+		return (
 			<Table
 				dataSource={props.savedSearches}
 				rowKey="id"
@@ -96,30 +109,40 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 				expandable={{
 					rowExpandable: (record: SavedSearch) => record.lastSearched !== undefined
 				}}
-				expandedRowRender={(record: SavedSearch): JSX.Element => <span>EXPANDED {record}</span>}
+				expandedRowRender={(record: SavedSearch): JSX.Element => <span>EXPANDED {record.id}</span>}
 			>
-				<Column title="Tags" dataIndex="tags" key="tagsCol" render={renderTags} />
+				<Column title="Tags" dataIndex="tags" key="tagsCol" render={renderTags} filterDropdownVisible={true} />
 				<Column title="Rating" dataIndex="rating" key="ratingCol" />
 				<Column title="Last Searched" dataIndex="lastSearched" key="lastSearchedCol" render={renderLastSearched} />
 				<Column title="Actions" dataIndex="" key="action" width={220} render={renderActions} />
 			</Table>
-		</Container>
-	);
+		);
+	};
+
+	const renderSpinner = (): JSX.Element => {
+		return <StyledSpin size="large" indicator={<LoadingOutlined style={{ fontSize: '150px' }} />} />;
+	};
+
+	return <Container className={props.className}>{props.isLoading ? renderSpinner() : renderTable()}</Container>;
 };
 
 interface StateFromProps {
 	savedSearches: SavedSearch[];
+	isLoading: boolean;
 }
 
 const mapState = (state: State): StateFromProps => ({
-	savedSearches: state.savedSearches.savedSearches
+	savedSearches: state.savedSearches.savedSearches,
+	isLoading: state.searchForm.loading
 });
 
 const mapDispatch = {
-	setActivePost,
+	setActivePostIndex,
 	setActiveView,
 	setPosts,
-	removeSavedSearch
+	removeSavedSearch,
+	setLoading,
+	setSelectedTags
 };
 
 const connector = connect(mapState, mapDispatch);

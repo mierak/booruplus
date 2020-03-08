@@ -10,7 +10,7 @@ import { SelectValue } from 'antd/lib/select';
 import { Tag, Rating, SavedSearch } from '../../types/gelbooruTypes';
 import TagSelectOption from './TagSelectOption';
 import { getTagColor } from '../../util/utils';
-import { setPosts, setActivePost } from '../../store/posts';
+import { setPosts, setActivePostIndex } from '../../store/posts';
 import { addSavedSearch } from '../../store/savedSearches';
 import { saveSearch } from '../../db/database';
 
@@ -57,7 +57,7 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 		const posts = await getPostsForTags(searchString, { rating: props.rating, limit: props.postCount, page: props.page });
 		props.setActiveView('thumbnails');
 		props.setSearchFormDrawerVisible(false);
-		props.setActivePost(undefined);
+		props.setActivePostIndex(undefined);
 		props.setPosts(posts);
 	};
 
@@ -207,7 +207,7 @@ const mapDispatch = {
 	removeTag,
 	setRating,
 	addSavedSearch,
-	setActivePost
+	setActivePostIndex
 };
 
 const connector = connect(mapState, mapDispatch);

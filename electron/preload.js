@@ -24,12 +24,12 @@ contextBridge.exposeInMainWorld('api', {
 		ipcRenderer.removeAllListeners(channel);
 	},
 	invoke: (channel, data) => {
-		const validChannels = ['toMain', 'createWindow', 'save-image', 'load-image'];
+		const validChannels = ['toMain', 'createWindow', 'save-image', 'load-image', 'delete-image'];
 		if (validChannels.includes(channel)) {
 			try {
 				return ipcRenderer.invoke(channel, data);
 			} catch (err) {
-				console.log('invoker error');
+				console.log('invoke error');
 			}
 		}
 	}

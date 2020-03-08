@@ -124,3 +124,16 @@ ipcMain.handle('load-image', async (event: IpcMainInvokeEvent, post: Post) => {
 		return { data: undefined, post };
 	}
 });
+
+ipcMain.handle('delete-image', async (event: IpcMainInvokeEvent, post: Post) => {
+	try {
+		fs.unlinkSync(`C:/lolinizer/${post.directory}/${post.image}`);
+		const dirs = post.directory.split('/');
+		fs.rmdirSync(`C:/lolinizer/${dirs[0]}/${dirs[1]}`);
+		fs.rmdirSync(`C:/lolinizer/${dirs[0]}`);
+		return true;
+	} catch (err) {
+		console.error('could not delete post image or directories', post.id);
+		return false;
+	}
+});

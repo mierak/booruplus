@@ -46,6 +46,7 @@ export class Post implements Entity {
 	favorite: 0 | 1;
 	blacklisted: 0 | 1;
 	downloaded: 0 | 1;
+	selected: boolean;
 
 	constructor(params: PostDto) {
 		this.source = params.source;
@@ -67,6 +68,7 @@ export class Post implements Entity {
 		this.favorite = params.favorite !== undefined ? params.favorite : 0;
 		this.blacklisted = params.blacklisted !== undefined ? params.blacklisted : 0;
 		this.downloaded = params.downloaded !== undefined ? params.downloaded : 0;
+		this.selected = false;
 
 		this.tags = params.tags.split(' ');
 	}

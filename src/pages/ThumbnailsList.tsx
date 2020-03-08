@@ -14,7 +14,6 @@ import EmptyThumbnails from '../components/EmptyThumbnails';
 
 interface Props extends PropsFromRedux {
 	className?: string;
-	posts: Post[];
 	emptyDataLogoCentered?: boolean;
 }
 
@@ -65,9 +64,13 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const renderThumbnails = (): JSX.Element[] => {
-		const arr = props.posts.map((post, index) => {
-			return <Thumbnail key={post.id} post={post} index={index}></Thumbnail>;
-		});
+		// const arr = props.posts.map((post, index) => {
+		// 	return <Thumbnail key={post.id} post={post} index={index}></Thumbnail>;
+		// });
+		const arr: JSX.Element[] = [];
+		for (let i = 0; i < props.postsLength; i++) {
+			arr.push(<Thumbnail key={i} index={i}></Thumbnail>);
+		}
 		arr.push(
 			<StyledLoadMoreButton onClick={handleLoadMore} disabled={props.loading} key="thumbnails-list-load-more-button">
 				Load More
@@ -81,9 +84,12 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	return (
-		<Container className={props.className} id="thumbnails-list">
-			{props.posts.length === 0 ? renderNoData() : renderThumbnails()}
-		</Container>
+		<>
+			{/* <Layout.Header className="site-layout-background"></Layout.Header> */}
+			<Container className={props.className} id="thumbnails-list">
+				{props.postsLength === 0 ? renderNoData() : renderThumbnails()}
+			</Container>
+		</>
 	);
 };
 
@@ -95,6 +101,7 @@ interface StateFromProps {
 	rating: Rating;
 	postCount: number;
 	loading: boolean;
+	postsLength: number;
 }
 
 const mapState = (state: State): StateFromProps => ({
@@ -104,7 +111,8 @@ const mapState = (state: State): StateFromProps => ({
 	selectedTags: state.searchForm.selectedTags,
 	rating: state.searchForm.rating,
 	postCount: state.searchForm.postCount,
-	loading: state.searchForm.loading
+	loading: state.searchForm.loading,
+	postsLength: state.posts.posts.length
 });
 
 const mapDispatch = {
@@ -118,4 +126,5 @@ const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export default connector(ThumbnailsList);
+(ThumbnailsList as any).whyDidYouRender = true;
+export default connector(React.memo(ThumbnailsList));

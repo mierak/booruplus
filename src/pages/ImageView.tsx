@@ -9,7 +9,8 @@ import { Post } from '../../types/gelbooruTypes';
 import ThumbnailsList from './ThumbnailsList';
 import { Layout } from 'antd';
 import EmptyThumbnails from '../components/EmptyThumbnails';
-import { useLoadImage } from '../../src/hooks/useImageBus';
+import { useLoadImage } from '../hooks/useImageBus';
+import FullSizeImage from '../components/FullSizeImage';
 
 interface Props extends PropsFromRedux {
 	className?: string;
@@ -26,13 +27,6 @@ const Image = styled.img`
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
-`;
-
-const ImageContainer = styled.div`
-	width: 100%;
-	display: block;
-	float: left;
-	min-height: 1px;
 `;
 
 const StyledThumbnailsList = styled(ThumbnailsList)`
@@ -83,36 +77,12 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 		}
 	}, [props.activePost]);
 
-	const saveImage = (post: Post): void => {
-		props.activePost && window.api.invoke('save-image', post);
-	};
-
 	const renderImage = (): JSX.Element => {
 		if (props.activePost) {
 			if (props.activePost.fileUrl.includes('webm')) {
-				return (
-					<Image
-						as="video"
-						ref={videoRef}
-						key={props.activePost.id}
-						controls
-						autoPlay
-						loop
-						muted
-						onClick={(): void => {
-							props.activePost && saveImage(props.activePost);
-						}}
-					></Image>
-				);
+				return <Image as="video" ref={videoRef} key={props.activePost.id} controls autoPlay loop muted></Image>;
 			} else {
-				return (
-					<Image
-						src={imageUrl}
-						onClick={(): void => {
-							props.activePost && saveImage(props.activePost);
-						}}
-					/>
-				);
+				return <Image src={imageUrl} />;
 			}
 		}
 		return <EmptyThumbnails />;
@@ -121,7 +91,7 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 	return (
 		<Container>
 			<Layout>
-				<ImageContainer>{renderImage()}</ImageContainer>
+				<FullSizeImage />
 			</Layout>
 			<Layout.Sider
 				theme="light"
@@ -133,7 +103,7 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 					props.setImageViewThumbnailsCollapsed(!props.thumbnailsListvisible);
 				}}
 			>
-				<StyledThumbnailsList posts={props.posts} />
+				<StyledThumbnailsList />
 			</Layout.Sider>
 		</Container>
 	);
@@ -143,11 +113,13 @@ interface StateFromProps {
 	activePost: Post | undefined;
 	posts: Post[];
 	thumbnailsListvisible: boolean;
+	activePostIndex: number | undefined;
 }
 
 const mapState = (state: State): StateFromProps => ({
 	posts: state.posts.posts,
 	activePost: state.posts.activePost,
+	activePostIndex: state.posts.activePostIndex,
 	thumbnailsListvisible: state.system.imageViewThumbnailsCollapsed
 });
 

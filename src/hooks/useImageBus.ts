@@ -45,3 +45,11 @@ export const useSaveImage = (): ((post: Post) => void) => {
 
 	return saveImage;
 };
+
+export const useDeleteImage = (): ((post: Post) => void) => {
+	const deleteImage = (post: Post): void => {
+		window.api.invoke('delete-image', post);
+	};
+
+	return deleteImage;
+};

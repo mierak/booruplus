@@ -4,19 +4,16 @@ import { Post } from '../types/gelbooruTypes';
 export const SET_ACTIVE_POST_INDEX = 'lolinizer/posts/SET_ACTIVE_POST_INDEX';
 export const SET_POSTS = 'lolinizer/posts/SET_POSTS';
 export const ADD_POSTS = 'lolinizer/posts/ADD_POSTS';
+export const REMOVE_POST = 'lolinizer/posts/REMOVE_POST';
 export const SET_POST_FAVORITE = 'lolinizer/posts/SET_POST_FAVORITE';
-export const SET_ACTIVE_POST = 'lolinizer/posts/SET_ACTIVE_POST';
+export const SET_POST_BLACKLISTED = 'lolinizer/posts/SET_POST_BLACKLISTED';
+export const SET_POST_SELECTED = ' lolinizer/posts/SET_POST_SELECTED';
 
 //action interfaces
 
 interface SetActivePostIndex {
 	type: typeof SET_ACTIVE_POST_INDEX;
-	index: number;
-}
-
-interface SetActivePost {
-	type: typeof SET_ACTIVE_POST;
-	post: Post | undefined;
+	index: number | undefined;
 }
 
 interface SetPosts {
@@ -35,20 +32,30 @@ interface SetPostFavorite {
 	favorite: 0 | 1;
 }
 
-export type PostsAction = AddPosts | SetActivePostIndex | SetPosts | SetPostFavorite | SetActivePost;
+interface RemovePost {
+	type: typeof REMOVE_POST;
+	post: Post;
+}
+
+interface SetPostBlacklisted {
+	type: typeof SET_POST_BLACKLISTED;
+	post: Post;
+	blacklisted: 0 | 1;
+}
+
+interface SetPostSelected {
+	type: typeof SET_POST_SELECTED;
+	post: Post;
+	selected: boolean;
+}
+
+export type PostsAction = AddPosts | SetActivePostIndex | SetPosts | SetPostFavorite | RemovePost | SetPostBlacklisted | SetPostSelected;
 
 //action creators
-export const setActivePostIndex = (index: number): SetActivePostIndex => {
+export const setActivePostIndex = (index: number | undefined): SetActivePostIndex => {
 	return {
 		type: SET_ACTIVE_POST_INDEX,
 		index
-	};
-};
-
-export const setActivePost = (post: Post | undefined): SetActivePost => {
-	return {
-		type: SET_ACTIVE_POST,
-		post
 	};
 };
 
@@ -74,6 +81,29 @@ export const setPostFavorite = (post: Post, favorite: 0 | 1): SetPostFavorite =>
 	};
 };
 
+export const removePost = (post: Post): RemovePost => {
+	return {
+		type: REMOVE_POST,
+		post
+	};
+};
+
+export const setPostBlacklisted = (post: Post, blacklisted: 0 | 1): SetPostBlacklisted => {
+	return {
+		type: SET_POST_BLACKLISTED,
+		blacklisted,
+		post
+	};
+};
+
+export const setPostSelected = (post: Post, selected: boolean): SetPostSelected => {
+	return {
+		type: SET_POST_SELECTED,
+		selected,
+		post
+	};
+};
+
 //state interface
 export interface PostsState {
 	activePost: Post | undefined;
@@ -92,22 +122,28 @@ const initialState: PostsState = {
 export default function reducer(state: PostsState = initialState, action: PostsAction): PostsState {
 	switch (action.type) {
 		case SET_ACTIVE_POST_INDEX: {
-			const activePost = state.posts[action.index];
+			const activePost = (action.index && state.posts[action.index]) || undefined;
 			return {
 				...state,
 				activePostIndex: action.index,
 				activePost: activePost
 			};
 		}
-		case SET_ACTIVE_POST: {
-			const getIndex = (): number | undefined => {
-				if (!action.post) return undefined;
-				return state.posts.findIndex((post) => post === action.post);
-			};
+		case REMOVE_POST: {
+			let newIndex = state.activePostIndex;
+			let newActivePost = state.activePost;
+			const newPosts = state.posts.filter((post: Post, index: number) => {
+				if (post.id === action.post.id && index === state.activePostIndex) {
+					newIndex = 0;
+					newActivePost = state.posts[0];
+				}
+				return post.id !== action.post.id;
+			});
 			return {
 				...state,
-				activePost: action.post,
-				activePostIndex: getIndex()
+				posts: newPosts,
+				activePost: newActivePost,
+				activePostIndex: newIndex
 			};
 		}
 		case SET_POSTS:
@@ -121,12 +157,21 @@ export default function reducer(state: PostsState = initialState, action: PostsA
 				posts: [...state.posts, ...action.posts]
 			};
 		case SET_POST_FAVORITE: {
-			const post = state.posts.find((p) => p.id === action.post.id);
-			if (post) {
-				post.favorite = action.favorite;
-			}
 			return {
-				...state
+				...state,
+				posts: state.posts.map((post) => (post.id === action.post.id ? { ...post, favorite: action.favorite } : post))
+			};
+		}
+		case SET_POST_BLACKLISTED: {
+			return {
+				...state,
+				posts: state.posts.map((post) => (post.id === action.post.id ? { ...post, blacklisted: action.blacklisted } : post))
+			};
+		}
+		case SET_POST_SELECTED: {
+			return {
+				...state,
+				posts: state.posts.map((post) => (post.id === action.post.id ? { ...post, selected: action.selected } : post))
 			};
 		}
 		default:

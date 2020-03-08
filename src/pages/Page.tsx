@@ -6,7 +6,6 @@ import { View } from '../../store/system';
 import { setActivePostIndex, setPosts } from '../../store/posts';
 import { setSavedSearches } from '../../store/savedSearches';
 import ThumbnailsList from './ThumbnailsList';
-import { Post } from '../../types/gelbooruTypes';
 import AppLayout from '../components/Layout';
 import ImageView from './ImageView';
 import SearchForm from '../components/SearchForm';
@@ -21,18 +20,20 @@ interface Props extends PropsFromRedux {
 }
 
 const Page: React.FunctionComponent<Props> = (props: Props) => {
-	const hydrate = async (): Promise<void> => {
-		const savedSearches = await database.savedSearches.toArray();
-		props.setSavedSearches(savedSearches);
-	};
-	hydrate();
+	useEffect(() => {
+		const hydrate = async (): Promise<void> => {
+			const savedSearches = await database.savedSearches.toArray();
+			props.setSavedSearches(savedSearches);
+		};
+		hydrate();
+	}, []);
 
 	const renderView = (activeView: View): React.ReactNode => {
 		switch (activeView) {
 			case 'dashboard':
 				return <Dashboard />;
 			case 'thumbnails':
-				return <ThumbnailsList emptyDataLogoCentered={true} posts={props.posts} />;
+				return <ThumbnailsList emptyDataLogoCentered={true} />;
 			case 'image':
 				return <ImageView />;
 			case 'online-search':
@@ -52,7 +53,7 @@ const Page: React.FunctionComponent<Props> = (props: Props) => {
 		if (props.activePostIndex !== undefined) {
 			switch (event.keyCode) {
 				case 39:
-					if (props.activePostIndex !== props.posts.length - 1) {
+					if (props.activePostIndex !== props.postsLength - 1) {
 						props.setActivePostIndex(props.activePostIndex + 1);
 					} else {
 						props.setActivePostIndex(0);
@@ -62,7 +63,7 @@ const Page: React.FunctionComponent<Props> = (props: Props) => {
 					if (props.activePostIndex !== 0) {
 						props.setActivePostIndex(props.activePostIndex - 1);
 					} else {
-						props.setActivePostIndex(props.posts.length - 1);
+						props.setActivePostIndex(props.postsLength - 1);
 					}
 					break;
 			}
@@ -81,13 +82,13 @@ const Page: React.FunctionComponent<Props> = (props: Props) => {
 };
 
 interface StateFromProps {
-	posts: Post[];
+	postsLength: number;
 	activePostIndex: number | undefined;
 	activeView: View;
 }
 
 const mapState = (state: State): StateFromProps => ({
-	posts: state.posts.posts,
+	postsLength: state.posts.posts.length,
 	activePostIndex: state.posts.activePostIndex,
 	activeView: state.system.activeView
 });

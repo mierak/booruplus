@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import ThumbnailsList from './ThumbnailsList';
 import { getFavoritePosts } from '../../db/database';
 import { Post } from '../../types/gelbooruTypes';
-import { setPosts, setActivePost } from '../../store/posts';
+import { setPosts, setActivePostIndex } from '../../store/posts';
 
 interface Props extends PropsFromRedux {
 	className?: string;
@@ -18,14 +18,14 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 		const renderThumbnailList = async (): Promise<void> => {
 			const posts = await getFavoritePosts();
 			props.setPosts(posts);
-			props.setActivePost(undefined);
+			props.setActivePostIndex(undefined);
 		};
 		renderThumbnailList();
 	}, []);
 
 	return (
 		<Container className={props.className}>
-			<ThumbnailsList posts={props.posts} emptyDataLogoCentered={true} />
+			<ThumbnailsList emptyDataLogoCentered={true} />
 		</Container>
 	);
 };
@@ -40,7 +40,7 @@ const mapState = (state: State): StateFromProps => ({
 
 const mapDispatch = {
 	setPosts,
-	setActivePost
+	setActivePostIndex
 };
 
 const connector = connect(mapState, mapDispatch);

@@ -7,6 +7,7 @@ const SET_POST_COUNT = 'lolinizer/searchForm/SET_POST_COUNT';
 const SET_RATING = 'lolinizer/searchForm/SET_RATING';
 const SET_PAGE = 'lolinizer/searchForm/SET_PAGE';
 const SET_LOADING = 'lolinizer/searchForm/SET_LOADING';
+const SET_SELECT_TAGS = 'lolinizer/searchForm/SET_SELECTED_TAGS';
 
 interface AddTag {
 	type: typeof ADD_TAG;
@@ -42,7 +43,12 @@ interface SetLoading {
 	loading: boolean;
 }
 
-export type SearchFormAction = AddTag | RemoveTag | ClearTags | SetPostCount | SetRating | SetPage | SetLoading;
+interface SetSelectedTags {
+	type: typeof SET_SELECT_TAGS;
+	tags: Tag[];
+}
+
+export type SearchFormAction = AddTag | RemoveTag | ClearTags | SetPostCount | SetRating | SetPage | SetLoading | SetSelectedTags;
 
 export const addTag = (tag: Tag): AddTag => {
 	return {
@@ -92,6 +98,13 @@ export const setLoading = (loading: boolean): SetLoading => {
 	};
 };
 
+export const setSelectedTags = (tags: Tag[]): SetSelectedTags => {
+	return {
+		type: SET_SELECT_TAGS,
+		tags
+	};
+};
+
 export interface SearchFormState {
 	selectedTags: Tag[];
 	postCount: number;
@@ -102,7 +115,7 @@ export interface SearchFormState {
 
 export const initialState: SearchFormState = {
 	selectedTags: [],
-	postCount: 10,
+	postCount: 100,
 	rating: 'any',
 	page: 0,
 	loading: false
@@ -148,6 +161,11 @@ export default function reducer(state: SearchFormState = initialState, action: S
 			return {
 				...state,
 				loading: action.loading
+			};
+		case SET_SELECT_TAGS:
+			return {
+				...state,
+				selectedTags: action.tags
 			};
 		default:
 			return state;
