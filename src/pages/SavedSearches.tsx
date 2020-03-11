@@ -1,22 +1,17 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
-import { State } from '../../store/main';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store/main';
 import styled from 'styled-components';
 import { SavedSearch, Tag as GelbooruTag } from '../../types/gelbooruTypes';
 import { Table, Tag, Row, Col, Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { getTagColor } from '../../util/utils';
-import { getPostsForTags } from '../../service/apiService';
-import { setActiveView } from '../../store/system';
-import { setActivePostIndex, setPosts } from '../../store/posts';
-import { removeSavedSearch } from '../../store/savedSearches';
-import { setLoading, setSelectedTags } from '../../store/searchForm';
-import { deleteSavedSearch, saveSearch } from '../../db/database';
+import { removeSavedSearch, searchSavedTagSearchOnline } from '../../store/savedSearches';
 
 const { Column } = Table;
 
-interface Props extends PropsFromRedux {
+interface Props {
 	className?: string;
 }
 
@@ -38,22 +33,16 @@ const StyledSpin = styled(Spin)`
 `;
 
 const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
+	const dispatch = useDispatch();
+	const savedSearches = useSelector((state: RootState) => state.savedSearches.savedSearches);
+	const isLoading = useSelector((state: RootState) => state.searchForm.loading);
+
 	const handleOnlineSearch = async (savedSearch: SavedSearch): Promise<void> => {
-		props.setLoading(true);
-		const searchString = savedSearch.tags.map((tag: GelbooruTag) => tag.tag);
-		props.setSelectedTags(savedSearch.tags);
-		const posts = await getPostsForTags(searchString, { rating: savedSearch.rating });
-		props.setActivePostIndex(undefined);
-		props.setPosts(posts);
-		savedSearch.lastSearched = new Date();
-		saveSearch(savedSearch);
-		props.setLoading(false);
-		props.setActiveView('thumbnails');
+		dispatch(searchSavedTagSearchOnline(savedSearch));
 	};
 
 	const handleDelete = (savedSearch: SavedSearch): void => {
-		props.removeSavedSearch(savedSearch);
-		deleteSavedSearch(savedSearch);
+		dispatch(removeSavedSearch(savedSearch));
 	};
 
 	const renderActions = (_: unknown, record: SavedSearch): JSX.Element => {
@@ -99,7 +88,7 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 	const renderTable = (): JSX.Element => {
 		return (
 			<Table
-				dataSource={props.savedSearches}
+				dataSource={savedSearches}
 				rowKey="id"
 				pagination={false}
 				bordered
@@ -123,30 +112,7 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 		return <StyledSpin size="large" indicator={<LoadingOutlined style={{ fontSize: '150px' }} />} />;
 	};
 
-	return <Container className={props.className}>{props.isLoading ? renderSpinner() : renderTable()}</Container>;
+	return <Container className={props.className}>{isLoading ? renderSpinner() : renderTable()}</Container>;
 };
 
-interface StateFromProps {
-	savedSearches: SavedSearch[];
-	isLoading: boolean;
-}
-
-const mapState = (state: State): StateFromProps => ({
-	savedSearches: state.savedSearches.savedSearches,
-	isLoading: state.searchForm.loading
-});
-
-const mapDispatch = {
-	setActivePostIndex,
-	setActiveView,
-	setPosts,
-	removeSavedSearch,
-	setLoading,
-	setSelectedTags
-};
-
-const connector = connect(mapState, mapDispatch);
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-export default connector(SavedSearches);
+export default SavedSearches;

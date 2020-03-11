@@ -1,11 +1,11 @@
-import { Post, PostDto, Tag, Rating } from '../types/gelbooruTypes';
+import { Post, PostDto, Tag, Rating, parsePost } from '../types/gelbooruTypes';
 import * as db from '../db/database';
 
 const BASE_URL = 'https://gelbooru.com/index.php?page=dapi&q=index&json=1';
 const BASE_TAG_URL = `${BASE_URL}&s=tag`;
 const BASE_POST_URL = `${BASE_URL}&s=post`;
 
-interface Options {
+export interface PostApiOptions {
 	limit?: number;
 	rating?: Rating;
 	page?: number;
@@ -14,7 +14,7 @@ interface Options {
 const checkPostsAgainstDb = async (postDtos: PostDto[]): Promise<Post[]> => {
 	const posts: Post[] = await Promise.all(
 		postDtos.map(async (postDto: PostDto) => {
-			const post = new Post(postDto);
+			const post = parsePost(postDto);
 			const updatedPost = await db.saveOrUpdatePostFromApi(post);
 			return updatedPost;
 		})
@@ -22,7 +22,7 @@ const checkPostsAgainstDb = async (postDtos: PostDto[]): Promise<Post[]> => {
 	return posts;
 };
 
-export const getPostsForTags = async (tags: string[], options: Options = {}): Promise<Post[]> => {
+export const getPostsForTags = async (tags: string[], options: PostApiOptions = {}): Promise<Post[]> => {
 	//handle Optional params
 	if (!options.limit) options.limit = 100;
 	if (options.rating && options.rating !== 'any') tags.push(`rating:${options.rating}`);

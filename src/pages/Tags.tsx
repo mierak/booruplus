@@ -1,18 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
 import styled from 'styled-components';
-import { Table, Col, Input, Button } from 'antd';
+import { Table } from 'antd';
 import { loadTags } from '../../db/database';
 import { Tag, TagType } from '../../types/gelbooruTypes';
-import { SearchOutlined } from '@ant-design/icons';
-import { State } from '../../store/main';
-import { ColumnFilterItem, FilterDropdownProps } from 'antd/lib/table/interface';
+import { ColumnFilterItem } from 'antd/lib/table/interface';
 import { capitalize } from '../../util/utils';
 
 const { Column } = Table;
 
-interface Props extends PropsFromRedux {
+interface Props {
 	className?: string;
 }
 
@@ -34,7 +31,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 		loadTagsFromDb();
 	}, []);
 
-	const getFilteredTags = (): void => {};
+	// const getFilteredTags = (): void => {};
 
 	const renderActions = (_: unknown, record: Tag): JSX.Element => {
 		return (
@@ -110,14 +107,4 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 	);
 };
 
-interface StateFromProps {}
-
-const mapState = (state: State): StateFromProps => ({});
-
-const mapDispatch = {};
-
-const connector = connect(mapState, mapDispatch);
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-export default connector(Tags);
+export default Tags;

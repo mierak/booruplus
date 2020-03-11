@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
-import { State } from '../../store/main';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store/main';
 import { setSearchFormDrawerVisible, setActiveView } from '../../store/system';
-import { setPostCount, addTag, removeTag, clearTags, setRating, setPage } from '../../store/searchForm';
+import { addTag, removeTag, clearTags, setRating, setPage, setLimit } from '../../store/searchForm';
 import styled from 'styled-components';
-import { getTagsByPattern, getPostsForTags } from '../../service/apiService';
+import { getTagsByPattern } from '../../service/apiService';
 import { Card, Select, Button, Form, Tag as AntTag, InputNumber, Col, Input, Row } from 'antd';
 import { SelectValue } from 'antd/lib/select';
 import { Tag, Rating, SavedSearch } from '../../types/gelbooruTypes';
 import TagSelectOption from './TagSelectOption';
 import { getTagColor } from '../../util/utils';
-import { setPosts, setActivePostIndex } from '../../store/posts';
+import { setActivePostIndex, fetchPostsFromApi } from '../../store/posts';
 import { addSavedSearch } from '../../store/savedSearches';
 import { saveSearch } from '../../db/database';
 
-interface Props extends PropsFromRedux {
+interface Props {
 	className?: string;
 }
 
@@ -23,8 +23,13 @@ const StyledCard = styled(Card)`
 `;
 
 const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
+	const postLimit = useSelector((state: RootState) => state.searchForm.limit);
+	const rating = useSelector((state: RootState) => state.searchForm.rating);
+	const selectedTags = useSelector((state: RootState) => state.searchForm.selectedTags);
+	const page = useSelector((state: RootState) => state.searchForm.page);
 	const [options, setOptions] = useState<Tag[]>([]);
 	const [selectValue] = useState('');
+	const dispatch = useDispatch();
 
 	const handleChange = async (e: SelectValue): Promise<void> => {
 		const tags = await getTagsByPattern(e.toString());
@@ -33,58 +38,58 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 
 	const handleSelect = (e: SelectValue): void => {
 		const tag = options.find((t: Tag) => t.tag === e.toString());
-		tag && props.addTag(tag);
+		tag && dispatch(addTag(tag));
 	};
 
 	const handleRatingSelect = (val: Rating): void => {
-		props.setRating(val);
+		dispatch(setRating(val));
 	};
 
 	const handlePostCountChange = (value: number | undefined): void => {
-		value && props.setPostCount(value);
+		value && dispatch(setLimit(value));
 	};
 
 	const handlePageChange = (value: number | undefined): void => {
-		value !== undefined && props.setPage(value);
+		value !== undefined && dispatch(setPage(value));
 	};
 
 	const handleTagClose = (tag: Tag): void => {
-		props.removeTag(tag);
+		dispatch(removeTag(tag));
 	};
 
 	const handleSubmit = async (): Promise<void> => {
-		const searchString = props.selectedTags.map((tag) => tag.tag);
-		const posts = await getPostsForTags(searchString, { rating: props.rating, limit: props.postCount, page: props.page });
-		props.setActiveView('thumbnails');
-		props.setSearchFormDrawerVisible(false);
-		props.setActivePostIndex(undefined);
-		props.setPosts(posts);
+		dispatch(fetchPostsFromApi());
+		dispatch(setActiveView('thumbnails'));
+		dispatch(setSearchFormDrawerVisible(false));
+		dispatch(setActivePostIndex(undefined));
 	};
 
 	const handleClear = (): void => {
-		props.clearTags();
-		props.setPostCount(100);
-		props.setRating('any');
+		dispatch(clearTags());
+		dispatch(setLimit(100));
+		dispatch(setRating('any'));
 	};
 
 	const handleClose = (): void => {
-		props.setSearchFormDrawerVisible(false);
+		dispatch(setSearchFormDrawerVisible(false));
 	};
 
 	const handleSaveSearch = async (): Promise<void> => {
 		const savedSearch: SavedSearch = {
 			type: 'online',
-			tags: props.selectedTags,
-			rating: props.rating
+			tags: selectedTags,
+			rating: rating
 		};
 		const id = await saveSearch(savedSearch);
 		if (id !== undefined) {
-			props.addSavedSearch({
-				id: id,
-				type: 'online',
-				tags: props.selectedTags,
-				rating: props.rating
-			});
+			dispatch(
+				addSavedSearch({
+					id: id,
+					type: 'online',
+					tags: selectedTags,
+					rating: rating
+				})
+			);
 		}
 	};
 
@@ -97,7 +102,7 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const renderSelectedTags = (): JSX.Element[] => {
-		return props.selectedTags.map((tag: Tag) => (
+		return selectedTags.map((tag: Tag) => (
 			<AntTag
 				key={tag.id}
 				color={getTagColor(tag)}
@@ -121,7 +126,7 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 				<StyledCard bodyStyle={{ padding: '11px', minHeight: '48px' }}>{renderSelectedTags()}</StyledCard>
 			</Form.Item>
 			<Form.Item label="Rating">
-				<Select defaultValue={props.rating} value={props.rating} onChange={handleRatingSelect}>
+				<Select defaultValue={rating} value={rating} onChange={handleRatingSelect}>
 					<Select.Option key="any" value="any">
 						Any
 					</Select.Option>
@@ -143,10 +148,10 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 							<InputNumber
 								min={1}
 								max={100}
-								defaultValue={props.postCount}
+								defaultValue={postLimit}
 								style={{ width: '100%' }}
 								onChange={handlePostCountChange}
-								value={props.postCount}
+								value={postLimit}
 							></InputNumber>
 						</Form.Item>
 					</Col>
@@ -155,10 +160,10 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 							<InputNumber
 								min={0}
 								max={1000}
-								defaultValue={props.page}
+								defaultValue={page}
 								style={{ width: '100%' }}
 								onChange={handlePageChange}
-								value={props.page}
+								value={page}
 							></InputNumber>
 						</Form.Item>
 					</Col>
@@ -182,36 +187,4 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	);
 };
 
-interface StateFromProps {
-	postCount: number;
-	rating: Rating;
-	page: number;
-	selectedTags: Tag[];
-}
-
-const mapState = (state: State): StateFromProps => ({
-	postCount: state.searchForm.postCount,
-	rating: state.searchForm.rating,
-	selectedTags: state.searchForm.selectedTags,
-	page: state.searchForm.page
-});
-
-const mapDispatch = {
-	setPosts,
-	setActiveView,
-	setSearchFormDrawerVisible,
-	setPostCount,
-	setPage,
-	addTag,
-	clearTags,
-	removeTag,
-	setRating,
-	addSavedSearch,
-	setActivePostIndex
-};
-
-const connector = connect(mapState, mapDispatch);
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-export default connector(SearchForm);
+export default SearchForm;

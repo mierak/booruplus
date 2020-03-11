@@ -1,180 +1,152 @@
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Post } from '../types/gelbooruTypes';
+import { AppThunk } from './main';
+import { getPostsForTags, PostApiOptions } from '../service/apiService';
+import { updatePostInDb, getFavoritePosts } from '../db/database';
+import { setLoading, setPage } from './searchForm';
 
-//types
-export const SET_ACTIVE_POST_INDEX = 'lolinizer/posts/SET_ACTIVE_POST_INDEX';
-export const SET_POSTS = 'lolinizer/posts/SET_POSTS';
-export const ADD_POSTS = 'lolinizer/posts/ADD_POSTS';
-export const REMOVE_POST = 'lolinizer/posts/REMOVE_POST';
-export const SET_POST_FAVORITE = 'lolinizer/posts/SET_POST_FAVORITE';
-export const SET_POST_BLACKLISTED = 'lolinizer/posts/SET_POST_BLACKLISTED';
-export const SET_POST_SELECTED = ' lolinizer/posts/SET_POST_SELECTED';
-
-//action interfaces
-
-interface SetActivePostIndex {
-	type: typeof SET_ACTIVE_POST_INDEX;
-	index: number | undefined;
-}
-
-interface SetPosts {
-	type: typeof SET_POSTS;
-	posts: Post[];
-}
-
-interface AddPosts {
-	type: typeof ADD_POSTS;
-	posts: Post[];
-}
-
-interface SetPostFavorite {
-	type: typeof SET_POST_FAVORITE;
-	post: Post;
-	favorite: 0 | 1;
-}
-
-interface RemovePost {
-	type: typeof REMOVE_POST;
-	post: Post;
-}
-
-interface SetPostBlacklisted {
-	type: typeof SET_POST_BLACKLISTED;
-	post: Post;
-	blacklisted: 0 | 1;
-}
-
-interface SetPostSelected {
-	type: typeof SET_POST_SELECTED;
-	post: Post;
-	selected: boolean;
-}
-
-export type PostsAction = AddPosts | SetActivePostIndex | SetPosts | SetPostFavorite | RemovePost | SetPostBlacklisted | SetPostSelected;
-
-//action creators
-export const setActivePostIndex = (index: number | undefined): SetActivePostIndex => {
-	return {
-		type: SET_ACTIVE_POST_INDEX,
-		index
-	};
-};
-
-export const setPosts = (posts: Post[]): SetPosts => {
-	return {
-		type: SET_POSTS,
-		posts
-	};
-};
-
-export const addPosts = (posts: Post[]): AddPosts => {
-	return {
-		type: ADD_POSTS,
-		posts
-	};
-};
-
-export const setPostFavorite = (post: Post, favorite: 0 | 1): SetPostFavorite => {
-	return {
-		type: SET_POST_FAVORITE,
-		post,
-		favorite
-	};
-};
-
-export const removePost = (post: Post): RemovePost => {
-	return {
-		type: REMOVE_POST,
-		post
-	};
-};
-
-export const setPostBlacklisted = (post: Post, blacklisted: 0 | 1): SetPostBlacklisted => {
-	return {
-		type: SET_POST_BLACKLISTED,
-		blacklisted,
-		post
-	};
-};
-
-export const setPostSelected = (post: Post, selected: boolean): SetPostSelected => {
-	return {
-		type: SET_POST_SELECTED,
-		selected,
-		post
-	};
-};
-
-//state interface
 export interface PostsState {
-	activePost: Post | undefined;
 	activePostIndex: number | undefined;
 	posts: Post[];
 }
 
-//initial state
 const initialState: PostsState = {
-	activePost: undefined,
-	activePostIndex: undefined,
+	activePostIndex: 0,
 	posts: []
 };
 
-//reducer
-export default function reducer(state: PostsState = initialState, action: PostsAction): PostsState {
-	switch (action.type) {
-		case SET_ACTIVE_POST_INDEX: {
-			const activePost = (action.index && state.posts[action.index]) || undefined;
-			return {
-				...state,
-				activePostIndex: action.index,
-				activePost: activePost
-			};
+const postsSlice = createSlice({
+	name: 'posts',
+	initialState: initialState,
+	reducers: {
+		setActivePostIndex: (state, action: PayloadAction<number | undefined>): void => {
+			state.activePostIndex = action.payload;
+		},
+		removePost: (state, action: PayloadAction<Post>): void => {
+			const index = state.posts.findIndex((p: Post) => p.id === action.payload.id); //TODO returns -1 not undefined, test if correctly removes
+			state.posts.splice(index, 1);
+			state.activePostIndex = index;
+		},
+		setPosts: (state, action: PayloadAction<Post[]>): void => {
+			state.posts = action.payload;
+		},
+		addPosts: (state, action: PayloadAction<Post[]>): void => {
+			state.posts.push(...action.payload);
+		},
+		updatePost: (state, action: PayloadAction<Post>): void => {
+			const index = state.posts.findIndex((p) => p.id === action.payload.id);
+			state.posts[index] = action.payload;
+		},
+		setPostFavorite: (state, action: PayloadAction<{ index: number; favorite: 1 | 0 }>): void => {
+			state.posts[action.payload.index].favorite = action.payload.favorite;
+		},
+		setPostIndexSelected: (state, action: PayloadAction<{ index: number; selected: boolean }>): void => {
+			state.posts[action.payload.index].selected = action.payload.selected;
+		},
+		setPostSelected: (state, action: PayloadAction<{ post: Post; selected: boolean }>): void => {
+			const post = state.posts.find((p) => p.id === action.payload.post.id);
+			post && (post.selected = action.payload.selected);
+		},
+		setPostBlacklisted: (state, action: PayloadAction<{ index: number; blacklisted: 1 | 0 }>): void => {
+			state.posts[action.payload.index].blacklisted = action.payload.blacklisted;
+		},
+		nextPost: (state): void => {
+			if (state.activePostIndex) {
+				const index = state.activePostIndex === state.posts.length - 1 ? 0 : state.activePostIndex + 1;
+				state.activePostIndex = index;
+			}
+		},
+		previousPost: (state): void => {
+			if (state.activePostIndex) {
+				const index = state.activePostIndex === 0 ? state.posts.length - 1 : state.activePostIndex - 1;
+				state.activePostIndex = index;
+			}
 		}
-		case REMOVE_POST: {
-			let newIndex = state.activePostIndex;
-			let newActivePost = state.activePost;
-			const newPosts = state.posts.filter((post: Post, index: number) => {
-				if (post.id === action.post.id && index === state.activePostIndex) {
-					newIndex = 0;
-					newActivePost = state.posts[0];
-				}
-				return post.id !== action.post.id;
-			});
-			return {
-				...state,
-				posts: newPosts,
-				activePost: newActivePost,
-				activePostIndex: newIndex
-			};
-		}
-		case SET_POSTS:
-			return {
-				...state,
-				posts: action.posts
-			};
-		case ADD_POSTS:
-			return {
-				...state,
-				posts: [...state.posts, ...action.posts]
-			};
-		case SET_POST_FAVORITE: {
-			return {
-				...state,
-				posts: state.posts.map((post) => (post.id === action.post.id ? { ...post, favorite: action.favorite } : post))
-			};
-		}
-		case SET_POST_BLACKLISTED: {
-			return {
-				...state,
-				posts: state.posts.map((post) => (post.id === action.post.id ? { ...post, blacklisted: action.blacklisted } : post))
-			};
-		}
-		case SET_POST_SELECTED: {
-			return {
-				...state,
-				posts: state.posts.map((post) => (post.id === action.post.id ? { ...post, selected: action.selected } : post))
-			};
-		}
-		default:
-			return state;
 	}
+});
+
+export const {
+	setActivePostIndex,
+	removePost,
+	setPosts,
+	addPosts,
+	setPostFavorite,
+	setPostSelected,
+	setPostIndexSelected,
+	setPostBlacklisted,
+	nextPost,
+	previousPost,
+	updatePost
+} = postsSlice.actions;
+
+export default postsSlice.reducer;
+
+export const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<void> => {
+	try {
+		dispatch(setLoading(true));
+		const tags = getState().searchForm.selectedTags;
+		const tagsString = tags.map((tag) => tag.tag);
+		const options: PostApiOptions = {
+			limit: getState().searchForm.limit,
+			page: getState().searchForm.page,
+			rating: getState().searchForm.rating
+		};
+		const posts = await getPostsForTags(tagsString, options);
+		dispatch(setPosts(posts));
+		dispatch(setLoading(false));
+	} catch (err) {
+		console.error('Error while fetching from api', err);
+	}
+};
+
+export const loadMorePosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
+	try {
+		dispatch(setLoading(true));
+		const page = getState().searchForm.page;
+		const tags = getState().searchForm.selectedTags;
+		const tagsString = tags.map((tag) => tag.tag);
+		const options: PostApiOptions = {
+			limit: getState().searchForm.limit,
+			page: page + 1,
+			rating: getState().searchForm.rating
+		};
+		dispatch(setPage(page + 1));
+		const posts = await getPostsForTags(tagsString, options);
+		dispatch(addPosts(posts));
+		dispatch(setLoading(false));
+	} catch (err) {
+		console.error('Error while loading more posts', err);
+	}
+};
+
+export const loadFavoritePostsFromDb = (): AppThunk => async (dispatch): Promise<void> => {
+	try {
+		dispatch(setLoading(true));
+		const posts = await getFavoritePosts();
+		dispatch(setActivePostIndex(undefined));
+		dispatch(setPosts(posts));
+		dispatch(setLoading(false));
+	} catch (err) {
+		console.error('Error while retrieving favorite posts from db', err);
+	}
+};
+
+interface PostPropertyOptions {
+	blacklisted?: 0 | 1;
+	favorite?: 0 | 1;
+	downloaded?: 0 | 1;
 }
+
+//TODO remove from state if blacklisted
+export const changePostProperties = (post: Post, options: PostPropertyOptions): AppThunk => async (dispatch): Promise<void> => {
+	try {
+		const clonedPost = Object.assign({}, post);
+		options.blacklisted !== undefined && (clonedPost.blacklisted = options.blacklisted);
+		options.favorite !== undefined && (clonedPost.favorite = options.favorite);
+		options.downloaded !== undefined && (clonedPost.downloaded = options.downloaded);
+		updatePostInDb(clonedPost);
+		dispatch(updatePost(clonedPost));
+	} catch (err) {
+		console.error(err);
+	}
+};

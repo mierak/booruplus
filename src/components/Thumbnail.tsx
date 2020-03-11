@@ -1,25 +1,22 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { State } from '../../store/main';
+import { RootState } from '../../store/main';
 import { setActiveView } from '../../store/system';
-import { setActivePostIndex, setPostFavorite, removePost, setPostBlacklisted, setPosts, setPostSelected } from '../../store/posts';
-import { Card, Popconfirm, notification, Tooltip } from 'antd';
-import { Post } from '../../types/gelbooruTypes';
-import { HeartOutlined, HeartFilled, DownloadOutlined, DeleteOutlined, CheckCircleTwoTone } from '@ant-design/icons';
-import { updatePostInDb } from '../../db/database';
+import { setActivePostIndex, changePostProperties, setPostSelected } from '../../store/posts';
+import { Card, Popconfirm, notification, Tooltip, Spin } from 'antd';
+import { HeartOutlined, HeartFilled, DownloadOutlined, DeleteOutlined, CheckCircleTwoTone, LoadingOutlined } from '@ant-design/icons';
 import { useSaveImage, useDeleteImage } from '../../src/hooks/useImageBus';
 import { IconType } from 'antd/lib/notification';
 
-interface OwnProps {
+interface Props {
 	index: number;
 }
 
-interface Props extends PropsFromRedux, OwnProps {}
-
 interface CardProps {
 	readonly postindex: number;
-	readonly activepostindex: number | undefined;
+	readonly isactive: string;
 }
 
 interface SelectedIndexes {
@@ -28,8 +25,7 @@ interface SelectedIndexes {
 }
 
 const StyledCard = styled(Card)<CardProps>`
-	border: ${(props): false | 0 | 'dashed 1px black' | undefined =>
-		props.activepostindex !== undefined && props.postindex === props.activepostindex && 'dashed 1px black'};
+	border: ${(props): false | 0 | 'dashed 1px black' | undefined => props.isactive === 'true' && 'dashed 1px black'};
 	width: 170px;
 	height: 222px;
 `;
@@ -50,10 +46,17 @@ const StyledThumbnailImage = styled.img`
 `;
 
 const Thumbnail = (props: Props): React.ReactElement => {
+	const activeView = useSelector((state: RootState) => state.system.activeView);
+	const post = useSelector((state: RootState) =>
+		props.index >= 0 && props.index < state.posts.posts.length ? state.posts.posts[props.index] : undefined
+	);
+	const isActive = useSelector((state: RootState) => props.index === state.posts.activePostIndex);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const [_, setFavoriteState] = useState(props.post.favorite); //TODO replace this thumbnails action hack(icon refresh)
+	const [_, setFavoriteState] = useState(post && post.favorite); //TODO replace this thumbnails action hack(icon refresh)
+	const [loaded, setLoaded] = useState(true);
 	const saveImageToDisk = useSaveImage();
 	const deleteImageFromDisk = useDeleteImage();
+	const dispatch = useDispatch();
 
 	const openNotificationWithIcon = (type: IconType, title: string, description: string, duration?: number): void => {
 		notification[type]({
@@ -65,44 +68,45 @@ const Thumbnail = (props: Props): React.ReactElement => {
 
 	const handleThumbnailClick = (event: React.MouseEvent): void => {
 		if (event.ctrlKey) {
-			// props.post.selected = !props.post.selected;
-			const post = props.post;
-			post.selected = !post.selected;
-			props.setPostSelected(post, post.selected);
+			if (post) {
+				dispatch(setPostSelected({ post: post, selected: !post.selected }));
+			}
 		} else {
-			props.setActivePostIndex(props.index);
-			props.activeView !== 'image' && props.setActiveView('image');
+			dispatch(setActivePostIndex(props.index));
+			activeView !== 'image' && dispatch(setActiveView('image'));
 		}
 	};
 
 	const setFavorite = (favorite: 0 | 1): void => {
-		const post = props.post;
-		post.favorite = favorite;
-		props.setPostFavorite(props.post, favorite);
-		updatePostInDb(post);
-		setFavoriteState(favorite);
-		const description = favorite === 1 ? 'Post succesfuly added to favorites.' : 'Post successfuly removed from favorites.';
-		openNotificationWithIcon('success', 'Post updated', description);
+		if (post) {
+			dispatch(changePostProperties(post, { favorite }));
+			const description = favorite === 1 ? 'Post succesfuly added to favorites.' : 'Post successfuly removed from favorites.';
+			openNotificationWithIcon('success', 'Post updated', description);
+		}
 	};
 
 	const handleSave = (): void => {
-		saveImageToDisk(props.post);
-		openNotificationWithIcon('success', 'Post downloaded', 'Image was successfuly saved to disk.');
+		if (post) {
+			saveImageToDisk(post);
+			dispatch(changePostProperties(post, { downloaded: 1 }));
+			openNotificationWithIcon('success', 'Post downloaded', 'Image was successfuly saved to disk.');
+		}
 	};
 
 	const handleDelete = (): void => {
-		const post = props.post;
-		post.blacklisted = 1;
-		post.favorite = 0;
-		deleteImageFromDisk(props.post);
-		setFavoriteState(0);
-		props.removePost(post);
-		updatePostInDb(post);
-		openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
+		if (post) {
+			deleteImageFromDisk(post);
+			dispatch(changePostProperties(post, { favorite: 0, blacklisted: 1 }));
+			openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
+		}
 	};
 
-	const renderWithTooltip = (element: JSX.Element, text: string): JSX.Element => {
-		return <Tooltip title={text}>{element}</Tooltip>;
+	const renderWithTooltip = (element: JSX.Element, text: string, key: string): JSX.Element => {
+		return (
+			<Tooltip title={text} key={key}>
+				{element}
+			</Tooltip>
+		);
 	};
 
 	const renderActions = (): JSX.Element[] => {
@@ -110,29 +114,36 @@ const Thumbnail = (props: Props): React.ReactElement => {
 			<HeartFilled
 				key="heart-filled"
 				onClick={(): void => {
-					setFavorite(0);
+					post && setFavorite(0);
 				}}
 			/>,
-			'Remove from favorites'
+			'Remove from favorites',
+			'heart-filled'
 		);
 		const notFavorite = renderWithTooltip(
 			<HeartOutlined
 				key="heart-outlined"
 				onClick={(): void => {
-					setFavorite(1);
+					post && setFavorite(1);
 				}}
 			/>,
-			'Add to favorites'
+			'Add to favorites',
+			'heart-outlined'
 		);
-		const download = renderWithTooltip(<DownloadOutlined key="download" onClick={handleSave} />, 'Download post image');
+		const download = renderWithTooltip(
+			<DownloadOutlined key="download" onClick={(): void => post && handleSave()} />,
+			'Download post image',
+			'download'
+		);
 		const blackist = renderWithTooltip(
-			<Popconfirm title="Are you sure you want to blacklist this image?" onConfirm={handleDelete}>
+			<Popconfirm title="Are you sure you want to blacklist this image?" onConfirm={(): void => post && handleDelete()}>
 				<DeleteOutlined key="delete" />
 			</Popconfirm>,
-			'Blacklist post'
+			'Blacklist post',
+			'delete'
 		);
 		const arr: JSX.Element[] = [];
-		if (props.post.favorite === 1) {
+		if (post && post.favorite === 1) {
 			arr.push(favorite);
 		} else {
 			arr.push(notFavorite);
@@ -143,46 +154,30 @@ const Thumbnail = (props: Props): React.ReactElement => {
 
 	return (
 		<StyledCard
-			bodyStyle={{ height: '172px', padding: '0' }}
+			bodyStyle={{ height: '172px', width: '170px', padding: '0' }}
 			postindex={props.index}
-			activepostindex={props.activePostIndex}
+			isactive={isActive.toString()}
 			actions={renderActions()}
 			hoverable
 		>
 			<StyledImageContainer onClick={(event: React.MouseEvent): void => handleThumbnailClick(event)}>
-				{props.post.selected ? <CheckCircleTwoTone style={{ fontSize: '20px', position: 'absolute', top: '5px', right: '5px' }} /> : <></>}
-				<StyledThumbnailImage
-					src={`https://gelbooru.com/thumbnails/${props.post.directory}/thumbnail_${props.post.hash}.jpg`}
-				></StyledThumbnailImage>
+				{post && post.selected ? (
+					<CheckCircleTwoTone style={{ fontSize: '20px', position: 'absolute', top: '5px', right: '5px' }} />
+				) : (
+					<></>
+				)}
+				{post && (
+					<StyledThumbnailImage
+						src={`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`}
+						style={{ display: loaded ? 'block' : 'none' }}
+						onLoad={(): void => setLoaded(true)}
+						onLoadStart={(): void => setLoaded(false)}
+					></StyledThumbnailImage>
+				)}
+				{!loaded && <Spin indicator={<LoadingOutlined style={{ fontSize: '32px' }} />} />}
 			</StyledImageContainer>
 		</StyledCard>
 	);
 };
 
-interface StateFromProps {
-	activeView: string;
-	activePostIndex: number | undefined;
-	post: Post;
-}
-
-const mapState = (state: State, ownProps: OwnProps): StateFromProps => ({
-	activeView: state.system.activeView,
-	activePostIndex: state.posts.activePostIndex,
-	post: state.posts.posts[ownProps.index]
-});
-
-const mapDispatch = {
-	setActiveView,
-	setPostFavorite,
-	setActivePostIndex,
-	removePost,
-	setPostBlacklisted,
-	setPosts,
-	setPostSelected
-};
-
-const connector = connect(mapState, mapDispatch);
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-export default connector(Thumbnail);
+export default Thumbnail;

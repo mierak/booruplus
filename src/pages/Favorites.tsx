@@ -1,24 +1,20 @@
 import React, { useEffect } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
-import { State } from '../../store/main';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import ThumbnailsList from './ThumbnailsList';
-import { getFavoritePosts } from '../../db/database';
-import { Post } from '../../types/gelbooruTypes';
-import { setPosts, setActivePostIndex } from '../../store/posts';
+import ThumbnailsList from '../components/ThumbnailsList';
+import { loadFavoritePostsFromDb } from '../../store/posts';
 
-interface Props extends PropsFromRedux {
+interface Props {
 	className?: string;
 }
 
 const Container = styled.div``;
 
 const Favorites: React.FunctionComponent<Props> = (props: Props) => {
+	const dispatch = useDispatch();
 	useEffect(() => {
 		const renderThumbnailList = async (): Promise<void> => {
-			const posts = await getFavoritePosts();
-			props.setPosts(posts);
-			props.setActivePostIndex(undefined);
+			dispatch(loadFavoritePostsFromDb());
 		};
 		renderThumbnailList();
 	}, []);
@@ -30,21 +26,4 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 	);
 };
 
-interface StateFromProps {
-	posts: Post[];
-}
-
-const mapState = (state: State): StateFromProps => ({
-	posts: state.posts.posts
-});
-
-const mapDispatch = {
-	setPosts,
-	setActivePostIndex
-};
-
-const connector = connect(mapState, mapDispatch);
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-export default connector(Favorites);
+export default Favorites;

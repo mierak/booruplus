@@ -1,17 +1,11 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-import { mainReducer } from '../store/main';
+import { store } from '../store/main';
 import Page from './pages/Page';
-import { composeWithDevTools } from 'redux-devtools-extension';
-
-const makeStore = () => {
-	return createStore(mainReducer, composeWithDevTools());
-};
 
 const App = (): React.ReactElement => {
 	return (
-		<Provider store={makeStore()}>
+		<Provider store={store}>
 			<Page />
 		</Provider>
 	);

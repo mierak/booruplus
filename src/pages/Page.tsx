@@ -1,39 +1,35 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
-import { State } from '../../store/main';
-import { View } from '../../store/system';
-import { setActivePostIndex, setPosts } from '../../store/posts';
-import { setSavedSearches } from '../../store/savedSearches';
-import ThumbnailsList from './ThumbnailsList';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store/main';
+import { loadSavedSearchesFromDb } from '../../store/savedSearches';
 import AppLayout from '../components/Layout';
 import ImageView from './ImageView';
 import SearchForm from '../components/SearchForm';
 import SavedSearches from './SavedSearches';
-import database from '../../db/database';
 import Favorites from './Favorites';
 import Tags from './Tags';
 import Dashboard from './Dashboard';
+import Thumbnails from './Thumbnails';
 
-interface Props extends PropsFromRedux {
+interface Props {
 	className?: string;
 }
 
 const Page: React.FunctionComponent<Props> = (props: Props) => {
+	const dispatch = useDispatch();
+	const activeView = useSelector((state: RootState) => state.system.activeView);
+
 	useEffect(() => {
-		const hydrate = async (): Promise<void> => {
-			const savedSearches = await database.savedSearches.toArray();
-			props.setSavedSearches(savedSearches);
-		};
-		hydrate();
+		dispatch(loadSavedSearchesFromDb());
 	}, []);
 
-	const renderView = (activeView: View): React.ReactNode => {
+	const renderView = (): React.ReactNode => {
 		switch (activeView) {
 			case 'dashboard':
 				return <Dashboard />;
 			case 'thumbnails':
-				return <ThumbnailsList emptyDataLogoCentered={true} />;
+				return <Thumbnails />;
 			case 'image':
 				return <ImageView />;
 			case 'online-search':
@@ -49,58 +45,7 @@ const Page: React.FunctionComponent<Props> = (props: Props) => {
 		}
 	};
 
-	const handleKeyPress = (event: KeyboardEvent): void => {
-		if (props.activePostIndex !== undefined) {
-			switch (event.keyCode) {
-				case 39:
-					if (props.activePostIndex !== props.postsLength - 1) {
-						props.setActivePostIndex(props.activePostIndex + 1);
-					} else {
-						props.setActivePostIndex(0);
-					}
-					break;
-				case 37:
-					if (props.activePostIndex !== 0) {
-						props.setActivePostIndex(props.activePostIndex - 1);
-					} else {
-						props.setActivePostIndex(props.postsLength - 1);
-					}
-					break;
-			}
-		}
-	};
-
-	useEffect(() => {
-		window.addEventListener('keydown', handleKeyPress, true);
-
-		return (): void => {
-			window.removeEventListener('keydown', handleKeyPress, true);
-		};
-	}, [props.activePostIndex]);
-
-	return <AppLayout>{renderView(props.activeView)}</AppLayout>;
+	return <AppLayout>{renderView()}</AppLayout>;
 };
 
-interface StateFromProps {
-	postsLength: number;
-	activePostIndex: number | undefined;
-	activeView: View;
-}
-
-const mapState = (state: State): StateFromProps => ({
-	postsLength: state.posts.posts.length,
-	activePostIndex: state.posts.activePostIndex,
-	activeView: state.system.activeView
-});
-
-const mapDispatch = {
-	setActivePostIndex,
-	setPosts,
-	setSavedSearches
-};
-
-const connector = connect(mapState, mapDispatch);
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-export default connector(Page);
+export default Page;
