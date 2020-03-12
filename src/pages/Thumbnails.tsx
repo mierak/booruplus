@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import ThumbnailsList from '../components/ThumbnailsList';
 import { PageHeader, Button } from 'antd';
+import { useDispatch } from 'react-redux';
+import { downloadSelectedPosts } from '../../store/posts';
 
 interface Props {
 	className?: string;
@@ -18,6 +20,7 @@ const StyledThumbnailsList = styled(ThumbnailsList)`
 `;
 
 const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
+	const dispatch = useDispatch();
 	return (
 		<Container className={props.className}>
 			<PageHeader
@@ -31,7 +34,14 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 					<Button key="5">Add All To Favorites</Button>,
 					<Button key="4">Add Selected To Favorites</Button>,
 					<Button key="3">Download All</Button>,
-					<Button key="2">Download Selected</Button>
+					<Button
+						key="2"
+						onClick={(): void => {
+							dispatch(downloadSelectedPosts());
+						}}
+					>
+						Download Selected
+					</Button>
 				]}
 			></PageHeader>
 			<StyledThumbnailsList emptyDataLogoCentered={true} />

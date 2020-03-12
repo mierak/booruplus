@@ -91,7 +91,6 @@ ipcMain.on('createWindow', (event, args) => {
 			preload: __dirname + '/preload.js'
 		}
 	});
-	win.loadURL('https://google.com');
 });
 
 ipcMain.handle('save-image', async (event: IpcMainInvokeEvent, dto: SavePostDto) => {
@@ -119,6 +118,7 @@ ipcMain.handle('load-image', async (event: IpcMainInvokeEvent, post: Post) => {
 		const data = fs.readFileSync(`C:/lolinizer/${post.directory}/${post.image}`, { encoding: 'base64' });
 		const extension = getImageExtensionFromFilename(post.image);
 		const dataUri = prefixDataWithContentType(data, extension);
+		console.log(`ipcMain: image-loaded | id: ${post.id}`);
 		return { data: dataUri, post };
 	} catch (err) {
 		return { data: undefined, post };

@@ -4,6 +4,7 @@ import { AppThunk } from './main';
 import { getPostsForTags, PostApiOptions } from '../service/apiService';
 import { updatePostInDb, getFavoritePosts } from '../db/database';
 import { setLoading, setPage } from './searchForm';
+import { useSaveImage } from '../src/hooks/useImageBus';
 
 export interface PostsState {
 	activePostIndex: number | undefined;
@@ -137,16 +138,33 @@ interface PostPropertyOptions {
 	downloaded?: 0 | 1;
 }
 
-//TODO remove from state if blacklisted
 export const changePostProperties = (post: Post, options: PostPropertyOptions): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		const clonedPost = Object.assign({}, post);
 		options.blacklisted !== undefined && (clonedPost.blacklisted = options.blacklisted);
 		options.favorite !== undefined && (clonedPost.favorite = options.favorite);
 		options.downloaded !== undefined && (clonedPost.downloaded = options.downloaded);
+		options.blacklisted === 1 && dispatch(removePost(post));
 		updatePostInDb(clonedPost);
 		dispatch(updatePost(clonedPost));
 	} catch (err) {
-		console.error(err);
+		console.error('Error while changing post properties', err);
+	}
+};
+
+export const downloadSelectedPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
+	try {
+		const saveImage = useSaveImage();
+		const posts = getState().posts.posts.filter((p) => p.selected);
+		posts.forEach((p) => {
+			const post = Object.assign({}, p);
+			saveImage(post);
+			post.downloaded = 1;
+			post.blacklisted = 0;
+			updatePostInDb(post);
+			dispatch(updatePost(post));
+		});
+	} catch (err) {
+		console.error('Error while downloading favorite posts', err);
 	}
 };
