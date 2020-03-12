@@ -12,11 +12,7 @@ import Tags from './Tags';
 import Dashboard from './Dashboard';
 import Thumbnails from './Thumbnails';
 
-interface Props {
-	className?: string;
-}
-
-const Page: React.FunctionComponent<Props> = (props: Props) => {
+const Page: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 

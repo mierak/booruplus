@@ -29,6 +29,8 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 				title="Image List"
 				// subTitle="This is a subtitle"
 				extra={[
+					<Button key="9">Download Search</Button>,
+					<Button key="8">Save Search</Button>,
 					<Button key="7">Blacklist All</Button>,
 					<Button key="6">Blacklist Selected</Button>,
 					<Button key="5">Add All To Favorites</Button>,

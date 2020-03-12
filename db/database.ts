@@ -12,7 +12,7 @@ class Database extends Dexie {
 		super(databaseName);
 		this.version(1).stores({
 			posts:
-				'id, source, directory, hash, height, width, owner, parent_id, rating, sample, sample_height, sample_width, score, *tags, file_url, created_at, image, favorite',
+				'id, source, directory, hash, height, width, owner, parentId, rating, sample, sampleHeight, sampleWidth, score, *tags, fileUrl, createdAt, image, favorite',
 			savedSearches: '++id, tags, type, rating, lastSearched',
 			tags: 'id, tag, count, type, ambiguous'
 		});
@@ -89,7 +89,15 @@ export const saveOrUpdatePostFromApi = async (post: Post): Promise<Post> => {
 };
 
 export const updatePostInDb = async (post: Post): Promise<number | void> => {
+	post.selected = false;
 	return database.posts.update(post.id, post).catch((err) => {
+		console.error(err);
+		throw err;
+	});
+};
+
+export const bullUpdatePostsInDb = async (posts: Post[]): Promise<number | void> => {
+	return database.posts.bulkPut(posts).catch((err) => {
 		console.error(err);
 		throw err;
 	});

@@ -161,10 +161,28 @@ export const downloadSelectedPosts = (): AppThunk => async (dispatch, getState):
 			saveImage(post);
 			post.downloaded = 1;
 			post.blacklisted = 0;
+			post.selected = false;
 			updatePostInDb(post);
 			dispatch(updatePost(post));
 		});
 	} catch (err) {
 		console.error('Error while downloading favorite posts', err);
+	}
+};
+
+export const downloadAllPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
+	try {
+		const saveImage = useSaveImage();
+		getState().posts.posts.forEach((p) => {
+			const post = Object.assign([], p);
+			saveImage(post);
+			post.downloaded = 1;
+			post.blacklisted = 0;
+			post.selected = false;
+			updatePost(post);
+			dispatch(updatePost(post));
+		});
+	} catch (err) {
+		console.error('Error while downloading all posts', err);
 	}
 };

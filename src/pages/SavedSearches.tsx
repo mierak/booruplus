@@ -96,7 +96,7 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 				size="small"
 				rowClassName={(record, index): string => (index % 2 === 0 ? 'table-row-light' : 'table-row-dark')}
 				expandable={{
-					rowExpandable: (record: SavedSearch) => record.lastSearched !== undefined
+					rowExpandable: (record: SavedSearch): boolean => record.lastSearched !== undefined
 				}}
 				expandedRowRender={(record: SavedSearch): JSX.Element => <span>EXPANDED {record.id}</span>}
 			>

@@ -34,7 +34,7 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 	// }, []);
 
 	return (
-		<Container>
+		<Container className={props.className}>
 			<Layout>
 				<Layout.Content>
 					<FullSizeImage />
