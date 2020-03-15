@@ -22,6 +22,11 @@
 		"sourceType": "module",
 		"project": "./tsconfig.json"
 	},
+	"settings": {
+		"react": {
+			"version": "16.12.0"
+		}
+	},
 	"plugins": ["react", "@typescript-eslint"],
 	"rules": {
 		"indent": [
@@ -46,7 +51,8 @@
 		"@typescript-eslint/type-annotation-spacing": "error",
 		"@typescript-eslint/unbound-method": "error",
 		"@typescript-eslint/no-unused-vars": 1,
-		"react/no-unescaped-entities": 0
+		"react/no-unescaped-entities": 1
+		// "react/prop-types": 0
 		// "@typescript-eslint/no-explicit-function-return-type": "ignore"
 	}
 }

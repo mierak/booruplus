@@ -1,5 +1,4 @@
 import { Post, PostDto, Tag, Rating, parsePost } from '../types/gelbooruTypes';
-import * as db from '../db/database';
 
 const BASE_URL = 'https://gelbooru.com/index.php?page=dapi&q=index&json=1';
 const BASE_TAG_URL = `${BASE_URL}&s=tag`;
@@ -10,17 +9,6 @@ export interface PostApiOptions {
 	rating?: Rating;
 	page?: number;
 }
-
-const checkPostsAgainstDb = async (postDtos: PostDto[]): Promise<Post[]> => {
-	const posts: Post[] = await Promise.all(
-		postDtos.map(async (postDto: PostDto) => {
-			const post = parsePost(postDto);
-			const updatedPost = await db.saveOrUpdatePostFromApi(post);
-			return updatedPost;
-		})
-	);
-	return posts;
-};
 
 export const getPostsForTags = async (tags: string[], options: PostApiOptions = {}): Promise<Post[]> => {
 	//handle Optional params
@@ -34,7 +22,7 @@ export const getPostsForTags = async (tags: string[], options: PostApiOptions = 
 	try {
 		const response = await fetch(url);
 		const responsePosts: PostDto[] = await response.json();
-		const posts = await checkPostsAgainstDb(responsePosts);
+		const posts = responsePosts.map((postDto) => parsePost(postDto));
 		return posts;
 	} catch (err) {
 		console.error(err);
@@ -103,7 +91,6 @@ export const getTagsByPattern = async (pattern: string): Promise<Tag[]> => {
 	try {
 		const response = await fetch(`${BASE_TAG_URL}&name_pattern=${pattern}&limit=30`);
 		const tags: Tag[] = await response.json();
-		db.saveTags(tags);
 		return tags;
 	} catch (err) {
 		console.error(err);

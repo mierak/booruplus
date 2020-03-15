@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useEffect } from 'react';
 import { RootState } from '../../store/main';
 import styled from 'styled-components';
@@ -7,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { nextPost, previousPost, loadMorePosts } from '../../store/posts';
 import { Button } from 'antd';
 import EmptyThumbnails from './EmptyThumbnails';
+import PropTypes from 'prop-types';
 
 interface Props {
 	className?: string;
@@ -117,4 +117,10 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 		</>
 	);
 };
+
+ThumbnailsList.propTypes = {
+	emptyDataLogoCentered: PropTypes.bool,
+	className: PropTypes.string
+};
+
 export default React.memo(ThumbnailsList);

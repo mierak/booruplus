@@ -2,9 +2,18 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/main';
 import { setSearchFormDrawerVisible, setActiveView } from '../../store/system';
-import { addTag, removeTag, clearTags, setRating, setPage, setLimit } from '../../store/searchForm';
+import {
+	addTag,
+	removeTag,
+	clearTags,
+	setRating,
+	setPage,
+	setLimit,
+	SearchMode,
+	setSearchMode,
+	getTagsByPatternFromApi
+} from '../../store/searchForm';
 import styled from 'styled-components';
-import { getTagsByPattern } from '../../service/apiService';
 import { Card, Select, Button, Form, Tag as AntTag, InputNumber, Col, Input, Row } from 'antd';
 import { SelectValue } from 'antd/lib/select';
 import { Tag, Rating, SavedSearch } from '../../types/gelbooruTypes';
@@ -12,7 +21,6 @@ import TagSelectOption from './TagSelectOption';
 import { getTagColor } from '../../util/utils';
 import { setActivePostIndex, fetchPostsFromApi } from '../../store/posts';
 import { addSavedSearch } from '../../store/savedSearches';
-import { saveSearch } from '../../db/database';
 
 interface Props {
 	className?: string;
@@ -27,13 +35,12 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	const rating = useSelector((state: RootState) => state.searchForm.rating);
 	const selectedTags = useSelector((state: RootState) => state.searchForm.selectedTags);
 	const page = useSelector((state: RootState) => state.searchForm.page);
-	const [options, setOptions] = useState<Tag[]>([]);
+	const options = useSelector((state: RootState) => state.searchForm.tagOptions);
 	const [selectValue] = useState('');
 	const dispatch = useDispatch();
 
 	const handleChange = async (e: SelectValue): Promise<void> => {
-		const tags = await getTagsByPattern(e.toString());
-		setOptions(tags);
+		dispatch(getTagsByPatternFromApi(e.toString()));
 	};
 
 	const handleSelect = (e: SelectValue): void => {
@@ -57,7 +64,8 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 		dispatch(removeTag(tag));
 	};
 
-	const handleSubmit = async (): Promise<void> => {
+	const handleSubmit = async (mode: SearchMode): Promise<void> => {
+		dispatch(setSearchMode(mode));
 		dispatch(fetchPostsFromApi());
 		dispatch(setActiveView('thumbnails'));
 		dispatch(setSearchFormDrawerVisible(false));
@@ -76,21 +84,10 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 
 	const handleSaveSearch = async (): Promise<void> => {
 		const savedSearch: SavedSearch = {
-			type: 'online',
 			tags: selectedTags,
 			rating: rating
 		};
-		const id = await saveSearch(savedSearch);
-		if (id !== undefined) {
-			dispatch(
-				addSavedSearch({
-					id: id,
-					type: 'online',
-					tags: selectedTags,
-					rating: rating
-				})
-			);
-		}
+		dispatch(addSavedSearch(savedSearch));
 	};
 
 	const renderSelectOptions = (): JSX.Element[] => {
@@ -170,8 +167,11 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 				</Row>
 			</Input.Group>
 			<Form.Item wrapperCol={{ span: 19, offset: 5 }}>
-				<Button type="primary" htmlType="submit" onClick={(): Promise<void> => handleSubmit()}>
-					Submit
+				<Button type="primary" htmlType="submit" onClick={(): Promise<void> => handleSubmit('online')}>
+					Search Online
+				</Button>
+				<Button type="primary" htmlType="submit" onClick={(): Promise<void> => handleSubmit('offline')}>
+					Search Offline
 				</Button>
 				<Button type="dashed" htmlType="submit" onClick={(): void => handleClear()} style={{ marginLeft: '8px' }}>
 					Clear

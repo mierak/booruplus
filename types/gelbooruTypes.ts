@@ -25,60 +25,6 @@ export interface PostDto {
 	downloaded?: 0 | 1;
 }
 
-// export class Post implements Entity {
-// 	readonly source: string;
-// 	readonly directory: string;
-// 	readonly hash: string;
-// 	readonly height: number;
-// 	readonly width: number;
-// 	readonly id: number;
-// 	readonly owner: string;
-// 	readonly parentId: number;
-// 	readonly rating: string;
-// 	readonly sample: boolean;
-// 	readonly sampleHeight: number;
-// 	readonly sampleWidth: number;
-// 	readonly score: number;
-// 	readonly tags: string[];
-// 	readonly fileUrl: string;
-// 	readonly createdAt: string;
-// 	readonly image: string;
-// 	favorite: 0 | 1;
-// 	blacklisted: 0 | 1;
-// 	downloaded: 0 | 1;
-// 	selected: boolean;
-
-// 	constructor(params: PostDto) {
-// this.source = params.source;
-// this.directory = params.directory;
-// this.hash = params.hash;
-// this.height = params.height;
-// this.width = params.width;
-// this.id = params.id;
-// this.owner = params.owner;
-// this.parentId = params.parent_id;
-// this.rating = params.rating;
-// this.sample = params.sample;
-// this.sampleHeight = params.sample_height;
-// this.sampleWidth = params.sample_width;
-// this.score = params.score;
-// this.fileUrl = params.file_url;
-// this.createdAt = params.created_at;
-// this.image = params.image;
-// this.favorite = params.favorite !== undefined ? params.favorite : 0;
-// this.blacklisted = params.blacklisted !== undefined ? params.blacklisted : 0;
-// this.downloaded = params.downloaded !== undefined ? params.downloaded : 0;
-// this.selected = false;
-
-// 		this.tags = params.tags.split(' ');
-
-// 		// const str = JSON.stringify(this);
-// 		// const deser = JSON.parse(str);
-// 		// console.log(deser);
-// 		// console.log(this === deser);
-// 	}
-// }
-
 export interface Post {
 	source: string;
 	directory: string;
@@ -140,6 +86,9 @@ export interface Tag extends Entity {
 	count: number;
 	type: TagType;
 	ambiguous: number;
+	favoriteCount?: number;
+	blacklistedCount?: number;
+	downloadedCount?: number;
 }
 
 export type SavedSearchType = 'online' | 'offline';
@@ -147,7 +96,13 @@ export type SavedSearchType = 'online' | 'offline';
 export interface SavedSearch {
 	id?: number;
 	tags: Tag[];
-	type: SavedSearchType;
 	rating: Rating;
 	lastSearched?: string;
+}
+
+export interface PostTag {
+	id?: number;
+	postId: number;
+	tag: string;
+	post: Post;
 }
