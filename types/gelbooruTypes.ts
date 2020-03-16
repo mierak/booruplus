@@ -1,3 +1,5 @@
+import { getImageExtensionFromFilename } from '../util/utils';
+
 export interface Entity {
 	id: number;
 }
@@ -47,33 +49,50 @@ export interface Post {
 	blacklisted?: 0 | 1;
 	downloaded?: 0 | 1;
 	selected: boolean;
+	extension: string;
 }
+export const postParser = (): ((params: PostDto) => Post) => {
+	const domParser = new DOMParser();
 
-export const parsePost = (params: PostDto): Post => {
-	const post: Post = {
-		source: params.source,
-		directory: params.directory,
-		hash: params.hash,
-		height: params.height,
-		width: params.width,
-		id: params.id,
-		owner: params.owner,
-		parentId: params.parent_id,
-		rating: params.rating,
-		sample: params.sample,
-		sampleHeight: params.sample_height,
-		sampleWidth: params.sample_width,
-		score: params.score,
-		fileUrl: params.file_url,
-		createdAt: params.created_at,
-		image: params.image,
-		favorite: params.favorite !== undefined ? params.favorite : 0,
-		blacklisted: params.blacklisted !== undefined ? params.blacklisted : 0,
-		downloaded: params.downloaded !== undefined ? params.downloaded : 0,
-		selected: false,
-		tags: params.tags.split(' ')
+	const parseTags = (tagString: string): string[] => {
+		const array = tagString.split(' ');
+		const result = array.map((tag) => {
+			const parsed = domParser.parseFromString(tag, 'text/html').documentElement.textContent;
+			if (parsed === null || parsed === undefined) throw `Could not parse tag ${tag}`;
+			return parsed;
+		});
+		return result;
 	};
-	return post;
+
+	const parsePost = (params: PostDto): Post => {
+		const post: Post = {
+			source: params.source,
+			directory: params.directory,
+			hash: params.hash,
+			height: params.height,
+			width: params.width,
+			id: params.id,
+			owner: params.owner,
+			parentId: params.parent_id,
+			rating: params.rating,
+			sample: params.sample,
+			sampleHeight: params.sample_height,
+			sampleWidth: params.sample_width,
+			score: params.score,
+			fileUrl: params.file_url,
+			createdAt: params.created_at,
+			image: params.image,
+			favorite: params.favorite !== undefined ? params.favorite : 0,
+			blacklisted: params.blacklisted !== undefined ? params.blacklisted : 0,
+			downloaded: params.downloaded !== undefined ? params.downloaded : 0,
+			selected: false,
+			tags: parseTags(params.tags),
+			extension: getImageExtensionFromFilename(params.image)
+		};
+		return post;
+	};
+
+	return parsePost;
 };
 
 export type TagType = 'copyright' | 'tag' | 'artist' | 'metadata' | 'character';

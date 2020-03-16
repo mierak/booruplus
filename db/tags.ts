@@ -24,6 +24,14 @@ export const loadTags = async (): Promise<Tag[] | void> => {
 	return tags;
 };
 
+export const checkIfTagExists = async (tag: string): Promise<boolean> => {
+	const result = await db.tags
+		.where('tag')
+		.equals(tag)
+		.first();
+	return result !== undefined;
+};
+
 export const getFavoritePostCountForTag = async (tag: string): Promise<number> => {
 	return db.posts
 		.where('tags')

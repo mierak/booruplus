@@ -14,7 +14,9 @@
 		"paths": {
 			"*": ["node_modules/*"]
 		},
-		"strict": true
+		"strict": true,
+		"target": "ESNext",
+		"lib": ["ESNext.Array", "DOM"]
 	},
 	"include": [
 		"src/**/*",

@@ -1,8 +1,10 @@
-import { Post, PostDto, Tag, Rating, parsePost } from '../types/gelbooruTypes';
+import { Post, PostDto, Tag, Rating, postParser } from '../types/gelbooruTypes';
 
 const BASE_URL = 'https://gelbooru.com/index.php?page=dapi&q=index&json=1';
 const BASE_TAG_URL = `${BASE_URL}&s=tag`;
 const BASE_POST_URL = `${BASE_URL}&s=post`;
+
+const parsePost = postParser();
 
 export interface PostApiOptions {
 	limit?: number;
@@ -75,11 +77,22 @@ export const getTagByName = async (name: string): Promise<Tag | undefined> => {
 };
 
 export const getTagsByNames = async (...names: string[]): Promise<Tag[]> => {
-	//TODO handle 100 tags per request limit
+	//TODO ADD delay between requests
 	try {
-		const response = await fetch(`${BASE_TAG_URL}&names=${names.join(' ')}`);
-		const tags: Tag[] = await response.json();
-		return tags;
+		const deduplicatedNames = Array.from(new Set(names));
+		const batches: string[][] = [];
+		while (deduplicatedNames.length > 0) {
+			batches.push(deduplicatedNames.splice(0, 100));
+		}
+
+		const tagsFromApi = await Promise.all(
+			batches.map(async (batch) => {
+				const response = await fetch(`${BASE_TAG_URL}&names=${batch.join(' ')}`);
+				const tags: Tag[] = await response.json();
+				return tags;
+			})
+		);
+		return tagsFromApi.flat();
 	} catch (err) {
 		console.log(err);
 		return [];

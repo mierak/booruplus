@@ -7,6 +7,7 @@ export const {
 	saveTag,
 	saveTags,
 	loadTags,
+	checkIfTagExists,
 	getFavoritePostCountForTag,
 	getDownloadedPostCountForTag,
 	getBlacklistedPostCountForTag

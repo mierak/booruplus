@@ -77,5 +77,6 @@ export const getPostsForTags = async (...tags: string[]): Promise<Post[]> => {
 		})
 	);
 	const result: Post[] = intersection(...arrays);
+	console.log(result);
 	return result;
 };

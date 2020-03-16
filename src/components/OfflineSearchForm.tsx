@@ -19,6 +19,7 @@ import { SelectValue } from 'antd/lib/select';
 import { Tag, Rating, SavedSearch } from '../../types/gelbooruTypes';
 import TagSelectOption from './TagSelectOption';
 import { getTagColor } from '../../util/utils';
+import { setActivePostIndex } from '../../store/posts';
 import { fetchPosts } from '../../store/searchForm';
 import { addSavedSearch } from '../../store/savedSearches';
 
@@ -75,6 +76,7 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 		dispatch(fetchPosts());
 		dispatch(setActiveView('thumbnails'));
 		dispatch(setSearchFormDrawerVisible(false));
+		dispatch(setActivePostIndex(undefined));
 	};
 
 	const handleClear = (): void => {

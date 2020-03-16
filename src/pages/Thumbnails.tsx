@@ -8,7 +8,8 @@ import {
 	addSelectedPostsToFavorites,
 	addAllPostsToFavorites,
 	blacklistSelectedPosts,
-	blackListAllPosts
+	blackListAllPosts,
+	downloadAllPosts
 } from '../../store/posts';
 import { saveCurrentSearch } from '../../store/savedSearches';
 
@@ -77,7 +78,14 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 					>
 						Add Selected To Favorites
 					</Button>,
-					<Button key="3">Download All</Button>,
+					<Button
+						key="3"
+						onClick={(): void => {
+							dispatch(downloadAllPosts());
+						}}
+					>
+						Download All
+					</Button>,
 					<Button
 						key="2"
 						onClick={(): void => {

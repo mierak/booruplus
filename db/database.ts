@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import Dexie from 'dexie';
 import { Post, SavedSearch, Tag, PostTag } from '../types/gelbooruTypes';
-import { intersection } from '../util/utils';
 
 class Database extends Dexie {
 	posts: Dexie.Table<Post, number>;
@@ -12,9 +11,9 @@ class Database extends Dexie {
 	constructor(databaseName: string) {
 		super(databaseName);
 		this.version(1).stores({
-			posts: 'id, height, width, rating, *tags, createdAt, favorite',
+			posts: 'id, height, width, rating, *tags, createdAt, favorite, extension',
 			savedSearches: '++id, tags, type, rating, lastSearched',
-			tags: 'id, tag, count, type, ambguous',
+			tags: 'id, tag, count, type, ambiguous',
 			postsTags: '[postId+tag], postId, tag, post.favorite, post.blacklisted, post.downloaded'
 		});
 		this.posts = this.table('posts');

@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Post } from '../types/gelbooruTypes';
 import { AppThunk } from './main';
-import { getPostsForTags, PostApiOptions } from '../service/apiService';
-import { updatePostInDb, getFavoritePosts, saveOrUpdatePostFromApi } from '../db';
-import { setLoading, setPage } from './searchForm';
+import * as api from '../service/apiService';
+import * as db from '../db';
+import { setLoading } from './searchForm';
 import { useSaveImage, useDeleteImage } from '../src/hooks/useImageBus';
 
 export interface PostsState {
@@ -38,6 +38,13 @@ const postsSlice = createSlice({
 			const index = state.posts.findIndex((p) => p.id === action.payload.id);
 			state.posts[index] = action.payload;
 		},
+		updatePosts: (state, action: PayloadAction<Post[]>): void => {
+			const posts = action.payload;
+			posts.forEach((post) => {
+				const index = state.posts.findIndex((p) => p.id === post.id);
+				state.posts[index] = post;
+			});
+		},
 		setPostFavorite: (state, action: PayloadAction<{ index: number; favorite: 1 | 0 }>): void => {
 			state.posts[action.payload.index].favorite = action.payload.favorite;
 		},
@@ -52,13 +59,13 @@ const postsSlice = createSlice({
 			state.posts[action.payload.index].blacklisted = action.payload.blacklisted;
 		},
 		nextPost: (state): void => {
-			if (state.activePostIndex) {
+			if (state.activePostIndex !== undefined) {
 				const index = state.activePostIndex === state.posts.length - 1 ? 0 : state.activePostIndex + 1;
 				state.activePostIndex = index;
 			}
 		},
 		previousPost: (state): void => {
-			if (state.activePostIndex) {
+			if (state.activePostIndex !== undefined) {
 				const index = state.activePostIndex === 0 ? state.posts.length - 1 : state.activePostIndex - 1;
 				state.activePostIndex = index;
 			}
@@ -77,57 +84,51 @@ export const {
 	setPostBlacklisted,
 	nextPost,
 	previousPost,
-	updatePost
+	updatePost,
+	updatePosts
 } = postsSlice.actions;
 
 export default postsSlice.reducer;
-
-export const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<void> => {
-	try {
-		dispatch(setLoading(true));
-		//construct string of tags
-		const tags = getState().searchForm.selectedTags;
-		const tagsString = tags.map((tag) => tag.tag);
-		const options: PostApiOptions = {
-			limit: getState().searchForm.limit,
-			page: getState().searchForm.page,
-			rating: getState().searchForm.rating
-		};
-		//get posts from api
-		const posts = await getPostsForTags(tagsString, options);
-		//validate posts against db - check favorite/blacklisted/downloaded state
-		const validatedPosts = await Promise.all(posts.map((post) => saveOrUpdatePostFromApi(post)));
-		dispatch(setPosts(validatedPosts));
-		dispatch(setLoading(false));
-	} catch (err) {
-		console.error('Error while fetching from api', err);
-	}
+const deduplicateAndCheckTagsAgainstDb = async (tags: string[]): Promise<string[]> => {
+	const deduplicated = Array.from(new Set(tags));
+	const checked = await Promise.all(
+		deduplicated.map(async (tag) => {
+			const exists = await db.checkIfTagExists(tag);
+			if (!exists) return tag;
+		})
+	);
+	const checkedAndFiltered: string[] = [];
+	checked.forEach((val) => val !== undefined && checkedAndFiltered.push(val));
+	return checkedAndFiltered;
 };
 
-export const loadMorePosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
+export const downloadPosts = (posts: Post[]): AppThunk => async (dispatch): Promise<void> => {
 	try {
-		dispatch(setLoading(true));
-		const page = getState().searchForm.page;
-		const tags = getState().searchForm.selectedTags;
-		const tagsString = tags.map((tag) => tag.tag);
-		const options: PostApiOptions = {
-			limit: getState().searchForm.limit,
-			page: page + 1,
-			rating: getState().searchForm.rating
-		};
-		dispatch(setPage(page + 1));
-		const posts = await getPostsForTags(tagsString, options);
-		dispatch(addPosts(posts));
-		dispatch(setLoading(false));
+		const saveImage = useSaveImage();
+		const tagsToSave: string[] = [];
+		const updatedPosts = posts.map((p) => {
+			const post = Object.assign({}, p);
+			saveImage(post);
+			tagsToSave.push(...post.tags);
+			post.downloaded = 1;
+			post.blacklisted = 0;
+			post.selected = false;
+			db.updatePostInDb(post);
+			return post;
+		});
+		dispatch(updatePosts(updatedPosts));
+		const filteredTags = await deduplicateAndCheckTagsAgainstDb(tagsToSave);
+		const tagsFromApi = await api.getTagsByNames(...filteredTags);
+		db.saveTags(tagsFromApi);
 	} catch (err) {
-		console.error('Error while loading more posts', err);
+		console.error('Error while downloading all posts', err);
 	}
 };
 
 export const loadFavoritePostsFromDb = (): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		dispatch(setLoading(true));
-		const posts = await getFavoritePosts();
+		const posts = await db.getFavoritePosts();
 		dispatch(setActivePostIndex(undefined));
 		dispatch(setPosts(posts));
 		dispatch(setLoading(false));
@@ -149,7 +150,7 @@ export const changePostProperties = (post: Post, options: PostPropertyOptions): 
 		options.favorite !== undefined && (clonedPost.favorite = options.favorite);
 		options.downloaded !== undefined && (clonedPost.downloaded = options.downloaded);
 		options.blacklisted === 1 && dispatch(removePost(post));
-		updatePostInDb(clonedPost);
+		db.updatePostInDb(clonedPost);
 		dispatch(updatePost(clonedPost));
 	} catch (err) {
 		console.error('Error while changing post properties', err);
@@ -157,38 +158,13 @@ export const changePostProperties = (post: Post, options: PostPropertyOptions): 
 };
 
 export const downloadSelectedPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
-	try {
-		const saveImage = useSaveImage();
-		const posts = getState().posts.posts.filter((p) => p.selected);
-		posts.forEach((p) => {
-			const post = Object.assign({}, p);
-			saveImage(post);
-			post.downloaded = 1;
-			post.blacklisted = 0;
-			post.selected = false;
-			updatePostInDb(post);
-			dispatch(updatePost(post));
-		});
-	} catch (err) {
-		console.error('Error while downloading favorite posts', err);
-	}
+	const posts = getState().posts.posts.filter((p) => p.selected);
+	dispatch(downloadPosts(posts));
 };
 
 export const downloadAllPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
-	try {
-		const saveImage = useSaveImage();
-		getState().posts.posts.forEach((p) => {
-			const post = Object.assign([], p);
-			saveImage(post);
-			post.downloaded = 1;
-			post.blacklisted = 0;
-			post.selected = false;
-			updatePostInDb(post);
-			dispatch(updatePost(post));
-		});
-	} catch (err) {
-		console.error('Error while downloading all posts', err);
-	}
+	const posts = getState().posts.posts;
+	dispatch(downloadPosts(posts));
 };
 
 const blackListPost = (p: Post): Post => {
@@ -207,7 +183,7 @@ export const blacklistSelectedPosts = (): AppThunk => async (dispatch, getState)
 		posts.forEach((p) => {
 			const post = blackListPost(p);
 			deleteImage(post);
-			updatePostInDb(post);
+			db.updatePostInDb(post);
 			dispatch(removePost(post));
 		});
 	} catch (err) {
@@ -222,7 +198,7 @@ export const blackListAllPosts = (): AppThunk => async (dispatch, getStsate): Pr
 		posts.forEach((p) => {
 			const post = blackListPost(p);
 			deleteImage(post);
-			updatePostInDb(post);
+			db.updatePostInDb(post);
 			dispatch(removePost(post));
 		});
 	} catch (err) {
@@ -238,7 +214,7 @@ export const addSelectedPostsToFavorites = (): AppThunk => async (dispatch, getS
 			p.favorite = 1;
 			p.blacklisted = 0;
 			post.selected = false;
-			updatePostInDb(post);
+			db.updatePostInDb(post);
 			dispatch(removePost(post));
 		});
 	} catch (err) {
@@ -254,7 +230,7 @@ export const addAllPostsToFavorites = (): AppThunk => async (dispatch, getState)
 			p.favorite = 1;
 			p.blacklisted = 0;
 			post.selected = false;
-			updatePostInDb(post);
+			db.updatePostInDb(post);
 			dispatch(removePost(post));
 		});
 	} catch (err) {

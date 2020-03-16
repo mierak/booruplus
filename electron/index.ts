@@ -106,6 +106,7 @@ ipcMain.handle('save-image', async (event: IpcMainInvokeEvent, dto: SavePostDto)
 			//TODO handle gracefuly
 			throw err;
 		});
+		console.log(dto.post);
 		console.log(`ipcMain: image-saved | id: ${dto.post.id}`);
 		return dto.post;
 	} else {
