@@ -114,7 +114,7 @@ export const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Pro
 		//get posts from api
 		const posts = await api.getPostsForTags(tagsString, options);
 		//validate posts against db - check favorite/blacklisted/downloaded state
-		const validatedPosts = await Promise.all(posts.map((post) => db.saveOrUpdatePostFromApi(post)));
+		const validatedPosts = await Promise.all(posts.map((post) => db.posts.saveOrUpdateFromApi(post)));
 		dispatch(setPosts(validatedPosts));
 	} catch (err) {
 		console.error('Error while fetching from api', err);
@@ -124,7 +124,7 @@ export const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Pro
 export const fetchPostsFromDb = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		const tagsString = getState().searchForm.selectedTags.map((tag) => tag.tag);
-		const posts = await db.getPostsForTags(...tagsString);
+		const posts = await db.posts.getForTags(...tagsString);
 		dispatch(setPosts(posts));
 	} catch (err) {
 		console.error('Erroru occured while fetching posts from db', err);

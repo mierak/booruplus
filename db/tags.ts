@@ -2,21 +2,21 @@ import db from './database';
 import { Tag } from '../types/gelbooruTypes';
 
 //Tag
-export const saveTag = async (tag: Tag): Promise<number | void> => {
+export const save = async (tag: Tag): Promise<number | void> => {
 	return db.tags.put(tag).catch((err: Error) => {
 		console.error(err);
 		throw err;
 	});
 };
 
-export const saveTags = async (tags: Tag[]): Promise<number | void> => {
+export const saveBulk = async (tags: Tag[]): Promise<number | void> => {
 	return db.tags.bulkPut(tags).catch((err: Error) => {
 		console.error(err);
 		throw err;
 	});
 };
 
-export const loadTags = async (): Promise<Tag[] | void> => {
+export const getAll = async (): Promise<Tag[] | void> => {
 	const tags = await db.tags.toArray().catch((err: Error) => {
 		console.error(err);
 		throw err;
@@ -24,7 +24,7 @@ export const loadTags = async (): Promise<Tag[] | void> => {
 	return tags;
 };
 
-export const checkIfTagExists = async (tag: string): Promise<boolean> => {
+export const checkIfExists = async (tag: string): Promise<boolean> => {
 	const result = await db.tags
 		.where('tag')
 		.equals(tag)
@@ -32,7 +32,7 @@ export const checkIfTagExists = async (tag: string): Promise<boolean> => {
 	return result !== undefined;
 };
 
-export const getFavoritePostCountForTag = async (tag: string): Promise<number> => {
+export const getFavoriteCount = async (tag: string): Promise<number> => {
 	return db.posts
 		.where('tags')
 		.equals(tag)
@@ -40,7 +40,7 @@ export const getFavoritePostCountForTag = async (tag: string): Promise<number> =
 		.count();
 };
 
-export const getDownloadedPostCountForTag = async (tag: string): Promise<number> => {
+export const getDownloadedCount = async (tag: string): Promise<number> => {
 	return db.posts
 		.where('tags')
 		.equals(tag)
@@ -48,7 +48,7 @@ export const getDownloadedPostCountForTag = async (tag: string): Promise<number>
 		.count();
 };
 
-export const getBlacklistedPostCountForTag = async (tag: string): Promise<number> => {
+export const getBlacklistedCount = async (tag: string): Promise<number> => {
 	return db.posts
 		.where('tags')
 		.equals(tag)
@@ -56,7 +56,7 @@ export const getBlacklistedPostCountForTag = async (tag: string): Promise<number
 		.count();
 };
 
-export const getFavoritePostCountForTag2 = async (tag: Tag): Promise<number> => {
+export const getFavoriteCount2 = async (tag: Tag): Promise<number> => {
 	return db.postsTags
 		.where('tag')
 		.equals(tag.tag)

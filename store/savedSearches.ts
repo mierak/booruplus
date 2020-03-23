@@ -23,7 +23,7 @@ const savedSearchesSlice = createSlice({
 		removeSavedSearch: (state, action: PayloadAction<SavedSearch>): void => {
 			const index = state.savedSearches.findIndex((s) => s.id === action.payload.id);
 			state.savedSearches.splice(index, 1);
-			db.deleteSavedSearch(action.payload);
+			db.savedSearches.deleteSavedSearch(action.payload);
 		},
 		setSavedSearches: (state, action: PayloadAction<SavedSearch[]>): void => {
 			state.savedSearches = action.payload;
@@ -49,7 +49,7 @@ export const searchSavedTagSearchOnline = (savedSearch: SavedSearch): AppThunk =
 		dispatch(setSearchMode('online'));
 		dispatch(setSelectedTags(savedSearch.tags));
 		dispatch(fetchPosts());
-		db.saveSearch(search);
+		db.savedSearches.saveSearch(search);
 		dispatch(setActiveView('thumbnails'));
 	} catch (err) {
 		console.error('Error while searching online for SavedSearch', err, savedSearch);
@@ -58,7 +58,7 @@ export const searchSavedTagSearchOnline = (savedSearch: SavedSearch): AppThunk =
 
 export const addSavedSearch = (savedSearch: SavedSearch): AppThunk => async (dispatch): Promise<void> => {
 	try {
-		db.saveSearch(savedSearch);
+		db.savedSearches.saveSearch(savedSearch);
 		dispatch(pushSavedSearch(savedSearch));
 	} catch (err) {
 		console.error('Error while adding saved search', err);
@@ -84,7 +84,7 @@ export const saveCurrentSearch = (): AppThunk => async (dispatch, getState): Pro
 
 export const loadSavedSearchesFromDb = (): AppThunk => async (dispatch): Promise<void> => {
 	try {
-		const savedSearches = await db.getSavedSearches();
+		const savedSearches = await db.savedSearches.getSavedSearches();
 		savedSearches && dispatch(setSavedSearches(savedSearches));
 	} catch (err) {
 		console.log('Error while loading SavedSearches from database', err);

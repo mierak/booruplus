@@ -1,4 +1,5 @@
 import { Post, PostDto, Tag, Rating, postParser } from '../types/gelbooruTypes';
+import { delay } from '../util/utils';
 
 const BASE_URL = 'https://gelbooru.com/index.php?page=dapi&q=index&json=1';
 const BASE_TAG_URL = `${BASE_URL}&s=tag`;
@@ -77,7 +78,6 @@ export const getTagByName = async (name: string): Promise<Tag | undefined> => {
 };
 
 export const getTagsByNames = async (...names: string[]): Promise<Tag[]> => {
-	//TODO ADD delay between requests
 	try {
 		const deduplicatedNames = Array.from(new Set(names));
 		const batches: string[][] = [];
@@ -85,13 +85,14 @@ export const getTagsByNames = async (...names: string[]): Promise<Tag[]> => {
 			batches.push(deduplicatedNames.splice(0, 100));
 		}
 
-		const tagsFromApi = await Promise.all(
-			batches.map(async (batch) => {
-				const response = await fetch(`${BASE_TAG_URL}&names=${batch.join(' ')}`);
-				const tags: Tag[] = await response.json();
-				return tags;
-			})
-		);
+		const tagsFromApi: Tag[][] = [];
+		for (const batch of batches) {
+			const response = await fetch(`${BASE_TAG_URL}&names=${batch.join(' ')}`);
+			const tags: Tag[] = await response.json();
+			tagsFromApi.push(tags);
+			await delay(2000);
+		}
+
 		return tagsFromApi.flat();
 	} catch (err) {
 		console.log(err);

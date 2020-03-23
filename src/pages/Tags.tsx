@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Table } from 'antd';
-import { loadTags, getFavoritePostCountForTag, getBlacklistedPostCountForTag, getDownloadedPostCountForTag } from '../../db';
 import { Tag, TagType } from '../../types/gelbooruTypes';
 import { ColumnFilterItem } from 'antd/lib/table/interface';
 import { capitalize } from '../../util/utils';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../../store/main';
+import { loadAllTagsFromDb, loadAllTagsFromDbWithStats } from '../../store/tags';
 
 const { Column } = Table;
 
@@ -18,32 +20,14 @@ const Container = styled.div`
 `;
 
 const Tags: React.FunctionComponent<Props> = (props: Props) => {
-	const [tags, setTags] = useState<Tag[]>();
+	const tags = useSelector((state: RootState) => state.tags.tags);
+	const dispatch = useDispatch();
 	// const [searchText, setSearchText] = useState<unknown>();
 	// const [searchedColumn, setSearchedColumn] = useState<string>('');
 
 	useEffect(() => {
-		//TODO Thunk it
-		const loadTagsFromDb = async (): Promise<void> => {
-			const tagsFromDb = await loadTags();
-			if (tagsFromDb) {
-				console.time('fetch');
-				const tags = await Promise.all(
-					tagsFromDb.map(async (tag) => {
-						const favoriteCount = await getFavoritePostCountForTag(tag.tag);
-						const blacklistedCount = await getBlacklistedPostCountForTag(tag.tag);
-						const downloadedCount = await getDownloadedPostCountForTag(tag.tag);
-						tag.favoriteCount = favoriteCount;
-						tag.blacklistedCount = blacklistedCount;
-						tag.downloadedCount = downloadedCount;
-						return tag;
-					})
-				);
-				console.timeEnd('fetch');
-				setTags(tags);
-			}
-		};
-		loadTagsFromDb();
+		// dispatch(loadAllTagsFromDb());
+		dispatch(loadAllTagsFromDbWithStats());
 	}, []);
 
 	// const getFilteredTags = (): void => {};

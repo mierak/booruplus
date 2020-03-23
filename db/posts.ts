@@ -2,7 +2,7 @@ import db from './database';
 import { Post } from '../types/gelbooruTypes';
 import { intersection } from '../util/utils';
 
-export const saveOrUpdatePostFromApi = async (post: Post): Promise<Post> => {
+export const saveOrUpdateFromApi = async (post: Post): Promise<Post> => {
 	const savedPost = await db.transaction(
 		'rw',
 		db.posts,
@@ -24,7 +24,7 @@ export const saveOrUpdatePostFromApi = async (post: Post): Promise<Post> => {
 	return savedPost;
 };
 
-export const updatePostInDb = async (post: Post): Promise<number | void> => {
+export const update = async (post: Post): Promise<number | void> => {
 	return db.transaction('rw', db.posts, db.postsTags, async () => {
 		const postClone = Object.assign({}, post);
 		postClone.selected = false;
@@ -35,14 +35,14 @@ export const updatePostInDb = async (post: Post): Promise<number | void> => {
 	});
 };
 
-export const bulkUpdatePostsInDb = async (posts: Post[]): Promise<number | void> => {
+export const updateBulk = async (posts: Post[]): Promise<number | void> => {
 	return db.posts.bulkPut(posts).catch((err) => {
 		console.error(err);
 		throw err;
 	});
 };
 
-export const getFavoritePosts = async (): Promise<Post[]> => {
+export const getFavorites = async (): Promise<Post[]> => {
 	// const uniquePostIds = await database.postsTags.orderBy('postId').uniqueKeys();
 	// console.log('uniquePostIds', uniquePostIds);
 	// uniquePostIds.forEach((postId) => {
@@ -65,7 +65,7 @@ export const getFavoritePosts = async (): Promise<Post[]> => {
 		});
 };
 
-export const getPostsForTags = async (...tags: string[]): Promise<Post[]> => {
+export const getForTags = async (...tags: string[]): Promise<Post[]> => {
 	const arrays: Post[][] = await Promise.all(
 		tags.map(async (tag) => {
 			const posts = db.posts

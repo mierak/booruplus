@@ -93,7 +93,7 @@ const deduplicateAndCheckTagsAgainstDb = async (tags: string[]): Promise<string[
 	const deduplicated = Array.from(new Set(tags));
 	const checked = await Promise.all(
 		deduplicated.map(async (tag) => {
-			const exists = await db.checkIfTagExists(tag);
+			const exists = await db.tags.checkIfExists(tag);
 			if (!exists) return tag;
 		})
 	);
@@ -113,13 +113,13 @@ export const downloadPosts = (posts: Post[]): AppThunk => async (dispatch): Prom
 			post.downloaded = 1;
 			post.blacklisted = 0;
 			post.selected = false;
-			db.updatePostInDb(post);
+			db.posts.update(post);
 			return post;
 		});
 		dispatch(updatePosts(updatedPosts));
 		const filteredTags = await deduplicateAndCheckTagsAgainstDb(tagsToSave);
 		const tagsFromApi = await api.getTagsByNames(...filteredTags);
-		db.saveTags(tagsFromApi);
+		db.tags.saveBulk(tagsFromApi);
 	} catch (err) {
 		console.error('Error while downloading all posts', err);
 	}
@@ -128,7 +128,7 @@ export const downloadPosts = (posts: Post[]): AppThunk => async (dispatch): Prom
 export const loadFavoritePostsFromDb = (): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		dispatch(setLoading(true));
-		const posts = await db.getFavoritePosts();
+		const posts = await db.posts.getFavorites();
 		dispatch(setActivePostIndex(undefined));
 		dispatch(setPosts(posts));
 		dispatch(setLoading(false));
@@ -150,7 +150,7 @@ export const changePostProperties = (post: Post, options: PostPropertyOptions): 
 		options.favorite !== undefined && (clonedPost.favorite = options.favorite);
 		options.downloaded !== undefined && (clonedPost.downloaded = options.downloaded);
 		options.blacklisted === 1 && dispatch(removePost(post));
-		db.updatePostInDb(clonedPost);
+		db.posts.update(clonedPost);
 		dispatch(updatePost(clonedPost));
 	} catch (err) {
 		console.error('Error while changing post properties', err);
@@ -183,7 +183,7 @@ export const blacklistSelectedPosts = (): AppThunk => async (dispatch, getState)
 		posts.forEach((p) => {
 			const post = blackListPost(p);
 			deleteImage(post);
-			db.updatePostInDb(post);
+			db.posts.update(post);
 			dispatch(removePost(post));
 		});
 	} catch (err) {
@@ -198,7 +198,7 @@ export const blackListAllPosts = (): AppThunk => async (dispatch, getStsate): Pr
 		posts.forEach((p) => {
 			const post = blackListPost(p);
 			deleteImage(post);
-			db.updatePostInDb(post);
+			db.posts.update(post);
 			dispatch(removePost(post));
 		});
 	} catch (err) {
@@ -214,7 +214,7 @@ export const addSelectedPostsToFavorites = (): AppThunk => async (dispatch, getS
 			p.favorite = 1;
 			p.blacklisted = 0;
 			post.selected = false;
-			db.updatePostInDb(post);
+			db.posts.update(post);
 			dispatch(removePost(post));
 		});
 	} catch (err) {
@@ -230,7 +230,7 @@ export const addAllPostsToFavorites = (): AppThunk => async (dispatch, getState)
 			p.favorite = 1;
 			p.blacklisted = 0;
 			post.selected = false;
-			db.updatePostInDb(post);
+			db.posts.update(post);
 			dispatch(removePost(post));
 		});
 	} catch (err) {

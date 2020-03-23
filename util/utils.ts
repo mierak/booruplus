@@ -76,3 +76,5 @@ export const intersection = <T extends Entity>(...arrays: T[][]): T[] => {
 export const capitalize = (string: string): string => {
 	return `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
 };
+
+export const delay = (ms: number): Promise<void> => new Promise((_) => setTimeout(_, ms));

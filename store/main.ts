@@ -5,12 +5,14 @@ import posts from './posts';
 import system from './system';
 import searchFormReducer from './searchForm';
 import savedSearches from './savedSearches';
+import tags from './tags';
 
 export const mainReducer = combineReducers({
 	system: system,
 	posts: posts,
 	searchForm: searchFormReducer,
-	savedSearches: savedSearches
+	savedSearches: savedSearches,
+	tags: tags
 });
 
 export const store = configureStore({
