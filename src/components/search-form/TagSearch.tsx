@@ -4,18 +4,24 @@ import { SelectValue } from 'antd/lib/select';
 import { Select } from 'antd';
 
 import { actions } from '../../../store';
-import { RootState } from '../../../store/types';
+import { RootState, SearchMode } from '../../../store/types';
 
 import { Tag } from '../../../types/gelbooruTypes';
 import TagSelectOption from '../TagSelectOption';
 import { useDebounce } from '../../hooks/useDebounce';
 
-const TagSearch: React.FunctionComponent = () => {
-	const [selectValue] = useState('');
-	const [value, setValue] = useState('');
+interface Props {
+	mode: SearchMode;
+}
+const TagSearch: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	const dispatch = useDispatch();
 
-	const options = useSelector((state: RootState): Tag[] => state.downloadedSearchForm.tagOptions);
+	const [selectValue] = useState('');
+	const [value, setValue] = useState('');
+
+	const options = useSelector(
+		(state: RootState): Tag[] => (mode === 'offline' && state.downloadedSearchForm.tagOptions) || state.onlineSearchForm.tagOptions
+	);
 
 	const debounced = useDebounce(value, 300);
 
@@ -24,12 +30,15 @@ const TagSearch: React.FunctionComponent = () => {
 	};
 
 	useEffect(() => {
-		debounced.length >= 3 && dispatch(actions.downloadedSearchForm.loadByPatternFromDb(debounced));
+		const load =
+			(mode === 'offline' && actions.downloadedSearchForm.loadByPatternFromDb) || actions.onlineSearchForm.getTagsByPatternFromApi;
+		debounced.length >= 3 && dispatch(load(debounced));
 	}, [debounced]);
 
 	const handleSelect = (e: SelectValue): void => {
 		const tag = options.find((t: Tag) => t.tag === e.toString());
-		tag && dispatch(actions.downloadedSearchForm.addTag(tag));
+		const addTag = (mode === 'offline' && actions.downloadedSearchForm.addTag) || actions.onlineSearchForm.addTag;
+		tag && dispatch(addTag(tag));
 	};
 
 	const renderSelectOptions = (): JSX.Element[] => {

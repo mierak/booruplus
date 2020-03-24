@@ -2,16 +2,21 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { InputNumber } from 'antd';
 
-import { RootState } from '../../../store/types';
+import { RootState, SearchMode } from '../../../store/types';
 import { actions } from '../../../store';
 
-const PageSelect: React.FunctionComponent = () => {
+interface Props {
+	mode: SearchMode;
+}
+
+const PageSelect: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	const dispatch = useDispatch();
 
-	const page = useSelector((state: RootState) => state.downloadedSearchForm.page);
+	const page = useSelector((state: RootState) => (mode === 'offline' && state.downloadedSearchForm.page) || state.onlineSearchForm.page);
 
 	const handlePageChange = (value: number | undefined): void => {
-		value !== undefined && dispatch(actions.downloadedSearchForm.setPage(value));
+		const setPage = (mode === 'offline' && actions.downloadedSearchForm.setPage) || actions.onlineSearchForm.setPage;
+		value !== undefined && dispatch(setPage(value));
 	};
 
 	return (

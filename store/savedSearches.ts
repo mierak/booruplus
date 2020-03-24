@@ -66,8 +66,8 @@ const addSavedSearch = (savedSearch: SavedSearch): AppThunk => async (dispatch):
 
 const saveCurrentSearch = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
-		const tags = getState().searchForm.selectedTags;
-		const rating = getState().searchForm.rating;
+		const tags = getState().onlineSearchForm.selectedTags;
+		const rating = getState().onlineSearchForm.rating;
 
 		const savedSearch: SavedSearch = {
 			tags,

@@ -36,7 +36,7 @@ const StyledSpin = styled(Spin)`
 const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 	const savedSearches = useSelector((state: RootState) => state.savedSearches.savedSearches);
-	const isLoading = useSelector((state: RootState) => state.searchForm.loading);
+	const isLoading = useSelector((state: RootState) => state.onlineSearchForm.loading);
 
 	const handleOnlineSearch = async (savedSearch: SavedSearch): Promise<void> => {
 		dispatch(actions.savedSearches.searchSavedTagSearchOnline(savedSearch));

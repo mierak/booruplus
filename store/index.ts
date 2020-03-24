@@ -3,7 +3,7 @@ import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 
 import postsReducer, { actions as posts } from './posts';
 import systemReducer, { actions as system } from './system';
-import searchFormReducer, { actions as onlineSearchForm } from './searchForm';
+import onlineSearchFormReducer, { actions as onlineSearchForm } from './onlineSearchForm';
 import savedSearchesReducer, { actions as savedSearches } from './savedSearches';
 import tagsReducer, { actions as tags } from './tags';
 import downloadedSearchFormReducer, { actions as downloadedSearchForm } from './downloadedSearchForm';
@@ -12,10 +12,10 @@ import { RootState } from './types';
 export const mainReducer = combineReducers({
 	system: systemReducer,
 	posts: postsReducer,
-	searchForm: searchFormReducer,
 	savedSearches: savedSearchesReducer,
 	tags: tagsReducer,
-	downloadedSearchForm: downloadedSearchFormReducer
+	downloadedSearchForm: downloadedSearchFormReducer,
+	onlineSearchForm: onlineSearchFormReducer
 });
 
 export const store = configureStore({

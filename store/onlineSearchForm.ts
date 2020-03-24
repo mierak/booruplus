@@ -84,12 +84,12 @@ const getTagsByPatternFromApi = (value: string): AppThunk => async (dispatch): P
 const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		//construct string of tags
-		const tags = getState().searchForm.selectedTags;
+		const tags = getState().onlineSearchForm.selectedTags;
 		const tagsString = tags.map((tag) => tag.tag);
 		const options: api.PostApiOptions = {
-			limit: getState().searchForm.limit,
-			page: getState().searchForm.page,
-			rating: getState().searchForm.rating
+			limit: getState().onlineSearchForm.limit,
+			page: getState().onlineSearchForm.page,
+			rating: getState().onlineSearchForm.rating
 		};
 		//get posts from api
 		const posts = await api.getPostsForTags(tagsString, options);
@@ -103,7 +103,7 @@ const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<vo
 
 const fetchPostsFromDb = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
-		const tagsString = getState().searchForm.selectedTags.map((tag) => tag.tag);
+		const tagsString = getState().onlineSearchForm.selectedTags.map((tag) => tag.tag);
 		const posts = await db.posts.getForTags(...tagsString);
 		dispatch(globalActions.posts.setPosts(posts));
 	} catch (err) {
@@ -114,7 +114,7 @@ const fetchPostsFromDb = (): AppThunk => async (dispatch, getState): Promise<voi
 const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		dispatch(searchFormSlice.actions.setLoading(true));
-		if (getState().searchForm.searchMode === 'online') {
+		if (getState().onlineSearchForm.searchMode === 'online') {
 			dispatch(fetchPostsFromApi());
 		} else {
 			dispatch(fetchPostsFromDb());
@@ -129,13 +129,13 @@ const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => 
 const loadMorePosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		dispatch(searchFormSlice.actions.setLoading(true));
-		const page = getState().searchForm.page;
-		const tags = getState().searchForm.selectedTags;
+		const page = getState().onlineSearchForm.page;
+		const tags = getState().onlineSearchForm.selectedTags;
 		const tagsString = tags.map((tag) => tag.tag);
 		const options: api.PostApiOptions = {
-			limit: getState().searchForm.limit,
+			limit: getState().onlineSearchForm.limit,
 			page: page + 1,
-			rating: getState().searchForm.rating
+			rating: getState().onlineSearchForm.rating
 		};
 		dispatch(searchFormSlice.actions.setPage(page + 1));
 		const posts = await api.getPostsForTags(tagsString, options);

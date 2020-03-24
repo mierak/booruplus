@@ -2,16 +2,23 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { InputNumber } from 'antd';
 
-import { RootState } from '../../../store/types';
+import { RootState, SearchMode } from '../../../store/types';
 import { actions } from '../../../store';
 
-const PostCountSelect: React.FunctionComponent = () => {
+interface Props {
+	mode: SearchMode;
+}
+
+const PostCountSelect: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	const dispatch = useDispatch();
 
-	const postLimit = useSelector((state: RootState) => state.downloadedSearchForm.postLimit);
+	const postLimit = useSelector(
+		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.postLimit) || state.onlineSearchForm.limit
+	);
 
 	const handlePostCountChange = (value: number | undefined): void => {
-		value && dispatch(actions.downloadedSearchForm.setPostLimit(value));
+		const setPostLimit = (mode === 'offline' && actions.downloadedSearchForm.setPostLimit) || actions.onlineSearchForm.setLimit;
+		value && dispatch(setPostLimit(value));
 	};
 
 	return (

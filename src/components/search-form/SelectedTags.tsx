@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { Tag as AntTag, Card } from 'antd';
 
-import { RootState } from '../../../store/types';
+import { RootState, SearchMode } from '../../../store/types';
 import { actions } from '../../../store';
 
 import { Tag } from '../../../types/gelbooruTypes';
@@ -13,12 +13,20 @@ const StyledCard = styled(Card)`
 	border-color: rgb(217, 217, 217);
 `;
 
-const SelectedTags: React.FunctionComponent = () => {
+interface Props {
+	mode: SearchMode;
+}
+
+const SelectedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	const dispatch = useDispatch();
-	const selectedTags = useSelector((state: RootState) => state.downloadedSearchForm.selectedTags);
+
+	const selectedTags = useSelector(
+		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.selectedTags) || state.onlineSearchForm.selectedTags
+	);
 
 	const handleTagClose = (tag: Tag): void => {
-		dispatch(actions.downloadedSearchForm.removeTag(tag));
+		const removeTag = (mode === 'offline' && actions.downloadedSearchForm.removeTag) || actions.onlineSearchForm.removeTag;
+		dispatch(removeTag(tag));
 	};
 
 	const renderSelectedTags = (): JSX.Element[] => {

@@ -49,7 +49,7 @@ const StyledLoadMoreButton = styled(Button)`
 const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 	const postCount = useSelector((state: RootState) => state.posts.posts.length);
-	const loading = useSelector((state: RootState) => state.searchForm.loading);
+	const loading = useSelector((state: RootState) => state.onlineSearchForm.loading);
 	// useEffect(() => {
 	// 	if (props.activeView === 'image') {
 	// 		const list = document.getElementById('thumbnails-list');

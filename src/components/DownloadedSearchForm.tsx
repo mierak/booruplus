@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, Col, Input, Row } from 'antd';
+import { Button, Form, Col, Row } from 'antd';
 import { useDispatch } from 'react-redux';
 
 import { actions } from '../../store';
@@ -37,27 +37,27 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	return (
 		<Form labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} layout="horizontal" className={props.className}>
 			<Form.Item label="Find Tag">
-				<TagSearch />
+				<TagSearch mode="offline" />
 			</Form.Item>
 			<Form.Item label="Selected Tags">
-				<SelectedTags />
+				<SelectedTags mode="offline" />
 			</Form.Item>
 			<Row>
 				<Col span={12} style={{ paddingRight: 0 }}>
 					<Form.Item label="Post Count" labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}>
-						<PostCountSelect />
+						<PostCountSelect mode="offline" />
 					</Form.Item>
 				</Col>
 				<Col span={12}>
 					<Form.Item label="Page" labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
-						<PageSelect />
+						<PageSelect mode="offline" />
 					</Form.Item>
 				</Col>
 			</Row>
 			<Row>
 				<Col span={12} style={{ paddingRight: 0 }}>
 					<Form.Item label="Rating" labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}>
-						<RatingSelect />
+						<RatingSelect mode="offline" />
 					</Form.Item>
 				</Col>
 			</Row>
@@ -74,7 +74,7 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 				<Button htmlType="submit" onClick={handleClose} style={{ marginLeft: '8px' }}>
 					Close
 				</Button>
-				<SaveSearchButton />
+				<SaveSearchButton mode="offline" />
 			</Form.Item>
 		</Form>
 	);

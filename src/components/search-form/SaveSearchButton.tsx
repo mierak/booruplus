@@ -2,16 +2,24 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button } from 'antd';
 
-import { RootState } from '../../../store/types';
+import { RootState, SearchMode } from '../../../store/types';
 import { actions } from '../../../store';
 
 import { SavedSearch } from '../../../types/gelbooruTypes';
 
-const SaveSearchButton: React.FunctionComponent = () => {
+interface Props {
+	mode: SearchMode;
+}
+
+const SaveSearchButton: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	const dispatch = useDispatch();
 
-	const selectedTags = useSelector((state: RootState) => state.downloadedSearchForm.selectedTags);
-	const rating = useSelector((state: RootState) => state.downloadedSearchForm.rating);
+	const selectedTags = useSelector(
+		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.selectedTags) || state.onlineSearchForm.selectedTags
+	);
+	const rating = useSelector(
+		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.rating) || state.onlineSearchForm.rating
+	);
 
 	const handleSaveSearch = async (): Promise<void> => {
 		const savedSearch: SavedSearch = {

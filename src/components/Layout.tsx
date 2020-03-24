@@ -13,6 +13,7 @@ import {
 
 import { actions } from '../../store';
 import { RootState, View } from '../../store/types';
+
 import OnlineSearchForm from './OnlineSearchForm';
 import DownloadedSearchForm from './DownloadedSearchForm';
 
