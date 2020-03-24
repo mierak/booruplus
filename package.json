@@ -93,7 +93,7 @@
 		"redux-devtools-extension": "^2.13.8",
 		"style-loader": "^0.23.1",
 		"ts-loader": "^6.2.1",
-		"typescript": "^3.7.0"
+		"typescript": "^3.8.3"
 	},
 	"dependencies": {
 		"@reduxjs/toolkit": "^1.2.5",

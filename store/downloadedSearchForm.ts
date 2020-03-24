@@ -2,8 +2,10 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { AppThunk } from './types';
 import { actions as globalActions } from '.';
+
 import { Tag, Rating } from '../types/gelbooruTypes';
 import * as db from '../db';
+import { isExtensionVideo } from '../util/utils';
 
 export interface DownloadedSearchFormState {
 	selectedTags: Tag[];
@@ -120,7 +122,7 @@ const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => 
 			if (!state.showGifs && post.extension === 'gif') {
 				return false;
 			}
-			if ((!state.showVideos && post.extension === 'webm') || (!state.showVideos && post.extension === 'mp4')) {
+			if (isExtensionVideo(post.extension)) {
 				return false;
 			}
 			if (post.extension === 'gif') {

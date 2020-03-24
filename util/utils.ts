@@ -78,3 +78,7 @@ export const capitalize = (string: string): string => {
 };
 
 export const delay = (ms: number): Promise<void> => new Promise((_) => setTimeout(_, ms));
+
+export const isExtensionVideo = (extension: string): boolean => {
+	return extension === 'mp4' || extension === 'webm';
+};
