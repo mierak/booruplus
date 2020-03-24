@@ -108,7 +108,8 @@ const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => 
 	try {
 		const state = getState().downloadedSearchForm;
 		const tags = state.selectedTags.map((tag) => tag.tag);
-		const posts = await db.posts.getForTags(...tags);
+
+		const posts = (tags.length === 0 && (await db.posts.getAllDownloaded())) || (await db.posts.getForTags(...tags));
 		//TODO FIX - shows blacklisted/favorited regardless of extension
 		const filteredPosts = posts.filter((post) => {
 			const blacklisted = post.blacklisted === 1 ? true : false;

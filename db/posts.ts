@@ -42,6 +42,17 @@ export const updateBulk = async (posts: Post[]): Promise<number | void> => {
 	});
 };
 
+export const getAll = async (): Promise<Post[]> => {
+	return db.posts.toArray();
+};
+
+export const getAllDownloaded = async (): Promise<Post[]> => {
+	return db.posts
+		.where('downloaded')
+		.equals(1)
+		.toArray();
+};
+
 export const getFavorites = async (): Promise<Post[]> => {
 	// const uniquePostIds = await database.postsTags.orderBy('postId').uniqueKeys();
 	// console.log('uniquePostIds', uniquePostIds);

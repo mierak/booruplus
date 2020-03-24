@@ -72,7 +72,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 			<Table
 				size="small"
 				dataSource={tags}
-				// pagination={false}
+				pagination={false}
 				rowKey="id"
 				rowClassName={(_record, index): string => (index % 2 === 0 ? 'table-row-light' : 'table-row-dark')}
 			>

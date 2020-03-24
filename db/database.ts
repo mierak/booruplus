@@ -10,8 +10,8 @@ class Database extends Dexie {
 
 	constructor(databaseName: string) {
 		super(databaseName);
-		this.version(1).stores({
-			posts: 'id, height, width, rating, *tags, createdAt, favorite, extension',
+		this.version(2).stores({
+			posts: 'id, height, width, rating, *tags, createdAt, favorite, extension, downloaded',
 			savedSearches: '++id, tags, type, rating, lastSearched',
 			tags: 'id, tag, count, type, ambiguous',
 			postsTags: '[postId+tag], postId, tag, post.favorite, post.blacklisted, post.downloaded'
