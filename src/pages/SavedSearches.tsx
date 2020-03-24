@@ -1,12 +1,14 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store';
 import styled from 'styled-components';
-import { SavedSearch, Tag as GelbooruTag } from '../../types/gelbooruTypes';
 import { Table, Tag, Row, Col, Spin } from 'antd';
+
+import { actions } from '../../store';
+import { RootState } from '../../store/types';
+
+import { SavedSearch, Tag as GelbooruTag } from '../../types/gelbooruTypes';
 import { LoadingOutlined } from '@ant-design/icons';
 import { getTagColor } from '../../util/utils';
-import { removeSavedSearch, searchSavedTagSearchOnline } from '../../store/savedSearches';
 
 const { Column } = Table;
 
@@ -37,11 +39,11 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 	const isLoading = useSelector((state: RootState) => state.searchForm.loading);
 
 	const handleOnlineSearch = async (savedSearch: SavedSearch): Promise<void> => {
-		dispatch(searchSavedTagSearchOnline(savedSearch));
+		dispatch(actions.savedSearches.searchSavedTagSearchOnline(savedSearch));
 	};
 
 	const handleDelete = (savedSearch: SavedSearch): void => {
-		dispatch(removeSavedSearch(savedSearch));
+		dispatch(actions.savedSearches.removeSavedSearch(savedSearch));
 	};
 
 	const renderActions = (_: unknown, record: SavedSearch): JSX.Element => {

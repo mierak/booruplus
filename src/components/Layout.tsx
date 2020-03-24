@@ -1,8 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Layout, Menu, Affix, Drawer } from 'antd';
-import { RootState } from '../../store';
-import { View, setActiveView, setSearchFormDrawerVisible, setDownloadedSearchFormDrawerVisible } from '../../store/system';
 import {
 	DashboardOutlined,
 	UnorderedListOutlined,
@@ -12,6 +10,9 @@ import {
 	FormOutlined,
 	SaveOutlined
 } from '@ant-design/icons';
+
+import { actions } from '../../store';
+import { RootState, View } from '../../store/types';
 import OnlineSearchForm from './OnlineSearchForm';
 import DownloadedSearchForm from './DownloadedSearchForm';
 
@@ -27,23 +28,23 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 	const downloadedSearchFormDrawerVisible = useSelector((state: RootState) => state.system.downloadedSearchFormDrawerVisible);
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 	const handleMenuClick = (view: View): void => {
-		dispatch(setActiveView(view));
+		dispatch(actions.system.setActiveView(view));
 	};
 
 	const handleSearchFormDrawerClose = (): void => {
-		dispatch(setSearchFormDrawerVisible(false));
+		dispatch(actions.system.setSearchFormDrawerVisible(false));
 	};
 
 	const handleSearchFormDrawerOpen = (): void => {
-		dispatch(setSearchFormDrawerVisible(true));
+		dispatch(actions.system.setSearchFormDrawerVisible(true));
 	};
 
 	const handleDownloadedSearchFormDrawerOpen = (): void => {
-		dispatch(setDownloadedSearchFormDrawerVisible(true));
+		dispatch(actions.system.setDownloadedSearchFormDrawerVisible(true));
 	};
 
 	const handleDownloadedSearchFormDrawerClose = (): void => {
-		dispatch(setDownloadedSearchFormDrawerVisible(false));
+		dispatch(actions.system.setDownloadedSearchFormDrawerVisible(false));
 	};
 
 	return (

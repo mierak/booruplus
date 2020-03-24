@@ -1,26 +1,14 @@
 import React, { useState } from 'react';
 import { Card, Select, Button, Form, Tag as AntTag, InputNumber, Col, Input, Row, Checkbox } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store';
-import { setSearchFormDrawerVisible, setActiveView } from '../../store/system';
-import {
-	addTag,
-	removeTag,
-	clearTags,
-	setRating,
-	setPage,
-	setLimit,
-	SearchMode,
-	setSearchMode,
-	getTagsByPatternFromApi
-} from '../../store/searchForm';
 import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
 import { SelectValue } from 'antd/lib/select';
+
+import { actions } from '../../store';
+import { RootState, SearchMode } from '../../store/types';
 import { Tag, Rating, SavedSearch } from '../../types/gelbooruTypes';
 import TagSelectOption from './TagSelectOption';
 import { getTagColor } from '../../util/utils';
-import { fetchPosts } from '../../store/searchForm';
-import { addSavedSearch } from '../../store/savedSearches';
 
 interface Props {
 	className?: string;
@@ -37,54 +25,53 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	const page = useSelector((state: RootState) => state.searchForm.page);
 	const options = useSelector((state: RootState) => state.searchForm.tagOptions);
 	const mode = useSelector((state: RootState) => state.searchForm.searchMode);
-	const offlineOptions = useSelector((state: RootState) => state.searchForm.offlineOptions);
 	const [selectValue] = useState('');
 	const dispatch = useDispatch();
 
 	const handleChange = async (e: SelectValue): Promise<void> => {
-		dispatch(getTagsByPatternFromApi(e.toString()));
+		dispatch(actions.onlineSearchForm.getTagsByPatternFromApi(e.toString()));
 	};
 
 	const handleSelect = (e: SelectValue): void => {
 		const tag = options.find((t: Tag) => t.tag === e.toString());
-		tag && dispatch(addTag(tag));
+		tag && dispatch(actions.onlineSearchForm.addTag(tag));
 	};
 
 	const handleModeChange = (val: SearchMode): void => {
-		dispatch(setSearchMode(val));
+		dispatch(actions.onlineSearchForm.setSearchMode(val));
 	};
 
 	const handleRatingSelect = (val: Rating): void => {
-		dispatch(setRating(val));
+		dispatch(actions.onlineSearchForm.setRating(val));
 	};
 
 	const handlePostCountChange = (value: number | undefined): void => {
-		value && dispatch(setLimit(value));
+		value && dispatch(actions.onlineSearchForm.setLimit(value));
 	};
 
 	const handlePageChange = (value: number | undefined): void => {
-		value !== undefined && dispatch(setPage(value));
+		value !== undefined && dispatch(actions.onlineSearchForm.setPage(value));
 	};
 
 	const handleTagClose = (tag: Tag): void => {
-		dispatch(removeTag(tag));
+		dispatch(actions.onlineSearchForm.removeTag(tag));
 	};
 
 	const handleSubmit = async (mode: SearchMode): Promise<void> => {
-		dispatch(setSearchMode(mode));
-		dispatch(fetchPosts());
-		dispatch(setActiveView('thumbnails'));
-		dispatch(setSearchFormDrawerVisible(false));
+		dispatch(actions.onlineSearchForm.setSearchMode(mode));
+		dispatch(actions.onlineSearchForm.fetchPosts());
+		dispatch(actions.system.setActiveView('thumbnails'));
+		dispatch(actions.system.setSearchFormDrawerVisible(false));
 	};
 
 	const handleClear = (): void => {
-		dispatch(clearTags());
-		dispatch(setLimit(100));
-		dispatch(setRating('any'));
+		dispatch(actions.onlineSearchForm.clearTags());
+		dispatch(actions.onlineSearchForm.setLimit(100));
+		dispatch(actions.onlineSearchForm.setRating('any'));
 	};
 
 	const handleClose = (): void => {
-		dispatch(setSearchFormDrawerVisible(false));
+		dispatch(actions.system.setSearchFormDrawerVisible(false));
 	};
 
 	const handleSaveSearch = async (): Promise<void> => {
@@ -92,7 +79,7 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 			tags: selectedTags,
 			rating: rating
 		};
-		dispatch(addSavedSearch(savedSearch));
+		dispatch(actions.savedSearches.addSavedSearch(savedSearch));
 	};
 
 	const renderSelectOptions = (): JSX.Element[] => {

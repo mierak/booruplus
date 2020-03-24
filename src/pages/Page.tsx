@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store';
-import { loadSavedSearchesFromDb } from '../../store/savedSearches';
+
+import { actions } from '../../store';
+import { RootState } from '../../store/types';
+
 import AppLayout from '../components/Layout';
 import ImageView from './ImageView';
 import SearchForm from '../components/OnlineSearchForm';
@@ -16,7 +18,7 @@ const Page: React.FunctionComponent = () => {
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 
 	useEffect(() => {
-		dispatch(loadSavedSearchesFromDb());
+		dispatch(actions.savedSearches.loadSavedSearchesFromDb());
 	}, []);
 
 	const renderView = (): React.ReactNode => {

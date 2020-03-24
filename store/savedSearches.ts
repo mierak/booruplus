@@ -1,9 +1,10 @@
 import { SavedSearch } from '../types/gelbooruTypes';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AppThunk } from '.';
+
+import { actions as globalActions } from '.';
+import { AppThunk } from './types';
+
 import * as db from '../db';
-import { setActiveView } from './system';
-import { setSelectedTags, fetchPostsFromApi, setSearchMode, fetchPosts, setLoading } from './searchForm';
 
 export interface SavedSearchesState {
 	savedSearches: SavedSearch[];
@@ -37,28 +38,24 @@ const savedSearchesSlice = createSlice({
 
 const { pushSavedSearch } = savedSearchesSlice.actions;
 
-export const { removeSavedSearch, setSavedSearches, updateLastSearched } = savedSearchesSlice.actions;
-
-export const actions = savedSearchesSlice.actions;
-
 export default savedSearchesSlice.reducer;
 
-export const searchSavedTagSearchOnline = (savedSearch: SavedSearch): AppThunk => async (dispatch): Promise<void> => {
+const searchSavedTagSearchOnline = (savedSearch: SavedSearch): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		const search = Object.assign({}, savedSearch);
 		search.lastSearched = new Date().toUTCString();
-		dispatch(updateLastSearched(search));
-		dispatch(setSearchMode('online'));
-		dispatch(setSelectedTags(savedSearch.tags));
-		dispatch(fetchPosts());
+		dispatch(globalActions.savedSearches.updateLastSearched(search));
+		dispatch(globalActions.onlineSearchForm.setSearchMode('online'));
+		dispatch(globalActions.onlineSearchForm.setSelectedTags(savedSearch.tags));
+		dispatch(globalActions.onlineSearchForm.fetchPosts());
 		db.savedSearches.saveSearch(search);
-		dispatch(setActiveView('thumbnails'));
+		dispatch(globalActions.system.setActiveView('thumbnails'));
 	} catch (err) {
 		console.error('Error while searching online for SavedSearch', err, savedSearch);
 	}
 };
 
-export const addSavedSearch = (savedSearch: SavedSearch): AppThunk => async (dispatch): Promise<void> => {
+const addSavedSearch = (savedSearch: SavedSearch): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		db.savedSearches.saveSearch(savedSearch);
 		dispatch(pushSavedSearch(savedSearch));
@@ -67,7 +64,7 @@ export const addSavedSearch = (savedSearch: SavedSearch): AppThunk => async (dis
 	}
 };
 
-export const saveCurrentSearch = (): AppThunk => async (dispatch, getState): Promise<void> => {
+const saveCurrentSearch = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		const tags = getState().searchForm.selectedTags;
 		const rating = getState().searchForm.rating;
@@ -84,11 +81,19 @@ export const saveCurrentSearch = (): AppThunk => async (dispatch, getState): Pro
 	}
 };
 
-export const loadSavedSearchesFromDb = (): AppThunk => async (dispatch): Promise<void> => {
+const loadSavedSearchesFromDb = (): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		const savedSearches = await db.savedSearches.getSavedSearches();
-		savedSearches && dispatch(setSavedSearches(savedSearches));
+		savedSearches && dispatch(globalActions.savedSearches.setSavedSearches(savedSearches));
 	} catch (err) {
 		console.log('Error while loading SavedSearches from database', err);
 	}
+};
+
+export const actions = {
+	...savedSearchesSlice.actions,
+	searchSavedTagSearchOnline,
+	addSavedSearch,
+	saveCurrentSearch,
+	loadSavedSearchesFromDb
 };

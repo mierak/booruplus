@@ -1,16 +1,11 @@
 import { Tag, Rating } from '../types/gelbooruTypes';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AppThunk } from '.';
+
+import { actions as globalActions } from '.';
+import { AppThunk, SearchMode, OfflineOptions } from './types';
+
 import * as api from '../service/apiService';
 import * as db from '../db';
-import { setPosts, addPosts, setActivePostIndex } from './posts';
-
-export type SearchMode = 'online' | 'offline';
-
-interface OfflineOptions {
-	blacklisted: boolean;
-	favorite: boolean;
-}
 
 export interface SearchFormState {
 	selectedTags: Tag[];
@@ -78,30 +73,15 @@ const searchFormSlice = createSlice({
 	}
 });
 
-export const {
-	addTag,
-	removeTag,
-	clearTags,
-	setLimit,
-	setRating,
-	setPage,
-	setLoading,
-	setSelectedTags,
-	setSearchMode,
-	setTagOptions,
-	setOfflineOptions
-} = searchFormSlice.actions;
-
-export const getTagsByPatternFromApi = (value: string): AppThunk => async (dispatch): Promise<void> => {
+const getTagsByPatternFromApi = (value: string): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		const tags = await api.getTagsByPattern(value);
-		dispatch(setTagOptions(tags));
+		dispatch(searchFormSlice.actions.setTagOptions(tags));
 	} catch (err) {
 		console.error('Error occured while fetching posts from api by pattern', err);
 	}
 };
-
-export const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<void> => {
+const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		//construct string of tags
 		const tags = getState().searchForm.selectedTags;
@@ -115,40 +95,40 @@ export const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Pro
 		const posts = await api.getPostsForTags(tagsString, options);
 		//validate posts against db - check favorite/blacklisted/downloaded state
 		const validatedPosts = await Promise.all(posts.map((post) => db.posts.saveOrUpdateFromApi(post)));
-		dispatch(setPosts(validatedPosts));
+		dispatch(globalActions.posts.setPosts(validatedPosts));
 	} catch (err) {
 		console.error('Error while fetching from api', err);
 	}
 };
 
-export const fetchPostsFromDb = (): AppThunk => async (dispatch, getState): Promise<void> => {
+const fetchPostsFromDb = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		const tagsString = getState().searchForm.selectedTags.map((tag) => tag.tag);
 		const posts = await db.posts.getForTags(...tagsString);
-		dispatch(setPosts(posts));
+		dispatch(globalActions.posts.setPosts(posts));
 	} catch (err) {
 		console.error('Erroru occured while fetching posts from db', err);
 	}
 };
 
-export const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
+const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
-		dispatch(setLoading(true));
+		dispatch(searchFormSlice.actions.setLoading(true));
 		if (getState().searchForm.searchMode === 'online') {
 			dispatch(fetchPostsFromApi());
 		} else {
 			dispatch(fetchPostsFromDb());
 		}
-		dispatch(setActivePostIndex(undefined));
-		dispatch(setLoading(false));
+		dispatch(globalActions.posts.setActivePostIndex(undefined));
+		dispatch(searchFormSlice.actions.setLoading(false));
 	} catch (err) {
 		console.error('Error occured while trying to fetch posts', err);
 	}
 };
 
-export const loadMorePosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
+const loadMorePosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
-		dispatch(setLoading(true));
+		dispatch(searchFormSlice.actions.setLoading(true));
 		const page = getState().searchForm.page;
 		const tags = getState().searchForm.selectedTags;
 		const tagsString = tags.map((tag) => tag.tag);
@@ -157,10 +137,10 @@ export const loadMorePosts = (): AppThunk => async (dispatch, getState): Promise
 			page: page + 1,
 			rating: getState().searchForm.rating
 		};
-		dispatch(setPage(page + 1));
+		dispatch(searchFormSlice.actions.setPage(page + 1));
 		const posts = await api.getPostsForTags(tagsString, options);
-		dispatch(addPosts(posts));
-		dispatch(setLoading(false));
+		dispatch(globalActions.posts.addPosts(posts));
+		dispatch(searchFormSlice.actions.setLoading(false));
 	} catch (err) {
 		console.error('Error while loading more posts', err);
 	}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
+
+import { RootState } from '../../store/types';
 import styled from 'styled-components';
 import { useLoadImage } from '../../src/hooks/useImageBus';
 import EmptyThumbnails from './EmptyThumbnails';

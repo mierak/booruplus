@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
-import { RootState } from '../../store';
-import styled from 'styled-components';
-import Thumbnail from './Thumbnail';
 import { useSelector, useDispatch } from 'react-redux';
-import { nextPost, previousPost } from '../../store/posts';
-import { loadMorePosts } from '../../store/searchForm';
+import styled from 'styled-components';
+import PropTypes from 'prop-types';
+
+import { actions } from '../../store';
+import { RootState } from '../../store/types';
+
+import Thumbnail from './Thumbnail';
 import { Button } from 'antd';
 import EmptyThumbnails from './EmptyThumbnails';
-import PropTypes from 'prop-types';
 
 interface Props {
 	className?: string;
@@ -58,7 +59,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	// const [postsLength, setPostsLength] = useState(0);
 
 	const handleLoadMore = async (): Promise<void> => {
-		dispatch(loadMorePosts());
+		dispatch(actions.onlineSearchForm.loadMorePosts());
 		// props.setLoading(true);
 		// const searchString = props.selectedTags.map((tag) => tag.tag);
 		// const posts = await getPostsForTags(searchString, { rating: props.rating, limit: props.postCount, page: props.page + 1 });
@@ -83,10 +84,10 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const handleKeyPress = (event: KeyboardEvent): void => {
 		switch (event.keyCode) {
 			case 39:
-				dispatch(nextPost());
+				dispatch(actions.posts.nextPost());
 				break;
 			case 37:
-				dispatch(previousPost());
+				dispatch(actions.posts.previousPost());
 				break;
 		}
 	};

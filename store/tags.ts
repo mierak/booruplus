@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+import { AppThunk } from './types';
+
 import * as db from '../db';
 import { Tag } from '../types/gelbooruTypes';
-import { AppThunk } from '.';
 
 export interface TagsState {
 	tags: Tag[];
@@ -22,20 +23,18 @@ const tagsSlice = createSlice({
 	}
 });
 
-export const { setTags } = tagsSlice.actions;
-
 export default tagsSlice.reducer;
 
-export const loadAllTagsFromDb = (): AppThunk => async (dispatch): Promise<void> => {
+const loadAllTagsFromDb = (): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		const tags = await db.tags.getAll();
-		tags && dispatch(setTags(tags));
+		tags && dispatch(tagsSlice.actions.setTags(tags));
 	} catch (err) {
 		console.error('Error while loading tags from db', err);
 	}
 };
 
-export const loadAllTagsFromDbWithStats = (): AppThunk => async (dispatch): Promise<void> => {
+const loadAllTagsFromDbWithStats = (): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		const tags = await db.tags.getAll();
 		if (tags) {
@@ -47,17 +46,17 @@ export const loadAllTagsFromDbWithStats = (): AppThunk => async (dispatch): Prom
 					return tag;
 				})
 			);
-			dispatch(setTags(tagsWithStats));
+			dispatch(tagsSlice.actions.setTags(tagsWithStats));
 		}
 	} catch (err) {
 		console.error('Error while loading tags with stats from db', err);
 	}
 };
 
-export const loadByPatternFromDb = (pattern: string): AppThunk => async (dispatch): Promise<void> => {
+const loadByPatternFromDb = (pattern: string): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		const tags = await db.tags.getByPattern(pattern);
-		dispatch(setTags(tags));
+		dispatch(tagsSlice.actions.setTags(tags));
 	} catch (err) {
 		console.error('Error while loading tags by pattern from db', err);
 	}

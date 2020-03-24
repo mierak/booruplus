@@ -3,16 +3,12 @@ import { Card, Select, Button, Form, Tag as AntTag, InputNumber, Col, Input, Row
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { RootState } from '../../store';
-import { setSearchFormDrawerVisible, setActiveView } from '../../store/system';
+import { RootState, View } from '../../store/types';
 import { actions } from '../../store';
 import { SelectValue } from 'antd/lib/select';
 import { Tag, Rating, SavedSearch } from '../../types/gelbooruTypes';
 import TagSelectOption from './TagSelectOption';
 import { getTagColor } from '../../util/utils';
-import { setActivePostIndex } from '../../store/posts';
-import { fetchPosts } from '../../store/searchForm';
-import { addSavedSearch } from '../../store/savedSearches';
 
 interface Props {
 	className?: string;
@@ -103,7 +99,7 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 			tags: selectedTags,
 			rating: rating
 		};
-		dispatch(addSavedSearch(savedSearch));
+		dispatch(actions.savedSearches.addSavedSearch(savedSearch));
 	};
 
 	const renderSelectOptions = (): JSX.Element[] => {

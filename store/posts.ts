@@ -1,10 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+import { actions as globalActions } from '.';
+import { AppThunk } from './types';
+
+import { useSaveImage, useDeleteImage } from '../src/hooks/useImageBus';
 import { Post } from '../types/gelbooruTypes';
-import { AppThunk } from '.';
 import * as api from '../service/apiService';
 import * as db from '../db';
-import { setLoading } from './searchForm';
-import { useSaveImage, useDeleteImage } from '../src/hooks/useImageBus';
+import { PostPropertyOptions } from './types';
 
 export interface PostsState {
 	activePostIndex: number | undefined;
@@ -73,24 +76,8 @@ const postsSlice = createSlice({
 	}
 });
 
-export const {
-	setActivePostIndex,
-	removePost,
-	setPosts,
-	addPosts,
-	setPostFavorite,
-	setPostSelected,
-	setPostIndexSelected,
-	setPostBlacklisted,
-	nextPost,
-	previousPost,
-	updatePost,
-	updatePosts
-} = postsSlice.actions;
-
-export const actions = postsSlice.actions;
-
 export default postsSlice.reducer;
+
 const deduplicateAndCheckTagsAgainstDb = async (tags: string[]): Promise<string[]> => {
 	const deduplicated = Array.from(new Set(tags));
 	const checked = await Promise.all(
@@ -104,7 +91,7 @@ const deduplicateAndCheckTagsAgainstDb = async (tags: string[]): Promise<string[
 	return checkedAndFiltered;
 };
 
-export const downloadPosts = (posts: Post[]): AppThunk => async (dispatch): Promise<void> => {
+const downloadPosts = (posts: Post[]): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		const saveImage = useSaveImage();
 		const tagsToSave: string[] = [];
@@ -118,7 +105,7 @@ export const downloadPosts = (posts: Post[]): AppThunk => async (dispatch): Prom
 			db.posts.update(post);
 			return post;
 		});
-		dispatch(updatePosts(updatedPosts));
+		dispatch(globalActions.posts.updatePosts(updatedPosts));
 		const filteredTags = await deduplicateAndCheckTagsAgainstDb(tagsToSave);
 		const tagsFromApi = await api.getTagsByNames(...filteredTags);
 		db.tags.saveBulk(tagsFromApi);
@@ -126,45 +113,37 @@ export const downloadPosts = (posts: Post[]): AppThunk => async (dispatch): Prom
 		console.error('Error while downloading all posts', err);
 	}
 };
-
-export const loadFavoritePostsFromDb = (): AppThunk => async (dispatch): Promise<void> => {
+const loadFavoritePostsFromDb = (): AppThunk => async (dispatch): Promise<void> => {
 	try {
-		dispatch(setLoading(true));
+		dispatch(globalActions.onlineSearchForm.setLoading(true));
 		const posts = await db.posts.getFavorites();
-		dispatch(setActivePostIndex(undefined));
-		dispatch(setPosts(posts));
-		dispatch(setLoading(false));
+		dispatch(globalActions.posts.setActivePostIndex(undefined));
+		dispatch(globalActions.posts.setPosts(posts));
+		dispatch(globalActions.onlineSearchForm.setLoading(false));
 	} catch (err) {
 		console.error('Error while retrieving favorite posts from db', err);
 	}
 };
 
-interface PostPropertyOptions {
-	blacklisted?: 0 | 1;
-	favorite?: 0 | 1;
-	downloaded?: 0 | 1;
-}
-
-export const changePostProperties = (post: Post, options: PostPropertyOptions): AppThunk => async (dispatch): Promise<void> => {
+const changePostProperties = (post: Post, options: PostPropertyOptions): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		const clonedPost = Object.assign({}, post);
 		options.blacklisted !== undefined && (clonedPost.blacklisted = options.blacklisted);
 		options.favorite !== undefined && (clonedPost.favorite = options.favorite);
 		options.downloaded !== undefined && (clonedPost.downloaded = options.downloaded);
-		options.blacklisted === 1 && dispatch(removePost(post));
+		options.blacklisted === 1 && dispatch(globalActions.posts.removePost(post));
 		db.posts.update(clonedPost);
-		dispatch(updatePost(clonedPost));
+		dispatch(globalActions.posts.updatePost(clonedPost));
 	} catch (err) {
 		console.error('Error while changing post properties', err);
 	}
 };
 
-export const downloadSelectedPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
+const downloadSelectedPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	const posts = getState().posts.posts.filter((p) => p.selected);
 	dispatch(downloadPosts(posts));
 };
-
-export const downloadAllPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
+const downloadAllPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	const posts = getState().posts.posts;
 	dispatch(downloadPosts(posts));
 };
@@ -178,7 +157,7 @@ const blackListPost = (p: Post): Post => {
 	return post;
 };
 
-export const blacklistSelectedPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
+const blacklistSelectedPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		const deleteImage = useDeleteImage();
 		const posts = getState().posts.posts.filter((p) => p.selected);
@@ -186,14 +165,14 @@ export const blacklistSelectedPosts = (): AppThunk => async (dispatch, getState)
 			const post = blackListPost(p);
 			deleteImage(post);
 			db.posts.update(post);
-			dispatch(removePost(post));
+			dispatch(globalActions.posts.removePost(post));
 		});
 	} catch (err) {
 		console.error('Error occured while blacklisting selected posts', err);
 	}
 };
 
-export const blackListAllPosts = (): AppThunk => async (dispatch, getStsate): Promise<void> => {
+const blackListAllPosts = (): AppThunk => async (dispatch, getStsate): Promise<void> => {
 	try {
 		const deleteImage = useDeleteImage();
 		const posts = getStsate().posts.posts;
@@ -201,14 +180,14 @@ export const blackListAllPosts = (): AppThunk => async (dispatch, getStsate): Pr
 			const post = blackListPost(p);
 			deleteImage(post);
 			db.posts.update(post);
-			dispatch(removePost(post));
+			dispatch(globalActions.posts.removePost(post));
 		});
 	} catch (err) {
 		console.error('Error occured while blacklisting all posts', err);
 	}
 };
 
-export const addSelectedPostsToFavorites = (): AppThunk => async (dispatch, getState): Promise<void> => {
+const addSelectedPostsToFavorites = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		const posts = getState().posts.posts.filter((p) => p.selected);
 		posts.forEach((p) => {
@@ -217,14 +196,14 @@ export const addSelectedPostsToFavorites = (): AppThunk => async (dispatch, getS
 			p.blacklisted = 0;
 			post.selected = false;
 			db.posts.update(post);
-			dispatch(removePost(post));
+			dispatch(globalActions.posts.removePost(post));
 		});
 	} catch (err) {
 		console.error('Erroroccured while adding selected posts to favorites', err);
 	}
 };
 
-export const addAllPostsToFavorites = (): AppThunk => async (dispatch, getState): Promise<void> => {
+const addAllPostsToFavorites = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		const posts = getState().posts.posts;
 		posts.forEach((p) => {
@@ -233,9 +212,22 @@ export const addAllPostsToFavorites = (): AppThunk => async (dispatch, getState)
 			p.blacklisted = 0;
 			post.selected = false;
 			db.posts.update(post);
-			dispatch(removePost(post));
+			dispatch(globalActions.posts.removePost(post));
 		});
 	} catch (err) {
 		console.error('Erroroccured while adding selected posts to favorites', err);
 	}
+};
+
+export const actions = {
+	...postsSlice.actions,
+	downloadPosts,
+	loadFavoritePostsFromDb,
+	changePostProperties,
+	downloadSelectedPosts,
+	downloadAllPosts,
+	blacklistSelectedPosts,
+	blackListAllPosts,
+	addSelectedPostsToFavorites,
+	addAllPostsToFavorites
 };

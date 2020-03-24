@@ -1,7 +1,8 @@
 import React from 'react';
 import { Empty, Button } from 'antd';
 import { useDispatch } from 'react-redux';
-import { setSearchFormDrawerVisible } from '../../store/system';
+
+import { actions } from '../../store';
 
 interface Props {
 	className?: string;
@@ -13,7 +14,7 @@ const EmptyThumbnails: React.FunctionComponent<Props> = (props: Props) => {
 		<Empty className={props.className} description="No Posts To Show">
 			<Button
 				onClick={(): void => {
-					dispatch(setSearchFormDrawerVisible(true));
+					dispatch(actions.system.setSearchFormDrawerVisible(true));
 				}}
 			>
 				Open Search Form

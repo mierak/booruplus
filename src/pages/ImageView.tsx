@@ -1,10 +1,12 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { RootState } from '../../store';
-import { setImageViewThumbnailsCollapsed } from '../../store/system';
-import ThumbnailsList from '../components/ThumbnailsList';
 import { Layout } from 'antd';
+
+import { actions } from '../../store';
+import { RootState } from '../../store/types';
+
+import ThumbnailsList from '../components/ThumbnailsList';
 import FullSizeImage from '../components/FullSizeImage';
 
 interface Props {
@@ -46,7 +48,7 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 				collapsedWidth={0}
 				collapsed={!thumbnailsListvisible}
 				onCollapse={(): void => {
-					dispatch(setImageViewThumbnailsCollapsed(!thumbnailsListvisible));
+					dispatch(actions.system.setImageViewThumbnailsCollapsed(!thumbnailsListvisible));
 				}}
 			>
 				<StyledThumbnailsList />

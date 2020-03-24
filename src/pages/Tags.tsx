@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
-import { Table } from 'antd';
-import { Tag, TagType } from '../../types/gelbooruTypes';
-import { ColumnFilterItem } from 'antd/lib/table/interface';
-import { capitalize } from '../../util/utils';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store';
-import { loadAllTagsFromDb, loadAllTagsFromDbWithStats } from '../../store/tags';
+import styled from 'styled-components';
+import { ColumnFilterItem } from 'antd/lib/table/interface';
+import { Table } from 'antd';
+
+import { actions } from '../../store';
+import { RootState } from '../../store/types';
+
+import { Tag, TagType } from '../../types/gelbooruTypes';
+import { capitalize } from '../../util/utils';
 
 const { Column } = Table;
 
@@ -27,7 +29,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 
 	useEffect(() => {
 		// dispatch(loadAllTagsFromDb());
-		dispatch(loadAllTagsFromDbWithStats());
+		dispatch(actions.tags.loadAllTagsFromDbWithStats());
 	}, []);
 
 	// const getFilteredTags = (): void => {};

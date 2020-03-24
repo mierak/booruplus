@@ -1,8 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-// export type SystemAction = SetActiveView | SetSearchFormDrawerVisible | SetImageViewThumbnailsCollapsed;
-
-export type View = 'thumbnails' | 'image' | 'dashboard' | 'online-search' | 'saved-searches' | 'favorites' | 'tag-list';
+import { View } from './types';
 
 export interface SystemState {
 	activeView: View;
@@ -36,13 +33,6 @@ const systemSlice = createSlice({
 		}
 	}
 });
-
-export const {
-	setActiveView,
-	setSearchFormDrawerVisible,
-	setImageViewThumbnailsCollapsed,
-	setDownloadedSearchFormDrawerVisible
-} = systemSlice.actions;
 
 export const actions = systemSlice.actions;
 

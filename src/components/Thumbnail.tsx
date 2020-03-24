@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { RootState } from '../../store';
-import { setActiveView } from '../../store/system';
-import { setActivePostIndex, changePostProperties, setPostSelected } from '../../store/posts';
+
+import { actions } from '../../store';
+import { RootState } from '../../store/types';
+
 import { Card, Popconfirm, notification, Tooltip, Spin } from 'antd';
 import { HeartOutlined, HeartFilled, DownloadOutlined, DeleteOutlined, CheckCircleTwoTone, LoadingOutlined } from '@ant-design/icons';
 import { useSaveImage, useDeleteImage } from '../../src/hooks/useImageBus';
@@ -68,17 +69,17 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	const handleThumbnailClick = (event: React.MouseEvent): void => {
 		if (event.ctrlKey) {
 			if (post) {
-				dispatch(setPostSelected({ post: post, selected: !post.selected }));
+				dispatch(actions.posts.setPostSelected({ post: post, selected: !post.selected }));
 			}
 		} else {
-			dispatch(setActivePostIndex(props.index));
-			activeView !== 'image' && dispatch(setActiveView('image'));
+			dispatch(actions.posts.setActivePostIndex(props.index));
+			activeView !== 'image' && dispatch(actions.system.setActiveView('image'));
 		}
 	};
 
 	const setFavorite = (favorite: 0 | 1): void => {
 		if (post) {
-			dispatch(changePostProperties(post, { favorite }));
+			dispatch(actions.posts.changePostProperties(post, { favorite }));
 			const description = favorite === 1 ? 'Post succesfuly added to favorites.' : 'Post successfuly removed from favorites.';
 			openNotificationWithIcon('success', 'Post updated', description);
 		}
@@ -87,7 +88,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	const handleSave = (): void => {
 		if (post) {
 			saveImageToDisk(post);
-			dispatch(changePostProperties(post, { downloaded: 1 }));
+			dispatch(actions.posts.changePostProperties(post, { downloaded: 1 }));
 			openNotificationWithIcon('success', 'Post downloaded', 'Image was successfuly saved to disk.');
 		}
 	};
@@ -95,7 +96,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	const handleDelete = (): void => {
 		if (post) {
 			deleteImageFromDisk(post);
-			dispatch(changePostProperties(post, { favorite: 0, blacklisted: 1 }));
+			dispatch(actions.posts.changePostProperties(post, { favorite: 0, blacklisted: 1 }));
 			openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
 		}
 	};

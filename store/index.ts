@@ -1,5 +1,4 @@
-import { combineReducers, Action } from 'redux';
-import { ThunkAction } from 'redux-thunk';
+import { combineReducers } from 'redux';
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 
 import postsReducer, { actions as posts } from './posts';
@@ -8,6 +7,7 @@ import searchFormReducer, { actions as onlineSearchForm } from './searchForm';
 import savedSearchesReducer, { actions as savedSearches } from './savedSearches';
 import tagsReducer, { actions as tags } from './tags';
 import downloadedSearchFormReducer, { actions as downloadedSearchForm } from './downloadedSearchForm';
+import { RootState } from './types';
 
 export const mainReducer = combineReducers({
 	system: systemReducer,
@@ -31,9 +31,3 @@ export const actions = {
 	tags,
 	downloadedSearchForm
 };
-
-export type RootState = ReturnType<typeof mainReducer>;
-
-export type AppThunk = ThunkAction<void, RootState, unknown, Action<string>>;
-
-export type AppDispatch = typeof store.dispatch;

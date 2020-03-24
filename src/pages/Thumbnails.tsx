@@ -1,17 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import ThumbnailsList from '../components/ThumbnailsList';
 import { PageHeader, Button } from 'antd';
 import { useDispatch } from 'react-redux';
-import {
-	downloadSelectedPosts,
-	addSelectedPostsToFavorites,
-	addAllPostsToFavorites,
-	blacklistSelectedPosts,
-	blackListAllPosts,
-	downloadAllPosts
-} from '../../store/posts';
-import { saveCurrentSearch } from '../../store/savedSearches';
+
+import { actions } from '../../store';
+import ThumbnailsList from '../components/ThumbnailsList';
 
 interface Props {
 	className?: string;
@@ -41,7 +34,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 					<Button
 						key="8"
 						onClick={(): void => {
-							dispatch(saveCurrentSearch());
+							dispatch(actions.savedSearches.saveCurrentSearch());
 						}}
 					>
 						Save Search
@@ -49,7 +42,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 					<Button
 						key="7"
 						onClick={(): void => {
-							dispatch(blackListAllPosts());
+							dispatch(actions.posts.blackListAllPosts());
 						}}
 					>
 						Blacklist All
@@ -57,7 +50,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 					<Button
 						key="6"
 						onClick={(): void => {
-							dispatch(blacklistSelectedPosts());
+							dispatch(actions.posts.blacklistSelectedPosts());
 						}}
 					>
 						Blacklist Selected
@@ -65,7 +58,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 					<Button
 						key="5"
 						onClick={(): void => {
-							dispatch(addAllPostsToFavorites());
+							dispatch(actions.posts.addAllPostsToFavorites());
 						}}
 					>
 						Add All To Favorites
@@ -73,7 +66,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 					<Button
 						key="4"
 						onClick={(): void => {
-							dispatch(addSelectedPostsToFavorites());
+							dispatch(actions.posts.addSelectedPostsToFavorites());
 						}}
 					>
 						Add Selected To Favorites
@@ -81,7 +74,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 					<Button
 						key="3"
 						onClick={(): void => {
-							dispatch(downloadAllPosts());
+							dispatch(actions.posts.downloadAllPosts());
 						}}
 					>
 						Download All
@@ -89,7 +82,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 					<Button
 						key="2"
 						onClick={(): void => {
-							dispatch(downloadSelectedPosts());
+							dispatch(actions.posts.downloadSelectedPosts());
 						}}
 					>
 						Download Selected

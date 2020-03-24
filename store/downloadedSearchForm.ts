@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { AppThunk } from '.';
+import { AppThunk } from './types';
+import { actions as globalActions } from '.';
 import { Tag, Rating } from '../types/gelbooruTypes';
 import * as db from '../db';
-import { setPosts } from './posts';
 
 export interface DownloadedSearchFormState {
 	selectedTags: Tag[];
@@ -93,30 +93,16 @@ const downloadedSearchFormSlice = createSlice({
 	}
 });
 
-export const {
-	addTag,
-	setRating,
-	setTags,
-	setTagOptions,
-	setPostLimit,
-	setPage,
-	setShowBlacklisted,
-	setShowFavorites,
-	setShowVideos,
-	setShowImages,
-	setShowGifs
-} = downloadedSearchFormSlice.actions;
-
-export const loadByPatternFromDb = (pattern: string): AppThunk => async (dispatch): Promise<void> => {
+const loadByPatternFromDb = (pattern: string): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		const tags = await db.tags.getByPattern(pattern);
-		dispatch(setTagOptions(tags));
+		dispatch(globalActions.downloadedSearchForm.setTagOptions(tags));
 	} catch (err) {
 		console.error('Error while loading tags by pattern from db', err);
 	}
 };
 
-export const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
+const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		const state = getState().downloadedSearchForm;
 		const tags = state.selectedTags.map((tag) => tag.tag);
@@ -146,7 +132,7 @@ export const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<vo
 			}
 		});
 		console.log('filteredPosts', filteredPosts);
-		dispatch(setPosts(filteredPosts));
+		dispatch(globalActions.posts.setPosts(filteredPosts));
 	} catch (err) {
 		console.error('Error while fetching tags from db', err);
 	}
