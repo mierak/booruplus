@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Select, Button, Form, Tag as AntTag, InputNumber, Col, Input, Row, Checkbox } from 'antd';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,6 +9,7 @@ import { RootState, SearchMode } from '../../store/types';
 import { Tag, Rating, SavedSearch } from '../../types/gelbooruTypes';
 import TagSelectOption from './TagSelectOption';
 import { getTagColor } from '../../util/utils';
+import { useDebounce } from '../hooks/useDebounce';
 
 interface Props {
 	className?: string;
@@ -26,10 +27,17 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	const options = useSelector((state: RootState) => state.searchForm.tagOptions);
 	const mode = useSelector((state: RootState) => state.searchForm.searchMode);
 	const [selectValue] = useState('');
+	const [value, setValue] = useState('');
 	const dispatch = useDispatch();
 
+	const debouncedSearch = useDebounce(value, 5000);
+
+	useEffect(() => {
+		dispatch(actions.onlineSearchForm.getTagsByPatternFromApi(debouncedSearch));
+	}, [debouncedSearch]);
 	const handleChange = async (e: SelectValue): Promise<void> => {
-		dispatch(actions.onlineSearchForm.getTagsByPatternFromApi(e.toString()));
+		// dispatch(actions.onlineSearchForm.getTagsByPatternFromApi(e.toString()));
+		setValue(e.toString());
 	};
 
 	const handleSelect = (e: SelectValue): void => {
