@@ -65,3 +65,7 @@ export const getFavoriteCount2 = async (tag: Tag): Promise<number> => {
 		})
 		.count();
 };
+
+export const getByPattern = async (pattern: string): Promise<Tag[]> => {
+	return db.tags.filter((tag) => tag.tag.includes(pattern)).toArray();
+};

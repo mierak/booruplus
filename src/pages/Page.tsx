@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store/main';
+import { RootState } from '../../store';
 import { loadSavedSearchesFromDb } from '../../store/savedSearches';
 import AppLayout from '../components/Layout';
 import ImageView from './ImageView';
-import SearchForm from '../components/SearchForm';
+import SearchForm from '../components/OnlineSearchForm';
 import SavedSearches from './SavedSearches';
 import Favorites from './Favorites';
 import Tags from './Tags';

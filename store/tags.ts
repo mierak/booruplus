@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import * as db from '../db';
 import { Tag } from '../types/gelbooruTypes';
-import { AppThunk } from './main';
+import { AppThunk } from '.';
 
 export interface TagsState {
 	tags: Tag[];
@@ -53,3 +53,14 @@ export const loadAllTagsFromDbWithStats = (): AppThunk => async (dispatch): Prom
 		console.error('Error while loading tags with stats from db', err);
 	}
 };
+
+export const loadByPatternFromDb = (pattern: string): AppThunk => async (dispatch): Promise<void> => {
+	try {
+		const tags = await db.tags.getByPattern(pattern);
+		dispatch(setTags(tags));
+	} catch (err) {
+		console.error('Error while loading tags by pattern from db', err);
+	}
+};
+
+export const actions = { ...tagsSlice.actions, loadAllTagsFromDb, loadAllTagsFromDbWithStats, loadByPatternFromDb };

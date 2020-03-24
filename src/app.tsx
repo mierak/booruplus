@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { store } from '../store/main';
+import { store } from '../store';
 import Page from './pages/Page';
 
 const App = (): React.ReactElement => {

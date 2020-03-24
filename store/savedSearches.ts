@@ -1,6 +1,6 @@
 import { SavedSearch } from '../types/gelbooruTypes';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AppThunk } from './main';
+import { AppThunk } from '.';
 import * as db from '../db';
 import { setActiveView } from './system';
 import { setSelectedTags, fetchPostsFromApi, setSearchMode, fetchPosts, setLoading } from './searchForm';
@@ -38,6 +38,8 @@ const savedSearchesSlice = createSlice({
 const { pushSavedSearch } = savedSearchesSlice.actions;
 
 export const { removeSavedSearch, setSavedSearches, updateLastSearched } = savedSearchesSlice.actions;
+
+export const actions = savedSearchesSlice.actions;
 
 export default savedSearchesSlice.reducer;
 

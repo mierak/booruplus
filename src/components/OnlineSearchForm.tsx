@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Select, Button, Form, Tag as AntTag, InputNumber, Col, Input, Row, Checkbox } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store/main';
+import { RootState } from '../../store';
 import { setSearchFormDrawerVisible, setActiveView } from '../../store/system';
 import {
 	addTag,
@@ -19,7 +19,6 @@ import { SelectValue } from 'antd/lib/select';
 import { Tag, Rating, SavedSearch } from '../../types/gelbooruTypes';
 import TagSelectOption from './TagSelectOption';
 import { getTagColor } from '../../util/utils';
-import { setActivePostIndex } from '../../store/posts';
 import { fetchPosts } from '../../store/searchForm';
 import { addSavedSearch } from '../../store/savedSearches';
 
@@ -76,7 +75,6 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 		dispatch(fetchPosts());
 		dispatch(setActiveView('thumbnails'));
 		dispatch(setSearchFormDrawerVisible(false));
-		dispatch(setActivePostIndex(undefined));
 	};
 
 	const handleClear = (): void => {

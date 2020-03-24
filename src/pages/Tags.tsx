@@ -5,7 +5,7 @@ import { Tag, TagType } from '../../types/gelbooruTypes';
 import { ColumnFilterItem } from 'antd/lib/table/interface';
 import { capitalize } from '../../util/utils';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store/main';
+import { RootState } from '../../store';
 import { loadAllTagsFromDb, loadAllTagsFromDbWithStats } from '../../store/tags';
 
 const { Column } = Table;

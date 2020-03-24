@@ -1,24 +1,16 @@
 import React, { useState } from 'react';
 import { Card, Select, Button, Form, Tag as AntTag, InputNumber, Col, Input, Row, Checkbox } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store/main';
-import { setSearchFormDrawerVisible, setActiveView } from '../../store/system';
-import {
-	addTag,
-	removeTag,
-	clearTags,
-	setRating,
-	setPage,
-	setLimit,
-	SearchMode,
-	setSearchMode,
-	getTagsByPatternFromApi
-} from '../../store/searchForm';
 import styled from 'styled-components';
+
+import { RootState } from '../../store';
+import { setSearchFormDrawerVisible, setActiveView } from '../../store/system';
+import { actions } from '../../store';
 import { SelectValue } from 'antd/lib/select';
 import { Tag, Rating, SavedSearch } from '../../types/gelbooruTypes';
 import TagSelectOption from './TagSelectOption';
 import { getTagColor } from '../../util/utils';
+import { setActivePostIndex } from '../../store/posts';
 import { fetchPosts } from '../../store/searchForm';
 import { addSavedSearch } from '../../store/savedSearches';
 
@@ -31,60 +23,79 @@ const StyledCard = styled(Card)`
 `;
 
 const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
-	const postLimit = useSelector((state: RootState) => state.searchForm.limit);
-	const rating = useSelector((state: RootState) => state.searchForm.rating);
-	const selectedTags = useSelector((state: RootState) => state.searchForm.selectedTags);
-	const page = useSelector((state: RootState) => state.searchForm.page);
-	const options = useSelector((state: RootState) => state.searchForm.tagOptions);
-	const mode = useSelector((state: RootState) => state.searchForm.searchMode);
-	const offlineOptions = useSelector((state: RootState) => state.searchForm.offlineOptions);
-	const [selectValue] = useState('');
 	const dispatch = useDispatch();
 
+	const postLimit = useSelector((state: RootState) => state.downloadedSearchForm.postLimit);
+	const rating = useSelector((state: RootState) => state.downloadedSearchForm.rating);
+	const selectedTags = useSelector((state: RootState) => state.downloadedSearchForm.selectedTags);
+	const page = useSelector((state: RootState) => state.downloadedSearchForm.page);
+	const options = useSelector((state: RootState) => state.downloadedSearchForm.tagOptions);
+	const showBlacklisted = useSelector((state: RootState) => state.downloadedSearchForm.showBlacklisted);
+	const showFavorites = useSelector((state: RootState) => state.downloadedSearchForm.showFavorites);
+	const showVideos = useSelector((state: RootState) => state.downloadedSearchForm.showVideos);
+	const showImages = useSelector((state: RootState) => state.downloadedSearchForm.showImages);
+	const showGifs = useSelector((state: RootState) => state.downloadedSearchForm.showGifs);
+	const [selectValue] = useState('');
+
 	const handleChange = async (e: SelectValue): Promise<void> => {
-		dispatch(getTagsByPatternFromApi(e.toString()));
+		dispatch(actions.downloadedSearchForm.loadByPatternFromDb(e.toString()));
 	};
 
 	const handleSelect = (e: SelectValue): void => {
 		const tag = options.find((t: Tag) => t.tag === e.toString());
-		tag && dispatch(addTag(tag));
-	};
-
-	const handleModeChange = (val: SearchMode): void => {
-		dispatch(setSearchMode(val));
+		tag && dispatch(actions.downloadedSearchForm.addTag(tag));
 	};
 
 	const handleRatingSelect = (val: Rating): void => {
-		dispatch(setRating(val));
+		dispatch(actions.downloadedSearchForm.setRating(val));
 	};
 
 	const handlePostCountChange = (value: number | undefined): void => {
-		value && dispatch(setLimit(value));
+		value && dispatch(actions.downloadedSearchForm.setPostLimit(value));
 	};
 
 	const handlePageChange = (value: number | undefined): void => {
-		value !== undefined && dispatch(setPage(value));
+		value !== undefined && dispatch(actions.downloadedSearchForm.setPage(value));
 	};
 
 	const handleTagClose = (tag: Tag): void => {
-		dispatch(removeTag(tag));
+		dispatch(actions.downloadedSearchForm.removeTag(tag));
 	};
 
-	const handleSubmit = async (mode: SearchMode): Promise<void> => {
-		dispatch(setSearchMode(mode));
-		dispatch(fetchPosts());
-		dispatch(setActiveView('thumbnails'));
-		dispatch(setSearchFormDrawerVisible(false));
+	const handleCheckboxChange = (checkbox: 'blacklisted' | 'favorites' | 'images' | 'gifs' | 'videos'): void => {
+		switch (checkbox) {
+			case 'blacklisted':
+				dispatch(actions.downloadedSearchForm.toggleShowBlacklisted());
+				break;
+			case 'favorites':
+				dispatch(actions.downloadedSearchForm.toggleShowFavorites());
+				break;
+			case 'gifs':
+				dispatch(actions.downloadedSearchForm.toggleShowGifs());
+				break;
+			case 'images':
+				dispatch(actions.downloadedSearchForm.toggleShowImages());
+				break;
+			case 'videos':
+				dispatch(actions.downloadedSearchForm.toggleShowVideos());
+				break;
+		}
+	};
+
+	const handleSubmit = async (/*mode: SearchMode*/): Promise<void> => {
+		// dispatch(setSearchMode(mode));
+		dispatch(actions.downloadedSearchForm.fetchPosts());
+		dispatch(actions.system.setActiveView('thumbnails'));
+		dispatch(actions.system.setDownloadedSearchFormDrawerVisible(false));
+		dispatch(actions.posts.setActivePostIndex(undefined));
 	};
 
 	const handleClear = (): void => {
-		dispatch(clearTags());
-		dispatch(setLimit(100));
-		dispatch(setRating('any'));
+		dispatch(actions.downloadedSearchForm.clearForm());
 	};
 
 	const handleClose = (): void => {
-		dispatch(setSearchFormDrawerVisible(false));
+		dispatch(actions.system.setDownloadedSearchFormDrawerVisible(false));
 	};
 
 	const handleSaveSearch = async (): Promise<void> => {
@@ -150,14 +161,14 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 					</Col>
 					<Col span={12}>
 						<Form.Item label="Mode" labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
-							<Select defaultValue={mode} value={mode} onChange={handleModeChange}>
+							{/* <Select defaultValue={mode} value={mode} onChange={handleModeChange}>
 								<Select.Option key="online" value="online">
 									Online
 								</Select.Option>
 								<Select.Option key="offline" value="offline">
 									Offline
 								</Select.Option>
-							</Select>
+							</Select> */}
 						</Form.Item>
 					</Col>
 				</Row>
@@ -191,20 +202,28 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 					</Col>
 				</Row>
 			</Input.Group>
-			{mode === 'offline' && (
-				<Input.Group>
-					<Form.Item>
-						<Checkbox>Blacklisted</Checkbox>
-						<Checkbox>Favorite</Checkbox>
-					</Form.Item>
-				</Input.Group>
-			)}
+			<Input.Group>
+				<Form.Item>
+					<Checkbox checked={showBlacklisted} onChange={(): void => handleCheckboxChange('blacklisted')}>
+						Blacklisted
+					</Checkbox>
+					<Checkbox checked={showFavorites} onChange={(): void => handleCheckboxChange('favorites')}>
+						Favorites
+					</Checkbox>
+					<Checkbox checked={showImages} onChange={(): void => handleCheckboxChange('images')}>
+						Images
+					</Checkbox>
+					<Checkbox checked={showGifs} onChange={(): void => handleCheckboxChange('gifs')}>
+						Gifs
+					</Checkbox>
+					<Checkbox checked={showVideos} onChange={(): void => handleCheckboxChange('videos')}>
+						Videos
+					</Checkbox>
+				</Form.Item>
+			</Input.Group>
 			<Form.Item wrapperCol={{ span: 19, offset: 5 }}>
-				<Button type="primary" htmlType="submit" onClick={(): Promise<void> => handleSubmit('online')}>
-					Search Online
-				</Button>
-				<Button type="primary" htmlType="submit" onClick={(): Promise<void> => handleSubmit('offline')}>
-					Search Offline
+				<Button type="primary" htmlType="submit" onClick={(): Promise<void> => handleSubmit()}>
+					Search
 				</Button>
 				<Button type="dashed" htmlType="submit" onClick={(): void => handleClear()} style={{ marginLeft: '8px' }}>
 					Clear

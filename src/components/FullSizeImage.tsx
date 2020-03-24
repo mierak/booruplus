@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../store/main';
+import { RootState } from '../../store';
 import styled from 'styled-components';
 import { useLoadImage } from '../../src/hooks/useImageBus';
 import EmptyThumbnails from './EmptyThumbnails';

@@ -1,6 +1,6 @@
 import { Tag, Rating } from '../types/gelbooruTypes';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AppThunk } from './main';
+import { AppThunk } from '.';
 import * as api from '../service/apiService';
 import * as db from '../db';
 import { setPosts, addPosts, setActivePostIndex } from './posts';
@@ -164,6 +164,15 @@ export const loadMorePosts = (): AppThunk => async (dispatch, getState): Promise
 	} catch (err) {
 		console.error('Error while loading more posts', err);
 	}
+};
+
+export const actions = {
+	...searchFormSlice.actions,
+	getTagsByPatternFromApi,
+	fetchPostsFromApi,
+	fetchPostsFromDb,
+	fetchPosts,
+	loadMorePosts
 };
 
 export default searchFormSlice.reducer;

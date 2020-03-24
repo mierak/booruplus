@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store/main';
+import { RootState } from '../../store';
 import styled from 'styled-components';
 import { SavedSearch, Tag as GelbooruTag } from '../../types/gelbooruTypes';
 import { Table, Tag, Row, Col, Spin } from 'antd';

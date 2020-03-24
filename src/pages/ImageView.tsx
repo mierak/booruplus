@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { RootState } from '../../store/main';
+import { RootState } from '../../store';
 import { setImageViewThumbnailsCollapsed } from '../../store/system';
 import ThumbnailsList from '../components/ThumbnailsList';
 import { Layout } from 'antd';

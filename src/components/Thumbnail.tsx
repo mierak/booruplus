@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { RootState } from '../../store/main';
+import { RootState } from '../../store';
 import { setActiveView } from '../../store/system';
 import { setActivePostIndex, changePostProperties, setPostSelected } from '../../store/posts';
 import { Card, Popconfirm, notification, Tooltip, Spin } from 'antd';

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { RootState } from '../../store/main';
+import { RootState } from '../../store';
 import styled from 'styled-components';
 import Thumbnail from './Thumbnail';
 import { useSelector, useDispatch } from 'react-redux';

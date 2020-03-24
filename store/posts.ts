@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Post } from '../types/gelbooruTypes';
-import { AppThunk } from './main';
+import { AppThunk } from '.';
 import * as api from '../service/apiService';
 import * as db from '../db';
 import { setLoading } from './searchForm';
@@ -87,6 +87,8 @@ export const {
 	updatePost,
 	updatePosts
 } = postsSlice.actions;
+
+export const actions = postsSlice.actions;
 
 export default postsSlice.reducer;
 const deduplicateAndCheckTagsAgainstDb = async (tags: string[]): Promise<string[]> => {
