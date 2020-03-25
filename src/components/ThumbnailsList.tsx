@@ -60,12 +60,6 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 
 	const handleLoadMore = async (): Promise<void> => {
 		dispatch(actions.onlineSearchForm.loadMorePosts());
-		// props.setLoading(true);
-		// const searchString = props.selectedTags.map((tag) => tag.tag);
-		// const posts = await getPostsForTags(searchString, { rating: props.rating, limit: props.postCount, page: props.page + 1 });
-		// props.setPage(props.page + 1);
-		// props.addPosts(posts);
-		// props.setLoading(false);
 	};
 
 	const renderThumbnails = (): JSX.Element[] => {

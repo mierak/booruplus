@@ -1,9 +1,8 @@
-import { app, BrowserWindow, ipcMain, IpcMainEvent, IpcMainInvokeEvent } from 'electron';
+import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 import { SavePostDto } from '../types/processDto';
 import { Post } from '../types/gelbooruTypes';
 import { prefixDataWithContentType, getImageExtensionFromFilename } from '../util/utils';
-import { ImageForPostNotFoundError } from '../types/error';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 

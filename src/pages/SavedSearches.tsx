@@ -109,7 +109,9 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 				expandable={{
 					rowExpandable: (record: SavedSearch): boolean => record.lastSearched !== undefined
 				}}
-				expandedRowRender={(record: SavedSearch): JSX.Element => <span>EXPANDED {record.id}</span>}
+				expandedRowRender={(record: SavedSearch): JSX.Element => (
+					<span>SELECTED THUMBNAILS WILL SHOW HERE AS A PREVIEW - RECORD ID: {record.id}</span>
+				)}
 			>
 				<Column title="Tags" dataIndex="tags" key="tagsCol" render={renderTags} filterDropdownVisible={true} />
 				<Column title="Rating" dataIndex="rating" key="ratingCol" />
