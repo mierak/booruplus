@@ -3,7 +3,6 @@ import { Button, Form, Col, Row } from 'antd';
 import { useDispatch } from 'react-redux';
 
 import { actions } from '../../store';
-import { SearchMode } from '../../store/types';
 
 import TagSearch from './search-form/TagSearch';
 import RatingSelect from './search-form/RatingSelect';

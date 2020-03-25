@@ -55,6 +55,19 @@ const searchSavedTagSearchOnline = (savedSearch: SavedSearch): AppThunk => async
 	}
 };
 
+const searchSavedTagSearchOffline = (savedSearch: SavedSearch): AppThunk => async (dispatch): Promise<void> => {
+	try {
+		const search = Object.assign({}, savedSearch);
+		search.lastSearched = new Date().toUTCString();
+		dispatch(globalActions.downloadedSearchForm.setTags(search.tags));
+		dispatch(globalActions.downloadedSearchForm.fetchPosts());
+		db.savedSearches.saveSearch(search);
+		dispatch(globalActions.system.setActiveView('thumbnails'));
+	} catch (err) {
+		console.error('Error while searching offline for SavedSearch', err, savedSearch);
+	}
+};
+
 const addSavedSearch = (savedSearch: SavedSearch): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		db.savedSearches.saveSearch(savedSearch);
@@ -93,6 +106,7 @@ const loadSavedSearchesFromDb = (): AppThunk => async (dispatch): Promise<void> 
 export const actions = {
 	...savedSearchesSlice.actions,
 	searchSavedTagSearchOnline,
+	searchSavedTagSearchOffline,
 	addSavedSearch,
 	saveCurrentSearch,
 	loadSavedSearchesFromDb

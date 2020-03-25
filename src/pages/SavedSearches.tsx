@@ -38,8 +38,12 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 	const savedSearches = useSelector((state: RootState) => state.savedSearches.savedSearches);
 	const isLoading = useSelector((state: RootState) => state.onlineSearchForm.loading);
 
-	const handleOnlineSearch = async (savedSearch: SavedSearch): Promise<void> => {
+	const handleOnlineSearch = (savedSearch: SavedSearch): void => {
 		dispatch(actions.savedSearches.searchSavedTagSearchOnline(savedSearch));
+	};
+
+	const handleOfflineSearch = (savedSearch: SavedSearch): void => {
+		dispatch(actions.savedSearches.searchSavedTagSearchOffline(savedSearch));
 	};
 
 	const handleDelete = (savedSearch: SavedSearch): void => {
@@ -59,7 +63,13 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 					</a>
 				</Col>
 				<Col span={8}>
-					<a>Offline</a>
+					<a
+						onClick={(): void => {
+							handleOfflineSearch(record);
+						}}
+					>
+						Offline
+					</a>
 				</Col>
 				<Col span={8}>
 					<a onClick={(): void => handleDelete(record)}>Delete</a>

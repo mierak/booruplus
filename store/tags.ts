@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { AppThunk } from './types';
+import { actions as globalActions } from '.';
 
 import * as db from '../db';
 import { Tag } from '../types/gelbooruTypes';
@@ -62,4 +63,31 @@ const loadByPatternFromDb = (pattern: string): AppThunk => async (dispatch): Pro
 	}
 };
 
-export const actions = { ...tagsSlice.actions, loadAllTagsFromDb, loadAllTagsFromDbWithStats, loadByPatternFromDb };
+const searcTagOnline = (tag: Tag): AppThunk => async (dispatch): Promise<void> => {
+	try {
+		dispatch(globalActions.onlineSearchForm.setSelectedTags([tag]));
+		dispatch(globalActions.onlineSearchForm.fetchPosts());
+		dispatch(globalActions.system.setActiveView('thumbnails'));
+	} catch (err) {
+		console.error('Error while searching online for Tag', err, tag);
+	}
+};
+
+const searchTagOffline = (tag: Tag): AppThunk => async (dispatch): Promise<void> => {
+	try {
+		dispatch(globalActions.downloadedSearchForm.setTags([tag]));
+		dispatch(globalActions.downloadedSearchForm.fetchPosts());
+		dispatch(globalActions.system.setActiveView('thumbnails'));
+	} catch (err) {
+		console.error('Error while searching offline for Tag', err, tag);
+	}
+};
+
+export const actions = {
+	...tagsSlice.actions,
+	loadAllTagsFromDb,
+	loadAllTagsFromDbWithStats,
+	loadByPatternFromDb,
+	searcTagOnline,
+	searchTagOffline
+};

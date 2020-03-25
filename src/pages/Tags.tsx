@@ -22,8 +22,9 @@ const Container = styled.div`
 `;
 
 const Tags: React.FunctionComponent<Props> = (props: Props) => {
-	const tags = useSelector((state: RootState) => state.tags.tags);
 	const dispatch = useDispatch();
+
+	const tags = useSelector((state: RootState) => state.tags.tags);
 	// const [searchText, setSearchText] = useState<unknown>();
 	// const [searchedColumn, setSearchedColumn] = useState<string>('');
 
@@ -34,13 +35,34 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 
 	// const getFilteredTags = (): void => {};
 
+	const handleOnlineSearch = (tag: Tag): void => {
+		dispatch(actions.tags.searcTagOnline(tag));
+	};
+
+	const handleOfflineSearch = (tag: Tag): void => {
+		dispatch(actions.tags.searchTagOffline(tag));
+	};
+
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const renderActions = (_: unknown, _record: Tag): JSX.Element => {
+	const renderActions = (_: unknown, record: Tag): JSX.Element => {
 		return (
 			<div>
-				<a>Online Search</a>
+				<a
+					onClick={(): void => {
+						handleOnlineSearch(record);
+					}}
+				>
+					Online Search
+				</a>
 				<span> </span>
-				<a style={{ float: 'right' }}>Offline Search</a>
+				<a
+					onClick={(): void => {
+						handleOfflineSearch(record);
+					}}
+					style={{ float: 'right' }}
+				>
+					Offline Search
+				</a>
 			</div>
 		);
 	};
