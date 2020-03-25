@@ -5,7 +5,7 @@ import { actions as globalActions } from '.';
 
 import { Tag, Rating } from '../types/gelbooruTypes';
 import * as db from '../db';
-import { isExtensionVideo } from '../util/utils';
+import { isExtensionVideo, getRatingName } from '../util/utils';
 
 export interface DownloadedSearchFormState {
 	selectedTags: Tag[];
@@ -65,7 +65,7 @@ const downloadedSearchFormSlice = createSlice({
 			state.showNonBlacklisted = action.payload;
 		},
 		toggleShowNonBlacklisted: (state): void => {
-			state.showNonBlacklisted = !state.showBlacklisted;
+			state.showNonBlacklisted = !state.showNonBlacklisted;
 		},
 		setShowBlacklisted: (state, action: PayloadAction<boolean>): void => {
 			state.showBlacklisted = action.payload;
@@ -118,8 +118,11 @@ const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => 
 		const tags = state.selectedTags.map((tag) => tag.tag);
 
 		const posts = (tags.length === 0 && (await db.posts.getAllDownloaded())) || (await db.posts.getForTags(...tags));
-		//TODO FIX - shows blacklisted/favorited regardless of extension
+		//TODO FIX - shows blacklisted/favorited/rating regardless of extension
 		const filteredPosts = posts.filter((post) => {
+			if (state.rating !== 'any' && getRatingName(state.rating) !== post.rating) {
+				return false;
+			}
 			const blacklisted = post.blacklisted === 1 ? true : false;
 			if (!state.showNonBlacklisted && !blacklisted) {
 				return false;

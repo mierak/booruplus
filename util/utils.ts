@@ -1,4 +1,4 @@
-import { Tag, Entity } from '../types/gelbooruTypes';
+import { Tag, Entity, Rating } from '../types/gelbooruTypes';
 
 export const getTagColor = (tag: Tag): string => {
 	switch (tag.type) {
@@ -81,4 +81,17 @@ export const delay = (ms: number): Promise<void> => new Promise((_) => setTimeou
 
 export const isExtensionVideo = (extension: string): boolean => {
 	return extension === 'mp4' || extension === 'webm';
+};
+
+export const getRatingName = (rating: Rating): string => {
+	switch (rating) {
+		case 'any':
+			return 'any';
+		case 'explicit':
+			return 'e';
+		case 'questionable':
+			return 'q';
+		case 'safe':
+			return 's';
+	}
 };

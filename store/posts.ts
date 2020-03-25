@@ -119,8 +119,8 @@ const downloadPost = (post: Post): AppThunk => async (dispatch): Promise<void> =
 		const saveImage = useSaveImage();
 		const updatedPost = Object.assign({}, post);
 		saveImage(updatedPost);
-		post.downloaded = 1;
-		post.blacklisted = 0;
+		updatedPost.downloaded = 1;
+		updatedPost.blacklisted = 0;
 		db.posts.update(updatedPost);
 
 		dispatch(postsSlice.actions.updatePost(updatedPost));
@@ -167,7 +167,7 @@ const downloadAllPosts = (): AppThunk => async (dispatch, getState): Promise<voi
 	dispatch(downloadPosts(posts));
 };
 
-const blackListPost = (p: Post): Post => {
+const copyAndBlacklistPost = (p: Post): Post => {
 	const post = Object.assign({}, p);
 	post.blacklisted = 1;
 	post.downloaded = 0;
@@ -176,12 +176,24 @@ const blackListPost = (p: Post): Post => {
 	return post;
 };
 
+const blacklistPost = (post: Post): AppThunk => async (dispatch): Promise<void> => {
+	try {
+		const deleteImage = useDeleteImage();
+		const updatedPost = copyAndBlacklistPost(post);
+		deleteImage(updatedPost);
+		db.posts.update(updatedPost);
+		dispatch(globalActions.posts.removePost(updatedPost));
+	} catch (err) {
+		console.error('Error occured while blacklisting a post', err, post);
+	}
+};
+
 const blacklistSelectedPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		const deleteImage = useDeleteImage();
 		const posts = getState().posts.posts.filter((p) => p.selected);
 		posts.forEach((p) => {
-			const post = blackListPost(p);
+			const post = copyAndBlacklistPost(p);
 			deleteImage(post);
 			db.posts.update(post);
 			dispatch(globalActions.posts.removePost(post));
@@ -196,7 +208,7 @@ const blackListAllPosts = (): AppThunk => async (dispatch, getStsate): Promise<v
 		const deleteImage = useDeleteImage();
 		const posts = getStsate().posts.posts;
 		posts.forEach((p) => {
-			const post = blackListPost(p);
+			const post = copyAndBlacklistPost(p);
 			deleteImage(post);
 			db.posts.update(post);
 			dispatch(globalActions.posts.removePost(post));
@@ -246,6 +258,7 @@ export const actions = {
 	downloadSelectedPosts,
 	downloadAllPosts,
 	downloadPost,
+	blacklistPost,
 	blacklistSelectedPosts,
 	blackListAllPosts,
 	addSelectedPostsToFavorites,

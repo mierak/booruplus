@@ -95,8 +95,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 
 	const handleDelete = (): void => {
 		if (post) {
-			deleteImageFromDisk(post);
-			dispatch(actions.posts.changePostProperties(post, { favorite: 0, blacklisted: 1 })); // TODO FIX - thunk the deletion, dont access deletehook
+			dispatch(actions.posts.blacklistPost(post));
 			openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
 		}
 	};
