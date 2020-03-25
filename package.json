@@ -3,7 +3,7 @@
 	"productName": "Lolinizer",
 	"version": "1.0.0",
 	"description": "My Electron application description",
-	"main": "./.webpack/main",
+	"main": ".webpack/main",
 	"scripts": {
 		"start": "electron-forge start",
 		"package": "electron-forge package",
@@ -19,12 +19,14 @@
 	"license": "MIT",
 	"config": {
 		"forge": {
-			"packagerConfig": {},
+			"packagerConfig": {
+				"asar": true
+			},
 			"makers": [
 				{
 					"name": "@electron-forge/maker-squirrel",
 					"config": {
-						"name": "electron2"
+						"name": "Lolinizer"
 					}
 				},
 				{

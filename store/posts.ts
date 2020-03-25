@@ -113,6 +113,25 @@ const downloadPosts = (posts: Post[]): AppThunk => async (dispatch): Promise<voi
 		console.error('Error while downloading all posts', err);
 	}
 };
+
+const downloadPost = (post: Post): AppThunk => async (dispatch): Promise<void> => {
+	try {
+		const saveImage = useSaveImage();
+		const updatedPost = Object.assign({}, post);
+		saveImage(updatedPost);
+		post.downloaded = 1;
+		post.blacklisted = 0;
+		db.posts.update(updatedPost);
+
+		dispatch(postsSlice.actions.updatePost(updatedPost));
+		const filteredTags = await deduplicateAndCheckTagsAgainstDb(updatedPost.tags);
+		const tagsFromApi = await api.getTagsByNames(...filteredTags);
+		db.tags.saveBulk(tagsFromApi);
+	} catch (err) {
+		console.error('Error while downloading post', err);
+	}
+};
+
 const loadFavoritePostsFromDb = (): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		dispatch(globalActions.onlineSearchForm.setLoading(true));
@@ -226,6 +245,7 @@ export const actions = {
 	changePostProperties,
 	downloadSelectedPosts,
 	downloadAllPosts,
+	downloadPost,
 	blacklistSelectedPosts,
 	blackListAllPosts,
 	addSelectedPostsToFavorites,

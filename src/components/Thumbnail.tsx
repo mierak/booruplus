@@ -88,8 +88,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 
 	const handleSave = (): void => {
 		if (post) {
-			saveImageToDisk(post);
-			dispatch(actions.posts.changePostProperties(post, { downloaded: 1 }));
+			dispatch(actions.posts.downloadPost(post));
 			openNotificationWithIcon('success', 'Post downloaded', 'Image was successfuly saved to disk.');
 		}
 	};
@@ -97,7 +96,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	const handleDelete = (): void => {
 		if (post) {
 			deleteImageFromDisk(post);
-			dispatch(actions.posts.changePostProperties(post, { favorite: 0, blacklisted: 1 }));
+			dispatch(actions.posts.changePostProperties(post, { favorite: 0, blacklisted: 1 })); // TODO FIX - thunk the deletion, dont access deletehook
 			openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
 		}
 	};
