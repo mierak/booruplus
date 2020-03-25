@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { actions } from '../../store';
-import { RootState } from '../../store/types';
+import { RootState, PostPropertyOptions } from '../../store/types';
 
 import { Card, Popconfirm, notification, Tooltip, Spin } from 'antd';
 import { HeartOutlined, HeartFilled, DownloadOutlined, DeleteOutlined, CheckCircleTwoTone, LoadingOutlined } from '@ant-design/icons';
@@ -79,7 +79,8 @@ const Thumbnail = (props: Props): React.ReactElement => {
 
 	const setFavorite = (favorite: 0 | 1): void => {
 		if (post) {
-			dispatch(actions.posts.changePostProperties(post, { favorite }));
+			const options: PostPropertyOptions = (favorite === 1 && { favorite: favorite, blacklisted: 0 }) || { favorite };
+			dispatch(actions.posts.changePostProperties(post, options));
 			const description = favorite === 1 ? 'Post succesfuly added to favorites.' : 'Post successfuly removed from favorites.';
 			openNotificationWithIcon('success', 'Post updated', description);
 		}

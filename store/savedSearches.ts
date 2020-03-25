@@ -99,7 +99,7 @@ const loadSavedSearchesFromDb = (): AppThunk => async (dispatch): Promise<void> 
 		const savedSearches = await db.savedSearches.getSavedSearches();
 		savedSearches && dispatch(globalActions.savedSearches.setSavedSearches(savedSearches));
 	} catch (err) {
-		console.log('Error while loading SavedSearches from database', err);
+		console.error('Error while loading SavedSearches from database', err);
 	}
 };
 

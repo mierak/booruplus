@@ -8,14 +8,18 @@ import { actions } from '../../../store';
 const Checkboxes: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 
+	const showNonBlacklisted = useSelector((state: RootState) => state.downloadedSearchForm.showNonBlacklisted);
 	const showBlacklisted = useSelector((state: RootState) => state.downloadedSearchForm.showBlacklisted);
 	const showFavorites = useSelector((state: RootState) => state.downloadedSearchForm.showFavorites);
 	const showVideos = useSelector((state: RootState) => state.downloadedSearchForm.showVideos);
 	const showImages = useSelector((state: RootState) => state.downloadedSearchForm.showImages);
 	const showGifs = useSelector((state: RootState) => state.downloadedSearchForm.showGifs);
 
-	const handleCheckboxChange = (checkbox: 'blacklisted' | 'favorites' | 'images' | 'gifs' | 'videos'): void => {
+	const handleCheckboxChange = (checkbox: 'non-blacklisted' | 'blacklisted' | 'favorites' | 'images' | 'gifs' | 'videos'): void => {
 		switch (checkbox) {
+			case 'non-blacklisted':
+				dispatch(actions.downloadedSearchForm.toggleShowNonBlacklisted());
+				break;
 			case 'blacklisted':
 				dispatch(actions.downloadedSearchForm.toggleShowBlacklisted());
 				break;
@@ -36,6 +40,9 @@ const Checkboxes: React.FunctionComponent = () => {
 
 	return (
 		<>
+			<Checkbox checked={showNonBlacklisted} onChange={(): void => handleCheckboxChange('non-blacklisted')}>
+				Non-Blacklisted
+			</Checkbox>
 			<Checkbox checked={showBlacklisted} onChange={(): void => handleCheckboxChange('blacklisted')}>
 				Blacklisted
 			</Checkbox>

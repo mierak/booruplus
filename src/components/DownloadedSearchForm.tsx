@@ -61,7 +61,7 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 					</Form.Item>
 				</Col>
 			</Row>
-			<Form.Item wrapperCol={{ span: 19, offset: 5 }}>
+			<Form.Item wrapperCol={{ span: 21, offset: 3 }}>
 				<Checkboxes />
 			</Form.Item>
 			<Form.Item wrapperCol={{ span: 19, offset: 5 }}>

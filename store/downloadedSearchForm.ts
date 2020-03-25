@@ -13,6 +13,7 @@ export interface DownloadedSearchFormState {
 	rating: Rating;
 	postLimit: number;
 	page: number;
+	showNonBlacklisted: boolean;
 	showBlacklisted: boolean;
 	showFavorites: boolean;
 	showVideos: boolean;
@@ -26,6 +27,7 @@ const initialState: DownloadedSearchFormState = {
 	rating: 'any',
 	postLimit: 0,
 	page: 0,
+	showNonBlacklisted: true,
 	showBlacklisted: false,
 	showFavorites: true,
 	showVideos: true,
@@ -58,6 +60,12 @@ const downloadedSearchFormSlice = createSlice({
 		},
 		setPage: (state, action: PayloadAction<number>): void => {
 			state.page = action.payload;
+		},
+		setShowNonBlacklisted: (state, action: PayloadAction<boolean>): void => {
+			state.showNonBlacklisted = action.payload;
+		},
+		toggleShowNonBlacklisted: (state): void => {
+			state.showNonBlacklisted = !state.showBlacklisted;
 		},
 		setShowBlacklisted: (state, action: PayloadAction<boolean>): void => {
 			state.showBlacklisted = action.payload;
@@ -113,6 +121,9 @@ const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => 
 		//TODO FIX - shows blacklisted/favorited regardless of extension
 		const filteredPosts = posts.filter((post) => {
 			const blacklisted = post.blacklisted === 1 ? true : false;
+			if (!state.showNonBlacklisted && !blacklisted) {
+				return false;
+			}
 			if (!state.showBlacklisted && blacklisted) {
 				return false;
 			}
@@ -134,7 +145,6 @@ const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => 
 				return state.showImages;
 			}
 		});
-		console.log('filteredPosts', filteredPosts);
 		dispatch(globalActions.posts.setPosts(filteredPosts));
 	} catch (err) {
 		console.error('Error while fetching tags from db', err);

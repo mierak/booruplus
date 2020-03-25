@@ -95,7 +95,7 @@ export const getTagsByNames = async (...names: string[]): Promise<Tag[]> => {
 
 		return tagsFromApi.flat();
 	} catch (err) {
-		console.log(err);
+		console.error(err);
 		return [];
 	}
 };
