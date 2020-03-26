@@ -25,9 +25,7 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleClear = (): void => {
-		dispatch(actions.onlineSearchForm.clearTags());
-		dispatch(actions.onlineSearchForm.setLimit(100));
-		dispatch(actions.onlineSearchForm.setRating('any'));
+		dispatch(actions.onlineSearchForm.clear());
 	};
 
 	const handleClose = (): void => {

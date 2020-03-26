@@ -69,6 +69,9 @@ const searchFormSlice = createSlice({
 		},
 		setOfflineOptions: (state, action: PayloadAction<OfflineOptions>): void => {
 			state.offlineOptions = action.payload;
+		},
+		clear: (): SearchFormState => {
+			return initialState;
 		}
 	}
 });

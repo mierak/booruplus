@@ -98,8 +98,8 @@ const downloadedSearchFormSlice = createSlice({
 		toggleShowGifs: (state): void => {
 			state.showGifs = !state.showGifs;
 		},
-		clearForm: (state): void => {
-			state = initialState; //TODO FIX - not working
+		clearForm: (): DownloadedSearchFormState => {
+			return initialState;
 		}
 	}
 });
