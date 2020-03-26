@@ -7,7 +7,6 @@ import { RootState, PostPropertyOptions } from '../../store/types';
 
 import { Card, Popconfirm, notification, Tooltip, Spin } from 'antd';
 import { HeartOutlined, HeartFilled, DownloadOutlined, DeleteOutlined, CheckCircleTwoTone, LoadingOutlined } from '@ant-design/icons';
-import { useSaveImage, useDeleteImage } from '../../src/hooks/useImageBus';
 import { IconType } from 'antd/lib/notification';
 
 interface Props {
@@ -54,8 +53,6 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [_, setFavoriteState] = useState(post && post.favorite); //TODO replace this thumbnails action hack(icon refresh)
 	const [loaded, setLoaded] = useState(true);
-	const saveImageToDisk = useSaveImage();
-	const deleteImageFromDisk = useDeleteImage();
 	const dispatch = useDispatch();
 
 	const openNotificationWithIcon = (type: IconType, title: string, description: string, duration?: number): void => {
@@ -77,11 +74,20 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		}
 	};
 
-	const setFavorite = (favorite: 0 | 1): void => {
+	const handleFavorite = (): void => {
 		if (post) {
-			const options: PostPropertyOptions = (favorite === 1 && { favorite: favorite, blacklisted: 0 }) || { favorite };
+			const options: PostPropertyOptions = { favorite: 1, blacklisted: 0 };
 			dispatch(actions.posts.changePostProperties(post, options));
-			const description = favorite === 1 ? 'Post succesfuly added to favorites.' : 'Post successfuly removed from favorites.';
+			const description = 'Post succesfuly added to favorites.';
+			openNotificationWithIcon('success', 'Post updated', description);
+		}
+	};
+
+	const handleRemoveFavorite = (): void => {
+		if (post) {
+			const options: PostPropertyOptions = { favorite: 0 };
+			dispatch(actions.posts.changePostProperties(post, options));
+			const description = 'Post successfuly removed from favorites.';
 			openNotificationWithIcon('success', 'Post updated', description);
 		}
 	};
@@ -93,13 +99,6 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		}
 	};
 
-	const handleDelete = (): void => {
-		if (post) {
-			dispatch(actions.posts.blacklistPost(post));
-			openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
-		}
-	};
-
 	const renderWithTooltip = (element: JSX.Element, text: string, key: string): JSX.Element => {
 		return (
 			<Tooltip title={text} key={key}>
@@ -108,34 +107,27 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		);
 	};
 
+	const handleBlacklistClick = (): void => {
+		if (post) {
+			dispatch(actions.posts.blacklistPost(post));
+			openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
+		}
+	};
+
 	const renderActions = (): JSX.Element[] => {
 		const favorite = renderWithTooltip(
-			<HeartFilled
-				key="heart-filled"
-				onClick={(): void => {
-					post && setFavorite(0);
-				}}
-			/>,
+			<HeartFilled key="heart-filled" onClick={handleRemoveFavorite} />,
 			'Remove from favorites',
 			'heart-filled'
 		);
 		const notFavorite = renderWithTooltip(
-			<HeartOutlined
-				key="heart-outlined"
-				onClick={(): void => {
-					post && setFavorite(1);
-				}}
-			/>,
+			<HeartOutlined key="heart-outlined" onClick={handleFavorite} />,
 			'Add to favorites',
 			'heart-outlined'
 		);
-		const download = renderWithTooltip(
-			<DownloadOutlined key="download" onClick={(): void => post && handleSave()} />,
-			'Download post image',
-			'download'
-		);
+		const download = renderWithTooltip(<DownloadOutlined key="download" onClick={handleSave} />, 'Download post image', 'download');
 		const blackist = renderWithTooltip(
-			<Popconfirm title="Are you sure you want to blacklist this image?" onConfirm={(): void => post && handleDelete()}>
+			<Popconfirm title="Are you sure you want to blacklist this image?" onConfirm={handleBlacklistClick}>
 				<DeleteOutlined key="delete" />
 			</Popconfirm>,
 			'Blacklist post',
@@ -179,4 +171,4 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	);
 };
 
-export default Thumbnail;
+export default React.memo(Thumbnail);

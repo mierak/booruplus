@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+import * as db from '../db';
+
 import { AppThunk } from './types';
 import { actions as globalActions } from '.';
 
-import { Tag, Rating } from '../types/gelbooruTypes';
-import * as db from '../db';
+import { Tag, Rating, Post } from '../types/gelbooruTypes';
 import { isExtensionVideo, getRatingName } from '../util/utils';
 
 export interface DownloadedSearchFormState {
@@ -114,41 +115,43 @@ const loadByPatternFromDb = (pattern: string): AppThunk => async (dispatch): Pro
 
 const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
+		dispatch(globalActions.system.setFetchingPosts(true));
+		dispatch(globalActions.system.setDownloadedSearchFormDrawerVisible(false));
+		dispatch(globalActions.system.setActiveView('thumbnails'));
 		const state = getState().downloadedSearchForm;
 		const tags = state.selectedTags.map((tag) => tag.tag);
 
-		const posts = (tags.length === 0 && (await db.posts.getAllDownloaded())) || (await db.posts.getForTags(...tags));
-		//TODO FIX - shows blacklisted/favorited/rating regardless of extension
-		const filteredPosts = posts.filter((post) => {
-			if (state.rating !== 'any' && getRatingName(state.rating) !== post.rating) {
-				return false;
+		setTimeout(async () => {
+			const posts: Post[] = [];
+			if (state.showNonBlacklisted) {
+				const nonBlacklisted = (tags.length === 0 && (await db.posts.getAllDownloaded())) || (await db.posts.getForTags(...tags));
+				posts.push(...nonBlacklisted);
 			}
-			const blacklisted = post.blacklisted === 1 ? true : false;
-			if (!state.showNonBlacklisted && !blacklisted) {
-				return false;
+			if (state.showBlacklisted) {
+				const blacklistedPosts = await db.posts.getAllBlacklisted();
+				posts.push(...blacklistedPosts);
 			}
-			if (!state.showBlacklisted && blacklisted) {
-				return false;
-			}
-			const favorite = post.favorite === 1 ? true : false;
-			if (!state.showFavorites && favorite) {
-				return false;
-			}
-			if (!state.showGifs && post.extension === 'gif') {
-				return false;
-			}
-			if (isExtensionVideo(post.extension)) {
-				return false;
-			}
-			if (post.extension === 'gif') {
-				return state.showGifs;
-			} else if (post.extension === 'webm' || post.extension === 'mp4') {
-				return state.showVideos;
-			} else {
-				return state.showImages;
-			}
-		});
-		dispatch(globalActions.posts.setPosts(filteredPosts));
+			const filteredPosts = posts.filter((post) => {
+				if (state.rating !== 'any' && getRatingName(state.rating) !== post.rating) {
+					return false;
+				}
+
+				const favorite = post.favorite === 1 ? true : false;
+				if (!state.showFavorites && favorite) {
+					return false;
+				}
+
+				if (post.extension === 'gif') {
+					return state.showGifs;
+				} else if (isExtensionVideo(post.extension)) {
+					return state.showVideos;
+				} else {
+					return state.showImages;
+				}
+			});
+			dispatch(globalActions.posts.setPosts(filteredPosts));
+			dispatch(globalActions.system.setFetchingPosts(false));
+		}, 500);
 	} catch (err) {
 		console.error('Error while fetching tags from db', err);
 	}

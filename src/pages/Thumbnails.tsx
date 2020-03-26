@@ -1,9 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import { PageHeader, Button } from 'antd';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { PageHeader, Button, Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 
 import { actions } from '../../store';
+import { RootState } from '../../store/types';
+
 import ThumbnailsList from '../components/ThumbnailsList';
 
 interface Props {
@@ -20,8 +23,88 @@ const StyledThumbnailsList = styled(ThumbnailsList)`
 	height: auto;
 `;
 
+const StyledSpin = styled(Spin)`
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(0, -50%);
+`;
+
 const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
+
+	const isFetchingPosts = useSelector((state: RootState) => state.system.isFetchingPosts);
+
+	const renderThumbnailList = (): JSX.Element => {
+		if (isFetchingPosts) {
+			return <StyledSpin indicator={<LoadingOutlined style={{ fontSize: '64px' }} />} />;
+		} else {
+			return <StyledThumbnailsList emptyDataLogoCentered={true} />;
+		}
+	};
+
+	const renderButtons = (): JSX.Element[] => {
+		return [
+			<Button key="9">Download Search</Button>,
+			<Button
+				key="8"
+				onClick={(): void => {
+					dispatch(actions.savedSearches.saveCurrentSearch());
+				}}
+			>
+				Save Search
+			</Button>,
+			<Button
+				key="7"
+				onClick={(): void => {
+					dispatch(actions.posts.blackListAllPosts());
+				}}
+			>
+				Blacklist All
+			</Button>,
+			<Button
+				key="6"
+				onClick={(): void => {
+					dispatch(actions.posts.blacklistSelectedPosts());
+				}}
+			>
+				Blacklist Selected
+			</Button>,
+			<Button
+				key="5"
+				onClick={(): void => {
+					dispatch(actions.posts.addAllPostsToFavorites());
+				}}
+			>
+				Add All To Favorites
+			</Button>,
+			<Button
+				key="4"
+				onClick={(): void => {
+					dispatch(actions.posts.addSelectedPostsToFavorites());
+				}}
+			>
+				Add Selected To Favorites
+			</Button>,
+			<Button
+				key="3"
+				onClick={(): void => {
+					dispatch(actions.posts.downloadAllPosts());
+				}}
+			>
+				Download All
+			</Button>,
+			<Button
+				key="2"
+				onClick={(): void => {
+					dispatch(actions.posts.downloadSelectedPosts());
+				}}
+			>
+				Download Selected
+			</Button>
+		];
+	};
+
 	return (
 		<Container className={props.className}>
 			<PageHeader
@@ -29,67 +112,9 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 				// onBack={() => window.history.back()}
 				title="Image List"
 				// subTitle="This is a subtitle"
-				extra={[
-					<Button key="9">Download Search</Button>,
-					<Button
-						key="8"
-						onClick={(): void => {
-							dispatch(actions.savedSearches.saveCurrentSearch());
-						}}
-					>
-						Save Search
-					</Button>,
-					<Button
-						key="7"
-						onClick={(): void => {
-							dispatch(actions.posts.blackListAllPosts());
-						}}
-					>
-						Blacklist All
-					</Button>,
-					<Button
-						key="6"
-						onClick={(): void => {
-							dispatch(actions.posts.blacklistSelectedPosts());
-						}}
-					>
-						Blacklist Selected
-					</Button>,
-					<Button
-						key="5"
-						onClick={(): void => {
-							dispatch(actions.posts.addAllPostsToFavorites());
-						}}
-					>
-						Add All To Favorites
-					</Button>,
-					<Button
-						key="4"
-						onClick={(): void => {
-							dispatch(actions.posts.addSelectedPostsToFavorites());
-						}}
-					>
-						Add Selected To Favorites
-					</Button>,
-					<Button
-						key="3"
-						onClick={(): void => {
-							dispatch(actions.posts.downloadAllPosts());
-						}}
-					>
-						Download All
-					</Button>,
-					<Button
-						key="2"
-						onClick={(): void => {
-							dispatch(actions.posts.downloadSelectedPosts());
-						}}
-					>
-						Download Selected
-					</Button>
-				]}
+				extra={renderButtons()}
 			></PageHeader>
-			<StyledThumbnailsList emptyDataLogoCentered={true} />
+			{renderThumbnailList()}
 		</Container>
 	);
 };

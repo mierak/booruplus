@@ -42,6 +42,10 @@ export const updateBulk = async (posts: Post[]): Promise<number | void> => {
 	});
 };
 
+export const getById = async (post: Post): Promise<Post | undefined> => {
+	return db.posts.get(post.id);
+};
+
 export const getAll = async (): Promise<Post[]> => {
 	return db.posts.toArray();
 };
@@ -49,6 +53,13 @@ export const getAll = async (): Promise<Post[]> => {
 export const getAllDownloaded = async (): Promise<Post[]> => {
 	return db.posts
 		.where('downloaded')
+		.equals(1)
+		.toArray();
+};
+
+export const getAllBlacklisted = async (): Promise<Post[]> => {
+	return db.posts
+		.where('blacklisted')
 		.equals(1)
 		.toArray();
 };

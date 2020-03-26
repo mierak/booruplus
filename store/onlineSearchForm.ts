@@ -113,17 +113,17 @@ const fetchPostsFromDb = (): AppThunk => async (dispatch, getState): Promise<voi
 
 const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
-		dispatch(searchFormSlice.actions.setLoading(true));
+		dispatch(globalActions.system.setFetchingPosts(true));
 		if (getState().onlineSearchForm.searchMode === 'online') {
 			dispatch(fetchPostsFromApi());
 		} else {
 			dispatch(fetchPostsFromDb());
 		}
 		dispatch(globalActions.posts.setActivePostIndex(undefined));
-		dispatch(searchFormSlice.actions.setLoading(false));
 	} catch (err) {
 		console.error('Error occured while trying to fetch posts', err);
 	}
+	dispatch(globalActions.system.setFetchingPosts(false));
 };
 
 const loadMorePosts = (): AppThunk => async (dispatch, getState): Promise<void> => {

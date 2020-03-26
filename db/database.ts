@@ -16,6 +16,9 @@ class Database extends Dexie {
 			tags: 'id, tag, count, type, ambiguous',
 			postsTags: '[postId+tag], postId, tag, post.favorite, post.blacklisted, post.downloaded'
 		});
+		this.version(3).stores({
+			posts: 'id, height, width, rating, *tags, createdAt, favorite, extension, downloaded, blacklisted'
+		});
 		this.posts = this.table('posts');
 		this.savedSearches = this.table('savedSearches');
 		this.tags = this.table('tags');

@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import { Button } from 'antd';
 
 import { actions } from '../../store';
 import { RootState } from '../../store/types';
 
 import Thumbnail from './Thumbnail';
-import { Button } from 'antd';
 import EmptyThumbnails from './EmptyThumbnails';
 
 interface Props {
@@ -49,13 +49,18 @@ const StyledLoadMoreButton = styled(Button)`
 const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 	const postCount = useSelector((state: RootState) => state.posts.posts.length);
-	const loading = useSelector((state: RootState) => state.onlineSearchForm.loading);
-	// useEffect(() => {
-	// 	if (props.activeView === 'image') {
-	// 		const list = document.getElementById('thumbnails-list');
-	// 		props.activePostIndex && list?.scrollTo(0, 232 * props.activePostIndex - list.clientHeight / 2 + 116);
-	// 	}
-	// });
+	const loading = useSelector((state: RootState) => state.onlineSearchForm.loading); // TODO Extract to own component to not rerender the thumbnail list
+	const activeView = useSelector((state: RootState) => state.system.activeView);
+	const activePostIndex = useSelector((state: RootState) => state.posts.activePostIndex);
+
+	useEffect(() => {
+		if (activeView === 'image') {
+			const list = document.getElementById('thumbnails-list');
+			if (list && activePostIndex) {
+				list.scrollTo(0, 232 * activePostIndex - list.clientHeight / 2 + 116 / list.clientWidth / 190);
+			}
+		}
+	});
 	// const [postsLength, setPostsLength] = useState(0);
 
 	const handleLoadMore = async (): Promise<void> => {

@@ -6,13 +6,15 @@ export interface SystemState {
 	searchFormDrawerVsibile: boolean;
 	downloadedSearchFormDrawerVisible: boolean;
 	imageViewThumbnailsCollapsed: boolean;
+	isFetchingPosts: boolean;
 }
 
 const initialState: SystemState = {
 	activeView: 'thumbnails',
 	searchFormDrawerVsibile: false,
 	downloadedSearchFormDrawerVisible: false,
-	imageViewThumbnailsCollapsed: true
+	imageViewThumbnailsCollapsed: true,
+	isFetchingPosts: false
 };
 
 const systemSlice = createSlice({
@@ -30,6 +32,9 @@ const systemSlice = createSlice({
 		},
 		setImageViewThumbnailsCollapsed: (state, action: PayloadAction<boolean>): void => {
 			state.imageViewThumbnailsCollapsed = action.payload;
+		},
+		setFetchingPosts: (state, action: PayloadAction<boolean>): void => {
+			state.isFetchingPosts = action.payload;
 		}
 	}
 });
