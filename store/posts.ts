@@ -60,19 +60,19 @@ const postsSlice = createSlice({
 		},
 		setPostBlacklisted: (state, action: PayloadAction<{ index: number; blacklisted: 1 | 0 }>): void => {
 			state.posts[action.payload.index].blacklisted = action.payload.blacklisted;
-		},
-		nextPost: (state): void => {
-			if (state.activePostIndex !== undefined) {
-				const index = state.activePostIndex === state.posts.length - 1 ? 0 : state.activePostIndex + 1;
-				state.activePostIndex = index;
-			}
-		},
-		previousPost: (state): void => {
-			if (state.activePostIndex !== undefined) {
-				const index = state.activePostIndex === 0 ? state.posts.length - 1 : state.activePostIndex - 1;
-				state.activePostIndex = index;
-			}
 		}
+		// nextPost: (state): void => {
+		// 	if (state.activePostIndex !== undefined) {
+		// 		const index = state.activePostIndex === state.posts.length - 1 ? 0 : state.activePostIndex + 1;
+		// 		state.activePostIndex = index;
+		// 	}
+		// },
+		// previousPost: (state): void => {
+		// 	if (state.activePostIndex !== undefined) {
+		// 		const index = state.activePostIndex === 0 ? state.posts.length - 1 : state.activePostIndex - 1;
+		// 		state.activePostIndex = index;
+		// 	}
+		// }
 	}
 });
 
@@ -254,6 +254,21 @@ const addAllPostsToFavorites = (): AppThunk => async (dispatch, getState): Promi
 	}
 };
 
+const nextPost = (): AppThunk => async (dispatch, getState): Promise<void> => {
+	const activePostIndex = getState().posts.activePostIndex;
+	if (activePostIndex !== undefined) {
+		const index = activePostIndex === getState().posts.posts.length - 1 ? 0 : activePostIndex + 1;
+		dispatch(postsSlice.actions.setActivePostIndex(index));
+	}
+};
+const previousPost = (): AppThunk => async (dispatch, getState): Promise<void> => {
+	const activePostIndex = getState().posts.activePostIndex;
+	if (activePostIndex !== undefined) {
+		const index = activePostIndex === 0 ? getState().posts.posts.length - 1 : activePostIndex - 1;
+		dispatch(postsSlice.actions.setActivePostIndex(index));
+	}
+};
+
 export const actions = {
 	...postsSlice.actions,
 	downloadPosts,
@@ -266,5 +281,7 @@ export const actions = {
 	blacklistSelectedPosts,
 	blackListAllPosts,
 	addSelectedPostsToFavorites,
-	addAllPostsToFavorites
+	addAllPostsToFavorites,
+	previousPost,
+	nextPost
 };

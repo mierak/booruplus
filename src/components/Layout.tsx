@@ -8,7 +8,8 @@ import {
 	HeartOutlined,
 	TagsOutlined,
 	FormOutlined,
-	SaveOutlined
+	SaveOutlined,
+	SettingOutlined
 } from '@ant-design/icons';
 
 import { actions } from '../../store';
@@ -85,6 +86,10 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 						<Menu.Item key="offline-search-drawer" onClick={handleDownloadedSearchFormDrawerOpen}>
 							<FormOutlined />
 							<span>Offline Search</span>
+						</Menu.Item>
+						<Menu.Item key="settings" onClick={(): void => handleMenuClick('settings')}>
+							<SettingOutlined />
+							<span>Settings</span>
 						</Menu.Item>
 					</Menu>
 				</Sider>

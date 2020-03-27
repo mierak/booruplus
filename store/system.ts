@@ -7,6 +7,7 @@ export interface SystemState {
 	downloadedSearchFormDrawerVisible: boolean;
 	imageViewThumbnailsCollapsed: boolean;
 	isFetchingPosts: boolean;
+	isLoadingImage: boolean;
 }
 
 const initialState: SystemState = {
@@ -14,7 +15,8 @@ const initialState: SystemState = {
 	searchFormDrawerVsibile: false,
 	downloadedSearchFormDrawerVisible: false,
 	imageViewThumbnailsCollapsed: true,
-	isFetchingPosts: false
+	isFetchingPosts: false,
+	isLoadingImage: false
 };
 
 const systemSlice = createSlice({
@@ -35,6 +37,9 @@ const systemSlice = createSlice({
 		},
 		setFetchingPosts: (state, action: PayloadAction<boolean>): void => {
 			state.isFetchingPosts = action.payload;
+		},
+		setIsLoadingImage: (state, action: PayloadAction<boolean>): void => {
+			state.isLoadingImage = action.payload;
 		}
 	}
 });

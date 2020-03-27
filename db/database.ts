@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import Dexie from 'dexie';
 import { Post, SavedSearch, Tag, PostTag } from '../types/gelbooruTypes';
+import { SettingsPair } from './types';
 
 class Database extends Dexie {
 	posts: Dexie.Table<Post, number>;
 	savedSearches: Dexie.Table<SavedSearch, number>;
 	tags: Dexie.Table<Tag, number>;
 	postsTags: Dexie.Table<PostTag, number>;
+	settings: Dexie.Table<SettingsPair, string>;
 
 	constructor(databaseName: string) {
 		super(databaseName);
@@ -19,6 +21,10 @@ class Database extends Dexie {
 		this.version(3).stores({
 			posts: 'id, height, width, rating, *tags, createdAt, favorite, extension, downloaded, blacklisted'
 		});
+		this.version(4).stores({
+			settings: 'name'
+		});
+		this.settings = this.table('settings');
 		this.posts = this.table('posts');
 		this.savedSearches = this.table('savedSearches');
 		this.tags = this.table('tags');
@@ -27,6 +33,16 @@ class Database extends Dexie {
 }
 
 const db = new Database('lolinizerDb');
+
+db.on('populate', () => {
+	const settings: SettingsPair = {
+		name: 'default',
+		values: {
+			imagesFolderPath: 'C:\\temp' // TODO change to userfolder
+		}
+	};
+	db.settings.put(settings);
+});
 
 db.open().catch((err) => {
 	console.error('Could not open database: ', err);

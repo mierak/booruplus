@@ -1,8 +1,5 @@
 import { getImageExtensionFromFilename } from '../util/utils';
-
-export interface Entity {
-	id: number;
-}
+import { Entity } from '../db/types';
 
 export interface PostDto {
 	source: string;
@@ -27,13 +24,12 @@ export interface PostDto {
 	downloaded?: 0 | 1;
 }
 
-export interface Post {
+export interface Post extends Entity {
 	source: string;
 	directory: string;
 	hash: string;
 	height: number;
 	width: number;
-	id: number;
 	owner: string;
 	parentId: number;
 	rating: string;

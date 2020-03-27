@@ -1,4 +1,5 @@
-import { Tag, Entity, Rating } from '../types/gelbooruTypes';
+import { Tag, Rating } from '../types/gelbooruTypes';
+import { Entity } from '../db/types';
 
 export const getTagColor = (tag: Tag): string => {
 	switch (tag.type) {

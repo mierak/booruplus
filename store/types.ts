@@ -8,7 +8,7 @@ export type AppThunk = ThunkAction<void, RootState, unknown, Action<string>>;
 
 export type AppDispatch = typeof store.dispatch;
 
-export type View = 'thumbnails' | 'image' | 'dashboard' | 'online-search' | 'saved-searches' | 'favorites' | 'tag-list';
+export type View = 'thumbnails' | 'image' | 'dashboard' | 'online-search' | 'saved-searches' | 'favorites' | 'tag-list' | 'settings';
 
 export type SearchMode = 'online' | 'offline';
 
@@ -21,4 +21,8 @@ export interface PostPropertyOptions {
 	blacklisted?: 0 | 1;
 	favorite?: 0 | 1;
 	downloaded?: 0 | 1;
+}
+
+export interface Settings {
+	imagesFolderPath: string;
 }
