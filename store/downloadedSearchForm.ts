@@ -151,6 +151,7 @@ const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => 
 			});
 			dispatch(globalActions.posts.setPosts(filteredPosts));
 			dispatch(globalActions.system.setFetchingPosts(false));
+			db.tagSearchHistory.saveSearch(state.selectedTags);
 		}, 500);
 	} catch (err) {
 		console.error('Error while fetching tags from db', err);

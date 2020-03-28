@@ -99,6 +99,7 @@ const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<vo
 		//validate posts against db - check favorite/blacklisted/downloaded state
 		const validatedPosts = await Promise.all(posts.map((post) => db.posts.saveOrUpdateFromApi(post)));
 		dispatch(globalActions.posts.setPosts(validatedPosts));
+		db.tagSearchHistory.saveSearch(tags);
 	} catch (err) {
 		console.error('Error while fetching from api', err);
 	}

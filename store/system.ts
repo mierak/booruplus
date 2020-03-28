@@ -11,7 +11,7 @@ export interface SystemState {
 }
 
 const initialState: SystemState = {
-	activeView: 'thumbnails',
+	activeView: 'dashboard',
 	searchFormDrawerVsibile: false,
 	downloadedSearchFormDrawerVisible: false,
 	imageViewThumbnailsCollapsed: true,

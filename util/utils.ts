@@ -1,8 +1,9 @@
-import { Tag, Rating } from '../types/gelbooruTypes';
+import { Tag, Rating, TagType } from '../types/gelbooruTypes';
 import { Entity } from '../db/types';
 
-export const getTagColor = (tag: Tag): string => {
-	switch (tag.type) {
+export const getTagColor = (tag: Tag | string): string | undefined => {
+	const type = typeof tag === 'string' ? tag : tag.type;
+	switch (type) {
 		case 'artist':
 			return 'volcano';
 		case 'copyright':

@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import { RootState } from '../../store/types';
+import { actions } from '../../store';
+
 import { useLoadImage } from '../../src/hooks/useImageBus';
 import EmptyThumbnails from './EmptyThumbnails';
 
@@ -21,9 +23,13 @@ const Image = styled.img`
 `;
 
 const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
+	const dispatch = useDispatch();
+
 	const post = useSelector(
 		(state: RootState) => (state.posts.activePostIndex !== undefined && state.posts.posts[state.posts.activePostIndex]) || undefined
 	);
+	const isLoadingImage = useSelector((state: RootState) => state.system.isLoadingImage);
+
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [imageUrl, setImageUrl] = useState<string>('');
 	const loadImage = useLoadImage();
@@ -46,12 +52,28 @@ const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 		}
 	};
 
+	const onLoad = (): void => {
+		dispatch(actions.system.setIsLoadingImage(false));
+	};
+
 	const renderImage = (): JSX.Element => {
 		if (post) {
 			if (post.fileUrl.includes('webm')) {
-				return <Image as="video" ref={videoRef} key={post.id} controls autoPlay loop muted></Image>;
+				return (
+					<Image
+						as="video"
+						ref={videoRef}
+						key={post.id}
+						controls
+						autoPlay
+						loop
+						muted
+						onLoad={onLoad}
+						style={{ display: isLoadingImage ? 'hidden' : 'block' }}
+					></Image>
+				);
 			} else {
-				return <Image src={imageUrl} />;
+				return <Image src={imageUrl} onLoad={onLoad} style={{ display: isLoadingImage ? 'hidden' : 'block' }} />;
 			}
 		}
 		return <EmptyThumbnails />;
@@ -68,10 +90,16 @@ const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 					handleLoadResponse(response.fileUrl, response.fileUrl);
 				}
 			);
+			dispatch(actions.system.setIsLoadingImage(true));
 		}
 	}, [post]);
 
-	return <Container className={props.className}>{renderImage()}</Container>;
+	return (
+		<Container className={props.className}>
+			{isLoadingImage && <div>LOADING DOPICE</div> && console.log('hue')}
+			{renderImage()}
+		</Container>
+	);
 };
 
 export default FullSizeImage;

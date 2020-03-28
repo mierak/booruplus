@@ -1,6 +1,6 @@
 import db from './database';
-import { Post } from '../types/gelbooruTypes';
-import { intersection } from '../util/utils';
+import { Post, Rating } from '../types/gelbooruTypes';
+import { intersection, getRatingName } from '../util/utils';
 
 export const saveOrUpdateFromApi = async (post: Post): Promise<Post> => {
 	const savedPost = await db.transaction(
@@ -100,4 +100,33 @@ export const getForTags = async (...tags: string[]): Promise<Post[]> => {
 	);
 	const result: Post[] = intersection(...arrays);
 	return result;
+};
+
+export const getDownloadedCount = async (): Promise<number> => {
+	return db.posts
+		.where('downloaded')
+		.equals(1)
+		.count();
+};
+
+export const getBlacklistedCount = async (): Promise<number> => {
+	return db.posts
+		.where('blacklisted')
+		.equals(1)
+		.count();
+};
+
+export const getFavoriteCount = async (): Promise<number> => {
+	return db.posts
+		.where('favorite')
+		.equals(1)
+		.count();
+};
+
+export const getCountForRating = async (rating: Rating): Promise<number> => {
+	return db.posts
+		.where('rating')
+		.equals(getRatingName(rating))
+		.filter((post) => post.downloaded === 1)
+		.count();
 };

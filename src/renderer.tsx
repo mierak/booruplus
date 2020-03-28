@@ -28,6 +28,7 @@
 
 import './index.css';
 import 'antd/dist/antd.css';
+import 'ant-design-pro/dist/ant-design-pro.css';
 import ReactDOM from 'react-dom';
 import App from './app';
 import React from 'react';
