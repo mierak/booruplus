@@ -144,20 +144,6 @@ const loadFavoritePostsFromDb = (): AppThunk => async (dispatch): Promise<void> 
 	}
 };
 
-const changePostProperties = (post: Post, options: PostPropertyOptions): AppThunk => async (dispatch): Promise<void> => {
-	try {
-		const clonedPost = Object.assign({}, post);
-		options.blacklisted !== undefined && (clonedPost.blacklisted = options.blacklisted);
-		options.favorite !== undefined && (clonedPost.favorite = options.favorite);
-		options.downloaded !== undefined && (clonedPost.downloaded = options.downloaded);
-		options.blacklisted === 1 && dispatch(globalActions.posts.removePost(post));
-		db.posts.update(clonedPost);
-		dispatch(globalActions.posts.updatePost(clonedPost));
-	} catch (err) {
-		console.error('Error while changing post properties', err);
-	}
-};
-
 const downloadSelectedPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	const posts = getState().posts.posts.filter((p) => p.selected);
 	dispatch(downloadPosts(posts));
@@ -222,19 +208,33 @@ const blackListAllPosts = (): AppThunk => async (dispatch, getStsate): Promise<v
 	}
 };
 
+const changePostProperties = (post: Post, options: PostPropertyOptions): AppThunk => async (dispatch): Promise<void> => {
+	try {
+		const clonedPost = Object.assign({}, post);
+		options.blacklisted !== undefined && (clonedPost.blacklisted = options.blacklisted);
+		options.favorite !== undefined && (clonedPost.favorite = options.favorite);
+		options.downloaded !== undefined && (clonedPost.downloaded = options.downloaded);
+		options.blacklisted === 1 && dispatch(globalActions.posts.removePost(post));
+		db.posts.update(clonedPost);
+		dispatch(globalActions.posts.updatePost(clonedPost));
+	} catch (err) {
+		console.error('Error while changing post properties', err);
+	}
+};
+
 const addSelectedPostsToFavorites = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		const posts = getState().posts.posts.filter((p) => p.selected);
 		posts.forEach((p) => {
 			const post = Object.assign({}, p);
-			p.favorite = 1;
-			p.blacklisted = 0;
+			post.favorite = 1;
+			post.blacklisted = 0;
 			post.selected = false;
 			db.posts.update(post);
-			dispatch(globalActions.posts.removePost(post));
+			dispatch(globalActions.posts.updatePost(post));
 		});
 	} catch (err) {
-		console.error('Erroroccured while adding selected posts to favorites', err);
+		console.error('Erroro ccured while adding selected posts to favorites', err);
 	}
 };
 
@@ -243,14 +243,14 @@ const addAllPostsToFavorites = (): AppThunk => async (dispatch, getState): Promi
 		const posts = getState().posts.posts;
 		posts.forEach((p) => {
 			const post = Object.assign({}, p);
-			p.favorite = 1;
-			p.blacklisted = 0;
+			post.favorite = 1;
+			post.blacklisted = 0;
 			post.selected = false;
 			db.posts.update(post);
-			dispatch(globalActions.posts.removePost(post));
+			dispatch(globalActions.posts.updatePost(post));
 		});
 	} catch (err) {
-		console.error('Erroroccured while adding selected posts to favorites', err);
+		console.error('Error occured while adding selected posts to favorites', err);
 	}
 };
 

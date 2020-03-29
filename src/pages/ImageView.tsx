@@ -27,6 +27,7 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 
 	const thumbnailsListvisible = useSelector((state: RootState) => state.system.imageViewThumbnailsCollapsed);
+	const theme = useSelector((state: RootState) => state.settings.theme);
 	// const postsLength = useSelector((state: RootState) => state.posts.posts.length);
 	// useEffect(() => {
 	// 	if (props.postsLength > 0) {
@@ -42,7 +43,7 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 				</Layout.Content>
 			</Layout>
 			<Layout.Sider
-				theme="light"
+				theme={theme === 'light' ? 'light' : 'dark'}
 				collapsible
 				reverseArrow
 				collapsedWidth={0}

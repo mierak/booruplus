@@ -26,12 +26,10 @@
  * ```
  */
 
-import './index.css';
-import 'antd/dist/antd.css';
-import 'ant-design-pro/dist/ant-design-pro.css';
 import ReactDOM from 'react-dom';
 import App from './app';
 import React from 'react';
+import './index.css';
 
 // if (process.env.NODE_ENV === 'development') {
 // 	const whyDidYouRender = require('@welldone-software/why-did-you-render');

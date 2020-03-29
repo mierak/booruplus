@@ -2,13 +2,13 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { ColumnFilterItem } from 'antd/lib/table/interface';
-import { Table } from 'antd';
+import { Table, Tag as AntTag } from 'antd';
 
 import { actions } from '../../store';
 import { RootState } from '../../store/types';
 
 import { Tag, TagType } from '../../types/gelbooruTypes';
-import { capitalize } from '../../util/utils';
+import { capitalize, getTagColor } from '../../util/utils';
 
 const { Column } = Table;
 
@@ -25,6 +25,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 
 	const tags = useSelector((state: RootState) => state.tags.tags);
+	const tagsLoading = useSelector((state: RootState) => state.system.tagTableLoading);
 	// const [searchText, setSearchText] = useState<unknown>();
 	// const [searchedColumn, setSearchedColumn] = useState<string>('');
 
@@ -85,6 +86,10 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 		];
 	};
 
+	const renderTag = (_text: unknown, tag: Tag): JSX.Element => {
+		return <AntTag color={getTagColor(tag.type)}>{capitalize(tag.type)}</AntTag>;
+	};
+
 	// const getAmbiguousFilters = (): ColumnFilterItem[] => {
 	// 	return [generateFilterObject('true'), generateFilterObject('false')];
 	// };
@@ -95,6 +100,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 				size="small"
 				dataSource={tags}
 				pagination={false}
+				loading={tagsLoading}
 				rowKey="id"
 				rowClassName={(_record, index): string => (index % 2 === 0 ? 'table-row-light' : 'table-row-dark')}
 			>
@@ -112,6 +118,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 					width={100}
 					onFilter={(value: TagType, record: Tag): boolean => record.type === value}
 					filters={getTypeFilters()}
+					render={renderTag}
 				/>
 				<Column title="Count" dataIndex="count" width={100} sorter={(a: Tag, b: Tag): number => a.count - b.count} />
 				<Column

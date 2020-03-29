@@ -8,6 +8,8 @@ export interface SystemState {
 	imageViewThumbnailsCollapsed: boolean;
 	isFetchingPosts: boolean;
 	isLoadingImage: boolean;
+	tagOptionsLoading: boolean;
+	tagTableLoading: boolean;
 }
 
 const initialState: SystemState = {
@@ -16,7 +18,9 @@ const initialState: SystemState = {
 	downloadedSearchFormDrawerVisible: false,
 	imageViewThumbnailsCollapsed: true,
 	isFetchingPosts: false,
-	isLoadingImage: false
+	isLoadingImage: false,
+	tagOptionsLoading: false,
+	tagTableLoading: false
 };
 
 const systemSlice = createSlice({
@@ -40,6 +44,12 @@ const systemSlice = createSlice({
 		},
 		setIsLoadingImage: (state, action: PayloadAction<boolean>): void => {
 			state.isLoadingImage = action.payload;
+		},
+		setTagOptionsLoading: (state, action: PayloadAction<boolean>): void => {
+			state.tagOptionsLoading = action.payload;
+		},
+		setTagTableLoading: (state, action: PayloadAction<boolean>): void => {
+			state.tagTableLoading = action.payload;
 		}
 	}
 });

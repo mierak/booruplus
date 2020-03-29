@@ -7,7 +7,7 @@ import { Pie } from 'ant-design-pro/lib/Charts';
 import { RootState } from '../../store/types';
 import { actions } from '../../store';
 
-import { capitalize, getTagColor } from '../../util/utils';
+import { getTagColor } from '../../util/utils';
 import { TagType } from '../../types/gelbooruTypes';
 
 interface Props {
@@ -28,6 +28,21 @@ const ListCard = styled(Card)`
 	}
 `;
 
+const StyledPie = styled(Pie)`
+	&& .pie-sub-title {
+		color: ${(props): string => (props.theme === 'dark' ? 'rgba(255, 255, 255, 0.85)' : '')};
+	}
+	&& .antd-pro-charts-pie-legendTitle {
+		color: ${(props): string => (props.theme === 'dark' ? 'rgba(255, 255, 255, 0.85)' : '')};
+	}
+	&& .antd-pro-charts-pie-percent {
+		color: ${(props): string => (props.theme === 'dark' ? 'rgba(255, 255, 255, 0.65)' : '')};
+	}
+	&& .antd-pro-charts-pie-value {
+		color: ${(props): string => (props.theme === 'dark' ? 'rgba(255, 255, 255, 0.85)' : '')};
+	}
+`;
+
 const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 	useEffect(() => {
@@ -39,6 +54,7 @@ const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 		dispatch(actions.dashboard.fetchMostSearchedTags());
 	}, []);
 
+	const theme = useSelector((state: RootState) => state.settings.theme);
 	const downloadedPostCount = useSelector((state: RootState) => state.dashboard.totalDownloadedPosts);
 	const blacklistedPostCount = useSelector((state: RootState) => state.dashboard.totalBlacklistedPosts);
 	const favoritePostCount = useSelector((state: RootState) => state.dashboard.totalFavoritesPosts);
@@ -50,13 +66,13 @@ const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 		ratingCounts &&
 		Object.keys(ratingCounts).map((key) => {
 			return {
-				x: capitalize(key),
+				x: key,
 				y: ratingCounts[key]
 			};
 		});
 
 	const renderTag = (_text: unknown, tag: { tag: string; count: number; type: TagType }): JSX.Element => {
-		return <Tag color={getTagColor(tag.type)}>{capitalize(tag.tag)}</Tag>;
+		return <Tag color={getTagColor(tag.type)}>{tag.tag}</Tag>;
 	};
 
 	return (
@@ -84,12 +100,12 @@ const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 				</Col>
 			</Row>
 			<Row gutter={10} style={{ marginBottom: '10px' }}>
-				<Col xs={12}>
+				<Col xs={10}>
 					<Card title="Rating Distribution of Downloaded Posts" size="small">
-						<Pie
+						<StyledPie
 							hasLegend
-							title="Rating Distribution"
-							subTitle="Rating Distribution"
+							title="Rating"
+							subTitle="Rating"
 							total={(): number => {
 								const total = (ratingCountsData && ratingCountsData.map((data) => data.y).reduce((acc, val) => (acc = acc + val))) || 0;
 								return total;
@@ -97,12 +113,13 @@ const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 							height={200}
 							colors={['#a0d911', '#faad14', '#f5222d']}
 							data={ratingCountsData}
+							theme={theme}
 						/>
 					</Card>
 				</Col>
-				<Col xs={12}>
+				<Col xs={14}>
 					<ListCard title="Most Searched Tags" size="small">
-						<Table dataSource={mostSearchedTags} size="small" pagination={false}>
+						<Table dataSource={mostSearchedTags} size="small" pagination={false} rowKey="tag">
 							<Table.Column title="Tag" dataIndex="tag" render={renderTag} />
 							<Table.Column title="Count" dataIndex="count" />
 						</Table>

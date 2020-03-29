@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { actions } from '../../store';
-import { RootState } from '../../store/types';
+import { RootState, AppDispatch } from '../../store/types';
 
 import AppLayout from '../components/Layout';
 import ImageView from './ImageView';
@@ -13,16 +13,29 @@ import Tags from './Tags';
 import Dashboard from './Dashboard';
 import Thumbnails from './Thumbnails';
 import Settings from './Settings';
+// import 'antd/dist/antd.dark.css';
+import 'ant-design-pro/dist/ant-design-pro.css';
 
 const Page: React.FunctionComponent = () => {
-	const dispatch = useDispatch();
+	const [loaded, setLoaded] = useState(false);
+	const dispatch = useDispatch<AppDispatch>();
 
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 	const settings = useSelector((state: RootState) => state.settings);
 
 	useEffect(() => {
-		dispatch(actions.savedSearches.loadSavedSearchesFromDb());
-		dispatch(actions.settings.loadSettings('user'));
+		(async (): Promise<void> => {
+			dispatch(actions.savedSearches.loadSavedSearchesFromDb());
+			const set = await dispatch(actions.settings.loadSettings('user'));
+
+			if (set.theme === 'dark') {
+				require('antd/dist/antd.dark.css');
+			} else {
+				console.log('light');
+				require('antd/dist/antd.css');
+			}
+			setLoaded(true);
+		})();
 	}, []);
 
 	useEffect(() => {
@@ -52,7 +65,7 @@ const Page: React.FunctionComponent = () => {
 		}
 	};
 
-	return <AppLayout>{renderView()}</AppLayout>;
+	return <>{loaded ? <AppLayout>{renderView()}</AppLayout> : ''}</>;
 };
 
 export default Page;

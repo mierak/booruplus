@@ -78,11 +78,13 @@ const searchFormSlice = createSlice({
 
 const getTagsByPatternFromApi = (value: string): AppThunk => async (dispatch): Promise<void> => {
 	try {
+		dispatch(globalActions.system.setTagOptionsLoading(true));
 		const tags = await api.getTagsByPattern(value);
 		dispatch(searchFormSlice.actions.setTagOptions(tags));
 	} catch (err) {
 		console.error('Error occured while fetching posts from api by pattern', err);
 	}
+	dispatch(globalActions.system.setTagOptionsLoading(false));
 };
 const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
@@ -98,6 +100,7 @@ const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<vo
 		const posts = await api.getPostsForTags(tagsString, options);
 		//validate posts against db - check favorite/blacklisted/downloaded state
 		const validatedPosts = await Promise.all(posts.map((post) => db.posts.saveOrUpdateFromApi(post)));
+		dispatch(globalActions.system.setFetchingPosts(false));
 		dispatch(globalActions.posts.setPosts(validatedPosts));
 		db.tagSearchHistory.saveSearch(tags);
 	} catch (err) {
@@ -118,16 +121,11 @@ const fetchPostsFromDb = (): AppThunk => async (dispatch, getState): Promise<voi
 const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		dispatch(globalActions.system.setFetchingPosts(true));
-		if (getState().onlineSearchForm.searchMode === 'online') {
-			dispatch(fetchPostsFromApi());
-		} else {
-			dispatch(fetchPostsFromDb());
-		}
+		dispatch(fetchPostsFromApi());
 		dispatch(globalActions.posts.setActivePostIndex(undefined));
 	} catch (err) {
 		console.error('Error occured while trying to fetch posts', err);
 	}
-	dispatch(globalActions.system.setFetchingPosts(false));
 };
 
 const loadMorePosts = (): AppThunk => async (dispatch, getState): Promise<void> => {

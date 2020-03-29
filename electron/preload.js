@@ -6,7 +6,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('api', {
 	send: (channel, data) => {
 		// whitelist channels
-		const validChannels = ['toMain', 'createWindow', 'save-image', 'load-image', 'settings-loaded'];
+		const validChannels = ['toMain', 'createWindow', 'save-image', 'load-image', 'settings-loaded', 'theme-changed'];
 		if (validChannels.includes(channel)) {
 			ipcRenderer.send(channel, data);
 		}

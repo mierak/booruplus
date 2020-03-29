@@ -49,7 +49,7 @@ const StyledLoadMoreButton = styled(Button)`
 const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 	const postCount = useSelector((state: RootState) => state.posts.posts.length);
-	const loading = useSelector((state: RootState) => state.onlineSearchForm.loading); // TODO Extract to own component to not rerender the thumbnail list
+	// const loading = useSelector((state: RootState) => state.onlineSearchForm.loading); // TODO Extract to own component to not rerender the thumbnail list
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 	const activePostIndex = useSelector((state: RootState) => state.posts.activePostIndex);
 
@@ -109,11 +109,11 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 		<>
 			<Container className={props.className} id="thumbnails-list">
 				{postCount === 0 ? renderNoData() : renderThumbnails()}
-				{postCount > 0 && (
+				{/* {postCount > 0 && (
 					<StyledLoadMoreButton onClick={handleLoadMore} disabled={loading} key="thumbnails-list-load-more-button">
 						Load More
 					</StyledLoadMoreButton>
-				)}
+				)} */}
 			</Container>
 		</>
 	);

@@ -5,7 +5,8 @@ import * as db from '../db';
 import { Settings, AppThunk } from './types';
 
 const initialState: Settings = {
-	imagesFolderPath: ''
+	imagesFolderPath: '',
+	theme: 'dark'
 };
 
 const settingsSlice = createSlice({
@@ -21,7 +22,7 @@ const settingsSlice = createSlice({
 	}
 });
 
-const loadSettings = (name?: string): AppThunk => async (dispatch): Promise<void> => {
+const loadSettings = (name?: string): AppThunk<Settings> => async (dispatch): Promise<Settings> => {
 	try {
 		const settings = await db.settings.loadSettings(name);
 		if (settings) {
@@ -29,8 +30,10 @@ const loadSettings = (name?: string): AppThunk => async (dispatch): Promise<void
 		} else {
 			throw 'Settings could not be loaded from database';
 		}
+		return Promise.resolve(settings);
 	} catch (err) {
 		console.error(err);
+		return Promise.reject(err);
 	}
 };
 
@@ -38,13 +41,24 @@ const updateImagePath = (path: string): AppThunk => async (dispatch, getState): 
 	try {
 		const settings = Object.assign({}, getState().settings);
 		settings.imagesFolderPath = path;
-		settings.imagesFolderPath = await db.settings.saveSettings({ name: 'user', values: settings });
+		db.settings.saveSettings({ name: 'user', values: settings });
 		dispatch(settingsSlice.actions.setImagesFolderPath(path));
 	} catch (err) {
 		console.error('Error while updating image path setting', err);
 	}
 };
 
-export const actions = { ...settingsSlice.actions, loadSettings, updateImagePath };
+const updateTheme = (theme: 'dark' | 'light'): AppThunk => async (_, getState): Promise<void> => {
+	try {
+		const settings = Object.assign({}, getState().settings);
+		settings.theme = theme;
+		db.settings.saveSettings({ name: 'user', values: settings });
+	} catch (err) {
+		console.error('Error while updating theme', err);
+	}
+	return Promise.resolve();
+};
+
+export const actions = { ...settingsSlice.actions, loadSettings, updateImagePath, updateTheme };
 
 export default settingsSlice.reducer;

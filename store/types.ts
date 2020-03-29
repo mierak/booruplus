@@ -4,7 +4,7 @@ import { ThunkAction } from 'redux-thunk';
 
 export type RootState = ReturnType<typeof mainReducer>;
 
-export type AppThunk = ThunkAction<void, RootState, unknown, Action<string>>;
+export type AppThunk<T = void> = ThunkAction<Promise<T>, RootState, unknown, Action<string>>;
 
 export type AppDispatch = typeof store.dispatch;
 
@@ -25,4 +25,5 @@ export interface PostPropertyOptions {
 
 export interface Settings {
 	imagesFolderPath: string;
+	theme: 'dark' | 'light';
 }

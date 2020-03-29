@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import styled from 'styled-components';
 import { SelectValue } from 'antd/lib/select';
-import { Select } from 'antd';
+import { Select, Spin } from 'antd';
 
 import { actions } from '../../../store';
 import { RootState, SearchMode } from '../../../store/types';
@@ -13,11 +14,18 @@ import { useDebounce } from '../../hooks/useDebounce';
 interface Props {
 	mode: SearchMode;
 }
+
+const StyledSpin = styled(Spin)`
+	margin: 50px 100px 50px auto;
+	width: 465px;
+`;
+
 const TagSearch: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	const dispatch = useDispatch();
 
 	const [selectValue] = useState('');
 	const [value, setValue] = useState('');
+	const isLoadingTags = useSelector((state: RootState) => state.system.tagOptionsLoading);
 
 	const options = useSelector(
 		(state: RootState): Tag[] => (mode === 'offline' && state.downloadedSearchForm.tagOptions) || state.onlineSearchForm.tagOptions
@@ -50,7 +58,15 @@ const TagSearch: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	};
 
 	return (
-		<Select showArrow={false} showSearch onSearch={handleChange} onChange={handleSelect} value={selectValue}>
+		<Select
+			showArrow={false}
+			showSearch
+			onSearch={handleChange}
+			onChange={handleSelect}
+			value={selectValue}
+			loading={isLoadingTags}
+			notFoundContent={isLoadingTags ? <StyledSpin tip="Fetching tags..." /> : null}
+		>
 			{renderSelectOptions()}
 		</Select>
 	);

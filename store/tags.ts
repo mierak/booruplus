@@ -37,6 +37,7 @@ const loadAllTagsFromDb = (): AppThunk => async (dispatch): Promise<void> => {
 
 const loadAllTagsFromDbWithStats = (): AppThunk => async (dispatch): Promise<void> => {
 	try {
+		dispatch(globalActions.system.setTagTableLoading(true));
 		const tags = await db.tags.getAll();
 		if (tags) {
 			const tagsWithStats = await Promise.all(
@@ -52,6 +53,7 @@ const loadAllTagsFromDbWithStats = (): AppThunk => async (dispatch): Promise<voi
 	} catch (err) {
 		console.error('Error while loading tags with stats from db', err);
 	}
+	dispatch(globalActions.system.setTagTableLoading(false));
 };
 
 const loadByPatternFromDb = (pattern: string): AppThunk => async (dispatch): Promise<void> => {

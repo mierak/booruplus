@@ -22,6 +22,7 @@ const { Content, Sider } = Layout;
 
 interface Props {
 	children?: React.ReactNode;
+	className?: string;
 }
 
 const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
@@ -29,6 +30,7 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 	const searchFormDrawerVisible = useSelector((state: RootState) => state.system.searchFormDrawerVsibile);
 	const downloadedSearchFormDrawerVisible = useSelector((state: RootState) => state.system.downloadedSearchFormDrawerVisible);
 	const activeView = useSelector((state: RootState) => state.system.activeView);
+
 	const handleMenuClick = (view: View): void => {
 		dispatch(actions.system.setActiveView(view));
 	};
@@ -50,7 +52,7 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	return (
-		<Layout style={{ minHeight: '100vh' }}>
+		<Layout style={{ minHeight: '100vh' }} className={props.className}>
 			<Affix offsetTop={0}>
 				<Sider collapsible style={{ height: '100vh' }}>
 					<div className="logo" />

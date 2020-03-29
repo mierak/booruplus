@@ -18,10 +18,10 @@ interface Props {
 const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 
-	const handleSubmit = async (): Promise<void> => {
-		dispatch(actions.onlineSearchForm.fetchPosts());
+	const handleSubmit = (): void => {
 		dispatch(actions.system.setActiveView('thumbnails'));
 		dispatch(actions.system.setSearchFormDrawerVisible(false));
+		dispatch(actions.onlineSearchForm.fetchPosts());
 	};
 
 	const handleClear = (): void => {
@@ -60,7 +60,7 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 				</Col>
 			</Row>
 			<Form.Item wrapperCol={{ span: 19, offset: 5 }}>
-				<Button type="primary" htmlType="submit" onClick={(): Promise<void> => handleSubmit()}>
+				<Button type="primary" htmlType="submit" onClick={(): void => handleSubmit()}>
 					Search
 				</Button>
 				<Button type="dashed" htmlType="submit" onClick={(): void => handleClear()} style={{ marginLeft: '8px' }}>

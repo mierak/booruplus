@@ -46,7 +46,8 @@ db.on('populate', () => {
 	const settings: SettingsPair = {
 		name: 'default',
 		values: {
-			imagesFolderPath: 'C:\\temp' // TODO change to userfolder
+			imagesFolderPath: 'C:\\temp', // TODO change to userfolder
+			theme: 'light'
 		}
 	};
 	db.settings.put(settings);

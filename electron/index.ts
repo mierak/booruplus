@@ -1,4 +1,4 @@
-import { app, dialog, BrowserWindow, ipcMain, IpcMainInvokeEvent, IpcMainEvent } from 'electron';
+import { app, dialog, BrowserWindow, ipcMain, IpcMainInvokeEvent, IpcMainEvent, MessageBoxOptions } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 import fs from 'fs';
 
@@ -101,6 +101,19 @@ let settings: Settings;
 
 ipcMain.on('settings-loaded', (event: IpcMainEvent, value: Settings) => {
 	settings = value;
+});
+
+ipcMain.on('theme-changed', async () => {
+	const options: MessageBoxOptions = {
+		message: 'Changing theme requires application restart. Would you like to restart now?',
+		buttons: ['Ok', 'Cancel'],
+		title: 'Restart required'
+	};
+	const result = await dialog.showMessageBox(window, options);
+	if (result.response === 0) {
+		app.relaunch();
+		app.quit();
+	}
 });
 
 ipcMain.handle('save-image', async (event: IpcMainInvokeEvent, dto: SavePostDto) => {
