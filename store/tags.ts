@@ -77,7 +77,7 @@ const searcTagOnline = (tag: Tag): AppThunk => async (dispatch): Promise<void> =
 
 const searchTagOffline = (tag: Tag): AppThunk => async (dispatch): Promise<void> => {
 	try {
-		dispatch(globalActions.downloadedSearchForm.setTags([tag]));
+		dispatch(globalActions.downloadedSearchForm.setSelectedTags([tag]));
 		dispatch(globalActions.downloadedSearchForm.fetchPosts());
 		dispatch(globalActions.system.setActiveView('thumbnails'));
 	} catch (err) {

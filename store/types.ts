@@ -1,6 +1,7 @@
 import { mainReducer, store } from '.';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import { Tag } from '../types/gelbooruTypes';
 
 export type RootState = ReturnType<typeof mainReducer>;
 
@@ -10,7 +11,7 @@ export type AppDispatch = typeof store.dispatch;
 
 export type View = 'thumbnails' | 'image' | 'dashboard' | 'online-search' | 'saved-searches' | 'favorites' | 'tag-list' | 'settings';
 
-export type SearchMode = 'online' | 'offline';
+export type SearchMode = 'online' | 'offline' | 'favorites' | 'saved-search' | 'most-viewed';
 
 export interface OfflineOptions {
 	blacklisted: boolean;
@@ -26,4 +27,10 @@ export interface PostPropertyOptions {
 export interface Settings {
 	imagesFolderPath: string;
 	theme: 'dark' | 'light';
+}
+
+export interface TagHistory {
+	tag: Tag;
+	date: string;
+	count: number;
 }

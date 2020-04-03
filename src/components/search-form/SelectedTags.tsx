@@ -10,7 +10,12 @@ import { Tag } from '../../../types/gelbooruTypes';
 import { getTagColor } from '../../../util/utils';
 
 const StyledCard = styled(Card)`
-	border-color: rgb(217, 217, 217);
+	border-color: ${(props): string => (props.theme === 'light' ? 'rgb(217, 217, 217);' : '#434343')};
+
+	& > .ant-card-body {
+		padding: 11px;
+		min-height: 48px;
+	}
 `;
 
 interface Props {
@@ -20,6 +25,7 @@ interface Props {
 const SelectedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	const dispatch = useDispatch();
 
+	const theme = useSelector((state: RootState) => state.settings.theme);
 	const selectedTags = useSelector(
 		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.selectedTags) || state.onlineSearchForm.selectedTags
 	);
@@ -43,7 +49,7 @@ const SelectedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
 		));
 	};
 
-	return <StyledCard bodyStyle={{ padding: '11px', minHeight: '48px' }}>{renderSelectedTags()}</StyledCard>;
+	return <StyledCard theme={theme}>{renderSelectedTags()}</StyledCard>;
 };
 
 export default SelectedTags;

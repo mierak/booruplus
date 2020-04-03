@@ -11,18 +11,23 @@ import SelectedTags from './search-form/SelectedTags';
 import PostCountSelect from './search-form/PostCountSelect';
 import PageSelect from './search-form/PageSelect';
 import Checkboxes from './search-form/Checkboxes';
+import { AppDispatch } from 'store/types';
 
 interface Props {
 	className?: string;
 }
 
 const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 
 	const handleSubmit = async (): Promise<void> => {
-		// dispatch(actions.system.setDownloadedSearchFormDrawerVisible(false));
-		dispatch(actions.downloadedSearchForm.fetchPosts());
+		dispatch(actions.system.setFetchingPosts(true));
+		dispatch(actions.system.setActiveView('thumbnails'));
+		dispatch(actions.system.setDownloadedSearchFormDrawerVisible(false));
+		dispatch(actions.system.setSearchMode('offline'));
 		dispatch(actions.posts.setActivePostIndex(undefined));
+		await dispatch(actions.downloadedSearchForm.fetchPosts());
+		dispatch(actions.system.setFetchingPosts(false));
 	};
 
 	const handleClear = (): void => {

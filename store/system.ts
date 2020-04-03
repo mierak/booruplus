@@ -1,26 +1,30 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { View } from './types';
+import { View, SearchMode } from './types';
 
 export interface SystemState {
 	activeView: View;
-	searchFormDrawerVsibile: boolean;
-	downloadedSearchFormDrawerVisible: boolean;
-	imageViewThumbnailsCollapsed: boolean;
+	searchMode: SearchMode;
+	isSearchFormDrawerVsibile: boolean;
+	isDownloadedSearchFormDrawerVisible: boolean;
+	isImageViewThumbnailsCollapsed: boolean;
 	isFetchingPosts: boolean;
 	isLoadingImage: boolean;
-	tagOptionsLoading: boolean;
-	tagTableLoading: boolean;
+	isTagOptionsLoading: boolean;
+	isTagTableLoading: boolean;
+	isLoadingMore: boolean;
 }
 
 const initialState: SystemState = {
 	activeView: 'dashboard',
-	searchFormDrawerVsibile: false,
-	downloadedSearchFormDrawerVisible: false,
-	imageViewThumbnailsCollapsed: true,
+	searchMode: 'online',
+	isSearchFormDrawerVsibile: false,
+	isDownloadedSearchFormDrawerVisible: false,
+	isImageViewThumbnailsCollapsed: true,
 	isFetchingPosts: false,
 	isLoadingImage: false,
-	tagOptionsLoading: false,
-	tagTableLoading: false
+	isTagOptionsLoading: false,
+	isTagTableLoading: false,
+	isLoadingMore: false
 };
 
 const systemSlice = createSlice({
@@ -30,14 +34,17 @@ const systemSlice = createSlice({
 		setActiveView: (state, action: PayloadAction<View>): void => {
 			state.activeView = action.payload;
 		},
+		setSearchMode: (state, action: PayloadAction<SearchMode>): void => {
+			state.searchMode = action.payload;
+		},
 		setSearchFormDrawerVisible: (state, action: PayloadAction<boolean>): void => {
-			state.searchFormDrawerVsibile = action.payload;
+			state.isSearchFormDrawerVsibile = action.payload;
 		},
 		setDownloadedSearchFormDrawerVisible: (state, action: PayloadAction<boolean>): void => {
-			state.downloadedSearchFormDrawerVisible = action.payload;
+			state.isDownloadedSearchFormDrawerVisible = action.payload;
 		},
 		setImageViewThumbnailsCollapsed: (state, action: PayloadAction<boolean>): void => {
-			state.imageViewThumbnailsCollapsed = action.payload;
+			state.isImageViewThumbnailsCollapsed = action.payload;
 		},
 		setFetchingPosts: (state, action: PayloadAction<boolean>): void => {
 			state.isFetchingPosts = action.payload;
@@ -46,10 +53,13 @@ const systemSlice = createSlice({
 			state.isLoadingImage = action.payload;
 		},
 		setTagOptionsLoading: (state, action: PayloadAction<boolean>): void => {
-			state.tagOptionsLoading = action.payload;
+			state.isTagOptionsLoading = action.payload;
 		},
 		setTagTableLoading: (state, action: PayloadAction<boolean>): void => {
-			state.tagTableLoading = action.payload;
+			state.isTagTableLoading = action.payload;
+		},
+		setLoadingMore: (state, action: PayloadAction<boolean>): void => {
+			state.isLoadingMore = action.payload;
 		}
 	}
 });

@@ -2,7 +2,8 @@ import React from 'react';
 import { Button, Form, Col, Row } from 'antd';
 import { useDispatch } from 'react-redux';
 
-import { actions } from '../../store';
+import { actions } from 'store';
+import { AppDispatch } from 'store/types';
 
 import TagSearch from './search-form/TagSearch';
 import RatingSelect from './search-form/RatingSelect';
@@ -16,12 +17,15 @@ interface Props {
 }
 
 const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 
-	const handleSubmit = (): void => {
+	const handleSubmit = async (): Promise<void> => {
+		dispatch(actions.system.setFetchingPosts(true));
 		dispatch(actions.system.setActiveView('thumbnails'));
 		dispatch(actions.system.setSearchFormDrawerVisible(false));
-		dispatch(actions.onlineSearchForm.fetchPosts());
+		dispatch(actions.system.setSearchMode('online'));
+		await dispatch(actions.onlineSearchForm.fetchPosts());
+		dispatch(actions.system.setFetchingPosts(false));
 	};
 
 	const handleClear = (): void => {
@@ -60,10 +64,10 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 				</Col>
 			</Row>
 			<Form.Item wrapperCol={{ span: 19, offset: 5 }}>
-				<Button type="primary" htmlType="submit" onClick={(): void => handleSubmit()}>
+				<Button type="primary" htmlType="submit" onClick={handleSubmit}>
 					Search
 				</Button>
-				<Button type="dashed" htmlType="submit" onClick={(): void => handleClear()} style={{ marginLeft: '8px' }}>
+				<Button type="dashed" htmlType="submit" onClick={handleClear} style={{ marginLeft: '8px' }}>
 					Clear
 				</Button>
 				<Button htmlType="submit" onClick={handleClose} style={{ marginLeft: '8px' }}>

@@ -1,6 +1,8 @@
 import db from './database';
+
 import { Post, Rating } from '../types/gelbooruTypes';
-import { intersection, getRatingName } from '../util/utils';
+import { FilterOptions } from './types';
+import { intersection, getRatingName, isExtensionVideo } from '../util/utils';
 
 export const saveOrUpdateFromApi = async (post: Post): Promise<Post> => {
 	const savedPost = await db.transaction(
@@ -13,6 +15,7 @@ export const saveOrUpdateFromApi = async (post: Post): Promise<Post> => {
 				post.favorite = savedPost.favorite;
 				post.blacklisted = savedPost.blacklisted;
 				post.downloaded = savedPost.downloaded;
+				post.viewCount = savedPost.viewCount;
 			}
 			db.posts.put(post).catch((err) => {
 				console.error(err);
@@ -64,19 +67,45 @@ export const getAllBlacklisted = async (): Promise<Post[]> => {
 		.toArray();
 };
 
-export const getFavorites = async (): Promise<Post[]> => {
-	// const uniquePostIds = await database.postsTags.orderBy('postId').uniqueKeys();
-	// console.log('uniquePostIds', uniquePostIds);
-	// uniquePostIds.forEach((postId) => {
-	// 	database.postsTags.where();
-	// });
+// CONSIDER - Add cache to not run expensive filtering on fetchMore()
+const filterPosts = (posts: Post[], options: FilterOptions): Post[] => {
+	let result: Post[] = [];
+	if (options.blacklisted && options.nonBlacklisted) {
+		result = posts.filter((post) => post.downloaded === 1 || post.blacklisted === 1);
+	} else if (options.blacklisted && !options.nonBlacklisted) {
+		result = posts.filter((post) => post.blacklisted === 1);
+	} else if (!options.blacklisted && options.nonBlacklisted) {
+		result = posts.filter((post) => post.downloaded === 1);
+	}
 
-	// console.log(
-	// 	await database.postsTags
-	// 		.where('post.favorite')
-	// 		.equals(1)
-	// 		.count()
-	// ); //TODO group by postid? Most favorited tag -
+	result = result.filter((post) => options.rating === 'any' || post.rating === getRatingName(options.rating));
+
+	if (!options.showGifs) {
+		result = result.filter((post) => post.extension !== 'gif');
+	}
+	if (!options.showVideos) {
+		result = result.filter((post) => !isExtensionVideo(post.extension));
+	}
+	if (!options.showImages) {
+		result = result.filter((post) => isExtensionVideo(post.extension) || post.extension === 'gif');
+	}
+	if (!options.showFavorites) {
+		result = result.filter((post) => post.favorite !== 1);
+	}
+
+	return result.slice(options.offset, options.limit + options.offset);
+};
+
+export const getAllWithOptions = async (options: FilterOptions): Promise<Post[]> => {
+	console.log('options', options);
+	const posts = await db.posts.offset(0).toArray();
+	console.log('posts', posts);
+	const filteredPosts = filterPosts(posts, options);
+	console.log('filteredPosts', filteredPosts);
+	return filteredPosts;
+};
+
+export const getFavorites = async (): Promise<Post[]> => {
 	return db.posts
 		.where('favorite')
 		.equals(1)
@@ -87,6 +116,22 @@ export const getFavorites = async (): Promise<Post[]> => {
 		});
 };
 
+export const getForTagsWithOptions = async (options: FilterOptions, ...tags: string[]): Promise<Post[]> => {
+	const arrays = await Promise.all(
+		tags.map(async (tag) => {
+			return db.posts
+				.where('tags')
+				.equals(tag)
+				.toArray();
+		})
+	);
+	if (arrays.length === 0) {
+		return [];
+	}
+	const result = intersection(...arrays);
+	return filterPosts(result, options);
+};
+
 export const getForTags = async (...tags: string[]): Promise<Post[]> => {
 	const arrays: Post[][] = await Promise.all(
 		tags.map(async (tag) => {
@@ -94,6 +139,35 @@ export const getForTags = async (...tags: string[]): Promise<Post[]> => {
 				.where('tags')
 				.equals(tag)
 				.filter((post) => post.downloaded === 1)
+				.toArray();
+			return posts;
+		})
+	);
+	const result: Post[] = intersection(...arrays);
+	return result;
+};
+
+export const getBlacklistedForTags = async (...tags: string[]): Promise<Post[]> => {
+	const arrays: Post[][] = await Promise.all(
+		tags.map(async (tag) => {
+			const posts = db.posts
+				.where('tags')
+				.equals(tag)
+				.filter((post) => post.blacklisted === 1)
+				.toArray();
+			return posts;
+		})
+	);
+	const result: Post[] = intersection(...arrays);
+	return result;
+};
+
+export const getBlacklistedAndDownloadedForTags = async (...tags: string[]): Promise<Post[]> => {
+	const arrays: Post[][] = await Promise.all(
+		tags.map(async (tag) => {
+			const posts = db.posts
+				.where('tags')
+				.equals(tag)
 				.toArray();
 			return posts;
 		})
@@ -129,4 +203,31 @@ export const getCountForRating = async (rating: Rating): Promise<number> => {
 		.equals(getRatingName(rating))
 		.filter((post) => post.downloaded === 1)
 		.count();
+};
+
+export const getMostViewed = async (limit = 20): Promise<Post[]> => {
+	const asdf = db.posts
+		.orderBy('viewCount')
+		.reverse()
+		.limit(limit)
+		.toArray();
+	return asdf;
+};
+
+export const incrementviewcount = async (post: Post): Promise<Post> => {
+	const savedPost = await db.transaction(
+		'rw',
+		db.posts,
+		db.postsTags,
+		async (): Promise<Post> => {
+			const clone = Object.assign({}, post);
+			if (isNaN(clone.viewCount)) {
+				clone.viewCount = 0; //TODO remove check after db recreation as viewCount is set to 0 in parser
+			}
+			clone.viewCount = clone.viewCount + 1;
+			await db.posts.put(clone);
+			return clone;
+		}
+	);
+	return savedPost;
 };

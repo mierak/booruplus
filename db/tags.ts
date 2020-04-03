@@ -56,20 +56,27 @@ export const getBlacklistedCount = async (tag: string): Promise<number> => {
 		.count();
 };
 
-export const getFavoriteCount2 = async (tag: Tag): Promise<number> => {
-	return db.postsTags
-		.where('tag')
-		.equals(tag.tag)
-		.filter((pt) => {
-			return pt.post.favorite === 1;
-		})
-		.count();
-};
-
 export const getByPattern = async (pattern: string): Promise<Tag[]> => {
 	return db.tags.filter((tag) => tag.tag.includes(pattern)).toArray();
 };
 
 export const getCount = async (): Promise<number> => {
 	return db.tags.count();
+};
+
+export const getMostFavorited = async (limit = 20): Promise<{ tag: Tag | undefined; count: number }[]> => {
+	const uniqueTags = await db.tags.orderBy('tag').uniqueKeys();
+	const favoriteCounts = await Promise.all(
+		uniqueTags.map(async (tag) => {
+			return {
+				tag: await db.tags
+					.where('tag')
+					.equals(tag)
+					.first(),
+				count: await getFavoriteCount(tag.toString())
+			};
+		})
+	);
+	favoriteCounts.sort((a, b) => b.count - a.count);
+	return favoriteCounts.slice(0, limit);
 };

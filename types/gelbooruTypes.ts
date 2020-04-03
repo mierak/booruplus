@@ -46,6 +46,7 @@ export interface Post extends Entity {
 	downloaded?: 0 | 1;
 	selected: boolean;
 	extension: string;
+	viewCount: number;
 }
 export const postParser = (): ((params: PostDto) => Post) => {
 	const domParser = new DOMParser();
@@ -83,7 +84,8 @@ export const postParser = (): ((params: PostDto) => Post) => {
 			downloaded: params.downloaded !== undefined ? params.downloaded : 0,
 			selected: false,
 			tags: parseTags(params.tags),
-			extension: getImageExtensionFromFilename(params.image)
+			extension: getImageExtensionFromFilename(params.image),
+			viewCount: 0
 		};
 		return post;
 	};
@@ -113,6 +115,7 @@ export interface SavedSearch {
 	tags: Tag[];
 	rating: Rating;
 	lastSearched?: string;
+	previews: string[];
 }
 
 export interface PostTag {

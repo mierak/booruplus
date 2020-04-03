@@ -25,7 +25,7 @@ const TagSearch: React.FunctionComponent<Props> = ({ mode }: Props) => {
 
 	const [selectValue] = useState('');
 	const [value, setValue] = useState('');
-	const isLoadingTags = useSelector((state: RootState) => state.system.tagOptionsLoading);
+	const isLoadingTags = useSelector((state: RootState) => state.system.isTagOptionsLoading);
 
 	const options = useSelector(
 		(state: RootState): Tag[] => (mode === 'offline' && state.downloadedSearchForm.tagOptions) || state.onlineSearchForm.tagOptions

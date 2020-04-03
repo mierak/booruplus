@@ -4,11 +4,12 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { Button } from 'antd';
 
-import { actions } from '../../store';
-import { RootState } from '../../store/types';
+import { actions } from 'store';
+import { RootState } from 'store/types';
 
 import Thumbnail from './Thumbnail';
 import EmptyThumbnails from './EmptyThumbnails';
+import LoadMoreButton from './search-form/LoadMoreButton';
 
 interface Props {
 	className?: string;
@@ -38,7 +39,7 @@ const StyledEmptyThumbnails = styled(EmptyThumbnails)`
 	transform: translateY(-50%);
 `;
 
-const StyledLoadMoreButton = styled(Button)`
+const StyledLoadMoreButton = styled(LoadMoreButton)`
 	width: calc(100% - 20px);
 	grid-column: 1/-1;
 	margin-bottom: 15px;
@@ -49,7 +50,7 @@ const StyledLoadMoreButton = styled(Button)`
 const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 	const postCount = useSelector((state: RootState) => state.posts.posts.length);
-	// const loading = useSelector((state: RootState) => state.onlineSearchForm.loading); // TODO Extract to own component to not rerender the thumbnail list
+	const isLoadingMore = useSelector((state: RootState) => state.system.isLoadingMore);
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 	const activePostIndex = useSelector((state: RootState) => state.posts.activePostIndex);
 
@@ -61,11 +62,6 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 			}
 		}
 	});
-	// const [postsLength, setPostsLength] = useState(0);
-
-	const handleLoadMore = async (): Promise<void> => {
-		dispatch(actions.onlineSearchForm.loadMorePosts());
-	};
 
 	const renderThumbnails = (): JSX.Element[] => {
 		const arr: JSX.Element[] = [];
@@ -99,21 +95,11 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 		};
 	}, []);
 
-	useEffect(() => {
-		// console.log('mounted');
-		// setPostsLength(props.postsLength);
-		// console.log('set');
-	}, []);
-
 	return (
 		<>
 			<Container className={props.className} id="thumbnails-list">
 				{postCount === 0 ? renderNoData() : renderThumbnails()}
-				{/* {postCount > 0 && (
-					<StyledLoadMoreButton onClick={handleLoadMore} disabled={loading} key="thumbnails-list-load-more-button">
-						Load More
-					</StyledLoadMoreButton>
-				)} */}
+				{postCount > 0 && <StyledLoadMoreButton />}
 			</Container>
 		</>
 	);

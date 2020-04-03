@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import Dexie from 'dexie';
-import { Post, SavedSearch, Tag, PostTag, TagType } from '../types/gelbooruTypes';
-import { SettingsPair } from './types';
+import { Post, Tag, PostTag, TagType } from '../types/gelbooruTypes';
+import { SettingsPair, SavedSearch } from './types';
 
 class Database extends Dexie {
 	posts: Dexie.Table<Post, number>;
@@ -9,7 +9,7 @@ class Database extends Dexie {
 	tags: Dexie.Table<Tag, number>;
 	postsTags: Dexie.Table<PostTag, number>;
 	settings: Dexie.Table<SettingsPair, string>;
-	tagSearchHistory: Dexie.Table<{ tag: string; type: TagType; date: Date }, number>;
+	tagSearchHistory: Dexie.Table<{ tag: Tag; date: string }, number>;
 
 	constructor(databaseName: string) {
 		super(databaseName);
@@ -29,7 +29,13 @@ class Database extends Dexie {
 			tagSearchHistory: 'tag, date'
 		});
 		this.version(6).stores({
-			tagSearchHistory: '++id, tag, date'
+			tagSearchHistory: '++id, tag.tag, date'
+		});
+		this.version(7).stores({
+			posts: 'id, height, width, rating, *tags, createdAt, favorite, extension, downloaded, viewCount'
+		});
+		this.version(8).stores({
+			posts: 'id, height, width, rating, *tags, createdAt, favorite, extension, downloaded, viewCount, blacklisted'
 		});
 		this.tagSearchHistory = this.table('tagSearchHistory');
 		this.settings = this.table('settings');

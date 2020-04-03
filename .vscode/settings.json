@@ -10,5 +10,6 @@
 		"**/out": true,
 		"**/.webpack": true
 	},
-	"explorerExclude.backup": null
+	"explorerExclude.backup": null,
+	"eslint.enable": true
 }

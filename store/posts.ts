@@ -61,18 +61,6 @@ const postsSlice = createSlice({
 		setPostBlacklisted: (state, action: PayloadAction<{ index: number; blacklisted: 1 | 0 }>): void => {
 			state.posts[action.payload.index].blacklisted = action.payload.blacklisted;
 		}
-		// nextPost: (state): void => {
-		// 	if (state.activePostIndex !== undefined) {
-		// 		const index = state.activePostIndex === state.posts.length - 1 ? 0 : state.activePostIndex + 1;
-		// 		state.activePostIndex = index;
-		// 	}
-		// },
-		// previousPost: (state): void => {
-		// 	if (state.activePostIndex !== undefined) {
-		// 		const index = state.activePostIndex === 0 ? state.posts.length - 1 : state.activePostIndex - 1;
-		// 		state.activePostIndex = index;
-		// 	}
-		// }
 	}
 });
 
@@ -89,6 +77,45 @@ const deduplicateAndCheckTagsAgainstDb = async (tags: string[]): Promise<string[
 	const checkedAndFiltered: string[] = [];
 	checked.forEach((val) => val !== undefined && checkedAndFiltered.push(val));
 	return checkedAndFiltered;
+};
+
+const fetchFavorites = (): AppThunk => async (dispatch): Promise<void> => {
+	try {
+		dispatch(globalActions.onlineSearchForm.setLoading(true));
+		const posts = await db.posts.getFavorites();
+		dispatch(globalActions.posts.setActivePostIndex(undefined));
+		dispatch(globalActions.posts.setPosts(posts));
+		dispatch(globalActions.onlineSearchForm.setLoading(false));
+	} catch (err) {
+		console.error('Error while retrieving favorite posts from db', err);
+	}
+};
+
+const fetchMostViewedPosts = (limit = 20): AppThunk => async (dispatch): Promise<void> => {
+	try {
+		const posts = await db.posts.getMostViewed(limit);
+		dispatch(postsSlice.actions.setPosts(posts));
+	} catch (err) {
+		console.error('Error while fetching most viewed posts from db', err);
+	}
+};
+
+const downloadPost = (post: Post): AppThunk => async (dispatch): Promise<void> => {
+	try {
+		const saveImage = useSaveImage();
+		const updatedPost = Object.assign({}, post);
+		saveImage(updatedPost);
+		updatedPost.downloaded = 1;
+		updatedPost.blacklisted = 0;
+		db.posts.update(updatedPost);
+
+		dispatch(postsSlice.actions.updatePost(updatedPost));
+		const filteredTags = await deduplicateAndCheckTagsAgainstDb(updatedPost.tags);
+		const tagsFromApi = await api.getTagsByNames(...filteredTags);
+		db.tags.saveBulk(tagsFromApi);
+	} catch (err) {
+		console.error('Error while downloading post', err);
+	}
 };
 
 const downloadPosts = (posts: Post[]): AppThunk => async (dispatch): Promise<void> => {
@@ -111,36 +138,6 @@ const downloadPosts = (posts: Post[]): AppThunk => async (dispatch): Promise<voi
 		db.tags.saveBulk(tagsFromApi);
 	} catch (err) {
 		console.error('Error while downloading all posts', err);
-	}
-};
-
-const downloadPost = (post: Post): AppThunk => async (dispatch): Promise<void> => {
-	try {
-		const saveImage = useSaveImage();
-		const updatedPost = Object.assign({}, post);
-		saveImage(updatedPost);
-		updatedPost.downloaded = 1;
-		updatedPost.blacklisted = 0;
-		db.posts.update(updatedPost);
-
-		dispatch(postsSlice.actions.updatePost(updatedPost));
-		const filteredTags = await deduplicateAndCheckTagsAgainstDb(updatedPost.tags);
-		const tagsFromApi = await api.getTagsByNames(...filteredTags);
-		db.tags.saveBulk(tagsFromApi);
-	} catch (err) {
-		console.error('Error while downloading post', err);
-	}
-};
-
-const loadFavoritePostsFromDb = (): AppThunk => async (dispatch): Promise<void> => {
-	try {
-		dispatch(globalActions.onlineSearchForm.setLoading(true));
-		const posts = await db.posts.getFavorites();
-		dispatch(globalActions.posts.setActivePostIndex(undefined));
-		dispatch(globalActions.posts.setPosts(posts));
-		dispatch(globalActions.onlineSearchForm.setLoading(false));
-	} catch (err) {
-		console.error('Error while retrieving favorite posts from db', err);
 	}
 };
 
@@ -269,10 +266,20 @@ const previousPost = (): AppThunk => async (dispatch, getState): Promise<void> =
 	}
 };
 
+const incrementViewCount = (post: Post): AppThunk => async (dispatch): Promise<void> => {
+	try {
+		const updatedPost = await db.posts.incrementviewcount(post);
+		dispatch(postsSlice.actions.updatePost(updatedPost));
+	} catch (err) {
+		console.error('Error while incrementing viewCount of post', err, post);
+	}
+};
+
 export const actions = {
 	...postsSlice.actions,
 	downloadPosts,
-	loadFavoritePostsFromDb,
+	fetchFavorites,
+	fetchMostViewedPosts,
 	changePostProperties,
 	downloadSelectedPosts,
 	downloadAllPosts,
@@ -282,6 +289,7 @@ export const actions = {
 	blackListAllPosts,
 	addSelectedPostsToFavorites,
 	addAllPostsToFavorites,
+	incrementViewCount,
 	previousPost,
 	nextPost
 };

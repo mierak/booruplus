@@ -24,7 +24,8 @@ const SaveSearchButton: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	const handleSaveSearch = async (): Promise<void> => {
 		const savedSearch: SavedSearch = {
 			tags: selectedTags,
-			rating: rating
+			rating: rating,
+			previews: []
 		};
 		dispatch(actions.savedSearches.addSavedSearch(savedSearch));
 	};

@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import * as db from '../db';
-import { AppThunk } from './types';
-import { TagType } from '../types/gelbooruTypes';
+import { AppThunk, TagHistory } from './types';
+import { TagType, Tag, Post } from '../types/gelbooruTypes';
 
 interface RatingCounts {
 	[key: string]: number;
@@ -12,20 +12,24 @@ interface DashboardState {
 	totalDownloadedPosts: number;
 	totalFavoritesPosts: number;
 	totalBlacklistedPosts: number;
+	mostViewedPosts: Post[];
 	totalTags: number;
-	mostSearchedTags: { tag: string; count: number; type: TagType }[];
+	mostSearchedTags: TagHistory[];
 	mostDownloadedTag: number;
 	ratingCounts: RatingCounts | undefined;
+	mostFavoritedTags: { tag: Tag | undefined; count: number }[];
 }
 
 const initialState: DashboardState = {
 	totalDownloadedPosts: -1,
 	totalFavoritesPosts: -1,
 	totalBlacklistedPosts: -1,
+	mostViewedPosts: [],
 	totalTags: -1,
 	mostDownloadedTag: -1,
 	mostSearchedTags: [],
-	ratingCounts: undefined
+	ratingCounts: undefined,
+	mostFavoritedTags: []
 };
 
 const dashboardSlice = createSlice({
@@ -47,8 +51,14 @@ const dashboardSlice = createSlice({
 		setRatingCounts: (state, action: PayloadAction<RatingCounts>): void => {
 			state.ratingCounts = action.payload;
 		},
-		setMostsearchedTags: (state, action: PayloadAction<{ tag: string; count: number; type: TagType }[]>): void => {
+		setMostsearchedTags: (state, action: PayloadAction<TagHistory[]>): void => {
 			state.mostSearchedTags = action.payload;
+		},
+		setMostViewedPosts: (state, action: PayloadAction<Post[]>): void => {
+			state.mostViewedPosts = action.payload;
+		},
+		setMostFavoritedTags: (state, action: PayloadAction<{ tag: Tag | undefined; count: number }[]>): void => {
+			state.mostFavoritedTags = action.payload;
 		}
 	}
 });
@@ -109,6 +119,24 @@ const fetchMostSearchedTags = (): AppThunk => async (dispatch): Promise<void> =>
 	}
 };
 
+const fetchMostViewedPosts = (limit = 20): AppThunk => async (dispatch): Promise<void> => {
+	try {
+		const posts = await db.posts.getMostViewed(limit);
+		dispatch(dashboardSlice.actions.setMostViewedPosts(posts));
+	} catch (err) {
+		console.error('Error while fetching most viewed posts from db', err);
+	}
+};
+
+const fetchMostFavoritedTags = (limit = 20): AppThunk => async (dispatch): Promise<void> => {
+	try {
+		const tags = await db.tags.getMostFavorited();
+		dispatch(dashboardSlice.actions.setMostFavoritedTags(tags));
+	} catch (err) {
+		console.error('Error while fetching most favorited tags', err);
+	}
+};
+
 export const actions = {
 	...dashboardSlice.actions,
 	fetchDownloadedPostCount,
@@ -116,7 +144,9 @@ export const actions = {
 	fetchFavoritePostCount,
 	fetchTagCount,
 	fetchRatingCounts,
-	fetchMostSearchedTags
+	fetchMostSearchedTags,
+	fetchMostViewedPosts,
+	fetchMostFavoritedTags
 };
 
 export default dashboardSlice.reducer;

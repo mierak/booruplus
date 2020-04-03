@@ -25,7 +25,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 
 	const tags = useSelector((state: RootState) => state.tags.tags);
-	const tagsLoading = useSelector((state: RootState) => state.system.tagTableLoading);
+	const tagsLoading = useSelector((state: RootState) => state.system.isTagTableLoading);
 	// const [searchText, setSearchText] = useState<unknown>();
 	// const [searchedColumn, setSearchedColumn] = useState<string>('');
 

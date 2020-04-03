@@ -12,6 +12,14 @@
 		"resolveJsonModule": true,
 		"jsx": "react",
 		"paths": {
+			"store/*": ["store/*"],
+			"store/": ["store/index"],
+			"store": ["store/index"],
+			"db/*": ["db/*"],
+			"db": ["db/index"],
+			"service/*": ["service/*"],
+			"types/*": ["types/*"],
+			"util/*": ["util/*"],
 			"*": ["node_modules/*"]
 		},
 		"strict": true,

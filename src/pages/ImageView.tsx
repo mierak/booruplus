@@ -26,7 +26,7 @@ const StyledThumbnailsList = styled(ThumbnailsList)`
 const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 
-	const thumbnailsListvisible = useSelector((state: RootState) => state.system.imageViewThumbnailsCollapsed);
+	const thumbnailsListvisible = useSelector((state: RootState) => state.system.isImageViewThumbnailsCollapsed);
 	const theme = useSelector((state: RootState) => state.settings.theme);
 	// const postsLength = useSelector((state: RootState) => state.posts.posts.length);
 	// useEffect(() => {

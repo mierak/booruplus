@@ -1,31 +1,37 @@
 import db from './database';
 
-import { Tag, TagType } from '../types/gelbooruTypes';
+import { Tag } from '../types/gelbooruTypes';
+import { TagHistory } from '../store/types';
 
 export const saveSearch = async (tags: Tag[]): Promise<void> => {
 	tags.forEach((tag) => {
-		db.tagSearchHistory.put({ date: new Date(), tag: tag.tag, type: tag.type });
+		db.tagSearchHistory.put({ tag, date: new Date().toLocaleTimeString() });
 	});
 };
 
-export const getMostSearched = async (limit = 10): Promise<{ tag: string; count: number; type: TagType }[]> => {
-	const uniqueTags = await db.tagSearchHistory.orderBy('tag').uniqueKeys();
+export const getMostSearched = async (limit = 10): Promise<TagHistory[]> => {
+	const uniqueTags = await db.tagSearchHistory.orderBy('tag.tag').uniqueKeys();
 	const result = await Promise.all(
 		uniqueTags.map(async (tag) => {
 			const result = await db.tagSearchHistory
-				.where('tag')
+				.where('tag.tag')
 				.equals(tag)
 				.first();
-			const type: TagType = (result && result.type) || 'tag';
-			return {
-				tag: tag.toString(),
-				count: await db.tagSearchHistory
-					.where('tag')
-					.equals(tag)
-					.count(),
-				type: type
-			};
+
+			if (result) {
+				return {
+					tag: result.tag,
+					date: result.date,
+					count: await db.tagSearchHistory
+						.where('tag.tag')
+						.equals(tag)
+						.count()
+				};
+			} else {
+				return undefined;
+			}
 		})
 	);
-	return result.sort((a, b) => b.count - a.count);
+	const filteredResult = result.filter((result): result is TagHistory => result !== undefined);
+	return filteredResult.sort((a, b) => b.count - a.count);
 };

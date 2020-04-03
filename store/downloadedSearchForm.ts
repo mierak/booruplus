@@ -5,8 +5,8 @@ import * as db from '../db';
 import { AppThunk } from './types';
 import { actions as globalActions } from '.';
 
-import { Tag, Rating, Post } from '../types/gelbooruTypes';
-import { isExtensionVideo, getRatingName } from '../util/utils';
+import { Tag, Rating } from '../types/gelbooruTypes';
+import { FilterOptions } from 'db/types';
 
 export interface DownloadedSearchFormState {
 	selectedTags: Tag[];
@@ -26,7 +26,7 @@ const initialState: DownloadedSearchFormState = {
 	selectedTags: [],
 	tagOptions: [],
 	rating: 'any',
-	postLimit: 0,
+	postLimit: 100,
 	page: 0,
 	showNonBlacklisted: true,
 	showBlacklisted: false,
@@ -47,7 +47,7 @@ const downloadedSearchFormSlice = createSlice({
 			const index = state.selectedTags.findIndex((t) => t.id === action.payload.id);
 			state.selectedTags.splice(index, 1);
 		},
-		setTags: (state, action: PayloadAction<Tag[]>): void => {
+		setSelectedTags: (state, action: PayloadAction<Tag[]>): void => {
 			state.selectedTags = action.payload;
 		},
 		setTagOptions: (state, action: PayloadAction<Tag[]>): void => {
@@ -61,6 +61,9 @@ const downloadedSearchFormSlice = createSlice({
 		},
 		setPage: (state, action: PayloadAction<number>): void => {
 			state.page = action.payload;
+		},
+		incrementPage: (state): void => {
+			state.page = state.page + 1;
 		},
 		setShowNonBlacklisted: (state, action: PayloadAction<boolean>): void => {
 			state.showNonBlacklisted = action.payload;
@@ -104,6 +107,20 @@ const downloadedSearchFormSlice = createSlice({
 	}
 });
 
+const getFilterOptions = (state: DownloadedSearchFormState): FilterOptions => {
+	return {
+		blacklisted: state.showBlacklisted,
+		nonBlacklisted: state.showNonBlacklisted,
+		limit: state.postLimit,
+		offset: state.postLimit * state.page,
+		rating: state.rating,
+		showGifs: state.showGifs,
+		showImages: state.showImages,
+		showVideos: state.showVideos,
+		showFavorites: state.showFavorites
+	};
+};
+
 const loadByPatternFromDb = (pattern: string): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		const tags = await db.tags.getByPattern(pattern);
@@ -115,49 +132,34 @@ const loadByPatternFromDb = (pattern: string): AppThunk => async (dispatch): Pro
 
 const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
-		dispatch(globalActions.system.setFetchingPosts(true));
-		dispatch(globalActions.system.setDownloadedSearchFormDrawerVisible(false));
-		dispatch(globalActions.system.setActiveView('thumbnails'));
+		dispatch(downloadedSearchFormSlice.actions.setPage(0));
 		const state = getState().downloadedSearchForm;
 		const tags = state.selectedTags.map((tag) => tag.tag);
 
-		setTimeout(async () => {
-			const posts: Post[] = [];
-			if (state.showNonBlacklisted) {
-				const nonBlacklisted = (tags.length === 0 && (await db.posts.getAllDownloaded())) || (await db.posts.getForTags(...tags));
-				posts.push(...nonBlacklisted);
-			}
-			if (state.showBlacklisted) {
-				const blacklistedPosts = await db.posts.getAllBlacklisted();
-				posts.push(...blacklistedPosts);
-			}
-			const filteredPosts = posts.filter((post) => {
-				if (state.rating !== 'any' && getRatingName(state.rating) !== post.rating) {
-					return false;
-				}
+		const options = getFilterOptions(state);
+		const posts = tags.length !== 0 ? await db.posts.getForTagsWithOptions(options, ...tags) : await db.posts.getAllWithOptions(options);
 
-				const favorite = post.favorite === 1 ? true : false;
-				if (!state.showFavorites && favorite) {
-					return false;
-				}
-
-				if (post.extension === 'gif') {
-					return state.showGifs;
-				} else if (isExtensionVideo(post.extension)) {
-					return state.showVideos;
-				} else {
-					return state.showImages;
-				}
-			});
-			dispatch(globalActions.posts.setPosts(filteredPosts));
-			dispatch(globalActions.system.setFetchingPosts(false));
-			db.tagSearchHistory.saveSearch(state.selectedTags);
-		}, 500);
+		dispatch(globalActions.posts.setPosts(posts));
+		db.tagSearchHistory.saveSearch(state.selectedTags);
 	} catch (err) {
-		console.error('Error while fetching tags from db', err);
+		console.error('Error while fetching posts from db', err);
 	}
 };
 
-export const actions = { ...downloadedSearchFormSlice.actions, loadByPatternFromDb, fetchPosts };
+export const fetchMorePosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
+	try {
+		dispatch(downloadedSearchFormSlice.actions.incrementPage());
+		const state = getState().downloadedSearchForm;
+		const tags = state.selectedTags.map((tag) => tag.tag);
+
+		const options = getFilterOptions(state);
+		const posts = tags.length !== 0 ? await db.posts.getForTagsWithOptions(options, ...tags) : await db.posts.getAllWithOptions(options);
+		dispatch(globalActions.posts.addPosts(posts));
+	} catch (err) {
+		console.error('Error while fetching more posts from db', err);
+	}
+};
+
+export const actions = { ...downloadedSearchFormSlice.actions, loadByPatternFromDb, fetchPosts, fetchMorePosts };
 
 export default downloadedSearchFormSlice.reducer;

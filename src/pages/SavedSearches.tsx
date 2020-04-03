@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Table, Tag, Row, Col, Spin } from 'antd';
+import { Table, Tag, Row, Col, Spin, Card } from 'antd';
 
 import { actions } from '../../store';
 import { RootState } from '../../store/types';
@@ -31,6 +31,27 @@ const StyledSpin = styled(Spin)`
 	left: 50%;
 	top: 50%;
 	transform: translate(0, -50%);
+`;
+
+const StyledCard = styled(Card)`
+	max-width: 170px;
+	max-height: 170px;
+	margin-right: 10px;
+
+	&& > .ant-card-body {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		align-content: center;
+		padding: 10px;
+	}
+`;
+
+const StyledThumbnailImage = styled.img`
+	max-width: 150px;
+	max-height: 150px;
 `;
 
 const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
@@ -110,7 +131,15 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 					rowExpandable: (record: SavedSearch): boolean => record.lastSearched !== undefined
 				}}
 				expandedRowRender={(record: SavedSearch): JSX.Element => (
-					<span>SELECTED THUMBNAILS WILL SHOW HERE AS A PREVIEW - RECORD ID: {record.id}</span>
+					<div style={{ display: 'flex' }}>
+						{record.previews.map((objectUrl, index) => {
+							return (
+								<StyledCard key={index}>
+									<StyledThumbnailImage src={objectUrl} />
+								</StyledCard>
+							);
+						})}
+					</div>
 				)}
 			>
 				<Column title="Tags" dataIndex="tags" key="tagsCol" render={renderTags} filterDropdownVisible={true} />

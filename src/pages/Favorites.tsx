@@ -15,7 +15,7 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 	useEffect(() => {
 		const renderThumbnailList = async (): Promise<void> => {
-			dispatch(actions.posts.loadFavoritePostsFromDb());
+			dispatch(actions.posts.fetchFavorites());
 		};
 		renderThumbnailList();
 	}, []);

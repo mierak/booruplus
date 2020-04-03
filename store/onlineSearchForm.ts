@@ -13,7 +13,6 @@ export interface SearchFormState {
 	rating: Rating;
 	page: number;
 	loading: boolean;
-	searchMode: SearchMode;
 	tagOptions: Tag[];
 	offlineOptions: OfflineOptions;
 }
@@ -24,7 +23,6 @@ export const initialState: SearchFormState = {
 	rating: 'any',
 	page: 0,
 	loading: false,
-	searchMode: 'online',
 	tagOptions: [],
 	offlineOptions: {
 		blacklisted: false,
@@ -60,9 +58,6 @@ const searchFormSlice = createSlice({
 		},
 		setSelectedTags: (state, action: PayloadAction<Tag[]>): void => {
 			state.selectedTags = action.payload;
-		},
-		setSearchMode: (state, action: PayloadAction<SearchMode>): void => {
-			state.searchMode = action.payload;
 		},
 		setTagOptions: (state, action: PayloadAction<Tag[]>): void => {
 			state.tagOptions = action.payload;
@@ -100,7 +95,6 @@ const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<vo
 		const posts = await api.getPostsForTags(tagsString, options);
 		//validate posts against db - check favorite/blacklisted/downloaded state
 		const validatedPosts = await Promise.all(posts.map((post) => db.posts.saveOrUpdateFromApi(post)));
-		dispatch(globalActions.system.setFetchingPosts(false));
 		dispatch(globalActions.posts.setPosts(validatedPosts));
 		db.tagSearchHistory.saveSearch(tags);
 	} catch (err) {
@@ -118,19 +112,20 @@ const fetchPostsFromDb = (): AppThunk => async (dispatch, getState): Promise<voi
 	}
 };
 
-const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
+const fetchPosts = (): AppThunk<void> => async (dispatch): Promise<void> => {
 	try {
-		dispatch(globalActions.system.setFetchingPosts(true));
-		dispatch(fetchPostsFromApi());
+		dispatch(searchFormSlice.actions.setPage(0));
 		dispatch(globalActions.posts.setActivePostIndex(undefined));
+		await dispatch(fetchPostsFromApi());
+		return Promise.resolve();
 	} catch (err) {
 		console.error('Error occured while trying to fetch posts', err);
+		return Promise.reject(err);
 	}
 };
 
-const loadMorePosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
+const fetchMorePosts = (): AppThunk<void> => async (dispatch, getState): Promise<void> => {
 	try {
-		dispatch(searchFormSlice.actions.setLoading(true));
 		const page = getState().onlineSearchForm.page;
 		const tags = getState().onlineSearchForm.selectedTags;
 		const tagsString = tags.map((tag) => tag.tag);
@@ -142,9 +137,10 @@ const loadMorePosts = (): AppThunk => async (dispatch, getState): Promise<void> 
 		dispatch(searchFormSlice.actions.setPage(page + 1));
 		const posts = await api.getPostsForTags(tagsString, options);
 		dispatch(globalActions.posts.addPosts(posts));
-		dispatch(searchFormSlice.actions.setLoading(false));
+		return Promise.resolve();
 	} catch (err) {
 		console.error('Error while loading more posts', err);
+		return Promise.reject(err);
 	}
 };
 
@@ -154,7 +150,7 @@ export const actions = {
 	fetchPostsFromApi,
 	fetchPostsFromDb,
 	fetchPosts,
-	loadMorePosts
+	fetchMorePosts
 };
 
 export default searchFormSlice.reducer;

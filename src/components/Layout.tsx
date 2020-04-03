@@ -27,8 +27,8 @@ interface Props {
 
 const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
-	const searchFormDrawerVisible = useSelector((state: RootState) => state.system.searchFormDrawerVsibile);
-	const downloadedSearchFormDrawerVisible = useSelector((state: RootState) => state.system.downloadedSearchFormDrawerVisible);
+	const searchFormDrawerVisible = useSelector((state: RootState) => state.system.isSearchFormDrawerVsibile);
+	const downloadedSearchFormDrawerVisible = useSelector((state: RootState) => state.system.isDownloadedSearchFormDrawerVisible);
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 
 	const handleMenuClick = (view: View): void => {

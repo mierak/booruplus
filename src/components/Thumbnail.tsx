@@ -46,6 +46,7 @@ const StyledThumbnailImage = styled.img`
 
 const Thumbnail = (props: Props): React.ReactElement => {
 	const activeView = useSelector((state: RootState) => state.system.activeView);
+	const savedSearch = useSelector((state: RootState) => state.savedSearches.savedSearches)[0];
 	const post = useSelector((state: RootState) =>
 		props.index >= 0 && props.index < state.posts.posts.length ? state.posts.posts[props.index] : undefined
 	);
@@ -133,13 +134,28 @@ const Thumbnail = (props: Props): React.ReactElement => {
 			'Blacklist post',
 			'delete'
 		);
+		const preview = (
+			<DeleteOutlined
+				key="preview"
+				onClick={(): void => {
+					post &&
+						dispatch(
+							actions.savedSearches.addPreviewToSavedSearch(
+								savedSearch,
+								`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`
+							)
+						);
+				}}
+			/>
+		);
+
 		const arr: JSX.Element[] = [];
 		if (post && post.favorite === 1) {
 			arr.push(favorite);
 		} else {
 			arr.push(notFavorite);
 		}
-		arr.push(download, blackist);
+		arr.push(download, blackist, preview);
 		return arr;
 	};
 
