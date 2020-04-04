@@ -57,7 +57,6 @@ const Thumbnail = (props: Props): React.ReactElement => {
 
 	const searchMode = useSelector((state: RootState) => state.system.searchMode);
 	const activeView = useSelector((state: RootState) => state.system.activeView);
-	const savedSearch = useSelector((state: RootState) => state.savedSearches.savedSearches)[0];
 	const post = useSelector((state: RootState) =>
 		props.index >= 0 && props.index < state.posts.posts.length ? state.posts.posts[props.index] : undefined
 	);

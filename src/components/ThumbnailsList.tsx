@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { Button } from 'antd';
 
 import { actions } from 'store';
 import { RootState } from 'store/types';
@@ -50,7 +49,6 @@ const StyledLoadMoreButton = styled(LoadMoreButton)`
 const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 	const postCount = useSelector((state: RootState) => state.posts.posts.length);
-	const isLoadingMore = useSelector((state: RootState) => state.system.isLoadingMore);
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 	const activePostIndex = useSelector((state: RootState) => state.posts.activePostIndex);
 

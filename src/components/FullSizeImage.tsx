@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useSelector, useDispatch, Selector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import { RootState } from '../../store/types';
@@ -7,8 +7,6 @@ import { actions } from '../../store';
 
 import { useLoadImage } from '../../src/hooks/useImageBus';
 import EmptyThumbnails from './EmptyThumbnails';
-import { createSelector } from '@reduxjs/toolkit';
-import { Post } from '../../types/gelbooruTypes';
 
 interface Props {
 	className?: string;

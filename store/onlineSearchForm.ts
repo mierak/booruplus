@@ -114,8 +114,6 @@ const fetchPostsFromDb = (): AppThunk => async (dispatch, getState): Promise<voi
 
 const fetchPosts = (): AppThunk<void> => async (dispatch): Promise<void> => {
 	try {
-		dispatch(searchFormSlice.actions.setPage(0));
-		dispatch(globalActions.posts.setActivePostIndex(undefined));
 		await dispatch(fetchPostsFromApi());
 		return Promise.resolve();
 	} catch (err) {

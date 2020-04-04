@@ -24,6 +24,8 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 		dispatch(actions.system.setActiveView('thumbnails'));
 		dispatch(actions.system.setSearchFormDrawerVisible(false));
 		dispatch(actions.system.setSearchMode('online'));
+		dispatch(actions.onlineSearchForm.setPage(0));
+		dispatch(actions.posts.setActivePostIndex(undefined));
 		await dispatch(actions.onlineSearchForm.fetchPosts());
 		dispatch(actions.system.setFetchingPosts(false));
 	};

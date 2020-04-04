@@ -26,6 +26,7 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 		dispatch(actions.system.setDownloadedSearchFormDrawerVisible(false));
 		dispatch(actions.system.setSearchMode('offline'));
 		dispatch(actions.posts.setActivePostIndex(undefined));
+		dispatch(actions.downloadedSearchForm.setPage(0));
 		await dispatch(actions.downloadedSearchForm.fetchPosts());
 		dispatch(actions.system.setFetchingPosts(false));
 	};

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import Dexie from 'dexie';
-import { Post, Tag, PostTag, TagType } from '../types/gelbooruTypes';
+import { Post, Tag, PostTag } from '../types/gelbooruTypes';
 import { SettingsPair, SavedSearch } from './types';
 
 class Database extends Dexie {

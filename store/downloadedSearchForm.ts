@@ -132,7 +132,6 @@ const loadByPatternFromDb = (pattern: string): AppThunk => async (dispatch): Pro
 
 const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
-		dispatch(downloadedSearchFormSlice.actions.setPage(0));
 		const state = getState().downloadedSearchForm;
 		const tags = state.selectedTags.map((tag) => tag.tag);
 

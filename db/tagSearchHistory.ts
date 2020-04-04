@@ -9,7 +9,7 @@ export const saveSearch = async (tags: Tag[]): Promise<void> => {
 	});
 };
 
-export const getMostSearched = async (limit = 10): Promise<TagHistory[]> => {
+export const getMostSearched = async (limit = 20): Promise<TagHistory[]> => {
 	const uniqueTags = await db.tagSearchHistory.orderBy('tag.tag').uniqueKeys();
 	const result = await Promise.all(
 		uniqueTags.map(async (tag) => {
@@ -33,5 +33,5 @@ export const getMostSearched = async (limit = 10): Promise<TagHistory[]> => {
 		})
 	);
 	const filteredResult = result.filter((result): result is TagHistory => result !== undefined);
-	return filteredResult.sort((a, b) => b.count - a.count);
+	return filteredResult.sort((a, b) => b.count - a.count).slice(0, limit);
 };

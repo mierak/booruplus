@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import * as db from '../db';
 import { AppThunk, TagHistory } from './types';
-import { TagType, Tag, Post } from '../types/gelbooruTypes';
+import { Tag, Post } from '../types/gelbooruTypes';
 
 interface RatingCounts {
 	[key: string]: number;
@@ -130,7 +130,7 @@ const fetchMostViewedPosts = (limit = 20): AppThunk => async (dispatch): Promise
 
 const fetchMostFavoritedTags = (limit = 20): AppThunk => async (dispatch): Promise<void> => {
 	try {
-		const tags = await db.tags.getMostFavorited();
+		const tags = await db.tags.getMostFavorited(limit);
 		dispatch(dashboardSlice.actions.setMostFavoritedTags(tags));
 	} catch (err) {
 		console.error('Error while fetching most favorited tags', err);
