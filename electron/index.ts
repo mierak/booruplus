@@ -2,13 +2,14 @@ import { app, dialog, BrowserWindow, ipcMain, IpcMainInvokeEvent, IpcMainEvent, 
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 import fs from 'fs';
 
-declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
-declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
-
 import { Settings } from '../store/types';
 import { SavePostDto } from '../types/processDto';
 import { Post } from '../types/gelbooruTypes';
 import { prefixDataWithContentType, getImageExtensionFromFilename } from '../util/utils';
+
+declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
+declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+const isProd = app.isPackaged;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 
@@ -21,13 +22,16 @@ if (require('electron-squirrel-startup')) {
 let window: BrowserWindow;
 
 const createWindow = (): void => {
-	installExtension(REACT_DEVELOPER_TOOLS)
-		.then((name) => console.log(`Added Extension:  ${name}`))
-		.catch((err) => console.log('An error occurred: ', err));
+	console.log('isProd', isProd);
+	if (!isProd) {
+		installExtension(REACT_DEVELOPER_TOOLS)
+			.then((name) => console.log(`Added Extension:  ${name}`))
+			.catch((err) => console.log('An error occurred: ', err));
 
-	installExtension(REDUX_DEVTOOLS)
-		.then((name) => console.log(`Added Extension:  ${name}`))
-		.catch((err) => console.log('An error occurred: ', err));
+		installExtension(REDUX_DEVTOOLS)
+			.then((name) => console.log(`Added Extension:  ${name}`))
+			.catch((err) => console.log('An error occurred: ', err));
+	}
 	// Create the browser window.
 
 	const mainWindow = new BrowserWindow({
@@ -39,15 +43,15 @@ const createWindow = (): void => {
 			preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
 		}
 	});
-
+	console.log('NODE ENV', process.env.ENVIRONMENT);
 	// and load the index.html of the app.
 
-	// mainWindow.removeMenu();
+	if (!isProd) {
+		mainWindow.webContents.openDevTools();
+	} else {
+		mainWindow.removeMenu();
+	}
 	mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-
-	// Open the DevTools.
-
-	mainWindow.webContents.openDevTools();
 	window = mainWindow;
 };
 

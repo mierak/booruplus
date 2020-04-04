@@ -9,7 +9,7 @@
 		"package": "electron-forge package",
 		"make": "electron-forge make",
 		"publish": "electron-forge publish",
-		"lint": "eslint --ext .ts ."
+		"lint": "eslint --ext .ts,.tsx ."
 	},
 	"keywords": [],
 	"author": {
@@ -83,6 +83,7 @@
 		"@typescript-eslint/eslint-plugin": "^2.21.0",
 		"@typescript-eslint/parser": "^2.21.0",
 		"copy-webpack-plugin": "^5.1.1",
+		"cross-env": "^7.0.2",
 		"css-loader": "^3.0.0",
 		"electron": "8.0.1",
 		"electron-devtools-installer": "^2.2.4",

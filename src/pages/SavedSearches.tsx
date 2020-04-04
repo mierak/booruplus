@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Table, Tag, Row, Col, Spin, Card } from 'antd';
+import { Table, Tag, Row, Col, Spin, Card, Popconfirm } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 
 import { actions } from '../../store';
-import { RootState } from '../../store/types';
+import { RootState, AppDispatch } from '../../store/types';
 
 import { SavedSearch, Tag as GelbooruTag } from '../../types/gelbooruTypes';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -19,6 +20,7 @@ interface Props {
 const Container = styled.div`
 	height: 100vh;
 	padding: 10px;
+	overflow-x: 'hidden';
 `;
 
 const StyledTag = styled(Tag)`
@@ -47,28 +49,58 @@ const StyledCard = styled(Card)`
 		align-content: center;
 		padding: 10px;
 	}
+
+	&& > .ant-card-actions > li {
+		margin: 0;
+	}
 `;
 
-const StyledThumbnailImage = styled.img`
+const StyledPreviewImage = styled.img`
 	max-width: 150px;
 	max-height: 150px;
 `;
 
+const StyledPreviewsContainer = styled.div`
+	display: grid;
+	align-items: stretch;
+	grid-row-gap: 10px;
+	grid-template-columns: repeat(auto-fit, minmax(170px, 170px));
+	grid-auto-rows: 194px;
+`;
+
 const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 	const savedSearches = useSelector((state: RootState) => state.savedSearches.savedSearches);
 	const isLoading = useSelector((state: RootState) => state.onlineSearchForm.loading);
 
-	const handleOnlineSearch = (savedSearch: SavedSearch): void => {
-		dispatch(actions.savedSearches.searchSavedTagSearchOnline(savedSearch));
+	useEffect(() => {
+		dispatch(actions.savedSearches.loadSavedSearchesFromDb()); //TODO loading state
+	}, []);
+
+	const handleOnlineSearch = async (savedSearch: SavedSearch): Promise<void> => {
+		dispatch(actions.system.setFetchingPosts(true));
+		dispatch(actions.system.setSearchMode('saved-search-online'));
+		dispatch(actions.system.setActiveView('thumbnails'));
+		dispatch(actions.savedSearches.setActiveSaveSearch(savedSearch));
+		await dispatch(actions.savedSearches.searchSavedTagSearchOnline(savedSearch));
+		dispatch(actions.system.setFetchingPosts(false));
 	};
 
-	const handleOfflineSearch = (savedSearch: SavedSearch): void => {
-		dispatch(actions.savedSearches.searchSavedTagSearchOffline(savedSearch));
+	const handleOfflineSearch = async (savedSearch: SavedSearch): Promise<void> => {
+		dispatch(actions.system.setFetchingPosts(true));
+		dispatch(actions.system.setSearchMode('saved-search-offline'));
+		dispatch(actions.system.setActiveView('thumbnails'));
+		dispatch(actions.savedSearches.setActiveSaveSearch(savedSearch));
+		await dispatch(actions.savedSearches.searchSavedTagSearchOffline(savedSearch));
+		dispatch(actions.system.setFetchingPosts(false));
 	};
 
 	const handleDelete = (savedSearch: SavedSearch): void => {
 		dispatch(actions.savedSearches.removeSavedSearch(savedSearch));
+	};
+
+	const handlePreviewDelete = (record: SavedSearch, previewId: number): void => {
+		dispatch(actions.savedSearches.removePreview(record, previewId));
 	};
 
 	const renderActions = (_: unknown, record: SavedSearch): JSX.Element => {
@@ -117,6 +149,34 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 		}
 	};
 
+	const renderPreviewActions = (record: SavedSearch, id: number): JSX.Element[] => {
+		return [
+			<Popconfirm
+				title="Delete preview from Saved Search?"
+				okText="Delete"
+				cancelText="Cancel"
+				key="delete"
+				onConfirm={(): void => handlePreviewDelete(record, id)}
+			>
+				<DeleteOutlined />
+			</Popconfirm>
+		];
+	};
+
+	const renderPreviews = (record: SavedSearch): JSX.Element => {
+		return (
+			<StyledPreviewsContainer>
+				{record.previews.map((preview) => {
+					return (
+						<StyledCard key={preview.id} actions={renderPreviewActions(record, preview.id)}>
+							<StyledPreviewImage src={preview.objectUrl} />
+						</StyledCard>
+					);
+				})}
+			</StyledPreviewsContainer>
+		);
+	};
+
 	const renderTable = (): JSX.Element => {
 		return (
 			<Table
@@ -130,17 +190,8 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 				expandable={{
 					rowExpandable: (record: SavedSearch): boolean => record.lastSearched !== undefined
 				}}
-				expandedRowRender={(record: SavedSearch): JSX.Element => (
-					<div style={{ display: 'flex' }}>
-						{record.previews.map((objectUrl, index) => {
-							return (
-								<StyledCard key={index}>
-									<StyledThumbnailImage src={objectUrl} />
-								</StyledCard>
-							);
-						})}
-					</div>
-				)}
+				expandedRowRender={renderPreviews}
+				style={{ overflowX: 'hidden' }}
 			>
 				<Column title="Tags" dataIndex="tags" key="tagsCol" render={renderTags} filterDropdownVisible={true} />
 				<Column title="Rating" dataIndex="rating" key="ratingCol" />

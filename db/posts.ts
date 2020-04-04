@@ -97,11 +97,8 @@ const filterPosts = (posts: Post[], options: FilterOptions): Post[] => {
 };
 
 export const getAllWithOptions = async (options: FilterOptions): Promise<Post[]> => {
-	console.log('options', options);
 	const posts = await db.posts.offset(0).toArray();
-	console.log('posts', posts);
 	const filteredPosts = filterPosts(posts, options);
-	console.log('filteredPosts', filteredPosts);
 	return filteredPosts;
 };
 
@@ -209,6 +206,7 @@ export const getMostViewed = async (limit = 20): Promise<Post[]> => {
 	const asdf = db.posts
 		.orderBy('viewCount')
 		.reverse()
+		.filter((post) => post.viewCount > 0)
 		.limit(limit)
 		.toArray();
 	return asdf;

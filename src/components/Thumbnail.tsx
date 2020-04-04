@@ -3,10 +3,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { actions } from '../../store';
-import { RootState, PostPropertyOptions } from '../../store/types';
+import { RootState, PostPropertyOptions, AppDispatch } from '../../store/types';
 
 import { Card, Popconfirm, notification, Tooltip, Spin } from 'antd';
-import { HeartOutlined, HeartFilled, DownloadOutlined, DeleteOutlined, CheckCircleTwoTone, LoadingOutlined } from '@ant-design/icons';
+import {
+	HeartOutlined,
+	HeartFilled,
+	DownloadOutlined,
+	DeleteOutlined,
+	CheckCircleTwoTone,
+	LoadingOutlined,
+	PlusOutlined
+} from '@ant-design/icons';
 import { IconType } from 'antd/lib/notification';
 
 interface Props {
@@ -45,6 +53,9 @@ const StyledThumbnailImage = styled.img`
 `;
 
 const Thumbnail = (props: Props): React.ReactElement => {
+	const dispatch = useDispatch<AppDispatch>();
+
+	const searchMode = useSelector((state: RootState) => state.system.searchMode);
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 	const savedSearch = useSelector((state: RootState) => state.savedSearches.savedSearches)[0];
 	const post = useSelector((state: RootState) =>
@@ -54,7 +65,6 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [_, setFavoriteState] = useState(post && post.favorite); //TODO replace this thumbnails action hack(icon refresh)
 	const [loaded, setLoaded] = useState(true);
-	const dispatch = useDispatch();
 
 	const openNotificationWithIcon = (type: IconType, title: string, description: string, duration?: number): void => {
 		notification[type]({
@@ -134,20 +144,6 @@ const Thumbnail = (props: Props): React.ReactElement => {
 			'Blacklist post',
 			'delete'
 		);
-		const preview = (
-			<DeleteOutlined
-				key="preview"
-				onClick={(): void => {
-					post &&
-						dispatch(
-							actions.savedSearches.addPreviewToSavedSearch(
-								savedSearch,
-								`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`
-							)
-						);
-				}}
-			/>
-		);
 
 		const arr: JSX.Element[] = [];
 		if (post && post.favorite === 1) {
@@ -155,7 +151,28 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		} else {
 			arr.push(notFavorite);
 		}
-		arr.push(download, blackist, preview);
+		arr.push(download, blackist);
+
+		if (searchMode === 'saved-search-offline' || searchMode === 'saved-search-online') {
+			arr.push(
+				renderWithTooltip(
+					<PlusOutlined
+						key="preview"
+						// TODO Add confirmation of adding, add posibility to delete preview, change icon
+						onClick={(): void => {
+							post &&
+								dispatch(
+									actions.savedSearches.addPreviewToActiveSavedSearch(
+										`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`
+									)
+								);
+						}}
+					/>,
+					'Add post as Saved Search preview',
+					'add-preview'
+				)
+			);
+		}
 		return arr;
 	};
 

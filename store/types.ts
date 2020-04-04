@@ -11,7 +11,7 @@ export type AppDispatch = typeof store.dispatch;
 
 export type View = 'thumbnails' | 'image' | 'dashboard' | 'online-search' | 'saved-searches' | 'favorites' | 'tag-list' | 'settings';
 
-export type SearchMode = 'online' | 'offline' | 'favorites' | 'saved-search' | 'most-viewed';
+export type SearchMode = 'online' | 'offline' | 'favorites' | 'saved-search-offline' | 'saved-search-online' | 'most-viewed';
 
 export interface OfflineOptions {
 	blacklisted: boolean;

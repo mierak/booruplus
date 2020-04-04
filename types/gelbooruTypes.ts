@@ -110,12 +110,17 @@ export interface Tag extends Entity {
 
 export type SavedSearchType = 'online' | 'offline';
 
+export interface SavedSearchPreview {
+	id: number;
+	objectUrl: string;
+}
+
 export interface SavedSearch {
-	id?: number;
+	id: number;
 	tags: Tag[];
 	rating: Rating;
 	lastSearched?: string;
-	previews: string[];
+	previews: SavedSearchPreview[];
 }
 
 export interface PostTag {

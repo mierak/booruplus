@@ -2,7 +2,7 @@ import { Tag, Rating } from '../types/gelbooruTypes';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { actions as globalActions } from '.';
-import { AppThunk, SearchMode, OfflineOptions } from './types';
+import { AppThunk, OfflineOptions } from './types';
 
 import * as api from '../service/apiService';
 import * as db from '../db';

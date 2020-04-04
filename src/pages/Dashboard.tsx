@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { Statistic, Row, Col, Card, Tag as AntTag, Table } from 'antd';
+import { Statistic, Row, Col, Card, Tag as AntTag, Table, Tooltip, Empty } from 'antd';
+import { CheckCircleTwoTone } from '@ant-design/icons';
 import { Pie } from 'ant-design-pro/lib/Charts';
 
 import { RootState, TagHistory } from 'store/types';
@@ -49,6 +50,7 @@ const StyledMostViewedCard = styled(Card)`
 	&& > .ant-card-body {
 		padding: 0px;
 		max-height: calc(100vh - 466px);
+		height: calc(100vh - 466px);
 		overflow-y: auto;
 		overflow-x: hidden;
 	}
@@ -79,6 +81,13 @@ const StyledImageContainer = styled.div`
 const StyledMeta = styled(Card.Meta)`
 	display: flex;
 	justify-content: center;
+`;
+
+const StyledEmpty = styled(Empty)`
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 `;
 
 const StyledPie = styled(Pie)`
@@ -166,6 +175,30 @@ const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 		return <AntTag color={getTagColor(mostSearchedTag.tag.type)}>{mostSearchedTag.tag.tag}</AntTag>;
 	};
 
+	const renderMostViewedPosts = (): JSX.Element[] => {
+		return mostViewedPosts.map((post) => {
+			return (
+				<StyledThumbnailCard hoverable key={post.id} onClick={(): void => handleMostViewedImageClick(post)}>
+					<StyledImageContainer>
+						<img src={`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`} />
+					</StyledImageContainer>
+					<StyledMeta
+						description={
+							<span>
+								Viewed {post.viewCount} times{' '}
+								{post.downloaded === 1 && (
+									<Tooltip title="Downloaded">
+										<CheckCircleTwoTone />
+									</Tooltip>
+								)}
+							</span>
+						}
+					/>
+				</StyledThumbnailCard>
+			);
+		});
+	};
+
 	return (
 		<Container className={props.className}>
 			<Row gutter={10} style={{ marginBottom: '10px' }}>
@@ -231,16 +264,7 @@ const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 				<Col span={24}>
 					<StyledMostViewedCard title="Most Viewed Posts" size="small">
 						<StyledMostViewedGrid>
-							{mostViewedPosts.map((post) => {
-								return (
-									<StyledThumbnailCard hoverable key={post.id} onClick={(): void => handleMostViewedImageClick(post)}>
-										<StyledImageContainer>
-											<img src={`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`} />
-										</StyledImageContainer>
-										<StyledMeta description={`Viewed ${post.viewCount} times`} />
-									</StyledThumbnailCard>
-								);
-							})}
+							{mostViewedPosts.length > 0 ? renderMostViewedPosts() : <StyledEmpty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
 						</StyledMostViewedGrid>
 					</StyledMostViewedCard>
 				</Col>

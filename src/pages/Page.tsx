@@ -13,7 +13,6 @@ import Tags from './Tags';
 import Dashboard from './Dashboard';
 import Thumbnails from './Thumbnails';
 import Settings from './Settings';
-// import 'antd/dist/antd.dark.css';
 import 'ant-design-pro/dist/ant-design-pro.css';
 
 const Page: React.FunctionComponent = () => {
@@ -25,13 +24,11 @@ const Page: React.FunctionComponent = () => {
 
 	useEffect(() => {
 		(async (): Promise<void> => {
-			dispatch(actions.savedSearches.loadSavedSearchesFromDb());
 			const set = await dispatch(actions.settings.loadSettings('user'));
 
 			if (set.theme === 'dark') {
 				require('antd/dist/antd.dark.css');
 			} else {
-				console.log('light');
 				require('antd/dist/antd.css');
 			}
 			setLoaded(true);

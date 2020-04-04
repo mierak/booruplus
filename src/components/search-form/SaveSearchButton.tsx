@@ -5,8 +5,6 @@ import { Button } from 'antd';
 import { RootState, SearchMode } from '../../../store/types';
 import { actions } from '../../../store';
 
-import { SavedSearch } from '../../../types/gelbooruTypes';
-
 interface Props {
 	mode: SearchMode;
 }
@@ -22,12 +20,7 @@ const SaveSearchButton: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	);
 
 	const handleSaveSearch = async (): Promise<void> => {
-		const savedSearch: SavedSearch = {
-			tags: selectedTags,
-			rating: rating,
-			previews: []
-		};
-		dispatch(actions.savedSearches.addSavedSearch(savedSearch));
+		dispatch(actions.savedSearches.saveSearch(selectedTags, rating));
 	};
 
 	return (

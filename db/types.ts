@@ -10,12 +10,17 @@ export interface SettingsPair {
 	values: Settings;
 }
 
+interface SavedSearchPreview {
+	id: number;
+	blob: Blob;
+}
+
 export interface SavedSearch {
 	id?: number;
 	tags: Tag[];
 	rating: Rating;
 	lastSearched?: string;
-	previews: Blob[];
+	previews: SavedSearchPreview[];
 }
 
 export interface FilterOptions {

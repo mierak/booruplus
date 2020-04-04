@@ -163,11 +163,8 @@ const blacklistPost = (post: Post): AppThunk => async (dispatch): Promise<void> 
 	try {
 		const deleteImage = useDeleteImage();
 		const updatedPost = copyAndBlacklistPost(post);
-		console.log('updatedPost', updatedPost);
 		deleteImage(updatedPost);
 		await db.posts.update(updatedPost);
-		const p = await db.posts.getById(updatedPost);
-		console.log('p', p);
 
 		dispatch(globalActions.posts.removePost(updatedPost));
 	} catch (err) {

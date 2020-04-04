@@ -17,9 +17,10 @@ const LoadMoreButton: React.FunctionComponent<Props> = ({ className }: Props) =>
 	const getLoadMore = (): (() => AppThunk) => {
 		switch (searchMode) {
 			case 'online':
+			case 'saved-search-online':
 				return actions.onlineSearchForm.fetchMorePosts;
 			case 'offline':
-			case 'saved-search':
+			case 'saved-search-offline':
 				return actions.downloadedSearchForm.fetchMorePosts;
 			case 'favorites':
 				return actions.posts.fetchFavorites;
