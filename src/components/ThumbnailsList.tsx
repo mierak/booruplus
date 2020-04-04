@@ -17,7 +17,7 @@ interface Props {
 
 const Container = styled.div`
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
 	grid-template-rows: repeat(auto-fit, 220px);
 	grid-gap: 10px;
 	margin: 10px 0 0 10px;

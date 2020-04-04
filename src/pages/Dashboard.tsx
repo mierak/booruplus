@@ -36,7 +36,7 @@ const StyledListCard = styled(Card)`
 
 const StyledMostViewedGrid = styled.div`
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
 	grid-template-rows: repeat(auto-fit, 200px);
 	grid-gap: 10px;
 	padding: 10px 10px 10px 10px;

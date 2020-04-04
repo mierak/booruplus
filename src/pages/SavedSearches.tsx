@@ -62,9 +62,8 @@ const StyledPreviewImage = styled.img`
 
 const StyledPreviewsContainer = styled.div`
 	display: grid;
-	align-items: stretch;
 	grid-row-gap: 10px;
-	grid-template-columns: repeat(auto-fit, minmax(170px, 170px));
+	grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
 	grid-auto-rows: 194px;
 `;
 

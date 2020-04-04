@@ -49,7 +49,7 @@ class Database extends Dexie {
 	}
 }
 
-const db = new Database('lolinizerDb');
+const db = new Database('booru_plus');
 
 db.on('populate', () => {
 	const settings: SettingsPair = {
