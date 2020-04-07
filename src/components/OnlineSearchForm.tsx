@@ -20,14 +20,12 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
 	const handleSubmit = async (): Promise<void> => {
-		dispatch(actions.system.setFetchingPosts(true));
 		dispatch(actions.system.setActiveView('thumbnails'));
 		dispatch(actions.system.setSearchFormDrawerVisible(false));
 		dispatch(actions.system.setSearchMode('online'));
 		dispatch(actions.onlineSearchForm.setPage(0));
 		dispatch(actions.posts.setActivePostIndex(undefined));
 		await dispatch(actions.onlineSearchForm.fetchPosts());
-		dispatch(actions.system.setFetchingPosts(false));
 	};
 
 	const handleClear = (): void => {

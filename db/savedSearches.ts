@@ -22,6 +22,17 @@ export const save = async (savedSearch: SavedSearch): Promise<number | undefined
 };
 
 export const createAndSave = async (rating: Rating, tags: Tag[]): Promise<number> => {
+	const allSearches = await db.savedSearches.toArray();
+	// let found = false;
+	// allSearches.forEach((search) => {
+	// 	if (!found) {
+	// 		found = search.tags.every((tag) => tags.includes());
+	// 		console.log('found', found);
+	// 	}
+	// });
+	// if (found) {
+	// 	console.log('EXISTS');
+	// }
 	return db.savedSearches.put({
 		previews: [],
 		rating,

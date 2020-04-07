@@ -136,8 +136,10 @@ const downloadPosts = (posts: Post[]): AppThunk => async (dispatch): Promise<voi
 		const filteredTags = await deduplicateAndCheckTagsAgainstDb(tagsToSave);
 		const tagsFromApi = await api.getTagsByNames(...filteredTags);
 		db.tags.saveBulk(tagsFromApi);
+		return Promise.resolve();
 	} catch (err) {
 		console.error('Error while downloading all posts', err);
+		return Promise.reject(err);
 	}
 };
 

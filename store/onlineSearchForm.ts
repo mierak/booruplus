@@ -83,6 +83,8 @@ const getTagsByPatternFromApi = (value: string): AppThunk => async (dispatch): P
 };
 const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
+		dispatch(globalActions.system.setFetchingPosts(true));
+		dispatch(globalActions.posts.setPosts([]));
 		//construct string of tags
 		const tags = getState().onlineSearchForm.selectedTags;
 		const tagsString = tags.map((tag) => tag.tag);
@@ -93,9 +95,13 @@ const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<vo
 		};
 		//get posts from api
 		const posts = await api.getPostsForTags(tagsString, options);
+		dispatch(globalActions.system.setFetchingPosts(false));
 		//validate posts against db - check favorite/blacklisted/downloaded state
-		const validatedPosts = await Promise.all(posts.map((post) => db.posts.saveOrUpdateFromApi(post)));
-		dispatch(globalActions.posts.setPosts(validatedPosts));
+
+		posts.forEach(async (post) => {
+			dispatch(globalActions.posts.addPosts([await db.posts.saveOrUpdateFromApi(post)]));
+		});
+		// dispatch(globalActions.posts.setPosts(validatedPosts));
 		db.tagSearchHistory.saveSearch(tags);
 	} catch (err) {
 		console.error('Error while fetching from api', err);

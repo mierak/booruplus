@@ -5,23 +5,24 @@ import { FilterOptions } from './types';
 import { intersection, getRatingName, isExtensionVideo } from '../util/utils';
 
 export const saveOrUpdateFromApi = async (post: Post): Promise<Post> => {
+	const clone: Post = { ...post };
 	const savedPost = await db.transaction(
 		'rw',
 		db.posts,
 		db.postsTags,
 		async (): Promise<Post> => {
-			const savedPost = await db.posts.get(post.id);
+			const savedPost = await db.posts.get(clone.id);
 			if (savedPost) {
-				post.favorite = savedPost.favorite;
-				post.blacklisted = savedPost.blacklisted;
-				post.downloaded = savedPost.downloaded;
-				post.viewCount = savedPost.viewCount;
+				clone.favorite = savedPost.favorite;
+				clone.blacklisted = savedPost.blacklisted;
+				clone.downloaded = savedPost.downloaded;
+				clone.viewCount = savedPost.viewCount;
 			}
-			db.posts.put(post).catch((err) => {
+			db.posts.put(clone).catch((err) => {
 				console.error(err);
 				throw err;
 			});
-			return post;
+			return clone;
 		}
 	);
 	return savedPost;

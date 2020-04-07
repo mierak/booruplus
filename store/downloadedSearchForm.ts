@@ -132,11 +132,18 @@ const loadByPatternFromDb = (pattern: string): AppThunk => async (dispatch): Pro
 
 const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
+		dispatch(globalActions.system.setFetchingPosts(true));
+		dispatch(globalActions.posts.setPosts([]));
 		const state = getState().downloadedSearchForm;
 		const tags = state.selectedTags.map((tag) => tag.tag);
 
 		const options = getFilterOptions(state);
 		const posts = tags.length !== 0 ? await db.posts.getForTagsWithOptions(options, ...tags) : await db.posts.getAllWithOptions(options);
+		dispatch(globalActions.system.setFetchingPosts(false));
+
+		posts.forEach(async (post) => {
+			dispatch(globalActions.posts.addPosts([post]));
+		});
 
 		dispatch(globalActions.posts.setPosts(posts));
 		db.tagSearchHistory.saveSearch(state.selectedTags);
