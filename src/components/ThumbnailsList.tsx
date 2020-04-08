@@ -56,7 +56,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 		if (activeView === 'image') {
 			const list = document.getElementById('thumbnails-list');
 			if (list && activePostIndex) {
-				list.scrollTo(0, 232 * activePostIndex - list.clientHeight / 2 + 116 / list.clientWidth / 190);
+				list.scrollTo(0, 232 * activePostIndex - list.clientHeight / 2 + 116);
 			}
 		}
 	});

@@ -31,3 +31,8 @@ body {
 ::-webkit-scrollbar-thumb:hover {
 	background-color: #188fff;
 }
+
+.ant-message-custom-content {
+	display: flex;
+	align-items: center;
+}

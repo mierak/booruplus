@@ -5,7 +5,7 @@ import { PageHeader, Button, Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
 import { actions } from '../../store';
-import { RootState } from '../../store/types';
+import { RootState, AppDispatch } from '../../store/types';
 
 import ThumbnailsList from '../components/ThumbnailsList';
 
@@ -31,7 +31,7 @@ const StyledSpin = styled(Spin)`
 `;
 
 const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 
 	const isFetchingPosts = useSelector((state: RootState) => state.system.isFetchingPosts);
 
@@ -88,8 +88,8 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			</Button>,
 			<Button
 				key="3"
-				onClick={(): void => {
-					dispatch(actions.posts.downloadAllPosts());
+				onClick={async (): Promise<void> => {
+					dispatch(actions.system.withProgressBar(async (id) => dispatch(actions.posts.downloadAllPosts(id))));
 				}}
 			>
 				Download All
@@ -97,7 +97,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			<Button
 				key="2"
 				onClick={(): void => {
-					dispatch(actions.posts.downloadSelectedPosts());
+					dispatch(actions.system.withProgressBar(async (id) => dispatch(actions.posts.downloadSelectedPosts(id))));
 				}}
 			>
 				Download Selected

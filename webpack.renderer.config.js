@@ -19,7 +19,8 @@ module.exports = {
 			service: path.resolve(__dirname, 'service'),
 			types: path.resolve(__dirname, 'types'),
 			util: path.resolve(__dirname, 'util'),
-			store: path.resolve(__dirname, 'store')
+			store: path.resolve(__dirname, 'store'),
+			hooks: path.resolve(__dirname, 'src/hooks')
 		}
 	}
 };

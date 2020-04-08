@@ -100,7 +100,7 @@ const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 					handleLoadResponse(response.fileUrl, response.fileUrl);
 				}
 			);
-			dispatch(actions.posts.incrementViewCount(post)); // TODO not incrementing because post is not updated in redux store, find a way to update post in store without rerendering fullsizeimage
+			dispatch(actions.posts.incrementViewCount(post));
 			dispatch(actions.system.setIsLoadingImage(true));
 		}
 	}, [index]);

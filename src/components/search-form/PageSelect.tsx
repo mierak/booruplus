@@ -9,7 +9,6 @@ interface Props {
 	mode: SearchMode;
 }
 
-//TODO FIX - Pagination for offline search is not implemented
 const PageSelect: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	const dispatch = useDispatch();
 

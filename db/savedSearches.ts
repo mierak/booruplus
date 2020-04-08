@@ -22,7 +22,7 @@ export const save = async (savedSearch: SavedSearch): Promise<number | undefined
 };
 
 export const createAndSave = async (rating: Rating, tags: Tag[]): Promise<number> => {
-	const allSearches = await db.savedSearches.toArray();
+	// const allSearches = await db.savedSearches.toArray();
 	// let found = false;
 	// allSearches.forEach((search) => {
 	// 	if (!found) {

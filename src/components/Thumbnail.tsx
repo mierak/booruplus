@@ -22,8 +22,9 @@ interface Props {
 }
 
 interface CardProps {
-	readonly postindex: number;
-	readonly isactive: string;
+	postindex: number;
+	isactive: string;
+	theme: 'dark' | 'light';
 }
 
 interface SelectedIndexes {
@@ -32,7 +33,8 @@ interface SelectedIndexes {
 }
 
 const StyledCard = styled(Card)<CardProps>`
-	border: ${(props): false | 0 | 'dashed 1px black' | undefined => props.isactive === 'true' && 'dashed 1px black'};
+	border: ${(props): false | 0 | 'dashed 1px black' | 'dashed 1px white' | undefined =>
+		props.isactive === 'true' && props.theme === 'dark' ? 'dashed 1px white' : 'dashed 1px black'};
 	width: 170px;
 	height: 222px;
 `;
@@ -61,6 +63,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		props.index >= 0 && props.index < state.posts.posts.length ? state.posts.posts[props.index] : undefined
 	);
 	const isActive = useSelector((state: RootState) => props.index === state.posts.activePostIndex);
+	const theme = useSelector((state: RootState) => state.settings.theme);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [_, setFavoriteState] = useState(post && post.favorite); //TODO replace this thumbnails action hack(icon refresh)
 	const [loaded, setLoaded] = useState(true);
@@ -180,6 +183,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 			bodyStyle={{ height: '172px', width: '170px', padding: '0' }}
 			postindex={props.index}
 			isactive={isActive.toString()}
+			theme={theme}
 			actions={renderActions()}
 			hoverable
 		>

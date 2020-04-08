@@ -28,12 +28,6 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 
 	const thumbnailsListvisible = useSelector((state: RootState) => state.system.isImageViewThumbnailsCollapsed);
 	const theme = useSelector((state: RootState) => state.settings.theme);
-	// const postsLength = useSelector((state: RootState) => state.posts.posts.length);
-	// useEffect(() => {
-	// 	if (props.postsLength > 0) {
-	// 		props.setActivePostIndex(0);
-	// 	}
-	// }, []);
 
 	return (
 		<Container className={props.className}>

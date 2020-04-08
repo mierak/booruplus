@@ -78,5 +78,5 @@ export const getMostFavorited = async (limit = 20): Promise<{ tag: Tag | undefin
 		})
 	);
 	favoriteCounts.sort((a, b) => b.count - a.count);
-	return favoriteCounts.slice(0, limit);
+	return favoriteCounts.filter((tag) => tag.count > 0).slice(0, limit);
 };

@@ -19,28 +19,27 @@ export const useLoadImage = (): ((
 	return loadImage;
 };
 
-export const useSaveImage = (): ((post: Post) => void) => {
-	const sendImage = (post: Post, base64: string | ArrayBuffer | null): void => {
+export const useSaveImage = (): ((post: Post) => Promise<void>) => {
+	const sendImage = async (post: Post, base64: string | ArrayBuffer | null): Promise<void> => {
 		const dto: SavePostDto = {
 			data: base64 as string,
 			post
 		};
-		window.api.invoke('save-image', dto);
+		return window.api.invoke('save-image', dto);
 	};
-	const sendSaveImageRequest = (post: Post): void => {
-		fetch(post.fileUrl).then((response) =>
-			response.blob().then((blob) => {
-				const reader = new FileReader();
-				reader.addEventListener('load', () => {
-					sendImage(post, reader.result);
-				});
-				reader.readAsDataURL(blob);
-			})
-		);
+	const sendSaveImageRequest = async (post: Post): Promise<void> => {
+		const response = await fetch(post.fileUrl);
+		const blob = await response.blob();
+		const reader = new FileReader();
+		reader.addEventListener('load', async () => {
+			await sendImage(post, reader.result);
+		});
+		reader.readAsDataURL(blob);
+		return Promise.resolve();
 	};
 
-	const saveImage = (post: Post): void => {
-		sendSaveImageRequest(post);
+	const saveImage = async (post: Post): Promise<void> => {
+		return sendSaveImageRequest(post);
 	};
 
 	return saveImage;

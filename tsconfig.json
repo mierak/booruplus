@@ -20,11 +20,11 @@
 			"service/*": ["service/*"],
 			"types/*": ["types/*"],
 			"util/*": ["util/*"],
+			"hooks/*": ["src/hooks/*"],
 			"*": ["node_modules/*"]
 		},
 		"strict": true,
-		"target": "ESNext",
-		"lib": ["ESNext.Array", "DOM"]
+		"target": "ES2019"
 	},
 	"include": [
 		"src/**/*",

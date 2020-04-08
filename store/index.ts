@@ -9,6 +9,7 @@ import tagsReducer, { actions as tags } from './tags';
 import downloadedSearchFormReducer, { actions as downloadedSearchForm } from './downloadedSearchForm';
 import settingsReducer, { actions as settings } from './settings';
 import dashboardReducer, { actions as dashboard } from './dashboard';
+import tasksReducer, { actions as tasks } from './tasks';
 import { RootState } from './types';
 
 export const mainReducer = combineReducers({
@@ -19,7 +20,8 @@ export const mainReducer = combineReducers({
 	downloadedSearchForm: downloadedSearchFormReducer,
 	onlineSearchForm: onlineSearchFormReducer,
 	settings: settingsReducer,
-	dashboard: dashboardReducer
+	dashboard: dashboardReducer,
+	tasks: tasksReducer
 });
 
 export const store = configureStore({
@@ -35,5 +37,6 @@ export const actions = {
 	tags,
 	downloadedSearchForm,
 	settings,
-	dashboard
+	dashboard,
+	tasks
 };

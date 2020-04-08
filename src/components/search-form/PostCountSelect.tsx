@@ -9,7 +9,6 @@ interface Props {
 	mode: SearchMode;
 }
 
-//TODO FIX - Post limit for offline search is not implemented
 const PostCountSelect: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	const dispatch = useDispatch();
 

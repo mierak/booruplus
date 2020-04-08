@@ -118,20 +118,35 @@ const downloadPost = (post: Post): AppThunk => async (dispatch): Promise<void> =
 	}
 };
 
-const downloadPosts = (posts: Post[]): AppThunk => async (dispatch): Promise<void> => {
+const downloadPosts = (posts: Post[], taskId?: number): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		const saveImage = useSaveImage();
 		const tagsToSave: string[] = [];
-		const updatedPosts = posts.map((p) => {
-			const post = Object.assign({}, p);
-			saveImage(post);
-			tagsToSave.push(...post.tags);
-			post.downloaded = 1;
-			post.blacklisted = 0;
-			post.selected = false;
-			db.posts.update(post);
-			return post;
-		});
+		const updatedPosts: Post[] = [];
+		let postsDone = 0;
+
+		for (const p of posts) {
+			await (async (): Promise<void> => {
+				const post = { ...p };
+				post.downloaded = 1;
+				post.blacklisted = 0;
+				post.selected = false;
+				const asdf = await db.posts.update(post);
+				console.log('asdf', asdf);
+				await saveImage(post);
+
+				taskId && dispatch(globalActions.tasks.setProgress({ id: taskId, progress: (postsDone++ / (posts.length - 1)) * 100 }));
+
+				updatedPosts.push(post);
+				tagsToSave.push(...post.tags);
+				return Promise.resolve();
+			})();
+
+			if (taskId && getState().tasks.tasks[taskId].isCanceled) {
+				break;
+			}
+		}
+
 		dispatch(globalActions.posts.updatePosts(updatedPosts));
 		const filteredTags = await deduplicateAndCheckTagsAgainstDb(tagsToSave);
 		const tagsFromApi = await api.getTagsByNames(...filteredTags);
@@ -143,13 +158,13 @@ const downloadPosts = (posts: Post[]): AppThunk => async (dispatch): Promise<voi
 	}
 };
 
-const downloadSelectedPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
+const downloadSelectedPosts = (taskId?: number): AppThunk => async (dispatch, getState): Promise<void> => {
 	const posts = getState().posts.posts.filter((p) => p.selected);
-	dispatch(downloadPosts(posts));
+	return dispatch(downloadPosts(posts, taskId));
 };
-const downloadAllPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
+const downloadAllPosts = (taskId?: number): AppThunk<void> => async (dispatch, getState): Promise<void> => {
 	const posts = getState().posts.posts;
-	dispatch(downloadPosts(posts));
+	return dispatch(downloadPosts(posts, taskId));
 };
 
 const copyAndBlacklistPost = (p: Post): Post => {

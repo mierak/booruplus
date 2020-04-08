@@ -28,14 +28,11 @@ export const saveOrUpdateFromApi = async (post: Post): Promise<Post> => {
 	return savedPost;
 };
 
-export const update = async (post: Post): Promise<number | void> => {
+export const update = async (post: Post): Promise<number> => {
 	return db.transaction('rw', db.posts, db.postsTags, async () => {
 		const postClone = Object.assign({}, post);
 		postClone.selected = false;
-		return db.posts.update(postClone.id, postClone).catch((err) => {
-			console.error(err);
-			throw err;
-		});
+		return db.posts.update(postClone.id, postClone);
 	});
 };
 

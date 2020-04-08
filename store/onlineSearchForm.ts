@@ -120,8 +120,7 @@ const fetchPostsFromDb = (): AppThunk => async (dispatch, getState): Promise<voi
 
 const fetchPosts = (): AppThunk<void> => async (dispatch): Promise<void> => {
 	try {
-		await dispatch(fetchPostsFromApi());
-		return Promise.resolve();
+		return dispatch(fetchPostsFromApi());
 	} catch (err) {
 		console.error('Error occured while trying to fetch posts', err);
 		return Promise.reject(err);
@@ -140,7 +139,9 @@ const fetchMorePosts = (): AppThunk<void> => async (dispatch, getState): Promise
 		};
 		dispatch(searchFormSlice.actions.setPage(page + 1));
 		const posts = await api.getPostsForTags(tagsString, options);
-		dispatch(globalActions.posts.addPosts(posts));
+		posts.forEach(async (post) => {
+			dispatch(globalActions.posts.addPosts([await db.posts.saveOrUpdateFromApi(post)]));
+		});
 		return Promise.resolve();
 	} catch (err) {
 		console.error('Error while loading more posts', err);
