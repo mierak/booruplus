@@ -30,7 +30,7 @@ export const saveOrUpdateFromApi = async (post: Post): Promise<Post> => {
 
 export const update = async (post: Post): Promise<number> => {
 	return db.transaction('rw', db.posts, db.postsTags, async () => {
-		const postClone = Object.assign({}, post);
+		const postClone = { ...post };
 		postClone.selected = false;
 		return db.posts.update(postClone.id, postClone);
 	});
@@ -216,7 +216,7 @@ export const incrementviewcount = async (post: Post): Promise<Post> => {
 		db.posts,
 		db.postsTags,
 		async (): Promise<Post> => {
-			const clone = Object.assign({}, post);
+			const clone = { ...post };
 			if (isNaN(clone.viewCount)) {
 				clone.viewCount = 0; //TODO remove check after db recreation as viewCount is set to 0 in parser
 			}

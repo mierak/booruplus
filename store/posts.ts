@@ -103,7 +103,7 @@ const fetchMostViewedPosts = (limit = 20): AppThunk => async (dispatch): Promise
 const downloadPost = (post: Post): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		const saveImage = useSaveImage();
-		const updatedPost = Object.assign({}, post);
+		const updatedPost = { ...post };
 		saveImage(updatedPost);
 		updatedPost.downloaded = 1;
 		updatedPost.blacklisted = 0;
@@ -168,7 +168,7 @@ const downloadAllPosts = (taskId?: number): AppThunk<void> => async (dispatch, g
 };
 
 const copyAndBlacklistPost = (p: Post): Post => {
-	const post = Object.assign({}, p);
+	const post = { ...p };
 	post.blacklisted = 1;
 	post.downloaded = 0;
 	post.favorite = 0;
@@ -221,7 +221,7 @@ const blackListAllPosts = (): AppThunk => async (dispatch, getStsate): Promise<v
 
 const changePostProperties = (post: Post, options: PostPropertyOptions): AppThunk => async (dispatch): Promise<void> => {
 	try {
-		const clonedPost = Object.assign({}, post);
+		const clonedPost = { ...post };
 		options.blacklisted !== undefined && (clonedPost.blacklisted = options.blacklisted);
 		options.favorite !== undefined && (clonedPost.favorite = options.favorite);
 		options.downloaded !== undefined && (clonedPost.downloaded = options.downloaded);
@@ -237,7 +237,7 @@ const addSelectedPostsToFavorites = (): AppThunk => async (dispatch, getState): 
 	try {
 		const posts = getState().posts.posts.filter((p) => p.selected);
 		posts.forEach((p) => {
-			const post = Object.assign({}, p);
+			const post = { ...p };
 			post.favorite = 1;
 			post.blacklisted = 0;
 			post.selected = false;
@@ -253,7 +253,7 @@ const addAllPostsToFavorites = (): AppThunk => async (dispatch, getState): Promi
 	try {
 		const posts = getState().posts.posts;
 		posts.forEach((p) => {
-			const post = Object.assign({}, p);
+			const post = { ...p };
 			post.favorite = 1;
 			post.blacklisted = 0;
 			post.selected = false;

@@ -59,7 +59,7 @@ export default savedSearchesSlice.reducer;
 
 const searchSavedTagSearchOnline = (savedSearch: SavedSearch): AppThunk => async (dispatch): Promise<void> => {
 	try {
-		const search = Object.assign({}, savedSearch);
+		const search = { ...savedSearch };
 		search.lastSearched = new Date().toUTCString();
 		dispatch(globalActions.savedSearches.updateLastSearched(search));
 		dispatch(globalActions.onlineSearchForm.setSelectedTags(savedSearch.tags));
@@ -74,7 +74,7 @@ const searchSavedTagSearchOnline = (savedSearch: SavedSearch): AppThunk => async
 
 const searchSavedTagSearchOffline = (savedSearch: SavedSearch): AppThunk => async (dispatch): Promise<void> => {
 	try {
-		const search = Object.assign({}, savedSearch);
+		const search = { ...savedSearch };
 		search.lastSearched = new Date().toUTCString();
 		dispatch(globalActions.downloadedSearchForm.setSelectedTags(search.tags));
 		await dispatch(globalActions.downloadedSearchForm.fetchPosts());

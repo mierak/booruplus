@@ -73,7 +73,7 @@ db.posts.hook('creating', (primKey, post) => {
 });
 
 db.posts.hook('updating', (mods, primKey, post) => {
-	const clonedPost = Object.assign({}, post);
+	const clonedPost = { ...post };
 
 	const favorite = Object.prototype.hasOwnProperty.call(mods, 'favorite');
 	const blacklisted = Object.prototype.hasOwnProperty.call(mods, 'blacklisted');

@@ -39,7 +39,7 @@ const loadSettings = (name?: string): AppThunk<Settings> => async (dispatch): Pr
 
 const updateImagePath = (path: string): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
-		const settings = Object.assign({}, getState().settings);
+		const settings = { ...getState().settings };
 		settings.imagesFolderPath = path;
 		db.settings.saveSettings({ name: 'user', values: settings });
 		dispatch(settingsSlice.actions.setImagesFolderPath(path));
@@ -50,7 +50,7 @@ const updateImagePath = (path: string): AppThunk => async (dispatch, getState): 
 
 const updateTheme = (theme: 'dark' | 'light'): AppThunk => async (_, getState): Promise<void> => {
 	try {
-		const settings = Object.assign({}, getState().settings);
+		const settings = { ...getState().settings };
 		settings.theme = theme;
 		db.settings.saveSettings({ name: 'user', values: settings });
 	} catch (err) {
