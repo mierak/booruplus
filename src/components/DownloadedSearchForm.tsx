@@ -1,8 +1,9 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { Button, Form, Col, Row } from 'antd';
+import { Button, Form, Col, Row, Popconfirm } from 'antd';
 
 import { actions } from '../../store';
+import { AppDispatch } from 'store/types';
 
 import TagSearch from './search-form/TagSearch';
 import RatingSelect from './search-form/RatingSelect';
@@ -11,7 +12,7 @@ import SelectedTags from './search-form/SelectedTags';
 import PostCountSelect from './search-form/PostCountSelect';
 import PageSelect from './search-form/PageSelect';
 import Checkboxes from './search-form/Checkboxes';
-import { AppDispatch } from 'store/types';
+import SubmitButton from './search-form/SubmitButton';
 
 interface Props {
 	className?: string;
@@ -19,15 +20,6 @@ interface Props {
 
 const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
-
-	const handleSubmit = async (): Promise<void> => {
-		dispatch(actions.system.setDownloadedSearchFormDrawerVisible(false));
-		dispatch(actions.system.setActiveView('thumbnails'));
-		dispatch(actions.system.setSearchMode('offline'));
-		dispatch(actions.posts.setActivePostIndex(undefined));
-		dispatch(actions.downloadedSearchForm.setPage(0));
-		await dispatch(actions.downloadedSearchForm.fetchPosts());
-	};
 
 	const handleClear = (): void => {
 		dispatch(actions.downloadedSearchForm.clearForm());
@@ -70,9 +62,7 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 					<Checkboxes />
 				</Form.Item>
 				<Form.Item wrapperCol={{ span: 19, offset: 5 }}>
-					<Button type="primary" onClick={handleSubmit}>
-						Search
-					</Button>
+					<SubmitButton mode="offline" />
 					<Button type="dashed" onClick={handleClear} style={{ marginLeft: '8px' }}>
 						Clear
 					</Button>

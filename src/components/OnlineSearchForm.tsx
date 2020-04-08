@@ -11,6 +11,7 @@ import SaveSearchButton from './search-form/SaveSearchButton';
 import PostCountSelect from './search-form/PostCountSelect';
 import PageSelect from './search-form/PageSelect';
 import SelectedTags from './search-form/SelectedTags';
+import SubmitButton from './search-form/SubmitButton';
 
 interface Props {
 	className?: string;
@@ -64,9 +65,7 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 				</Col>
 			</Row>
 			<Form.Item wrapperCol={{ span: 19, offset: 5 }}>
-				<Button type="primary" htmlType="submit" onClick={handleSubmit}>
-					Search
-				</Button>
+				<SubmitButton mode="online" />
 				<Button type="dashed" htmlType="submit" onClick={handleClear} style={{ marginLeft: '8px' }}>
 					Clear
 				</Button>

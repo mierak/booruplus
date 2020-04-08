@@ -140,7 +140,16 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		);
 		const download = renderWithTooltip(<DownloadOutlined key="download" onClick={handleSave} />, 'Download post image', 'download');
 		const blackist = renderWithTooltip(
-			<Popconfirm title="Are you sure you want to blacklist this image?" onConfirm={handleBlacklistClick}>
+			<Popconfirm
+				title="Are you sure you want to blacklist this image?"
+				cancelText="Blacklist"
+				okText="Cancel"
+				onCancel={handleBlacklistClick}
+				okType="default"
+				cancelButtonProps={{
+					type: 'primary'
+				}}
+			>
 				<DeleteOutlined key="delete" />
 			</Popconfirm>,
 			'Blacklist post',
