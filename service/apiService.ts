@@ -1,5 +1,5 @@
 import { Post, PostDto, Tag, Rating, postParser } from '../types/gelbooruTypes';
-import { delay } from '../util/utils';
+import { delay, escapeTag } from '../util/utils';
 
 const BASE_URL = 'https://gelbooru.com/index.php?page=dapi&q=index&json=1';
 const BASE_TAG_URL = `${BASE_URL}&s=tag`;
@@ -68,7 +68,7 @@ export const getTagById = async (id: number): Promise<Tag | undefined> => {
 
 export const getTagByName = async (name: string): Promise<Tag | undefined> => {
 	try {
-		const response = await fetch(`${BASE_TAG_URL}&name=${name}`);
+		const response = await fetch(`${BASE_TAG_URL}&name=${escapeTag(name)}`);
 		const tag: Tag = await response.json();
 		return tag;
 	} catch (err) {
@@ -87,7 +87,7 @@ export const getTagsByNames = async (...names: string[]): Promise<Tag[]> => {
 
 		const tagsFromApi: Tag[][] = [];
 		for (const batch of batches) {
-			const response = await fetch(`${BASE_TAG_URL}&names=${batch.join(' ')}`);
+			const response = await fetch(`${BASE_TAG_URL}&names=${escapeTag(batch.join(' '))}`);
 			const tags: Tag[] = await response.json();
 			tagsFromApi.push(tags);
 			await delay(2000);
@@ -101,9 +101,8 @@ export const getTagsByNames = async (...names: string[]): Promise<Tag[]> => {
 };
 
 export const getTagsByPattern = async (pattern: string): Promise<Tag[]> => {
-	if (pattern.length <= 3) return [];
 	try {
-		const response = await fetch(`${BASE_TAG_URL}&name_pattern=${pattern}&limit=30`);
+		const response = await fetch(`${BASE_TAG_URL}&name_pattern=${escapeTag(pattern)}&limit=30`);
 		const tags: Tag[] = await response.json();
 		return tags;
 	} catch (err) {

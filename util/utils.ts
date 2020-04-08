@@ -97,3 +97,7 @@ export const getRatingName = (rating: Rating): string => {
 			return 's';
 	}
 };
+
+export const escapeTag = (tag: string): string => {
+	return tag.replace('+', '%2b');
+};

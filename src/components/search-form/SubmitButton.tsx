@@ -21,8 +21,8 @@ const SubmitButton: React.FunctionComponent<Props> = ({ mode }: Props) => {
 
 	const handleSubmit = async (): Promise<void> => {
 		dispatch(setFormVisible(false));
+		dispatch(actions.system.setSearchMode(mode));
 		dispatch(actions.system.setActiveView('thumbnails'));
-		dispatch(actions.system.setSearchMode('offline'));
 		dispatch(actions.posts.setActivePostIndex(undefined));
 		dispatch(fetchPosts());
 	};

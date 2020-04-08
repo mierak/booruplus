@@ -40,7 +40,7 @@ const TagSearch: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	useEffect(() => {
 		const load =
 			(mode === 'offline' && actions.downloadedSearchForm.loadByPatternFromDb) || actions.onlineSearchForm.getTagsByPatternFromApi;
-		debounced.length >= 3 && dispatch(load(debounced));
+		debounced.length >= 2 && dispatch(load(debounced));
 	}, [debounced]);
 
 	const handleSelect = (e: SelectValue): void => {
