@@ -5,7 +5,7 @@ import { actions as globalActions } from '.';
 import { AppThunk, OfflineOptions } from './types';
 
 import * as api from '../service/apiService';
-import * as db from '../db';
+import { db } from '../db';
 
 export interface SearchFormState {
 	selectedTags: Tag[];
@@ -26,8 +26,8 @@ export const initialState: SearchFormState = {
 	tagOptions: [],
 	offlineOptions: {
 		blacklisted: false,
-		favorite: false
-	}
+		favorite: false,
+	},
 };
 
 const searchFormSlice = createSlice({
@@ -67,8 +67,8 @@ const searchFormSlice = createSlice({
 		},
 		clear: (): SearchFormState => {
 			return initialState;
-		}
-	}
+		},
+	},
 });
 
 const getTagsByPatternFromApi = (value: string): AppThunk => async (dispatch): Promise<void> => {
@@ -91,7 +91,7 @@ const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<vo
 		const options: api.PostApiOptions = {
 			limit: getState().onlineSearchForm.limit,
 			page: getState().onlineSearchForm.page,
-			rating: getState().onlineSearchForm.rating
+			rating: getState().onlineSearchForm.rating,
 		};
 		//get posts from api
 		const posts = await api.getPostsForTags(tagsString, options);
@@ -135,7 +135,7 @@ const fetchMorePosts = (): AppThunk<void> => async (dispatch, getState): Promise
 		const options: api.PostApiOptions = {
 			limit: getState().onlineSearchForm.limit,
 			page: page + 1,
-			rating: getState().onlineSearchForm.rating
+			rating: getState().onlineSearchForm.rating,
 		};
 		dispatch(searchFormSlice.actions.setPage(page + 1));
 		const posts = await api.getPostsForTags(tagsString, options);
@@ -155,7 +155,7 @@ export const actions = {
 	fetchPostsFromApi,
 	fetchPostsFromDb,
 	fetchPosts,
-	fetchMorePosts
+	fetchMorePosts,
 };
 
 export default searchFormSlice.reducer;

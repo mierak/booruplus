@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppThunk } from './types';
 import { actions as globalActions } from '.';
 
-import * as db from '../db';
+import { db } from '../db';
 import { Tag } from '../types/gelbooruTypes';
 
 export interface TagsState {
@@ -11,7 +11,7 @@ export interface TagsState {
 }
 
 const initialState: TagsState = {
-	tags: []
+	tags: [],
 };
 
 const tagsSlice = createSlice({
@@ -20,8 +20,8 @@ const tagsSlice = createSlice({
 	reducers: {
 		setTags: (state, action: PayloadAction<Tag[]>): void => {
 			state.tags = action.payload;
-		}
-	}
+		},
+	},
 });
 
 export default tagsSlice.reducer;
@@ -91,5 +91,5 @@ export const actions = {
 	loadAllTagsFromDbWithStats,
 	loadByPatternFromDb,
 	searcTagOnline,
-	searchTagOffline
+	searchTagOffline,
 };

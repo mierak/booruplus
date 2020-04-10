@@ -25,7 +25,7 @@ const initialState: SystemState = {
 	isLoadingImage: false,
 	isTagOptionsLoading: false,
 	isTagTableLoading: false,
-	isLoadingMore: false
+	isLoadingMore: false,
 };
 
 const systemSlice = createSlice({
@@ -61,8 +61,8 @@ const systemSlice = createSlice({
 		},
 		setLoadingMore: (state, action: PayloadAction<boolean>): void => {
 			state.isLoadingMore = action.payload;
-		}
-	}
+		},
+	},
 });
 
 const withProgressBar = (actionCallback: (taskId: number) => Promise<void>): AppThunk<void> => async (dispatch): Promise<void> => {

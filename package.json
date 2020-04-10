@@ -58,7 +58,10 @@
 									"name": "main_window",
 									"preload": {
 										"js": "./electron/preload.js"
-									}
+									},
+									"additionalChunks": [
+										"dexieworker"
+									]
 								}
 							]
 						}
@@ -68,12 +71,12 @@
 		}
 	},
 	"devDependencies": {
-		"@electron-forge/cli": "6.0.0-beta.49",
-		"@electron-forge/maker-deb": "6.0.0-beta.49",
-		"@electron-forge/maker-rpm": "6.0.0-beta.49",
-		"@electron-forge/maker-squirrel": "6.0.0-beta.49",
-		"@electron-forge/maker-zip": "6.0.0-beta.49",
-		"@electron-forge/plugin-webpack": "6.0.0-beta.49",
+		"@electron-forge/cli": "^6.0.0-beta.50",
+		"@electron-forge/maker-deb": "6.0.0-beta.50",
+		"@electron-forge/maker-rpm": "6.0.0-beta.50",
+		"@electron-forge/maker-squirrel": "6.0.0-beta.50",
+		"@electron-forge/maker-zip": "6.0.0-beta.50",
+		"@electron-forge/plugin-webpack": "6.0.0-beta.50",
 		"@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
 		"@types/electron-devtools-installer": "^2.2.0",
 		"@types/react": "^16.9.22",
@@ -82,7 +85,6 @@
 		"@types/styled-components": "^5.0.1",
 		"@typescript-eslint/eslint-plugin": "^2.21.0",
 		"@typescript-eslint/parser": "^2.21.0",
-		"copy-webpack-plugin": "^5.1.1",
 		"cross-env": "^7.0.2",
 		"css-loader": "^3.0.0",
 		"electron": "8.0.1",
@@ -96,16 +98,15 @@
 		"redux-devtools-extension": "^2.13.8",
 		"style-loader": "^0.23.1",
 		"ts-loader": "^6.2.1",
-		"typescript": "^3.8.3"
+		"typescript": "^3.8.3",
+		"worker-plugin": "^4.0.2"
 	},
 	"dependencies": {
 		"@reduxjs/toolkit": "^1.2.5",
-		"@types/pouchdb": "^6.4.0",
-		"@welldone-software/why-did-you-render": "^4.0.5",
 		"ant-design-pro": "^2.3.2",
 		"antd": "^4.0.0",
+		"comlink": "^4.2.0",
 		"dexie": "^2.0.4",
-		"dexie-export-import": "^1.0.0-rc.1",
 		"electron-squirrel-startup": "^1.0.0",
 		"react": "^16.12.0",
 		"react-dom": "^16.12.0",

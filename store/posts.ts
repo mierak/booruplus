@@ -6,7 +6,7 @@ import { AppThunk } from './types';
 import { useSaveImage, useDeleteImage } from '../src/hooks/useImageBus';
 import { Post } from '../types/gelbooruTypes';
 import * as api from '../service/apiService';
-import * as db from '../db';
+import { db } from '../db';
 import { PostPropertyOptions } from './types';
 
 export interface PostsState {
@@ -16,7 +16,7 @@ export interface PostsState {
 
 const initialState: PostsState = {
 	activePostIndex: 0,
-	posts: []
+	posts: [],
 };
 
 const postsSlice = createSlice({
@@ -60,8 +60,8 @@ const postsSlice = createSlice({
 		},
 		setPostBlacklisted: (state, action: PayloadAction<{ index: number; blacklisted: 1 | 0 }>): void => {
 			state.posts[action.payload.index].blacklisted = action.payload.blacklisted;
-		}
-	}
+		},
+	},
 });
 
 export default postsSlice.reducer;
@@ -305,5 +305,5 @@ export const actions = {
 	addAllPostsToFavorites,
 	incrementViewCount,
 	previousPost,
-	nextPost
+	nextPost,
 };

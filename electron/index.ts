@@ -18,11 +18,9 @@ if (require('electron-squirrel-startup')) {
 
 	app.quit();
 }
-
 let window: BrowserWindow;
 
 const createWindow = (): void => {
-	console.log('isProd', isProd);
 	if (!isProd) {
 		installExtension(REACT_DEVELOPER_TOOLS)
 			.then((name) => console.log(`Added Extension:  ${name}`))
@@ -40,8 +38,8 @@ const createWindow = (): void => {
 		webPreferences: {
 			webSecurity: false,
 			contextIsolation: true,
-			preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
-		}
+			preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+		},
 	});
 	console.log('NODE ENV', process.env.ENVIRONMENT);
 	// and load the index.html of the app.
@@ -96,8 +94,8 @@ ipcMain.on('createWindow', (event, args) => {
 		webPreferences: {
 			webSecurity: false,
 			contextIsolation: true,
-			preload: __dirname + '/preload.js'
-		}
+			preload: __dirname + '/preload.js',
+		},
 	});
 });
 
@@ -111,7 +109,7 @@ ipcMain.on('theme-changed', async () => {
 	const options: MessageBoxOptions = {
 		message: 'Changing theme requires application restart. Would you like to restart now?',
 		buttons: ['Ok', 'Cancel'],
-		title: 'Restart required'
+		title: 'Restart required',
 	};
 	const result = await dialog.showMessageBox(window, options);
 	if (result.response === 0) {

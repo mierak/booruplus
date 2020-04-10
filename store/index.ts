@@ -21,12 +21,12 @@ export const mainReducer = combineReducers({
 	onlineSearchForm: onlineSearchFormReducer,
 	settings: settingsReducer,
 	dashboard: dashboardReducer,
-	tasks: tasksReducer
+	tasks: tasksReducer,
 });
 
 export const store = configureStore({
 	reducer: mainReducer,
-	middleware: [...getDefaultMiddleware<RootState>()]
+	middleware: [...getDefaultMiddleware<RootState>()],
 });
 
 export const actions = {
@@ -38,5 +38,5 @@ export const actions = {
 	downloadedSearchForm,
 	settings,
 	dashboard,
-	tasks
+	tasks,
 };

@@ -4,7 +4,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { actions as globalActions } from '.';
 import { AppThunk } from './types';
 
-import * as db from 'db';
+import { db } from 'db';
 
 export interface SavedSearchesState {
 	savedSearches: SavedSearch[];
@@ -13,7 +13,7 @@ export interface SavedSearchesState {
 
 const initialState: SavedSearchesState = {
 	savedSearches: [],
-	activeSavedSearch: undefined
+	activeSavedSearch: undefined,
 };
 
 const savedSearchesSlice = createSlice({
@@ -49,8 +49,8 @@ const savedSearchesSlice = createSlice({
 				search.previews = search.previews.filter((preview) => preview.id !== action.payload.previewId);
 				state.savedSearches[index] = search;
 			}
-		}
-	}
+		},
+	},
 });
 
 const { pushSavedSearch } = savedSearchesSlice.actions;
@@ -95,7 +95,7 @@ const saveSearch = (tags: Tag[], rating: Rating): AppThunk => async (dispatch): 
 				tags,
 				rating,
 				lastSearched: undefined,
-				previews: []
+				previews: [],
 			};
 			dispatch(pushSavedSearch(savedSearch));
 		} else {
@@ -156,5 +156,5 @@ export const actions = {
 	saveCurrentSearch,
 	loadSavedSearchesFromDb,
 	addPreviewToActiveSavedSearch,
-	removePreview
+	removePreview,
 };

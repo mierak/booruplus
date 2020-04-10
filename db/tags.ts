@@ -73,7 +73,7 @@ export const getMostFavorited = async (limit = 20): Promise<{ tag: Tag | undefin
 					.where('tag')
 					.equals(tag)
 					.first(),
-				count: await getFavoriteCount(tag.toString())
+				count: await getFavoriteCount(tag.toString()),
 			};
 		})
 	);

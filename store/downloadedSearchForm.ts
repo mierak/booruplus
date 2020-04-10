@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import * as db from '../db';
+import { db } from '../db';
 
 import { AppThunk } from './types';
 import { actions as globalActions } from '.';
@@ -33,7 +33,7 @@ const initialState: DownloadedSearchFormState = {
 	showFavorites: true,
 	showVideos: true,
 	showImages: true,
-	showGifs: true
+	showGifs: true,
 };
 
 const downloadedSearchFormSlice = createSlice({
@@ -103,8 +103,8 @@ const downloadedSearchFormSlice = createSlice({
 		},
 		clearForm: (): DownloadedSearchFormState => {
 			return initialState;
-		}
-	}
+		},
+	},
 });
 
 const getFilterOptions = (state: DownloadedSearchFormState): FilterOptions => {
@@ -117,7 +117,7 @@ const getFilterOptions = (state: DownloadedSearchFormState): FilterOptions => {
 		showGifs: state.showGifs,
 		showImages: state.showImages,
 		showVideos: state.showVideos,
-		showFavorites: state.showFavorites
+		showFavorites: state.showFavorites,
 	};
 };
 

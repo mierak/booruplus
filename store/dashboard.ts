@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import * as db from '../db';
+import { db } from '../db';
 import { AppThunk, TagHistory } from './types';
 import { Tag, Post } from '../types/gelbooruTypes';
 
@@ -29,7 +29,7 @@ const initialState: DashboardState = {
 	mostDownloadedTag: -1,
 	mostSearchedTags: [],
 	ratingCounts: undefined,
-	mostFavoritedTags: []
+	mostFavoritedTags: [],
 };
 
 const dashboardSlice = createSlice({
@@ -59,8 +59,8 @@ const dashboardSlice = createSlice({
 		},
 		setMostFavoritedTags: (state, action: PayloadAction<{ tag: Tag | undefined; count: number }[]>): void => {
 			state.mostFavoritedTags = action.payload;
-		}
-	}
+		},
+	},
 });
 
 const fetchDownloadedPostCount = (): AppThunk => async (dispatch): Promise<void> => {
@@ -146,7 +146,7 @@ export const actions = {
 	fetchRatingCounts,
 	fetchMostSearchedTags,
 	fetchMostViewedPosts,
-	fetchMostFavoritedTags
+	fetchMostFavoritedTags,
 };
 
 export default dashboardSlice.reducer;

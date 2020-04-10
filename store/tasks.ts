@@ -15,7 +15,7 @@ interface TasksState {
 
 const initialState: TasksState = {
 	tasks: {},
-	lastId: 1
+	lastId: 1,
 };
 
 const tasksSlice = createSlice({
@@ -26,7 +26,7 @@ const tasksSlice = createSlice({
 			(state.tasks[action.payload] = {
 				id: action.payload,
 				progressPercent: 0,
-				isCanceled: false
+				isCanceled: false,
 			}),
 				(state.lastId = action.payload);
 		},
@@ -38,8 +38,8 @@ const tasksSlice = createSlice({
 		},
 		setCanceled: (state, action: PayloadAction<{ id: number; value: boolean }>): void => {
 			state.tasks[action.payload.id].isCanceled = action.payload.value;
-		}
-	}
+		},
+	},
 });
 
 const create = (): AppThunk<number> => async (dispatch, getState): Promise<number> => {

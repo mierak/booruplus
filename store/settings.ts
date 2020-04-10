@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import * as db from '../db';
+import { db } from '../db';
 
 import { Settings, AppThunk } from './types';
 
 const initialState: Settings = {
 	imagesFolderPath: '',
-	theme: 'dark'
+	theme: 'dark',
 };
 
 const settingsSlice = createSlice({
@@ -18,8 +18,8 @@ const settingsSlice = createSlice({
 		},
 		setImagesFolderPath: (state, action: PayloadAction<string>): void => {
 			state.imagesFolderPath = action.payload;
-		}
-	}
+		},
+	},
 });
 
 const loadSettings = (name?: string): AppThunk<Settings> => async (dispatch): Promise<Settings> => {
