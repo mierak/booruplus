@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
@@ -7,6 +7,7 @@ import { actions } from '../../store';
 
 import { useLoadImage } from '../../src/hooks/useImageBus';
 import EmptyThumbnails from './EmptyThumbnails';
+import ControllableImage from './controllable-image/ControllableImage';
 
 interface Props {
 	className?: string;
@@ -14,31 +15,28 @@ interface Props {
 
 const Container = styled.div``;
 
-const Image = styled.img`
+const StyledVideo = styled.video`
 	max-width: 100%;
 	max-height: 100vh;
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
+	overflow: hidden;
 `;
-
-// const indexSelector: Selector<RootState, number | undefined> = (state: RootState): number | undefined => state.posts.activePostIndex;
-// const postsSelector: Selector<RootState, Post[]> = (state: RootState): Post[] => state.posts.posts;
-
-// const selector = createSelector<RootState, number | undefined, Post[], Post | undefined>(indexSelector, postsSelector, (index, posts) =>
-// 	index ? posts[index] : undefined
-// );
+const StyledControllableImage = styled(ControllableImage)`
+	max-width: 100%;
+	max-height: 100vh;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	overflow: hidden;
+`;
 
 const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 
 	const index = useSelector((state: RootState) => state.posts.activePostIndex);
 	const post = useSelector((state: RootState) => (index !== undefined && state.posts.posts[index]) || undefined);
-
-	// const post = useSelector(selector);
-
-	// const isLoadingImage = useSelector((state: RootState) => state.system.isLoadingImage);
-	const isLoadingImage = false;
 
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [imageUrl, setImageUrl] = useState<string>('');
@@ -69,21 +67,9 @@ const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 	const renderImage = (): JSX.Element => {
 		if (post) {
 			if (post.fileUrl.includes('webm')) {
-				return (
-					<Image
-						as="video"
-						ref={videoRef}
-						key={post.id}
-						controls
-						autoPlay
-						loop
-						muted
-						onLoad={onLoad}
-						style={{ display: isLoadingImage ? 'hidden' : 'block' }}
-					></Image>
-				);
+				return <StyledVideo ref={videoRef} key={post.id} controls autoPlay loop muted onLoad={onLoad} />;
 			} else {
-				return <Image src={imageUrl} onLoad={onLoad} style={{ display: isLoadingImage ? 'hidden' : 'block' }} />;
+				return <StyledControllableImage url={imageUrl} />;
 			}
 		}
 		return <EmptyThumbnails />;
@@ -107,8 +93,8 @@ const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 
 	return (
 		<Container className={props.className}>
-			{/* {isLoadingImage && <div>LOADING DOPICE</div> && console.log('hue')} */}
 			{renderImage()}
+			{console.log('render image')}
 		</Container>
 	);
 };

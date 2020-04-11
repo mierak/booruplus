@@ -9,7 +9,7 @@ import {
 	TagsOutlined,
 	FormOutlined,
 	SaveOutlined,
-	SettingOutlined
+	SettingOutlined,
 } from '@ant-design/icons';
 
 import { actions } from '../../store';

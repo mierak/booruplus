@@ -16,11 +16,16 @@ interface Props {
 const Container = styled(Layout)`
 	width: 100%;
 	align-items: center;
+	overflow: hidden;
 `;
 
 const StyledThumbnailsList = styled(ThumbnailsList)`
 	max-width: 220px;
 	margin: 0 0 0 7px;
+`;
+
+const StyledLayout = styled(Layout)`
+	overflow-y: hidden;
 `;
 
 const ImageView: React.FunctionComponent<Props> = (props: Props) => {
@@ -31,11 +36,11 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 
 	return (
 		<Container className={props.className}>
-			<Layout>
+			<StyledLayout>
 				<Layout.Content>
 					<FullSizeImage />
 				</Layout.Content>
-			</Layout>
+			</StyledLayout>
 			<Layout.Sider
 				theme={theme === 'light' ? 'light' : 'dark'}
 				collapsible

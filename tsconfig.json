@@ -36,6 +36,7 @@
 		"electron/preload.js",
 		"window.d.ts",
 		"service/apiService.ts",
-		"electron/index.ts"
+		"electron/index.ts",
+		"resizeObserver.d.ts"
 	]
 }

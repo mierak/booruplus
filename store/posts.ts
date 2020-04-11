@@ -283,7 +283,7 @@ const previousPost = (): AppThunk => async (dispatch, getState): Promise<void> =
 const incrementViewCount = (post: Post): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		const updatedPost = await db.posts.incrementviewcount(post);
-		dispatch(postsSlice.actions.updatePost(updatedPost));
+		// dispatch(postsSlice.actions.updatePost(updatedPost));
 	} catch (err) {
 		console.error('Error while incrementing viewCount of post', err, post);
 	}
