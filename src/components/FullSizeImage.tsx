@@ -60,12 +60,7 @@ const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 		}
 	}, [index]);
 
-	return (
-		<Container className={props.className}>
-			{renderImage()}
-			{console.log('render image')}
-		</Container>
-	);
+	return <Container className={props.className}>{renderImage()}</Container>;
 };
 
 export default FullSizeImage;

@@ -27,6 +27,8 @@ export interface PostPropertyOptions {
 export interface Settings {
 	imagesFolderPath: string;
 	theme: 'dark' | 'light';
+	apiKey?: string;
+	gelbooruUsername?: string;
 }
 
 export interface TagHistory {

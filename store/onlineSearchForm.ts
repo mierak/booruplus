@@ -28,8 +28,8 @@ export const initialState: SearchFormState = {
 	tagOptions: [],
 	offlineOptions: {
 		blacklisted: false,
-		favorite: false,
-	},
+		favorite: false
+	}
 };
 
 const searchFormSlice = createSlice({
@@ -43,11 +43,11 @@ const searchFormSlice = createSlice({
 			!state.excludededTags.includes(action.payload) && state.excludededTags.push(action.payload);
 		},
 		removeTag: (state, action: PayloadAction<Tag>): void => {
-			const index = state.selectedTags.findIndex((t) => t.id === action.payload.id);
+			const index = state.selectedTags.findIndex(t => t.id === action.payload.id);
 			state.selectedTags.splice(index, 1);
 		},
 		removeExcludedTag: (state, action: PayloadAction<Tag>): void => {
-			const index = state.excludededTags.findIndex((t) => t.id === action.payload.id);
+			const index = state.excludededTags.findIndex(t => t.id === action.payload.id);
 			state.excludededTags.splice(index, 1);
 		},
 		clearTags: (state): void => {
@@ -79,14 +79,14 @@ const searchFormSlice = createSlice({
 		},
 		clear: (): SearchFormState => {
 			return initialState;
-		},
-	},
+		}
+	}
 });
 
-const getTagsByPatternFromApi = (value: string): AppThunk => async (dispatch): Promise<void> => {
+const getTagsByPatternFromApi = (value: string): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		dispatch(globalActions.system.setTagOptionsLoading(true));
-		const tags = await api.getTagsByPattern(value);
+		const tags = await api.getTagsByPattern(value, getState().settings.apiKey);
 		dispatch(searchFormSlice.actions.setTagOptions(tags));
 	} catch (err) {
 		console.error('Error occured while fetching posts from api by pattern', err);
@@ -100,19 +100,20 @@ const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<vo
 		//construct string of tags
 		const tags = getState().onlineSearchForm.selectedTags;
 		const excludedTags = getState().onlineSearchForm.excludededTags;
-		const tagsString = tags.map((tag) => tag.tag);
-		const excludedTagString = excludedTags.map((tag) => tag.tag);
+		const tagsString = tags.map(tag => tag.tag);
+		const excludedTagString = excludedTags.map(tag => tag.tag);
 		const options: api.PostApiOptions = {
 			limit: getState().onlineSearchForm.limit,
 			page: getState().onlineSearchForm.page,
 			rating: getState().onlineSearchForm.rating,
+			apiKey: getState().settings.apiKey
 		};
 		//get posts from api
 		const posts = await api.getPostsForTags(tagsString, options, excludedTagString);
 		dispatch(globalActions.system.setFetchingPosts(false));
 		//validate posts against db - check favorite/blacklisted/downloaded state
 
-		posts.forEach(async (post) => {
+		posts.forEach(async post => {
 			dispatch(globalActions.posts.addPosts([await db.posts.saveOrUpdateFromApi(post)]));
 		});
 		// dispatch(globalActions.posts.setPosts(validatedPosts));
@@ -124,7 +125,7 @@ const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<vo
 
 const fetchPostsFromDb = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
-		const tagsString = getState().onlineSearchForm.selectedTags.map((tag) => tag.tag);
+		const tagsString = getState().onlineSearchForm.selectedTags.map(tag => tag.tag);
 		const posts = await db.posts.getForTags(...tagsString);
 		dispatch(globalActions.posts.setPosts(posts));
 	} catch (err) {
@@ -145,15 +146,16 @@ const fetchMorePosts = (): AppThunk<void> => async (dispatch, getState): Promise
 	try {
 		const page = getState().onlineSearchForm.page;
 		const tags = getState().onlineSearchForm.selectedTags;
-		const tagsString = tags.map((tag) => tag.tag);
+		const tagsString = tags.map(tag => tag.tag);
 		const options: api.PostApiOptions = {
 			limit: getState().onlineSearchForm.limit,
 			page: page + 1,
 			rating: getState().onlineSearchForm.rating,
+			apiKey: getState().settings.apiKey
 		};
 		dispatch(searchFormSlice.actions.setPage(page + 1));
 		const posts = await api.getPostsForTags(tagsString, options);
-		posts.forEach(async (post) => {
+		posts.forEach(async post => {
 			dispatch(globalActions.posts.addPosts([await db.posts.saveOrUpdateFromApi(post)]));
 		});
 		return Promise.resolve();
@@ -169,7 +171,7 @@ export const actions = {
 	fetchPostsFromApi,
 	fetchPostsFromDb,
 	fetchPosts,
-	fetchMorePosts,
+	fetchMorePosts
 };
 
 export default searchFormSlice.reducer;

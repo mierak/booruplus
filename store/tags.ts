@@ -12,7 +12,7 @@ export interface TagsState {
 }
 
 const initialState: TagsState = {
-	tags: [],
+	tags: []
 };
 
 const tagsSlice = createSlice({
@@ -21,8 +21,8 @@ const tagsSlice = createSlice({
 	reducers: {
 		setTags: (state, action: PayloadAction<Tag[]>): void => {
 			state.tags = action.payload;
-		},
-	},
+		}
+	}
 });
 
 export default tagsSlice.reducer;
@@ -42,7 +42,7 @@ const loadAllTagsFromDbWithStats = (): AppThunk => async (dispatch): Promise<voi
 		const tags = await db.tags.getAll();
 		if (tags) {
 			const tagsWithStats = await Promise.all(
-				tags.map(async (tag) => {
+				tags.map(async tag => {
 					tag.blacklistedCount = await db.tags.getBlacklistedCount(tag.tag);
 					tag.downloadedCount = await db.tags.getDownloadedCount(tag.tag);
 					tag.favoriteCount = await db.tags.getFavoriteCount(tag.tag);
@@ -86,7 +86,7 @@ const searchTagOffline = (tag: Tag): AppThunk => async (dispatch): Promise<void>
 	}
 };
 
-const fetchTags = (tags: string[]): AppThunk<Tag[]> => async (): Promise<Tag[]> => {
+const fetchTags = (tags: string[]): AppThunk<Tag[]> => async (_, getState): Promise<Tag[]> => {
 	try {
 		const tagsFromDb: Tag[] = [];
 		const notFoundTags: string[] = [];
@@ -98,7 +98,7 @@ const fetchTags = (tags: string[]): AppThunk<Tag[]> => async (): Promise<Tag[]> 
 				tagsFromDb.push(tagFromDb);
 			}
 		}
-		const tagsFromApi = await api.getTagsByNames(...notFoundTags);
+		const tagsFromApi = await api.getTagsByNames(notFoundTags, getState().settings.apiKey);
 		return [...tagsFromDb, ...tagsFromApi];
 	} catch (err) {
 		console.error('Error while loading multiple tags from DB', err);
@@ -113,5 +113,5 @@ export const actions = {
 	loadByPatternFromDb,
 	searcTagOnline,
 	searchTagOffline,
-	fetchTags,
+	fetchTags
 };

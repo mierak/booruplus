@@ -141,8 +141,11 @@ ipcMain.on('theme-changed', async () => {
 });
 
 ipcMain.on('open-in-browser', (event: IpcMainEvent, value: string) => {
-	console.log('open');
 	shell.openExternal(value);
+});
+
+ipcMain.on('open-path', (event: IpcMainEvent, value: string) => {
+	shell.openItem(value);
 });
 
 ipcMain.handle('save-image', async (event: IpcMainInvokeEvent, dto: SavePostDto) => {

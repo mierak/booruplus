@@ -11,6 +11,7 @@ export interface PostApiOptions {
 	limit?: number;
 	rating?: Rating;
 	page?: number;
+	apiKey?: string;
 }
 
 export const getPostsForTags = async (tags: string[], options: PostApiOptions = {}, excludedTags?: string[]): Promise<Post[]> => {
@@ -19,14 +20,14 @@ export const getPostsForTags = async (tags: string[], options: PostApiOptions = 
 	if (options.rating && options.rating !== 'any') tags.push(`rating:${options.rating}`);
 
 	//construct API URL
-	let url = `${BASE_POST_URL}&limit=${options.limit}&tags=${tags.join(' ')}`;
+	let url = `${BASE_POST_URL}${options.apiKey}&limit=${options.limit}&tags=${tags.join(' ')}`;
 	if (excludedTags && excludedTags.length > 0) url += ` -${excludedTags.join(' -')}`;
 	if (options.page) url += `&pid=${options.page}`;
 
 	try {
 		const response = await fetch(url);
 		const responsePosts: PostDto[] = await response.json();
-		const posts = responsePosts.map((postDto) => parsePost(postDto));
+		const posts = responsePosts.map(postDto => parsePost(postDto));
 		return posts;
 	} catch (err) {
 		console.error('Error while fetching posts from api', err);
@@ -34,9 +35,9 @@ export const getPostsForTags = async (tags: string[], options: PostApiOptions = 
 	}
 };
 
-export const getPostById = async (id: number): Promise<Post | undefined> => {
+export const getPostById = async (id: number, apiKey?: string): Promise<Post | undefined> => {
 	try {
-		const response = await fetch(`${BASE_POST_URL}&id=${id}`);
+		const response = await fetch(`${BASE_POST_URL}${apiKey}&id=${id}`);
 		const post: Post = await response.json();
 		return post;
 	} catch (err) {
@@ -45,9 +46,9 @@ export const getPostById = async (id: number): Promise<Post | undefined> => {
 	}
 };
 
-export const getTags = async (page = 0): Promise<Tag[]> => {
+export const getTags = async (page = 0, apiKey?: string): Promise<Tag[]> => {
 	try {
-		const response = await fetch(`${BASE_TAG_URL}&pid=${page}`);
+		const response = await fetch(`${BASE_TAG_URL}${apiKey}&pid=${page}`);
 		const tags: Tag[] = await response.json();
 		return tags;
 	} catch (err) {
@@ -56,9 +57,9 @@ export const getTags = async (page = 0): Promise<Tag[]> => {
 	}
 };
 
-export const getTagById = async (id: number): Promise<Tag | undefined> => {
+export const getTagById = async (id: number, apiKey?: string): Promise<Tag | undefined> => {
 	try {
-		const response = await fetch(`${BASE_TAG_URL}&id=${id}`);
+		const response = await fetch(`${BASE_TAG_URL}${apiKey}&id=${id}`);
 		const tag: Tag = await response.json();
 		return tag;
 	} catch (err) {
@@ -67,9 +68,9 @@ export const getTagById = async (id: number): Promise<Tag | undefined> => {
 	}
 };
 
-export const getTagByName = async (name: string): Promise<Tag | undefined> => {
+export const getTagByName = async (name: string, apiKey?: string): Promise<Tag | undefined> => {
 	try {
-		const response = await fetch(`${BASE_TAG_URL}&name=${escapeTag(name)}`);
+		const response = await fetch(`${BASE_TAG_URL}${apiKey}&name=${escapeTag(name)}`);
 		const tag: Tag = await response.json();
 		return tag;
 	} catch (err) {
@@ -78,7 +79,7 @@ export const getTagByName = async (name: string): Promise<Tag | undefined> => {
 	}
 };
 
-export const getTagsByNames = async (...names: string[]): Promise<Tag[]> => {
+export const getTagsByNames = async (names: string[], apiKey?: string): Promise<Tag[]> => {
 	try {
 		const deduplicatedNames = Array.from(new Set(names));
 		const batches: string[][] = [];
@@ -88,7 +89,7 @@ export const getTagsByNames = async (...names: string[]): Promise<Tag[]> => {
 
 		const tagsFromApi: Tag[][] = [];
 		for (const batch of batches) {
-			const response = await fetch(`${BASE_TAG_URL}&names=${escapeTag(batch.join(' '))}`);
+			const response = await fetch(`${BASE_TAG_URL}${apiKey}&names=${escapeTag(batch.join(' '))}`);
 			const tags: Tag[] = await response.json();
 			tagsFromApi.push(tags);
 			await delay(2000);
@@ -101,9 +102,9 @@ export const getTagsByNames = async (...names: string[]): Promise<Tag[]> => {
 	}
 };
 
-export const getTagsByPattern = async (pattern: string): Promise<Tag[]> => {
+export const getTagsByPattern = async (pattern: string, apiKey?: string): Promise<Tag[]> => {
 	try {
-		const response = await fetch(`${BASE_TAG_URL}&name_pattern=%${escapeTag(pattern)}%&limit=30`);
+		const response = await fetch(`${BASE_TAG_URL}${apiKey}&name_pattern=%${escapeTag(pattern)}%&limit=30`);
 		const tags: Tag[] = await response.json();
 		return tags;
 	} catch (err) {

@@ -16,7 +16,7 @@ export interface PostsState {
 
 const initialState: PostsState = {
 	activePostIndex: 0,
-	posts: [],
+	posts: []
 };
 
 const postsSlice = createSlice({
@@ -38,13 +38,13 @@ const postsSlice = createSlice({
 			state.posts.push(...action.payload);
 		},
 		updatePost: (state, action: PayloadAction<Post>): void => {
-			const index = state.posts.findIndex((p) => p.id === action.payload.id);
+			const index = state.posts.findIndex(p => p.id === action.payload.id);
 			state.posts[index] = action.payload;
 		},
 		updatePosts: (state, action: PayloadAction<Post[]>): void => {
 			const posts = action.payload;
-			posts.forEach((post) => {
-				const index = state.posts.findIndex((p) => p.id === post.id);
+			posts.forEach(post => {
+				const index = state.posts.findIndex(p => p.id === post.id);
 				state.posts[index] = post;
 			});
 		},
@@ -55,13 +55,13 @@ const postsSlice = createSlice({
 			state.posts[action.payload.index].selected = action.payload.selected;
 		},
 		setPostSelected: (state, action: PayloadAction<{ post: Post; selected: boolean }>): void => {
-			const post = state.posts.find((p) => p.id === action.payload.post.id);
+			const post = state.posts.find(p => p.id === action.payload.post.id);
 			post && (post.selected = action.payload.selected);
 		},
 		setPostBlacklisted: (state, action: PayloadAction<{ index: number; blacklisted: 1 | 0 }>): void => {
 			state.posts[action.payload.index].blacklisted = action.payload.blacklisted;
-		},
-	},
+		}
+	}
 });
 
 export default postsSlice.reducer;
@@ -69,13 +69,13 @@ export default postsSlice.reducer;
 const deduplicateAndCheckTagsAgainstDb = async (tags: string[]): Promise<string[]> => {
 	const deduplicated = Array.from(new Set(tags));
 	const checked = await Promise.all(
-		deduplicated.map(async (tag) => {
+		deduplicated.map(async tag => {
 			const exists = await db.tags.checkIfExists(tag);
 			if (!exists) return tag;
 		})
 	);
 	const checkedAndFiltered: string[] = [];
-	checked.forEach((val) => val !== undefined && checkedAndFiltered.push(val));
+	checked.forEach(val => val !== undefined && checkedAndFiltered.push(val));
 	return checkedAndFiltered;
 };
 
@@ -100,7 +100,7 @@ const fetchMostViewedPosts = (limit = 20): AppThunk => async (dispatch): Promise
 	}
 };
 
-const downloadPost = (post: Post): AppThunk => async (dispatch): Promise<void> => {
+const downloadPost = (post: Post): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		const saveImage = useSaveImage();
 		const updatedPost = { ...post };
@@ -111,7 +111,7 @@ const downloadPost = (post: Post): AppThunk => async (dispatch): Promise<void> =
 
 		dispatch(postsSlice.actions.updatePost(updatedPost));
 		const filteredTags = await deduplicateAndCheckTagsAgainstDb(updatedPost.tags);
-		const tagsFromApi = await api.getTagsByNames(...filteredTags);
+		const tagsFromApi = await api.getTagsByNames(filteredTags, getState().settings.apiKey);
 		db.tags.saveBulk(tagsFromApi);
 	} catch (err) {
 		console.error('Error while downloading post', err);
@@ -132,7 +132,6 @@ const downloadPosts = (posts: Post[], taskId?: number): AppThunk => async (dispa
 				post.blacklisted = 0;
 				post.selected = false;
 				const asdf = await db.posts.update(post);
-				console.log('asdf', asdf);
 				await saveImage(post);
 
 				taskId && dispatch(globalActions.tasks.setProgress({ id: taskId, progress: (postsDone++ / (posts.length - 1)) * 100 }));
@@ -149,7 +148,7 @@ const downloadPosts = (posts: Post[], taskId?: number): AppThunk => async (dispa
 
 		dispatch(globalActions.posts.updatePosts(updatedPosts));
 		const filteredTags = await deduplicateAndCheckTagsAgainstDb(tagsToSave);
-		const tagsFromApi = await api.getTagsByNames(...filteredTags);
+		const tagsFromApi = await api.getTagsByNames(filteredTags, getState().settings.apiKey);
 		db.tags.saveBulk(tagsFromApi);
 		return Promise.resolve();
 	} catch (err) {
@@ -159,7 +158,7 @@ const downloadPosts = (posts: Post[], taskId?: number): AppThunk => async (dispa
 };
 
 const downloadSelectedPosts = (taskId?: number): AppThunk => async (dispatch, getState): Promise<void> => {
-	const posts = getState().posts.posts.filter((p) => p.selected);
+	const posts = getState().posts.posts.filter(p => p.selected);
 	return dispatch(downloadPosts(posts, taskId));
 };
 const downloadAllPosts = (taskId?: number): AppThunk<void> => async (dispatch, getState): Promise<void> => {
@@ -192,8 +191,8 @@ const blacklistPost = (post: Post): AppThunk => async (dispatch): Promise<void> 
 const blacklistSelectedPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		const deleteImage = useDeleteImage();
-		const posts = getState().posts.posts.filter((p) => p.selected);
-		posts.forEach((p) => {
+		const posts = getState().posts.posts.filter(p => p.selected);
+		posts.forEach(p => {
 			const post = copyAndBlacklistPost(p);
 			deleteImage(post);
 			db.posts.update(post);
@@ -208,7 +207,7 @@ const blackListAllPosts = (): AppThunk => async (dispatch, getStsate): Promise<v
 	try {
 		const deleteImage = useDeleteImage();
 		const posts = getStsate().posts.posts;
-		posts.forEach((p) => {
+		posts.forEach(p => {
 			const post = copyAndBlacklistPost(p);
 			deleteImage(post);
 			db.posts.update(post);
@@ -235,8 +234,8 @@ const changePostProperties = (post: Post, options: PostPropertyOptions): AppThun
 
 const addSelectedPostsToFavorites = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
-		const posts = getState().posts.posts.filter((p) => p.selected);
-		posts.forEach((p) => {
+		const posts = getState().posts.posts.filter(p => p.selected);
+		posts.forEach(p => {
 			const post = { ...p };
 			post.favorite = 1;
 			post.blacklisted = 0;
@@ -252,7 +251,7 @@ const addSelectedPostsToFavorites = (): AppThunk => async (dispatch, getState): 
 const addAllPostsToFavorites = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		const posts = getState().posts.posts;
-		posts.forEach((p) => {
+		posts.forEach(p => {
 			const post = { ...p };
 			post.favorite = 1;
 			post.blacklisted = 0;
@@ -305,5 +304,5 @@ export const actions = {
 	addAllPostsToFavorites,
 	incrementViewCount,
 	previousPost,
-	nextPost,
+	nextPost
 };

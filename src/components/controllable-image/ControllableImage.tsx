@@ -48,7 +48,7 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 				width: container.clientWidth,
 				height: container.clientHeight,
 				offsetX: viewport.getBoundingClientRect().left,
-				offsetY: viewport.getBoundingClientRect().top,
+				offsetY: viewport.getBoundingClientRect().top
 			});
 		}
 	};
@@ -140,10 +140,10 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 			};
 			loadImage(
 				post,
-				(response) => {
+				response => {
 					!url.includes('webm') && (img.src = response.data);
 				},
-				(response) => {
+				response => {
 					!url.includes('webm') && (img.src = response.fileUrl);
 				}
 			);
@@ -152,7 +152,6 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 
 	return (
 		<Container ref={containerRef} className={className}>
-			{console.log('render')}
 			{showControls && renderZoomButtons()}
 			<canvas ref={viewportRef} height={1000} width={1000} />
 		</Container>

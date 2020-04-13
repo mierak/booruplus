@@ -6,7 +6,7 @@ import { Settings, AppThunk } from './types';
 
 const initialState: Settings = {
 	imagesFolderPath: '',
-	theme: 'dark',
+	theme: 'dark'
 };
 
 const settingsSlice = createSlice({
@@ -19,7 +19,13 @@ const settingsSlice = createSlice({
 		setImagesFolderPath: (state, action: PayloadAction<string>): void => {
 			state.imagesFolderPath = action.payload;
 		},
-	},
+		setGelbooruUsername: (state, action: PayloadAction<string>): void => {
+			state.gelbooruUsername = action.payload;
+		},
+		setApiKey: (state, action: PayloadAction<string>): void => {
+			state.apiKey = action.payload;
+		}
+	}
 });
 
 const loadSettings = (name?: string): AppThunk<Settings> => async (dispatch): Promise<Settings> => {
@@ -37,28 +43,71 @@ const loadSettings = (name?: string): AppThunk<Settings> => async (dispatch): Pr
 	}
 };
 
-const updateImagePath = (path: string): AppThunk => async (dispatch, getState): Promise<void> => {
+const updateImagePath = (path: string): AppThunk<string> => async (dispatch, getState): Promise<string> => {
 	try {
 		const settings = { ...getState().settings };
 		settings.imagesFolderPath = path;
-		db.settings.saveSettings({ name: 'user', values: settings });
 		dispatch(settingsSlice.actions.setImagesFolderPath(path));
+		return await db.settings.saveSettings({ name: 'user', values: settings });
 	} catch (err) {
 		console.error('Error while updating image path setting', err);
+		return Promise.reject(err);
 	}
 };
 
-const updateTheme = (theme: 'dark' | 'light'): AppThunk => async (_, getState): Promise<void> => {
+const updateTheme = (theme: 'dark' | 'light'): AppThunk<string> => async (_, getState): Promise<string> => {
 	try {
 		const settings = { ...getState().settings };
 		settings.theme = theme;
-		db.settings.saveSettings({ name: 'user', values: settings });
+		return await db.settings.saveSettings({ name: 'user', values: settings });
 	} catch (err) {
 		console.error('Error while updating theme', err);
+		return Promise.reject(err);
 	}
-	return Promise.resolve();
 };
 
-export const actions = { ...settingsSlice.actions, loadSettings, updateImagePath, updateTheme };
+const updateApiKey = (key: string): AppThunk<string> => async (dispatch, getState): Promise<string> => {
+	try {
+		const settings = { ...getState().settings };
+		settings.apiKey = key;
+		dispatch(settingsSlice.actions.setApiKey(key));
+		return await db.settings.saveSettings({ name: 'user', values: settings });
+	} catch (err) {
+		console.error('Error while updating API key');
+		return Promise.reject(err);
+	}
+};
+
+const updateGelbooruUsername = (username: string): AppThunk<string> => async (dispatch, getState): Promise<string> => {
+	try {
+		const settings = { ...getState().settings };
+		settings.gelbooruUsername = username;
+		dispatch(settingsSlice.actions.setGelbooruUsername(username));
+		return await db.settings.saveSettings({ name: 'user', values: settings });
+	} catch (err) {
+		console.error('Error while updating username key');
+		return Promise.reject(err);
+	}
+};
+
+const saveSettings = (): AppThunk<string> => async (_, getState): Promise<string> => {
+	try {
+		const settings = { ...getState().settings };
+		return await db.settings.saveSettings({ name: 'user', values: settings });
+	} catch (err) {
+		console.error('Error while updating username key');
+		return Promise.reject(err);
+	}
+};
+
+export const actions = {
+	...settingsSlice.actions,
+	loadSettings,
+	updateImagePath,
+	updateTheme,
+	updateApiKey,
+	updateGelbooruUsername,
+	saveSettings
+};
 
 export default settingsSlice.reducer;
