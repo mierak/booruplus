@@ -134,3 +134,22 @@ export const sortTagsByType = (tags: Tag[]): Tag[] => {
 	}
 	return [...artistTags, ...characterTags, ...copyrightTags, ...metadataTags, ...tagTags];
 };
+
+/**
+ * Compares two arrays of tags
+ * @param arr1 first array to compare
+ * @param arr2 second array to compare
+ * @returns False if arrays have different length and when arrays dont contain the same tags. True if all tags are in both arrays
+ */
+export const compareTagArrays = (arr1: Tag[], arr2: Tag[]): boolean => {
+	if (arr1.length !== arr2.length) {
+		return false;
+	}
+
+	const arr1Strings = arr1.map((tag) => tag.tag);
+	const arr2Strings = arr2.map((tag) => tag.tag);
+
+	const both = [...arr1Strings, ...arr2Strings];
+
+	return both.every((tag) => arr1Strings.includes(tag) && arr2Strings.includes(tag));
+};

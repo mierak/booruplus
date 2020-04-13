@@ -10,7 +10,6 @@ import { isFilenameVideo } from 'util/utils';
 import EmptyThumbnails from './EmptyThumbnails';
 import ControllableImage from './controllable-image/ControllableImage';
 import Video from './Video';
-import { Spin } from 'antd';
 
 interface Props {
 	className?: string;

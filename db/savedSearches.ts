@@ -1,6 +1,7 @@
 import db from './database';
 import { SavedSearch, Rating, Tag } from '../types/gelbooruTypes';
 import { SavedSearch as DbSavedSearch } from './types';
+import { compareTagArrays } from 'util/utils';
 
 export const save = async (savedSearch: SavedSearch): Promise<number | undefined> => {
 	try {
@@ -22,18 +23,22 @@ export const save = async (savedSearch: SavedSearch): Promise<number | undefined
 	}
 };
 
-export const createAndSave = async (rating: Rating, tags: Tag[], excludedTags: Tag[]): Promise<number> => {
-	// const allSearches = await db.savedSearches.toArray();
-	// let found = false;
-	// allSearches.forEach((search) => {
-	// 	if (!found) {
-	// 		found = search.tags.every((tag) => tags.includes());
-	// 		console.log('found', found);
-	// 	}
-	// });
-	// if (found) {
-	// 	console.log('EXISTS');
-	// }
+export const createAndSave = async (rating: Rating, tags: Tag[], excludedTags: Tag[]): Promise<number | 'already-exists'> => {
+	// Check if SavedSearch with identical tags & excluded tags already exists
+	let found = false;
+	const allSearches = await db.savedSearches.toArray();
+	for (const search of allSearches) {
+		const everyTag = compareTagArrays(tags, search.tags);
+		const everyExcludedTag = compareTagArrays(excludedTags, search.excludedTags);
+		if (everyTag && everyExcludedTag) {
+			found = true;
+			break;
+		}
+	}
+	if (found) {
+		return 'already-exists';
+	}
+
 	return db.savedSearches.put({
 		previews: [],
 		rating,

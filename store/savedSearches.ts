@@ -5,6 +5,7 @@ import { actions as globalActions } from '.';
 import { AppThunk } from './types';
 
 import { db } from 'db';
+import { notification } from 'antd';
 
 export interface SavedSearchesState {
 	savedSearches: SavedSearch[];
@@ -91,7 +92,7 @@ const searchSavedTagSearchOffline = (savedSearch: SavedSearch): AppThunk => asyn
 const saveSearch = (tags: Tag[], excludedTags: Tag[], rating: Rating): AppThunk => async (dispatch): Promise<void> => {
 	try {
 		const id = await db.savedSearches.createAndSave(rating, tags, excludedTags);
-		if (id) {
+		if (id && typeof id === 'number') {
 			const savedSearch: SavedSearch = {
 				id,
 				tags,
@@ -101,6 +102,12 @@ const saveSearch = (tags: Tag[], excludedTags: Tag[], rating: Rating): AppThunk 
 				previews: [],
 			};
 			dispatch(pushSavedSearch(savedSearch));
+		} else if (id === 'already-exists') {
+			notification.error({
+				message: 'Saved Search already exists',
+				description: 'Could not save search because it already exists in the database',
+				duration: 2,
+			});
 		} else {
 			throw new Error('Could not persist save search');
 		}

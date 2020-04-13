@@ -6,8 +6,8 @@ import { PlusOutlined, MinusOutlined, PicCenterOutlined, TagsOutlined, GlobalOut
 
 import { Renderer } from './renderer';
 import { Post } from 'types/gelbooruTypes';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from 'store/types';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from 'store/types';
 import { actions } from 'store/';
 import TagsPopover from './TagsPopover';
 import { useLoadImage } from 'hooks/useImageBus';
@@ -39,8 +39,6 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 	const containerRef = useRef<HTMLDivElement>(null);
 	const viewportRef = useRef<HTMLCanvasElement>(null);
 	const renderer = useState<Renderer>(new Renderer())[0];
-
-	const isLoadingImage = useSelector((state: RootState) => state.system.isLoadingImage);
 
 	const initViewport = (viewport: HTMLCanvasElement, container: HTMLDivElement): void => {
 		if (renderer) {
