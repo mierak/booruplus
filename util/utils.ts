@@ -40,7 +40,7 @@ export const prefixDataWithContentType = (data: string, extension: string): stri
 			prefix += 'video/mp4';
 			break;
 		default:
-			throw 'Unsupported content type';
+			throw new Error('Unsupported content type');
 	}
 	return `${prefix}${suffix}${data}`;
 };
@@ -83,6 +83,10 @@ export const delay = (ms: number): Promise<void> => new Promise((_) => setTimeou
 
 export const isExtensionVideo = (extension: string): boolean => {
 	return extension === 'mp4' || extension === 'webm';
+};
+
+export const isFilenameVideo = (filename: string): boolean => {
+	return isExtensionVideo(getImageExtensionFromFilename(filename));
 };
 
 export const getRatingName = (rating: Rating): string => {

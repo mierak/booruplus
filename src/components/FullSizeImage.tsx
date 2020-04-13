@@ -1,13 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import { RootState } from '../../store/types';
 import { actions } from '../../store';
 
-import { useLoadImage } from '../../src/hooks/useImageBus';
+import { isFilenameVideo } from 'util/utils';
+
 import EmptyThumbnails from './EmptyThumbnails';
 import ControllableImage from './controllable-image/ControllableImage';
+import Video from './Video';
+import { Spin } from 'antd';
 
 interface Props {
 	className?: string;
@@ -15,7 +18,8 @@ interface Props {
 
 const Container = styled.div``;
 
-const StyledVideo = styled.video`
+const StyledControllableImage = styled(ControllableImage)`
+	position: relative;
 	max-width: 100%;
 	max-height: 100vh;
 	display: block;
@@ -23,8 +27,8 @@ const StyledVideo = styled.video`
 	margin-right: auto;
 	overflow: hidden;
 `;
-const StyledControllableImage = styled(ControllableImage)`
-	position: relative;
+
+const StyledVideo = styled(Video)`
 	max-width: 100%;
 	max-height: 100vh;
 	display: block;
@@ -39,38 +43,12 @@ const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 	const index = useSelector((state: RootState) => state.posts.activePostIndex);
 	const post = useSelector((state: RootState) => (index !== undefined && state.posts.posts[index]) || undefined);
 
-	const videoRef = useRef<HTMLVideoElement>(null);
-	const [imageUrl, setImageUrl] = useState<string>('');
-	const loadImage = useLoadImage();
-
-	const setVideo = (src: string): void => {
-		if (videoRef.current) {
-			const source = document.createElement('source');
-			source.setAttribute('src', src);
-			videoRef.current.appendChild(source);
-			videoRef.current.load();
-			videoRef.current.play();
-		}
-	};
-
-	const handleLoadResponse = (src: string, url: string): void => {
-		if (url.includes('webm')) {
-			setVideo(src);
-		} else {
-			setImageUrl(src);
-		}
-	};
-
-	const onLoad = (): void => {
-		dispatch(actions.system.setIsLoadingImage(false));
-	};
-
 	const renderImage = (): JSX.Element => {
 		if (post) {
-			if (post.fileUrl.includes('webm')) {
-				return <StyledVideo ref={videoRef} key={post.id} controls autoPlay loop muted onLoad={onLoad} />;
+			if (isFilenameVideo(post.image)) {
+				return <StyledVideo post={post} />;
 			} else {
-				return <StyledControllableImage url={imageUrl} post={post} showControls />;
+				return <StyledControllableImage url={post.fileUrl} post={post} showControls />;
 			}
 		}
 		return <EmptyThumbnails />;
@@ -78,15 +56,6 @@ const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 
 	useEffect(() => {
 		if (post) {
-			loadImage(
-				post,
-				(response) => {
-					handleLoadResponse(response.data, response.post.fileUrl);
-				},
-				(response) => {
-					handleLoadResponse(response.fileUrl, response.fileUrl);
-				}
-			);
 			dispatch(actions.posts.incrementViewCount(post));
 			dispatch(actions.system.setIsLoadingImage(true));
 		}

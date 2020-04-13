@@ -6,10 +6,11 @@ import { PlusOutlined, MinusOutlined, PicCenterOutlined, TagsOutlined, GlobalOut
 
 import { Renderer } from './renderer';
 import { Post } from 'types/gelbooruTypes';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from 'store/types';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from 'store/types';
 import { actions } from 'store/';
 import TagsPopover from './TagsPopover';
+import { useLoadImage } from 'hooks/useImageBus';
 
 interface Props {
 	url: string;
@@ -34,9 +35,12 @@ const StyledControlsContainer = styled.div`
 
 const ControllableImage: React.FunctionComponent<Props> = ({ url, className, post, showControls }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
+	const loadImage = useLoadImage();
 	const containerRef = useRef<HTMLDivElement>(null);
 	const viewportRef = useRef<HTMLCanvasElement>(null);
 	const renderer = useState<Renderer>(new Renderer())[0];
+
+	const isLoadingImage = useSelector((state: RootState) => state.system.isLoadingImage);
 
 	const initViewport = (viewport: HTMLCanvasElement, container: HTMLDivElement): void => {
 		if (renderer) {
@@ -129,13 +133,22 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 		const viewport = viewportRef.current;
 		const container = containerRef.current;
 		if (renderer && viewport && container) {
+			dispatch(actions.system.setIsLoadingImage(true));
 			const img = new Image();
 			img.onload = (): void => {
+				dispatch(actions.system.setIsLoadingImage(false));
 				initViewport(viewport, container);
 				renderer.renderImage(img);
 			};
-			img.src = url;
-			initViewport(viewport, container);
+			loadImage(
+				post,
+				(response) => {
+					!url.includes('webm') && (img.src = response.data);
+				},
+				(response) => {
+					!url.includes('webm') && (img.src = response.fileUrl);
+				}
+			);
 		}
 	}, [url]);
 

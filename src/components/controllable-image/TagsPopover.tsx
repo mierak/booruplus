@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Table, Tag as AntTag, Button } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 
 import { AppDispatch, RootState } from 'store/types';
 import { Tag } from 'types/gelbooruTypes';
@@ -42,7 +43,7 @@ const TagsPopover: React.FunctionComponent<Props> = ({ tags }: Props) => {
 		return <AntTag color={getTagColor(tag.type)}>{tag.tag}</AntTag>;
 	};
 
-	const renderActions = (_: unknown, record: Tag): JSX.Element => {
+	const renderActions = (_: unknown, record: Tag): React.ReactNode => {
 		const handleOnlineSearch = async (): Promise<void> => {
 			dispatch(actions.system.setFetchingPosts(true));
 			dispatch(actions.onlineSearchForm.clear());
@@ -62,16 +63,37 @@ const TagsPopover: React.FunctionComponent<Props> = ({ tags }: Props) => {
 			await dispatch(actions.downloadedSearchForm.fetchPosts());
 			dispatch(actions.system.setFetchingPosts(false));
 		};
-		return (
-			<div>
-				<Button type="link" onClick={handleOnlineSearch}>
-					Online
-				</Button>
-				<Button type="link" onClick={handleOfflineSearch}>
-					Offline
-				</Button>
-			</div>
-		);
+
+		const handleAddOnline = (): void => {
+			dispatch(actions.onlineSearchForm.addTag(record));
+		};
+
+		const handleAddOffline = (): void => {
+			dispatch(actions.downloadedSearchForm.addTag(record));
+		};
+
+		return [
+			<Button
+				type="link"
+				key="btn-online-add-tag"
+				icon={<PlusOutlined style={{ fontSize: '12px' }} />}
+				onClick={handleAddOnline}
+				title="Add tag to online search"
+			/>,
+			<Button key="btn-search-online" type="link" onClick={handleOnlineSearch}>
+				Online
+			</Button>,
+			<Button
+				type="link"
+				key="btn-offline-add-tag"
+				icon={<PlusOutlined style={{ fontSize: '12px' }} />}
+				onClick={handleAddOffline}
+				title="Add tag to offline search"
+			/>,
+			<Button key="btn-search-offline" type="link" onClick={handleOfflineSearch}>
+				Offline
+			</Button>,
+		];
 	};
 
 	return (
