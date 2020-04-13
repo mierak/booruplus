@@ -5,17 +5,17 @@ const WorkerPlugin = require('worker-plugin');
 
 rules.push({
 	test: /\.css$/,
-	use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
+	use: [{ loader: 'style-loader' }, { loader: 'css-loader' }]
 });
 plugins.push(new WorkerPlugin());
 
 module.exports = {
 	output: {
 		chunkFilename: 'main_window/[name].js',
-		publicPath: '../',
+		publicPath: '../'
 	},
 	module: {
-		rules,
+		rules
 	},
 	plugins: plugins,
 	resolve: {
@@ -26,7 +26,7 @@ module.exports = {
 			types: path.resolve(__dirname, 'types'),
 			util: path.resolve(__dirname, 'util'),
 			store: path.resolve(__dirname, 'store'),
-			hooks: path.resolve(__dirname, 'src/hooks'),
-		},
-	},
+			hooks: path.resolve(__dirname, 'src/hooks')
+		}
+	}
 };

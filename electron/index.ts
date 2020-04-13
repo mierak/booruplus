@@ -7,6 +7,8 @@ import { SavePostDto } from '../types/processDto';
 import { Post } from '../types/gelbooruTypes';
 import { prefixDataWithContentType, getImageExtensionFromFilename } from '../util/utils';
 
+import path from 'path';
+
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 const isProd = app.isPackaged;
@@ -23,12 +25,12 @@ let window: BrowserWindow;
 const createWindow = (): void => {
 	if (!isProd) {
 		installExtension(REACT_DEVELOPER_TOOLS)
-			.then((name) => console.log(`Added Extension:  ${name}`))
-			.catch((err) => console.log('An error occurred: ', err));
+			.then(name => console.log(`Added Extension:  ${name}`))
+			.catch(err => console.log('An error occurred: ', err));
 
 		installExtension(REDUX_DEVTOOLS)
-			.then((name) => console.log(`Added Extension:  ${name}`))
-			.catch((err) => console.log('An error occurred: ', err));
+			.then(name => console.log(`Added Extension:  ${name}`))
+			.catch(err => console.log('An error occurred: ', err));
 	}
 	// Create the browser window.
 
@@ -38,10 +40,10 @@ const createWindow = (): void => {
 		webPreferences: {
 			webSecurity: false,
 			contextIsolation: true,
-			preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+			preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
 		},
+		show: false
 	});
-	console.log('NODE ENV', process.env.ENVIRONMENT);
 	// and load the index.html of the app.
 
 	if (!isProd) {
@@ -53,13 +55,33 @@ const createWindow = (): void => {
 	window = mainWindow;
 };
 
+const createSplashScreen = (): BrowserWindow => {
+	const splashScreen = new BrowserWindow({
+		width: 640,
+		height: 360,
+		darkTheme: true,
+		frame: false,
+		resizable: false,
+		autoHideMenuBar: true
+	});
+	splashScreen.loadURL(path.resolve(__dirname, './splash_screen.html'));
+	return splashScreen;
+};
+
 // This method will be called when Electron has finished
 
 // initialization and is ready to create browser windows.
 
 // Some APIs can only be used after this event occurs.
 
-app.on('ready', createWindow);
+app.on('ready', () => {
+	const splashScreen = createSplashScreen();
+	createWindow();
+	window.once('ready-to-show', () => {
+		splashScreen.destroy();
+		window.show();
+	});
+});
 
 // Quit when all windows are closed.
 
@@ -73,15 +95,15 @@ app.on('window-all-closed', () => {
 	}
 });
 
-app.on('activate', () => {
-	// On OS X it's common to re-create a window in the app when the
+// app.on('activate', () => {
+// 	// On OS X it's common to re-create a window in the app when the
 
-	// dock icon is clicked and there are no other windows open.
+// 	// dock icon is clicked and there are no other windows open.
 
-	if (BrowserWindow.getAllWindows().length === 0) {
-		createWindow();
-	}
-});
+// 	if (BrowserWindow.getAllWindows().length === 0) {
+// 		createWindow();
+// 	}
+// });
 
 // In this file you can include the rest of your app's specific main process
 
@@ -94,8 +116,8 @@ ipcMain.on('createWindow', (event, args) => {
 		webPreferences: {
 			webSecurity: false,
 			contextIsolation: true,
-			preload: __dirname + '/preload.js',
-		},
+			preload: __dirname + '/preload.js'
+		}
 	});
 });
 
@@ -109,7 +131,7 @@ ipcMain.on('theme-changed', async () => {
 	const options: MessageBoxOptions = {
 		message: 'Changing theme requires application restart. Would you like to restart now?',
 		buttons: ['Ok', 'Cancel'],
-		title: 'Restart required',
+		title: 'Restart required'
 	};
 	const result = await dialog.showMessageBox(window, options);
 	if (result.response === 0) {
@@ -126,14 +148,14 @@ ipcMain.on('open-in-browser', (event: IpcMainEvent, value: string) => {
 ipcMain.handle('save-image', async (event: IpcMainInvokeEvent, dto: SavePostDto) => {
 	if (dto.data) {
 		const data = dto.data.split(';base64,').pop();
-		await fs.promises.mkdir(`${settings.imagesFolderPath}/${dto.post.directory}`, { recursive: true }).catch((err) => {
+		await fs.promises.mkdir(`${settings.imagesFolderPath}/${dto.post.directory}`, { recursive: true }).catch(err => {
 			console.error(err);
 			//TODO handle gracefully
 			throw err;
 		});
 		await fs.promises
 			.writeFile(`${settings.imagesFolderPath}/${dto.post.directory}/${dto.post.image}`, data, { encoding: 'base64' })
-			.catch((err) => {
+			.catch(err => {
 				console.error(err);
 				//TODO handle gracefuly
 				throw err;
