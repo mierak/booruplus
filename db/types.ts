@@ -18,6 +18,7 @@ interface SavedSearchPreview {
 export interface SavedSearch {
 	id?: number;
 	tags: Tag[];
+	excludedTags: Tag[];
 	rating: Rating;
 	lastSearched?: string;
 	previews: SavedSearchPreview[];

@@ -5,6 +5,7 @@ import { actions as globalActions } from '.';
 
 import { db } from '../db';
 import { Tag } from '../types/gelbooruTypes';
+import * as api from 'service/apiService';
 
 export interface TagsState {
 	tags: Tag[];
@@ -85,6 +86,26 @@ const searchTagOffline = (tag: Tag): AppThunk => async (dispatch): Promise<void>
 	}
 };
 
+const fetchTags = (tags: string[]): AppThunk<Tag[]> => async (): Promise<Tag[]> => {
+	try {
+		const tagsFromDb: Tag[] = [];
+		const notFoundTags: string[] = [];
+		for (const tag of tags) {
+			const tagFromDb = await db.tags.getTag(tag);
+			if (!tagFromDb) {
+				notFoundTags.push(tag);
+			} else {
+				tagsFromDb.push(tagFromDb);
+			}
+		}
+		const tagsFromApi = await api.getTagsByNames(...notFoundTags);
+		return [...tagsFromDb, ...tagsFromApi];
+	} catch (err) {
+		console.error('Error while loading multiple tags from DB', err);
+		return Promise.reject(err);
+	}
+};
+
 export const actions = {
 	...tagsSlice.actions,
 	loadAllTagsFromDb,
@@ -92,4 +113,5 @@ export const actions = {
 	loadByPatternFromDb,
 	searcTagOnline,
 	searchTagOffline,
+	fetchTags,
 };

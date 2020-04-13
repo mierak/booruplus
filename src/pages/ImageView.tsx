@@ -22,6 +22,7 @@ const Container = styled(Layout)`
 const StyledThumbnailsList = styled(ThumbnailsList)`
 	max-width: 220px;
 	margin: 0 0 0 7px;
+	height: 100vh;
 `;
 
 const StyledLayout = styled(Layout)`

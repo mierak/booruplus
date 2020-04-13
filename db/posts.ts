@@ -111,7 +111,7 @@ export const getFavorites = async (): Promise<Post[]> => {
 		});
 };
 
-export const getForTagsWithOptions = async (options: FilterOptions, ...tags: string[]): Promise<Post[]> => {
+export const getForTagsWithOptions = async (options: FilterOptions, tags: string[], excludedTags?: string[]): Promise<Post[]> => {
 	const arrays = await Promise.all(
 		tags.map(async (tag) => {
 			return db.posts
@@ -123,7 +123,20 @@ export const getForTagsWithOptions = async (options: FilterOptions, ...tags: str
 	if (arrays.length === 0) {
 		return [];
 	}
-	const result = intersection(...arrays);
+	let result = intersection(...arrays);
+
+	if (excludedTags && excludedTags.length > 0) {
+		result = result.filter((post) => {
+			let found = false;
+			for (const tag of post.tags) {
+				if (excludedTags.includes(tag)) {
+					found = true;
+					break;
+				}
+			}
+			return !found;
+		});
+	}
 	return filterPosts(result, options);
 };
 

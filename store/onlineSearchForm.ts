@@ -9,6 +9,7 @@ import { db } from '../db';
 
 export interface SearchFormState {
 	selectedTags: Tag[];
+	excludededTags: Tag[];
 	limit: number;
 	rating: Rating;
 	page: number;
@@ -19,6 +20,7 @@ export interface SearchFormState {
 
 export const initialState: SearchFormState = {
 	selectedTags: [],
+	excludededTags: [],
 	limit: 100,
 	rating: 'any',
 	page: 0,
@@ -37,9 +39,16 @@ const searchFormSlice = createSlice({
 		addTag: (state, action: PayloadAction<Tag>): void => {
 			!state.selectedTags.includes(action.payload) && state.selectedTags.push(action.payload);
 		},
+		addExcludedTag: (state, action: PayloadAction<Tag>): void => {
+			!state.excludededTags.includes(action.payload) && state.excludededTags.push(action.payload);
+		},
 		removeTag: (state, action: PayloadAction<Tag>): void => {
 			const index = state.selectedTags.findIndex((t) => t.id === action.payload.id);
 			state.selectedTags.splice(index, 1);
+		},
+		removeExcludedTag: (state, action: PayloadAction<Tag>): void => {
+			const index = state.excludededTags.findIndex((t) => t.id === action.payload.id);
+			state.excludededTags.splice(index, 1);
 		},
 		clearTags: (state): void => {
 			state.selectedTags = [];
@@ -58,6 +67,9 @@ const searchFormSlice = createSlice({
 		},
 		setSelectedTags: (state, action: PayloadAction<Tag[]>): void => {
 			state.selectedTags = action.payload;
+		},
+		setExcludedTags: (state, action: PayloadAction<Tag[]>): void => {
+			state.excludededTags = action.payload;
 		},
 		setTagOptions: (state, action: PayloadAction<Tag[]>): void => {
 			state.tagOptions = action.payload;
@@ -87,14 +99,16 @@ const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<vo
 		dispatch(globalActions.posts.setPosts([]));
 		//construct string of tags
 		const tags = getState().onlineSearchForm.selectedTags;
+		const excludedTags = getState().onlineSearchForm.excludededTags;
 		const tagsString = tags.map((tag) => tag.tag);
+		const excludedTagString = excludedTags.map((tag) => tag.tag);
 		const options: api.PostApiOptions = {
 			limit: getState().onlineSearchForm.limit,
 			page: getState().onlineSearchForm.page,
 			rating: getState().onlineSearchForm.rating,
 		};
 		//get posts from api
-		const posts = await api.getPostsForTags(tagsString, options);
+		const posts = await api.getPostsForTags(tagsString, options, excludedTagString);
 		dispatch(globalActions.system.setFetchingPosts(false));
 		//validate posts against db - check favorite/blacklisted/downloaded state
 

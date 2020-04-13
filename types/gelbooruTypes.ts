@@ -85,7 +85,7 @@ export const postParser = (): ((params: PostDto) => Post) => {
 			selected: false,
 			tags: parseTags(params.tags),
 			extension: getImageExtensionFromFilename(params.image),
-			viewCount: 0
+			viewCount: 0,
 		};
 		return post;
 	};
@@ -118,6 +118,7 @@ export interface SavedSearchPreview {
 export interface SavedSearch {
 	id: number;
 	tags: Tag[];
+	excludedTags: Tag[];
 	rating: Rating;
 	lastSearched?: string;
 	previews: SavedSearchPreview[];

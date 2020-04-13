@@ -1,4 +1,4 @@
-import { app, dialog, BrowserWindow, ipcMain, IpcMainInvokeEvent, IpcMainEvent, MessageBoxOptions } from 'electron';
+import { app, dialog, BrowserWindow, ipcMain, IpcMainInvokeEvent, IpcMainEvent, MessageBoxOptions, shell } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 import fs from 'fs';
 
@@ -116,6 +116,11 @@ ipcMain.on('theme-changed', async () => {
 		app.relaunch();
 		app.quit();
 	}
+});
+
+ipcMain.on('open-in-browser', (event: IpcMainEvent, value: string) => {
+	console.log('open');
+	shell.openExternal(value);
 });
 
 ipcMain.handle('save-image', async (event: IpcMainInvokeEvent, dto: SavePostDto) => {

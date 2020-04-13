@@ -22,16 +22,16 @@ interface Props {
 	mode: SearchMode;
 }
 
-const SelectedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
+const ExcludedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	const dispatch = useDispatch();
 
 	const theme = useSelector((state: RootState) => state.settings.theme);
-	const selectedTags = useSelector(
-		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.selectedTags) || state.onlineSearchForm.selectedTags
+	const excludededTags = useSelector(
+		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.excludededTags) || state.onlineSearchForm.excludededTags
 	);
 
 	const handleTagClose = (tag: Tag): void => {
-		const removeTag = (mode === 'offline' && actions.downloadedSearchForm.removeTag) || actions.onlineSearchForm.removeTag;
+		const removeTag = (mode === 'offline' && actions.downloadedSearchForm.removeExcludedTag) || actions.onlineSearchForm.removeExcludedTag;
 		dispatch(removeTag(tag));
 	};
 
@@ -41,19 +41,18 @@ const SelectedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
 
 	const handleDrop = (event: React.DragEvent): void => {
 		const tag: Tag = JSON.parse(event.dataTransfer.getData('tag'));
-		const addTag = (mode === 'offline' && actions.downloadedSearchForm.addTag) || actions.onlineSearchForm.addTag;
-		const removeExcludedTag =
-			(mode === 'offline' && actions.downloadedSearchForm.removeExcludedTag) || actions.onlineSearchForm.removeExcludedTag;
-		dispatch(removeExcludedTag(tag));
-		dispatch(addTag(tag));
+		const removeTag = (mode === 'offline' && actions.downloadedSearchForm.removeTag) || actions.onlineSearchForm.removeTag;
+		const addExcludedTag = (mode === 'offline' && actions.downloadedSearchForm.addExcludedTag) || actions.onlineSearchForm.addExcludedTag;
+		dispatch(addExcludedTag(tag));
+		dispatch(removeTag(tag));
 	};
 
 	const allowDrop = (event: React.DragEvent): void => {
 		event.preventDefault();
 	};
 
-	const renderSelectedTags = (): JSX.Element[] => {
-		return selectedTags.map((tag: Tag) => (
+	const renderExcludedTags = (): JSX.Element[] => {
+		return excludededTags.map((tag: Tag) => (
 			<AntTag
 				key={tag.id}
 				color={getTagColor(tag)}
@@ -70,9 +69,9 @@ const SelectedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
 
 	return (
 		<StyledCard theme={theme} onDrop={handleDrop} onDragOver={allowDrop}>
-			{renderSelectedTags()}
+			{renderExcludedTags()}
 		</StyledCard>
 	);
 };
 
-export default SelectedTags;
+export default ExcludedTags;

@@ -7,8 +7,9 @@ export const save = async (savedSearch: SavedSearch): Promise<number | undefined
 		const dbSearch: DbSavedSearch = {
 			rating: savedSearch.rating,
 			tags: savedSearch.tags,
+			excludedTags: savedSearch.excludedTags,
 			lastSearched: savedSearch.lastSearched,
-			previews: []
+			previews: [],
 		};
 
 		const searchFromDb = await db.savedSearches.get(savedSearch.id);
@@ -21,7 +22,7 @@ export const save = async (savedSearch: SavedSearch): Promise<number | undefined
 	}
 };
 
-export const createAndSave = async (rating: Rating, tags: Tag[]): Promise<number> => {
+export const createAndSave = async (rating: Rating, tags: Tag[], excludedTags: Tag[]): Promise<number> => {
 	// const allSearches = await db.savedSearches.toArray();
 	// let found = false;
 	// allSearches.forEach((search) => {
@@ -36,7 +37,8 @@ export const createAndSave = async (rating: Rating, tags: Tag[]): Promise<number
 	return db.savedSearches.put({
 		previews: [],
 		rating,
-		tags
+		tags,
+		excludedTags,
 	});
 };
 
@@ -49,15 +51,16 @@ export const getAll = async (): Promise<SavedSearch[] | void> => {
 		const previews = savedSearch.previews.map((preview) => {
 			return {
 				id: preview.id,
-				objectUrl: URL.createObjectURL(preview.blob)
+				objectUrl: URL.createObjectURL(preview.blob),
 			};
 		});
 		return {
 			id: savedSearch.id as number,
 			rating: savedSearch.rating,
 			tags: savedSearch.tags,
+			excludedTags: savedSearch.excludedTags,
 			lastSearched: savedSearch.lastSearched,
-			previews: previews
+			previews: previews,
 		};
 	});
 	return returnSearches;

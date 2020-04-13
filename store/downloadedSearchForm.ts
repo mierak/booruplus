@@ -10,6 +10,7 @@ import { FilterOptions } from 'db/types';
 
 export interface DownloadedSearchFormState {
 	selectedTags: Tag[];
+	excludededTags: Tag[];
 	tagOptions: Tag[];
 	rating: Rating;
 	postLimit: number;
@@ -24,6 +25,7 @@ export interface DownloadedSearchFormState {
 
 const initialState: DownloadedSearchFormState = {
 	selectedTags: [],
+	excludededTags: [],
 	tagOptions: [],
 	rating: 'any',
 	postLimit: 100,
@@ -43,12 +45,22 @@ const downloadedSearchFormSlice = createSlice({
 		addTag: (state, action: PayloadAction<Tag>): void => {
 			state.selectedTags.push(action.payload);
 		},
+		addExcludedTag: (state, action: PayloadAction<Tag>): void => {
+			!state.excludededTags.includes(action.payload) && state.excludededTags.push(action.payload);
+		},
 		removeTag: (state, action: PayloadAction<Tag>): void => {
 			const index = state.selectedTags.findIndex((t) => t.id === action.payload.id);
 			state.selectedTags.splice(index, 1);
 		},
+		removeExcludedTag: (state, action: PayloadAction<Tag>): void => {
+			const index = state.excludededTags.findIndex((t) => t.id === action.payload.id);
+			state.excludededTags.splice(index, 1);
+		},
 		setSelectedTags: (state, action: PayloadAction<Tag[]>): void => {
 			state.selectedTags = action.payload;
+		},
+		setExcludedTags: (state, action: PayloadAction<Tag[]>): void => {
+			state.excludededTags = action.payload;
 		},
 		setTagOptions: (state, action: PayloadAction<Tag[]>): void => {
 			state.tagOptions = action.payload;
@@ -101,7 +113,7 @@ const downloadedSearchFormSlice = createSlice({
 		toggleShowGifs: (state): void => {
 			state.showGifs = !state.showGifs;
 		},
-		clearForm: (): DownloadedSearchFormState => {
+		clear: (): DownloadedSearchFormState => {
 			return initialState;
 		},
 	},
@@ -136,9 +148,11 @@ const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => 
 		dispatch(globalActions.posts.setPosts([]));
 		const state = getState().downloadedSearchForm;
 		const tags = state.selectedTags.map((tag) => tag.tag);
+		const excludedTags = state.excludededTags.map((tag) => tag.tag);
 
 		const options = getFilterOptions(state);
-		const posts = tags.length !== 0 ? await db.posts.getForTagsWithOptions(options, ...tags) : await db.posts.getAllWithOptions(options);
+		const posts =
+			tags.length !== 0 ? await db.posts.getForTagsWithOptions(options, tags, excludedTags) : await db.posts.getAllWithOptions(options);
 		dispatch(globalActions.system.setFetchingPosts(false));
 
 		posts.forEach(async (post) => {
@@ -159,7 +173,7 @@ export const fetchMorePosts = (): AppThunk => async (dispatch, getState): Promis
 		const tags = state.selectedTags.map((tag) => tag.tag);
 
 		const options = getFilterOptions(state);
-		const posts = tags.length !== 0 ? await db.posts.getForTagsWithOptions(options, ...tags) : await db.posts.getAllWithOptions(options);
+		const posts = tags.length !== 0 ? await db.posts.getForTagsWithOptions(options, tags) : await db.posts.getAllWithOptions(options);
 		dispatch(globalActions.posts.addPosts(posts));
 	} catch (err) {
 		console.error('Error while fetching more posts from db', err);

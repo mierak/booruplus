@@ -158,7 +158,7 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 				onConfirm={(): void => handlePreviewDelete(record, id)}
 			>
 				<DeleteOutlined />
-			</Popconfirm>
+			</Popconfirm>,
 		];
 	};
 
@@ -187,12 +187,13 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 				size="small"
 				rowClassName={(record, index): string => (index % 2 === 0 ? 'table-row-light' : 'table-row-dark')}
 				expandable={{
-					rowExpandable: (record: SavedSearch): boolean => record.lastSearched !== undefined
+					rowExpandable: (record: SavedSearch): boolean => record.lastSearched !== undefined,
 				}}
 				expandedRowRender={renderPreviews}
 				style={{ overflowX: 'hidden' }}
 			>
 				<Column title="Tags" dataIndex="tags" key="tagsCol" render={renderTags} filterDropdownVisible={true} />
+				<Column title="Excluded Tags" dataIndex="excludedTags" key="excludedTagsCol" render={renderTags} filterDropdownVisible={true} />
 				<Column title="Rating" dataIndex="rating" key="ratingCol" />
 				<Column title="Last Searched" dataIndex="lastSearched" key="lastSearchedCol" render={renderLastSearched} />
 				<Column title="Actions" dataIndex="" key="action" width={220} render={renderActions} />

@@ -1,0 +1,87 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { Table, Tag as AntTag, Button } from 'antd';
+
+import { AppDispatch, RootState } from 'store/types';
+import { Tag } from 'types/gelbooruTypes';
+import { actions } from 'store/';
+import { getTagColor, sortTagsByType } from 'util/utils';
+
+interface Props {
+	tags: string[];
+}
+
+const Container = styled.div`
+	margin: -16px;
+	overflow-y: auto;
+	max-height: calc(100vh / 2);
+`;
+
+const TagsPopover: React.FunctionComponent<Props> = ({ tags }: Props) => {
+	const dispatch = useDispatch<AppDispatch>();
+	const containerRef = useRef<HTMLDivElement>(null);
+	const visible = useSelector((state: RootState) => state.system.isTagsPopoverVisible);
+	const [fetchedTags, setFetchedTags] = useState<Tag[]>([]);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		if (visible) {
+			setLoading(true);
+			const fetchTags = async (): Promise<void> => {
+				containerRef.current && containerRef.current.scrollTo(0, 0);
+				const response = await dispatch(actions.tags.fetchTags(tags));
+				setFetchedTags(sortTagsByType(response));
+				setLoading(false);
+			};
+			fetchTags();
+		}
+	}, [tags, visible]);
+
+	const renderTag = (_text: unknown, tag: Tag): React.ReactNode => {
+		return <AntTag color={getTagColor(tag.type)}>{tag.tag}</AntTag>;
+	};
+
+	const renderActions = (_: unknown, record: Tag): JSX.Element => {
+		const handleOnlineSearch = async (): Promise<void> => {
+			dispatch(actions.system.setFetchingPosts(true));
+			dispatch(actions.onlineSearchForm.clear());
+			dispatch(actions.onlineSearchForm.setSelectedTags([record]));
+			dispatch(actions.system.setSearchMode('online'));
+			dispatch(actions.system.setActiveView('thumbnails'));
+			await dispatch(actions.onlineSearchForm.fetchPosts());
+			dispatch(actions.system.setFetchingPosts(false));
+		};
+
+		const handleOfflineSearch = async (): Promise<void> => {
+			dispatch(actions.system.setFetchingPosts(true));
+			dispatch(actions.downloadedSearchForm.clear());
+			dispatch(actions.downloadedSearchForm.setSelectedTags([record]));
+			dispatch(actions.system.setSearchMode('offline'));
+			dispatch(actions.system.setActiveView('thumbnails'));
+			await dispatch(actions.downloadedSearchForm.fetchPosts());
+			dispatch(actions.system.setFetchingPosts(false));
+		};
+		return (
+			<div>
+				<Button type="link" onClick={handleOnlineSearch}>
+					Online
+				</Button>
+				<Button type="link" onClick={handleOfflineSearch}>
+					Offline
+				</Button>
+			</div>
+		);
+	};
+
+	return (
+		<Container ref={containerRef}>
+			<Table dataSource={fetchedTags} rowKey="id" size="small" pagination={false} bordered loading={loading}>
+				<Table.Column title="Tag" dataIndex="tag" render={renderTag} />
+				<Table.Column title="Search" dataIndex="" render={renderActions} />
+			</Table>
+		</Container>
+	);
+};
+
+export default TagsPopover;

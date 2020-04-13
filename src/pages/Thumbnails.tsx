@@ -49,7 +49,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			<Button
 				key="8"
 				onClick={(): void => {
-					dispatch(actions.savedSearches.saveCurrentSearch());
+					//dispatch(actions.savedSearches.saveCurrentSearch()); TODO
 				}}
 			>
 				Save Search
@@ -101,7 +101,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 				}}
 			>
 				Download Selected
-			</Button>
+			</Button>,
 		];
 	};
 

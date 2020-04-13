@@ -7,6 +7,7 @@ export interface SystemState {
 	searchMode: SearchMode;
 	isSearchFormDrawerVsibile: boolean;
 	isDownloadedSearchFormDrawerVisible: boolean;
+	isTagsPopoverVisible: boolean;
 	isImageViewThumbnailsCollapsed: boolean;
 	isFetchingPosts: boolean;
 	isLoadingImage: boolean;
@@ -20,6 +21,7 @@ const initialState: SystemState = {
 	searchMode: 'online',
 	isSearchFormDrawerVsibile: false,
 	isDownloadedSearchFormDrawerVisible: false,
+	isTagsPopoverVisible: false,
 	isImageViewThumbnailsCollapsed: true,
 	isFetchingPosts: false,
 	isLoadingImage: false,
@@ -43,6 +45,9 @@ const systemSlice = createSlice({
 		},
 		setDownloadedSearchFormDrawerVisible: (state, action: PayloadAction<boolean>): void => {
 			state.isDownloadedSearchFormDrawerVisible = action.payload;
+		},
+		setTagsPopovervisible: (state, action: PayloadAction<boolean>): void => {
+			state.isTagsPopoverVisible = action.payload;
 		},
 		setImageViewThumbnailsCollapsed: (state, action: PayloadAction<boolean>): void => {
 			state.isImageViewThumbnailsCollapsed = action.payload;

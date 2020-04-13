@@ -13,13 +13,14 @@ export interface PostApiOptions {
 	page?: number;
 }
 
-export const getPostsForTags = async (tags: string[], options: PostApiOptions = {}): Promise<Post[]> => {
+export const getPostsForTags = async (tags: string[], options: PostApiOptions = {}, excludedTags?: string[]): Promise<Post[]> => {
 	//handle Optional params
 	if (!options.limit) options.limit = 100;
 	if (options.rating && options.rating !== 'any') tags.push(`rating:${options.rating}`);
 
 	//construct API URL
 	let url = `${BASE_POST_URL}&limit=${options.limit}&tags=${tags.join(' ')}`;
+	if (excludedTags && excludedTags.length > 0) url += ` -${excludedTags.join(' -')}`;
 	if (options.page) url += `&pid=${options.page}`;
 
 	try {
@@ -28,7 +29,7 @@ export const getPostsForTags = async (tags: string[], options: PostApiOptions = 
 		const posts = responsePosts.map((postDto) => parsePost(postDto));
 		return posts;
 	} catch (err) {
-		console.error(err);
+		console.error('Error while fetching posts from api', err);
 		return [];
 	}
 };

@@ -6,13 +6,13 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('api', {
 	send: (channel, data) => {
 		// whitelist channels
-		const validChannels = ['toMain', 'createWindow', 'save-image', 'load-image', 'settings-loaded', 'theme-changed'];
+		const validChannels = ['toMain', 'createWindow', 'save-image', 'load-image', 'settings-loaded', 'theme-changed', 'open-in-browser'];
 		if (validChannels.includes(channel)) {
 			ipcRenderer.send(channel, data);
 		}
 	},
 	on: (channel, func) => {
-		const validChannels = ['fromMain', 'image-loaded', 'image-load-fail', 'image-saved', 'error'];
+		const validChannels = ['fromMain', 'image-loaded', 'image-load-fail', 'image-saved', 'error', 'open-in-browser'];
 		if (validChannels.includes(channel)) {
 			// Deliberately strip event as it includes `sender`
 			ipcRenderer.on(channel, (event, ...args) => func(...args));
@@ -33,5 +33,5 @@ contextBridge.exposeInMainWorld('api', {
 				console.error('invoke error');
 			}
 		}
-	}
+	},
 });

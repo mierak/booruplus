@@ -101,3 +101,32 @@ export const getRatingName = (rating: Rating): string => {
 export const escapeTag = (tag: string): string => {
 	return tag.replace('+', '%2b');
 };
+
+export const sortTagsByType = (tags: Tag[]): Tag[] => {
+	const copyrightTags: Tag[] = [];
+	const tagTags: Tag[] = [];
+	const artistTags: Tag[] = [];
+	const metadataTags: Tag[] = [];
+	const characterTags: Tag[] = [];
+
+	for (const tag of tags) {
+		switch (tag.type) {
+			case 'artist':
+				artistTags.push(tag);
+				break;
+			case 'character':
+				characterTags.push(tag);
+				break;
+			case 'copyright':
+				copyrightTags.push(tag);
+				break;
+			case 'metadata':
+				metadataTags.push(tag);
+				break;
+			case 'tag':
+				tagTags.push(tag);
+				break;
+		}
+	}
+	return [...artistTags, ...characterTags, ...copyrightTags, ...metadataTags, ...tagTags];
+};

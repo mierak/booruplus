@@ -15,12 +15,15 @@ const SaveSearchButton: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	const selectedTags = useSelector(
 		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.selectedTags) || state.onlineSearchForm.selectedTags
 	);
+	const excludedTags = useSelector(
+		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.excludededTags) || state.onlineSearchForm.excludededTags
+	);
 	const rating = useSelector(
 		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.rating) || state.onlineSearchForm.rating
 	);
 
 	const handleSaveSearch = async (): Promise<void> => {
-		dispatch(actions.savedSearches.saveSearch(selectedTags, rating));
+		dispatch(actions.savedSearches.saveSearch(selectedTags, excludedTags, rating));
 	};
 
 	return (

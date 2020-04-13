@@ -63,6 +63,7 @@ const searchSavedTagSearchOnline = (savedSearch: SavedSearch): AppThunk => async
 		search.lastSearched = new Date().toUTCString();
 		dispatch(globalActions.savedSearches.updateLastSearched(search));
 		dispatch(globalActions.onlineSearchForm.setSelectedTags(savedSearch.tags));
+		dispatch(globalActions.onlineSearchForm.setExcludedTags(savedSearch.excludedTags));
 		await dispatch(globalActions.onlineSearchForm.fetchPosts());
 		db.savedSearches.save(search);
 		return Promise.resolve();
@@ -77,6 +78,7 @@ const searchSavedTagSearchOffline = (savedSearch: SavedSearch): AppThunk => asyn
 		const search = { ...savedSearch };
 		search.lastSearched = new Date().toUTCString();
 		dispatch(globalActions.downloadedSearchForm.setSelectedTags(search.tags));
+		dispatch(globalActions.downloadedSearchForm.setExcludedTags(savedSearch.excludedTags));
 		await dispatch(globalActions.downloadedSearchForm.fetchPosts());
 		db.savedSearches.save(search);
 		return Promise.resolve();
@@ -86,13 +88,14 @@ const searchSavedTagSearchOffline = (savedSearch: SavedSearch): AppThunk => asyn
 	}
 };
 
-const saveSearch = (tags: Tag[], rating: Rating): AppThunk => async (dispatch): Promise<void> => {
+const saveSearch = (tags: Tag[], excludedTags: Tag[], rating: Rating): AppThunk => async (dispatch): Promise<void> => {
 	try {
-		const id = await db.savedSearches.createAndSave(rating, tags);
+		const id = await db.savedSearches.createAndSave(rating, tags, excludedTags);
 		if (id) {
 			const savedSearch: SavedSearch = {
 				id,
 				tags,
+				excludedTags,
 				rating,
 				lastSearched: undefined,
 				previews: [],
@@ -103,16 +106,6 @@ const saveSearch = (tags: Tag[], rating: Rating): AppThunk => async (dispatch): 
 		}
 	} catch (err) {
 		console.error('Error while saving search', err);
-	}
-};
-
-const saveCurrentSearch = (): AppThunk => async (dispatch, getState): Promise<void> => {
-	try {
-		const rating = getState().onlineSearchForm.rating;
-		const tags = getState().onlineSearchForm.selectedTags;
-		dispatch(globalActions.savedSearches.saveSearch(tags, rating));
-	} catch (err) {
-		console.error('Error while adding saved search', err);
 	}
 };
 
@@ -153,7 +146,6 @@ export const actions = {
 	searchSavedTagSearchOnline,
 	searchSavedTagSearchOffline,
 	saveSearch,
-	saveCurrentSearch,
 	loadSavedSearchesFromDb,
 	addPreviewToActiveSavedSearch,
 	removePreview,

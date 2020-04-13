@@ -24,6 +24,7 @@ const StyledVideo = styled.video`
 	overflow: hidden;
 `;
 const StyledControllableImage = styled(ControllableImage)`
+	position: relative;
 	max-width: 100%;
 	max-height: 100vh;
 	display: block;
@@ -69,7 +70,7 @@ const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 			if (post.fileUrl.includes('webm')) {
 				return <StyledVideo ref={videoRef} key={post.id} controls autoPlay loop muted onLoad={onLoad} />;
 			} else {
-				return <StyledControllableImage url={imageUrl} />;
+				return <StyledControllableImage url={imageUrl} post={post} showControls />;
 			}
 		}
 		return <EmptyThumbnails />;

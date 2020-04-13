@@ -32,6 +32,13 @@ export const checkIfExists = async (tag: string): Promise<boolean> => {
 	return result !== undefined;
 };
 
+export const getTag = async (tag: string): Promise<Tag | undefined> => {
+	return db.tags
+		.where('tag')
+		.equals(tag)
+		.first();
+};
+
 export const getFavoriteCount = async (tag: string): Promise<number> => {
 	return db.posts
 		.where('tags')

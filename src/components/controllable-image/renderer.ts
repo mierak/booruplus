@@ -20,15 +20,13 @@ export interface ListenerVariables {
 }
 
 export class Renderer {
-	private readonly _viewport: HTMLCanvasElement;
+	private _viewport: HTMLCanvasElement | undefined;
 	private _viewportSettings: ViewportSettings;
 	private _listenerVariables: ListenerVariables;
-	private _viewportCtx: CanvasRenderingContext2D | null;
+	private _viewportCtx: CanvasRenderingContext2D | null | undefined;
 	private _img: HTMLImageElement | undefined;
 
-	constructor(viewport: HTMLCanvasElement) {
-		this._viewport = viewport;
-		this._viewportCtx = viewport.getContext('2d');
+	constructor() {
 		this._viewportSettings = {
 			height: 0,
 			width: 0,
@@ -49,6 +47,11 @@ export class Renderer {
 			scaleBy: 1.05,
 		};
 	}
+
+	setViewport = (viewport: HTMLCanvasElement): void => {
+		this._viewport = viewport;
+		this._viewportCtx = viewport.getContext('2d');
+	};
 
 	setViewportSettings = (settings: ViewportSettings): void => {
 		this._viewportSettings = settings;
@@ -123,7 +126,6 @@ export class Renderer {
 		this._listenerVariables.previous.x = event.clientX;
 		this._listenerVariables.previous.y = event.clientY;
 		this._listenerVariables.mouseDown = true;
-		console.log('hello');
 	};
 	private handleMouseUp = (event: MouseEvent): void => {
 		this._listenerVariables.previous.x = event.clientX;
@@ -145,6 +147,17 @@ export class Renderer {
 			this.drawViewport();
 		}
 	};
+
+	zoomIn = (): void => {
+		this._listenerVariables.scale = this._listenerVariables.scale * this._listenerVariables.scaleBy;
+		this.drawViewport();
+	};
+
+	zoomOut = (): void => {
+		this._listenerVariables.scale = this._listenerVariables.scale / this._listenerVariables.scaleBy;
+		this.drawViewport();
+	};
+
 	private handleMouseWheel = (event: MouseWheelEvent): void => {
 		const oldScale = this._listenerVariables.scale;
 		const x = (event.clientX - this._viewportSettings.offsetX) / oldScale;
@@ -170,18 +183,22 @@ export class Renderer {
 	};
 
 	initListeners = (): void => {
-		this._viewport.addEventListener('mouseup', this.handleMouseUp);
-		this._viewport.addEventListener('mousedown', this.handleMouseDown);
-		this._viewport.addEventListener('mousemove', this.handleMouseMove);
-		this._viewport.addEventListener('wheel', this.handleMouseWheel, { passive: true });
-		this._viewport.addEventListener('mouseleave', this.handleMouseLeave);
+		if (this._viewport) {
+			this._viewport.addEventListener('mouseup', this.handleMouseUp);
+			this._viewport.addEventListener('mousedown', this.handleMouseDown);
+			this._viewport.addEventListener('mousemove', this.handleMouseMove);
+			this._viewport.addEventListener('wheel', this.handleMouseWheel, { passive: true });
+			this._viewport.addEventListener('mouseleave', this.handleMouseLeave);
+		}
 	};
 
 	removeListeners = (): void => {
-		this._viewport.removeEventListener('mouseup', this.handleMouseUp);
-		this._viewport.removeEventListener('mousedown', this.handleMouseDown);
-		this._viewport.removeEventListener('mousemove', this.handleMouseMove);
-		this._viewport.removeEventListener('wheel', this.handleMouseWheel);
-		this._viewport.removeEventListener('mouseleave', this.handleMouseLeave);
+		if (this._viewport) {
+			this._viewport.removeEventListener('mouseup', this.handleMouseUp);
+			this._viewport.removeEventListener('mousedown', this.handleMouseDown);
+			this._viewport.removeEventListener('mousemove', this.handleMouseMove);
+			this._viewport.removeEventListener('wheel', this.handleMouseWheel);
+			this._viewport.removeEventListener('mouseleave', this.handleMouseLeave);
+		}
 	};
 }

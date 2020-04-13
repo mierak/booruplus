@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { Button, Form, Col, Row, Popconfirm } from 'antd';
+import { Button, Form, Col, Row } from 'antd';
 
 import { actions } from '../../store';
 import { AppDispatch } from 'store/types';
@@ -13,6 +13,7 @@ import PostCountSelect from './search-form/PostCountSelect';
 import PageSelect from './search-form/PageSelect';
 import Checkboxes from './search-form/Checkboxes';
 import SubmitButton from './search-form/SubmitButton';
+import ExcludedTags from './search-form/ExcludedTags';
 
 interface Props {
 	className?: string;
@@ -22,7 +23,7 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
 	const handleClear = (): void => {
-		dispatch(actions.downloadedSearchForm.clearForm());
+		dispatch(actions.downloadedSearchForm.clear());
 	};
 
 	const handleClose = (): void => {
@@ -38,6 +39,9 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 				</Form.Item>
 				<Form.Item label="Selected Tags">
 					<SelectedTags mode="offline" />
+				</Form.Item>
+				<Form.Item label="Excluded Tags">
+					<ExcludedTags mode="offline" />
 				</Form.Item>
 				<Row>
 					<Col span={12} style={{ paddingRight: 0 }}>

@@ -12,6 +12,7 @@ import PostCountSelect from './search-form/PostCountSelect';
 import PageSelect from './search-form/PageSelect';
 import SelectedTags from './search-form/SelectedTags';
 import SubmitButton from './search-form/SubmitButton';
+import ExcludedTags from './search-form/ExcludedTags';
 
 interface Props {
 	className?: string;
@@ -19,14 +20,6 @@ interface Props {
 
 const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
-
-	const handleSubmit = async (): Promise<void> => {
-		dispatch(actions.system.setActiveView('thumbnails'));
-		dispatch(actions.system.setSearchFormDrawerVisible(false));
-		dispatch(actions.onlineSearchForm.setPage(0));
-		dispatch(actions.posts.setActivePostIndex(undefined));
-		await dispatch(actions.onlineSearchForm.fetchPosts());
-	};
 
 	const handleClear = (): void => {
 		dispatch(actions.onlineSearchForm.clear());
@@ -43,6 +36,9 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 			</Form.Item>
 			<Form.Item label="Selected Tags">
 				<SelectedTags mode="online" />
+			</Form.Item>
+			<Form.Item label="Excluded Tags">
+				<ExcludedTags mode="online" />
 			</Form.Item>
 			<Row>
 				<Col span={12} style={{ paddingRight: 0 }}>
