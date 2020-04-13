@@ -29,7 +29,13 @@ const Progress: React.FunctionComponent<Props> = ({ id }: Props) => {
 		return 'active';
 	};
 
-	return <StyledProgress percent={Math.round(task.progressPercent)} status={getStatus()} showInfo={false} />;
+	return (
+		<>
+			{(task.progressPercent === 0 && 'Setting up. This might take a while...') || (
+				<StyledProgress percent={Math.round(task.progressPercent)} status={getStatus()} showInfo={false} />
+			)}
+		</>
+	);
 };
 
 export const useProgress = async (dispatch: AppDispatch): Promise<[number, MessageType]> => {

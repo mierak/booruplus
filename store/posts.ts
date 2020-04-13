@@ -8,6 +8,7 @@ import { Post } from '../types/gelbooruTypes';
 import * as api from '../service/apiService';
 import { db } from '../db';
 import { PostPropertyOptions } from './types';
+import { delay } from 'util/utils';
 
 export interface PostsState {
 	activePostIndex: number | undefined;
@@ -131,7 +132,7 @@ const downloadPosts = (posts: Post[], taskId?: number): AppThunk => async (dispa
 				post.downloaded = 1;
 				post.blacklisted = 0;
 				post.selected = false;
-				const asdf = await db.posts.update(post);
+				await db.posts.update(post);
 				await saveImage(post);
 
 				taskId && dispatch(globalActions.tasks.setProgress({ id: taskId, progress: (postsDone++ / (posts.length - 1)) * 100 }));
@@ -164,6 +165,39 @@ const downloadSelectedPosts = (taskId?: number): AppThunk => async (dispatch, ge
 const downloadAllPosts = (taskId?: number): AppThunk<void> => async (dispatch, getState): Promise<void> => {
 	const posts = getState().posts.posts;
 	return dispatch(downloadPosts(posts, taskId));
+};
+
+const downloadWholeSearch = (taskId?: number): AppThunk => async (dispatch, getState): Promise<void> => {
+	try {
+		const tags = getState().onlineSearchForm.selectedTags;
+		const excludedTags = getState().onlineSearchForm.excludededTags;
+		const tagsString = tags.map(tag => tag.tag);
+		const excludedTagString = excludedTags.map(tag => tag.tag);
+		const options: api.PostApiOptions = {
+			limit: 100,
+			page: 0,
+			rating: getState().onlineSearchForm.rating,
+			apiKey: getState().settings.apiKey
+		};
+
+		let posts = await api.getPostsForTags(tagsString, options, excludedTagString);
+		let lastPage = 0;
+		const totalPosts: Post[] = [...posts];
+		await delay(2000);
+		while (posts.length > 0) {
+			const newOptions = {
+				...options,
+				page: ++lastPage
+			};
+			posts = await api.getPostsForTags(tagsString, newOptions, excludedTagString);
+			totalPosts.push(...posts);
+			await delay(2000);
+		}
+		return dispatch(downloadPosts(totalPosts, taskId));
+	} catch (err) {
+		console.error('Error while downloading whole search', err);
+		return Promise.reject(err);
+	}
 };
 
 const copyAndBlacklistPost = (p: Post): Post => {
@@ -297,6 +331,7 @@ export const actions = {
 	downloadSelectedPosts,
 	downloadAllPosts,
 	downloadPost,
+	downloadWholeSearch,
 	blacklistPost,
 	blacklistSelectedPosts,
 	blackListAllPosts,

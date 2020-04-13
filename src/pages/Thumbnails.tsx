@@ -34,6 +34,17 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
 	const isFetchingPosts = useSelector((state: RootState) => state.system.isFetchingPosts);
+	const mode = useSelector((state: RootState) => state.system.searchMode);
+
+	const selectedTags = useSelector(
+		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.selectedTags) || state.onlineSearchForm.selectedTags
+	);
+	const excludedTags = useSelector(
+		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.excludededTags) || state.onlineSearchForm.excludededTags
+	);
+	const rating = useSelector(
+		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.rating) || state.onlineSearchForm.rating
+	);
 
 	const renderThumbnailList = (): JSX.Element => {
 		if (isFetchingPosts) {
@@ -43,65 +54,64 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 		}
 	};
 
+	const handleDownloadWholeSearch = (): void => {
+		dispatch(actions.system.withProgressBar(async id => dispatch(actions.posts.downloadWholeSearch(id))));
+	};
+
+	const handleBlacklistAll = (): void => {
+		dispatch(actions.posts.blackListAllPosts());
+	};
+
+	const handleBlacklistSelected = (): void => {
+		dispatch(actions.posts.blacklistSelectedPosts());
+	};
+
+	const handleAddAllToFavorites = (): void => {
+		dispatch(actions.posts.addAllPostsToFavorites());
+	};
+
+	const handleAddSelectedToFavorites = (): void => {
+		dispatch(actions.posts.addSelectedPostsToFavorites());
+	};
+
+	const handleDownloadAll = (): void => {
+		dispatch(actions.system.withProgressBar(async id => dispatch(actions.posts.downloadAllPosts(id))));
+	};
+
+	const handleDownloadSelected = (): void => {
+		dispatch(actions.system.withProgressBar(async id => dispatch(actions.posts.downloadSelectedPosts(id))));
+	};
+
+	const handleSaveSearch = async (): Promise<void> => {
+		dispatch(actions.savedSearches.saveSearch(selectedTags, excludedTags, rating));
+	};
+
 	const renderButtons = (): JSX.Element[] => {
 		return [
-			<Button key="9">Download Search</Button>,
-			<Button
-				key="8"
-				onClick={(): void => {
-					//dispatch(actions.savedSearches.saveCurrentSearch()); TODO
-				}}
-			>
+			<Button key="9" onClick={handleDownloadWholeSearch}>
+				Download Search
+			</Button>,
+			<Button key="8" onClick={handleSaveSearch}>
 				Save Search
 			</Button>,
-			<Button
-				key="7"
-				onClick={(): void => {
-					dispatch(actions.posts.blackListAllPosts());
-				}}
-			>
+			<Button key="7" onClick={handleBlacklistAll}>
 				Blacklist All
 			</Button>,
-			<Button
-				key="6"
-				onClick={(): void => {
-					dispatch(actions.posts.blacklistSelectedPosts());
-				}}
-			>
+			<Button key="6" onClick={handleBlacklistSelected}>
 				Blacklist Selected
 			</Button>,
-			<Button
-				key="5"
-				onClick={(): void => {
-					dispatch(actions.posts.addAllPostsToFavorites());
-				}}
-			>
+			<Button key="5" onClick={handleAddAllToFavorites}>
 				Add All To Favorites
 			</Button>,
-			<Button
-				key="4"
-				onClick={(): void => {
-					dispatch(actions.posts.addSelectedPostsToFavorites());
-				}}
-			>
+			<Button key="4" onClick={handleAddSelectedToFavorites}>
 				Add Selected To Favorites
 			</Button>,
-			<Button
-				key="3"
-				onClick={async (): Promise<void> => {
-					dispatch(actions.system.withProgressBar(async (id) => dispatch(actions.posts.downloadAllPosts(id))));
-				}}
-			>
+			<Button key="3" onClick={handleDownloadAll}>
 				Download All
 			</Button>,
-			<Button
-				key="2"
-				onClick={(): void => {
-					dispatch(actions.system.withProgressBar(async (id) => dispatch(actions.posts.downloadSelectedPosts(id))));
-				}}
-			>
+			<Button key="2" onClick={handleDownloadSelected}>
 				Download Selected
-			</Button>,
+			</Button>
 		];
 	};
 
