@@ -8,7 +8,7 @@ import { actions } from '../../store';
 import { RootState, AppDispatch } from '../../store/types';
 
 const Container = styled.div`
-	padding: 10px;
+	padding: 10px 15px 10px 15px;
 	height: 100vh;
 `;
 
