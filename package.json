@@ -26,7 +26,8 @@
 				{
 					"name": "@electron-forge/maker-squirrel",
 					"config": {
-						"name": "Lolinizer"
+						"name": "Lolinizer",
+						"loadingGif": "./chika_dance.gif"
 					}
 				},
 				{
@@ -88,7 +89,7 @@
 		"copy-webpack-plugin": "^5.1.1",
 		"cross-env": "^7.0.2",
 		"css-loader": "^3.0.0",
-		"electron": "8.0.1",
+		"electron": "^8.2.1",
 		"electron-devtools-installer": "^2.2.4",
 		"eslint": "^6.8.0",
 		"eslint-plugin-react": "^7.18.3",

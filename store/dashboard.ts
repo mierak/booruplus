@@ -1,8 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { db } from '../db';
+import { actions as globalActions } from '.';
+
 import { AppThunk, TagHistory } from './types';
 import { Tag, Post } from '../types/gelbooruTypes';
+import { notification } from 'antd';
 
 interface RatingCounts {
 	[key: string]: number;
@@ -29,7 +32,7 @@ const initialState: DashboardState = {
 	mostDownloadedTag: -1,
 	mostSearchedTags: [],
 	ratingCounts: undefined,
-	mostFavoritedTags: [],
+	mostFavoritedTags: []
 };
 
 const dashboardSlice = createSlice({
@@ -59,8 +62,8 @@ const dashboardSlice = createSlice({
 		},
 		setMostFavoritedTags: (state, action: PayloadAction<{ tag: Tag | undefined; count: number }[]>): void => {
 			state.mostFavoritedTags = action.payload;
-		},
-	},
+		}
+	}
 });
 
 const fetchDownloadedPostCount = (): AppThunk => async (dispatch): Promise<void> => {
@@ -101,21 +104,36 @@ const fetchTagCount = (): AppThunk => async (dispatch): Promise<void> => {
 
 const fetchRatingCounts = (): AppThunk => async (dispatch): Promise<void> => {
 	try {
+		dispatch(globalActions.loadingStates.setRatingDistributionChartLoading(true));
 		const safeCount = await db.posts.getCountForRating('safe');
 		const questionableCount = await db.posts.getCountForRating('questionable');
 		const explicitCount = await db.posts.getCountForRating('explicit');
 		dispatch(dashboardSlice.actions.setRatingCounts({ safe: safeCount, questionable: questionableCount, explicit: explicitCount }));
+		dispatch(globalActions.loadingStates.setRatingDistributionChartLoading(false));
 	} catch (err) {
 		console.error('Error while fetching rating counts', err);
+		notification.error({
+			message: 'Error',
+			description: 'Error occured while fetching rating distributions from database. Please contact developers',
+			duration: 2
+		});
 	}
 };
 
 const fetchMostSearchedTags = (): AppThunk => async (dispatch): Promise<void> => {
 	try {
+		dispatch(dashboardSlice.actions.setMostsearchedTags([]));
+		dispatch(globalActions.loadingStates.setMostSearchedTagsLoading(true));
 		const tags = await db.tagSearchHistory.getMostSearched();
 		dispatch(dashboardSlice.actions.setMostsearchedTags(tags));
+		dispatch(globalActions.loadingStates.setMostSearchedTagsLoading(false));
 	} catch (err) {
 		console.error('Error while fetching most searched tags from db', err);
+		notification.error({
+			message: 'Error',
+			description: 'Error occured while fetching most searched tags from database. Please contact developers',
+			duration: 2
+		});
 	}
 };
 
@@ -130,10 +148,18 @@ const fetchMostViewedPosts = (limit = 20): AppThunk => async (dispatch): Promise
 
 const fetchMostFavoritedTags = (limit = 20): AppThunk => async (dispatch): Promise<void> => {
 	try {
+		dispatch(dashboardSlice.actions.setMostFavoritedTags([]));
+		dispatch(globalActions.loadingStates.setMostFavoritedTagsLoading(true));
 		const tags = await db.tags.getMostFavorited(limit);
 		dispatch(dashboardSlice.actions.setMostFavoritedTags(tags));
+		dispatch(globalActions.loadingStates.setMostFavoritedTagsLoading(false));
 	} catch (err) {
 		console.error('Error while fetching most favorited tags', err);
+		notification.error({
+			message: 'Error',
+			description: 'Error occured while fetching most favorited tags from database. Please contact developers',
+			duration: 2
+		});
 	}
 };
 
@@ -146,7 +172,7 @@ export const actions = {
 	fetchRatingCounts,
 	fetchMostSearchedTags,
 	fetchMostViewedPosts,
-	fetchMostFavoritedTags,
+	fetchMostFavoritedTags
 };
 
 export default dashboardSlice.reducer;

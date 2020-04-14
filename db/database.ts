@@ -17,38 +17,38 @@ class Database extends Dexie {
 			posts: 'id, height, width, rating, *tags, createdAt, favorite, extension, downloaded',
 			savedSearches: '++id, tags, type, rating, lastSearched',
 			tags: 'id, tag, count, type, ambiguous',
-			postsTags: '[postId+tag], postId, tag, post.favorite, post.blacklisted, post.downloaded',
+			postsTags: '[postId+tag], postId, tag, post.favorite, post.blacklisted, post.downloaded'
 		});
 		this.version(3).stores({
-			posts: 'id, height, width, rating, *tags, createdAt, favorite, extension, downloaded, blacklisted',
+			posts: 'id, height, width, rating, *tags, createdAt, favorite, extension, downloaded, blacklisted'
 		});
 		this.version(4).stores({
-			settings: 'name',
+			settings: 'name'
 		});
 		this.version(5).stores({
-			tagSearchHistory: 'tag, date',
+			tagSearchHistory: 'tag, date'
 		});
 		this.version(6).stores({
-			tagSearchHistory: '++id, tag.tag, date',
+			tagSearchHistory: '++id, tag.tag, date'
 		});
 		this.version(7).stores({
-			posts: 'id, height, width, rating, *tags, createdAt, favorite, extension, downloaded, viewCount',
+			posts: 'id, height, width, rating, *tags, createdAt, favorite, extension, downloaded, viewCount'
 		});
 		this.version(8).stores({
-			posts: 'id, height, width, rating, *tags, createdAt, favorite, extension, downloaded, viewCount, blacklisted',
+			posts: 'id, height, width, rating, *tags, createdAt, favorite, extension, downloaded, viewCount, blacklisted'
 		});
 		this.version(9).stores({
-			savedSearches: '++id, tags, type, rating, lastSearched, previews.id',
+			savedSearches: '++id, tags, type, rating, lastSearched, previews.id'
 		});
 		this.version(10)
 			.stores({
-				savedSearches: '++id, tags, excludedTags, type, rating, lastSearched, previews.id',
+				savedSearches: '++id, tags, excludedTags, type, rating, lastSearched, previews.id'
 			})
-			.upgrade((tx) => {
+			.upgrade(tx => {
 				return tx
 					.table('savedSearches')
 					.toCollection()
-					.modify((savedSearch) => {
+					.modify(savedSearch => {
 						savedSearch.excludedTags = [];
 					});
 			});
@@ -69,17 +69,18 @@ db.on('populate', () => {
 		values: {
 			imagesFolderPath: 'C:\\temp', // TODO change to userfolder
 			theme: 'light',
-		},
+			mostViewedCount: 28
+		}
 	};
 	db.settings.put(settings);
 });
 
-db.open().catch((err) => {
+db.open().catch(err => {
 	console.error('Could not open database: ', err);
 });
 
 db.posts.hook('creating', (primKey, post) => {
-	post.tags.forEach((tag) => {
+	post.tags.forEach(tag => {
 		db.postsTags.put({ postId: post.id, tag: tag, post: post });
 	});
 });
@@ -98,11 +99,11 @@ db.posts.hook('updating', (mods, primKey, post) => {
 	// @ts-ignore
 	downloaded && mods['downloaded'] !== undefined && (clonedPost.downloaded = mods['downloaded']);
 
-	post.tags.forEach((tag) => {
+	post.tags.forEach(tag => {
 		db.postsTags.put({
 			post: clonedPost,
 			postId: post.id,
-			tag: tag,
+			tag: tag
 		});
 	});
 });

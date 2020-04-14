@@ -6,7 +6,8 @@ import { Settings, AppThunk } from './types';
 
 const initialState: Settings = {
 	imagesFolderPath: '',
-	theme: 'dark'
+	theme: 'dark',
+	mostViewedCount: 28
 };
 
 const settingsSlice = createSlice({
@@ -24,6 +25,9 @@ const settingsSlice = createSlice({
 		},
 		setApiKey: (state, action: PayloadAction<string>): void => {
 			state.apiKey = action.payload;
+		},
+		setMostViewedCount: (state, action: PayloadAction<number>): void => {
+			state.mostViewedCount = action.payload;
 		}
 	}
 });
@@ -78,6 +82,18 @@ const updateApiKey = (key: string): AppThunk<string> => async (dispatch, getStat
 	}
 };
 
+const updateMostViewedCount = (count: number): AppThunk<string> => async (dispatch, getState): Promise<string> => {
+	try {
+		const settings = { ...getState().settings };
+		settings.mostViewedCount = count;
+		dispatch(settingsSlice.actions.setMostViewedCount(count));
+		return await db.settings.saveSettings({ name: 'user', values: settings });
+	} catch (err) {
+		console.error('Error while updating most viewed count key');
+		return Promise.reject(err);
+	}
+};
+
 const updateGelbooruUsername = (username: string): AppThunk<string> => async (dispatch, getState): Promise<string> => {
 	try {
 		const settings = { ...getState().settings };
@@ -107,6 +123,7 @@ export const actions = {
 	updateTheme,
 	updateApiKey,
 	updateGelbooruUsername,
+	updateMostViewedCount,
 	saveSettings
 };
 

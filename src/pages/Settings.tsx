@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FolderOpenOutlined, FolderOutlined, SaveOutlined } from '@ant-design/icons';
-import { Button, Card, Input, Form, Select, Row, Col, Descriptions, notification } from 'antd';
+import { Button, Card, Input, Form, Select, Row, Col, Descriptions, notification, InputNumber } from 'antd';
 
 import { actions } from '../../store';
 import { RootState, AppDispatch } from '../../store/types';
@@ -35,6 +35,7 @@ const Settings: React.FunctionComponent = () => {
 	});
 
 	const imagesFolderPath = useSelector((state: RootState) => state.settings.imagesFolderPath);
+	const mostViewedCount = useSelector((state: RootState) => state.settings.mostViewedCount);
 	const apiKey = useSelector((state: RootState) => state.settings.apiKey);
 	const theme = useSelector((state: RootState) => state.settings.theme);
 
@@ -74,6 +75,10 @@ const Settings: React.FunctionComponent = () => {
 			});
 		}
 		dispatch(actions.settings.setApiKey(key));
+	};
+
+	const handleMostViewedCountChange = (value: number | undefined): void => {
+		value && dispatch(actions.settings.updateMostViewedCount(value));
 	};
 
 	const handleSaveSettings = async (): Promise<void> => {
@@ -138,6 +143,13 @@ const Settings: React.FunctionComponent = () => {
 											Light
 										</Select.Option>
 									</Select>
+								</Item>
+							</Col>
+						</Row>
+						<Row>
+							<Col span={8}>
+								<Item label="Most Viewed Count" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+									<InputNumber value={mostViewedCount} min={1} max={100} onChange={handleMostViewedCountChange} />
 								</Item>
 							</Col>
 						</Row>

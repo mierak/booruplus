@@ -29,6 +29,7 @@ export interface Settings {
 	theme: 'dark' | 'light';
 	apiKey?: string;
 	gelbooruUsername?: string;
+	mostViewedCount: number;
 }
 
 export interface TagHistory {

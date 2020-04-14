@@ -22,7 +22,7 @@ if (require('electron-squirrel-startup')) {
 }
 let window: BrowserWindow;
 
-const createWindow = (): void => {
+const createWindow = (): BrowserWindow => {
 	if (!isProd) {
 		installExtension(REACT_DEVELOPER_TOOLS)
 			.then(name => console.log(`Added Extension:  ${name}`))
@@ -53,9 +53,11 @@ const createWindow = (): void => {
 	}
 	mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 	window = mainWindow;
+	return window;
 };
 
 const createSplashScreen = (): BrowserWindow => {
+	console.log('create splash');
 	const splashScreen = new BrowserWindow({
 		width: 640,
 		height: 360,
@@ -64,6 +66,7 @@ const createSplashScreen = (): BrowserWindow => {
 		resizable: false,
 		autoHideMenuBar: true
 	});
+
 	splashScreen.loadURL(path.resolve(__dirname, './splash_screen.html'));
 	return splashScreen;
 };
@@ -76,10 +79,12 @@ const createSplashScreen = (): BrowserWindow => {
 
 app.on('ready', () => {
 	const splashScreen = createSplashScreen();
-	createWindow();
-	window.once('ready-to-show', () => {
-		splashScreen.destroy();
-		window.show();
+	splashScreen.webContents.once('did-finish-load', () => {
+		const win = createWindow();
+		win.once('ready-to-show', () => {
+			splashScreen.destroy();
+			window.show();
+		});
 	});
 });
 

@@ -4,7 +4,7 @@ import { Tag } from '../types/gelbooruTypes';
 import { TagHistory } from '../store/types';
 
 export const saveSearch = async (tags: Tag[]): Promise<void> => {
-	tags.forEach((tag) => {
+	tags.forEach(tag => {
 		db.tagSearchHistory.put({ tag, date: new Date().toLocaleTimeString() });
 	});
 };
@@ -12,7 +12,7 @@ export const saveSearch = async (tags: Tag[]): Promise<void> => {
 export const getMostSearched = async (limit = 20): Promise<TagHistory[]> => {
 	const uniqueTags = await db.tagSearchHistory.orderBy('tag.tag').uniqueKeys();
 	const result = await Promise.all(
-		uniqueTags.map(async (tag) => {
+		uniqueTags.map(async tag => {
 			const result = await db.tagSearchHistory
 				.where('tag.tag')
 				.equals(tag)
