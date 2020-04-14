@@ -154,7 +154,6 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 		}
 
 		return (): void => {
-			console.log(`revoke ${objectUrl}`);
 			URL.revokeObjectURL(objectUrl);
 		};
 	}, [url]);

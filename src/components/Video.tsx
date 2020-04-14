@@ -28,6 +28,7 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 
 	useEffect(() => {
 		if (videoRef.current && isFilenameVideo(post.image)) {
+			let objectUrl = '';
 			const source = document.createElement('source');
 			dispatch(actions.system.setIsLoadingImage(true));
 			loadImage(
@@ -35,7 +36,7 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 				response => {
 					const buffer = new Blob([response.data]);
 
-					const objectUrl = URL.createObjectURL(buffer);
+					objectUrl = URL.createObjectURL(buffer);
 					source.setAttribute('src', objectUrl);
 					playVideo(source);
 				},
@@ -44,6 +45,10 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 					playVideo(source);
 				}
 			);
+
+			return (): void => {
+				URL.revokeObjectURL(objectUrl);
+			};
 		}
 	}, [post]);
 
