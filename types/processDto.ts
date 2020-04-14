@@ -1,16 +1,16 @@
 import { Post } from './gelbooruTypes';
 
 export interface SavePostDto {
-	data: string;
+	data: ArrayBuffer;
 	post: Post;
 }
 
 export interface LoadPostResponse {
-	data?: string;
+	data?: Blob;
 	post: Post;
 }
 
 export interface SuccessfulLoadPostResponse {
-	data: string;
+	data: Blob;
 	post: Post;
 }

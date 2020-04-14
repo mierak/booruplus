@@ -32,11 +32,14 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 			dispatch(actions.system.setIsLoadingImage(true));
 			loadImage(
 				post,
-				(response) => {
-					source.setAttribute('src', response.data);
+				response => {
+					const buffer = new Blob([response.data]);
+
+					const objectUrl = URL.createObjectURL(buffer);
+					source.setAttribute('src', objectUrl);
 					playVideo(source);
 				},
-				(response) => {
+				response => {
 					source.setAttribute('src', response.fileUrl);
 					playVideo(source);
 				}

@@ -5,7 +5,6 @@ import fs from 'fs';
 import { Settings } from '../store/types';
 import { SavePostDto } from '../types/processDto';
 import { Post } from '../types/gelbooruTypes';
-import { prefixDataWithContentType, getImageExtensionFromFilename } from '../util/utils';
 
 import path from 'path';
 
@@ -155,14 +154,13 @@ ipcMain.on('open-path', (event: IpcMainEvent, value: string) => {
 
 ipcMain.handle('save-image', async (event: IpcMainInvokeEvent, dto: SavePostDto) => {
 	if (dto.data) {
-		const data = dto.data.split(';base64,').pop();
 		await fs.promises.mkdir(`${settings.imagesFolderPath}/${dto.post.directory}`, { recursive: true }).catch(err => {
 			console.error(err);
 			//TODO handle gracefully
 			throw err;
 		});
 		await fs.promises
-			.writeFile(`${settings.imagesFolderPath}/${dto.post.directory}/${dto.post.image}`, data, { encoding: 'base64' })
+			.writeFile(`${settings.imagesFolderPath}/${dto.post.directory}/${dto.post.image}`, Buffer.from(dto.data), 'binary')
 			.catch(err => {
 				console.error(err);
 				//TODO handle gracefuly
@@ -177,11 +175,9 @@ ipcMain.handle('save-image', async (event: IpcMainInvokeEvent, dto: SavePostDto)
 
 ipcMain.handle('load-image', async (event: IpcMainInvokeEvent, post: Post) => {
 	try {
-		const data = fs.readFileSync(`${settings.imagesFolderPath}/${post.directory}/${post.image}`, { encoding: 'base64' });
-		const extension = getImageExtensionFromFilename(post.image);
-		const dataUri = prefixDataWithContentType(data, extension);
+		const data = fs.readFileSync(`${settings.imagesFolderPath}/${post.directory}/${post.image}`);
 		console.log(`ipcMain: image-loaded | id: ${post.id}`);
-		return { data: dataUri, post };
+		return { data: data, post };
 	} catch (err) {
 		return { data: undefined, post };
 	}

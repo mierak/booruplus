@@ -130,6 +130,7 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 	useEffect(() => {
 		const viewport = viewportRef.current;
 		const container = containerRef.current;
+		let objectUrl = '';
 		if (renderer && viewport && container) {
 			dispatch(actions.system.setIsLoadingImage(true));
 			const img = new Image();
@@ -140,14 +141,22 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 			};
 			loadImage(
 				post,
-				response => {
-					!url.includes('webm') && (img.src = response.data);
+				async response => {
+					const buffer = new Blob([response.data]);
+
+					objectUrl = URL.createObjectURL(buffer);
+					!url.includes('webm') && (img.src = objectUrl);
 				},
 				response => {
 					!url.includes('webm') && (img.src = response.fileUrl);
 				}
 			);
 		}
+
+		return (): void => {
+			console.log(`revoke ${objectUrl}`);
+			URL.revokeObjectURL(objectUrl);
+		};
 	}, [url]);
 
 	return (

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { PageHeader, Button, Spin, Affix } from 'antd';
+import { PageHeader, Button, Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
 import { actions } from '../../store';
