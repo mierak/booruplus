@@ -63,6 +63,7 @@ const searchSavedTagSearchOnline = (savedSearch: SavedSearch): AppThunk => async
 		const search = { ...savedSearch };
 		search.lastSearched = new Date().toUTCString();
 		dispatch(globalActions.savedSearches.updateLastSearched(search));
+		dispatch(globalActions.onlineSearchForm.setPage(0));
 		dispatch(globalActions.onlineSearchForm.setSelectedTags(savedSearch.tags));
 		dispatch(globalActions.onlineSearchForm.setExcludedTags(savedSearch.excludedTags));
 		await dispatch(globalActions.onlineSearchForm.fetchPosts());
@@ -78,6 +79,7 @@ const searchSavedTagSearchOffline = (savedSearch: SavedSearch): AppThunk => asyn
 	try {
 		const search = { ...savedSearch };
 		search.lastSearched = new Date().toUTCString();
+		dispatch(globalActions.downloadedSearchForm.setPage(0));
 		dispatch(globalActions.downloadedSearchForm.setSelectedTags(search.tags));
 		dispatch(globalActions.downloadedSearchForm.setExcludedTags(savedSearch.excludedTags));
 		await dispatch(globalActions.downloadedSearchForm.fetchPosts());

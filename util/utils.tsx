@@ -36,7 +36,7 @@ export const intersection = <T extends Entity>(...arrays: T[][]): T[] => {
 		const item = shortest[i];
 		let every = true;
 		for (let j = 1; j < ordered.length; j++) {
-			if (ordered[j].some(p => p.id === item.id)) continue;
+			if (ordered[j].some((p) => p.id === item.id)) continue;
 			every = false;
 			break;
 		}
@@ -51,7 +51,7 @@ export const capitalize = (string: string): string => {
 	return `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
 };
 
-export const delay = (ms: number): Promise<void> => new Promise(_ => setTimeout(_, ms));
+export const delay = (ms: number): Promise<void> => new Promise((_) => setTimeout(_, ms));
 
 export const isExtensionVideo = (extension: string): boolean => {
 	return extension === 'mp4' || extension === 'webm';
@@ -118,10 +118,10 @@ export const compareTagArrays = (arr1: Tag[], arr2: Tag[]): boolean => {
 		return false;
 	}
 
-	const arr1Strings = arr1.map(tag => tag.tag);
-	const arr2Strings = arr2.map(tag => tag.tag);
+	const arr1Strings = arr1.map((tag) => tag.tag);
+	const arr2Strings = arr2.map((tag) => tag.tag);
 
 	const both = [...arr1Strings, ...arr2Strings];
 
-	return both.every(tag => arr1Strings.includes(tag) && arr2Strings.includes(tag));
+	return both.every((tag) => arr1Strings.includes(tag) && arr2Strings.includes(tag));
 };

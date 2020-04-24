@@ -6,18 +6,13 @@ module.exports = {
 	 * that runs in the main process.
 	 */
 	entry: './electron/index.ts',
-	plugins: [
-		new CopyPlugin([
-			{ from: './src/splash_screen.html', to: '.' },
-			{ from: './src/dont_lewd_banner.png', to: '.' }
-		])
-	],
+	plugins: [new CopyPlugin([{ from: './src/splash_screen.html', to: '.' }])],
 	// Put your normal webpack config below here
 	// plugins: [new CopyPlugin([{ from: './electron/preload.js', to: './' }])],
 	module: {
-		rules: require('./webpack.rules')
+		rules: require('./webpack.rules'),
 	},
 	resolve: {
-		extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json']
-	}
+		extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json'],
+	},
 };

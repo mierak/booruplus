@@ -35,3 +35,10 @@ export interface FilterOptions {
 	showGifs: boolean;
 	showFavorites: boolean;
 }
+
+export interface FavoritesTreeNode {
+	title: string;
+	key: string;
+	childrenKeys: string[];
+	postIds: number[];
+}

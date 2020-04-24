@@ -51,6 +51,10 @@ export const getAll = async (): Promise<Post[]> => {
 	return db.posts.toArray();
 };
 
+export const getBulk = async (keys: number[]): Promise<Post[]> => {
+	return db.posts.bulkGet(keys);
+};
+
 export const getAllDownloaded = async (): Promise<Post[]> => {
 	return db.posts
 		.where('downloaded')

@@ -80,7 +80,7 @@ const MostViewedPosts: React.FunctionComponent = () => {
 	const handleMostViewedImageClick = (post: Post): void => {
 		dispatch(actions.system.setSearchMode('most-viewed'));
 		dispatch(actions.posts.setPosts(mostViewedPosts));
-		dispatch(actions.posts.setActivePostIndex(mostViewedPosts.findIndex(p => p.id === post.id)));
+		dispatch(actions.posts.setActivePostIndex(mostViewedPosts.findIndex((p) => p.id === post.id)));
 		dispatch(actions.system.setActiveView('image'));
 	};
 
@@ -89,7 +89,7 @@ const MostViewedPosts: React.FunctionComponent = () => {
 	};
 
 	const renderMostViewedPosts = (): React.ReactNode => {
-		return mostViewedPosts.map(post => {
+		return mostViewedPosts.map((post) => {
 			return (
 				<StyledThumbnailCard hoverable key={post.id} onClick={(): void => handleMostViewedImageClick(post)}>
 					<StyledImageContainer>
@@ -100,7 +100,7 @@ const MostViewedPosts: React.FunctionComponent = () => {
 							<span>
 								Viewed {post.viewCount} times{' '}
 								{post.downloaded === 1 && (
-									<Tooltip title="Downloaded">
+									<Tooltip destroyTooltipOnHide title="Downloaded">
 										<CheckCircleTwoTone />
 									</Tooltip>
 								)}

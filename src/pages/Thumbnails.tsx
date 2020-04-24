@@ -8,6 +8,8 @@ import { actions } from '../../store';
 import { RootState, AppDispatch } from '../../store/types';
 
 import ThumbnailsList from '../components/ThumbnailsList';
+import { CardAction, openNotificationWithIcon } from 'types/components';
+import { Post } from 'types/gelbooruTypes';
 
 interface Props {
 	className?: string;
@@ -46,16 +48,78 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.rating) || state.onlineSearchForm.rating
 	);
 
+	const handleFavorite = (post: Post): void => {
+		dispatch(actions.modals.showModal('add-to-favorites'));
+		dispatch(actions.modals.addToFavoritesModal.setPostIds([post.id]));
+	};
+
+	const handleBlacklist = (post: Post): void => {
+		dispatch(actions.posts.blacklistPost(post));
+		openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
+	};
+
+	const handleDownload = (post: Post): void => {
+		dispatch(actions.posts.downloadPost(post));
+		openNotificationWithIcon('success', 'Post downloaded', 'Image was successfuly saved to disk.');
+	};
+
+	const handleAddPreview = (post: Post): void => {
+		dispatch(
+			actions.savedSearches.addPreviewToActiveSavedSearch(`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`)
+		);
+		openNotificationWithIcon('success', 'Preview added', 'Preview was successfuly added to saved search');
+	};
+
+	const thumbnailActions: CardAction[] = [
+		{
+			key: 'card-action-add-to-favorites',
+			tooltip: 'Add to favorites',
+			icon: 'heart-outlined',
+			onClick: handleFavorite,
+		},
+		{
+			key: 'card-action-download',
+			tooltip: 'Download post image',
+			icon: 'download-outlined',
+			onClick: handleDownload,
+			condition: (post: Post): boolean => post.downloaded === 0,
+		},
+		{
+			key: 'card-action-blacklist',
+			tooltip: 'Blacklist',
+			icon: 'delete-outlined',
+			onClick: handleBlacklist,
+			popConfirm: {
+				okText: 'Blacklist',
+				cancelText: 'Cancel',
+				title: 'Are you sure you want to blacklist this image?',
+			},
+		},
+		{
+			key: 'card-action-add-preview-to-saved-search',
+			tooltip: 'Add preview',
+			icon: 'plus-outlined',
+			onClick: handleAddPreview,
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			condition: (_: Post): boolean => mode === 'saved-search-online' || mode === 'saved-search-offline',
+			popConfirm: {
+				okText: 'Add',
+				cancelText: 'Cancel',
+				title: 'Add preview to Saved Search?',
+			},
+		},
+	];
+
 	const renderThumbnailList = (): JSX.Element => {
 		if (isFetchingPosts) {
 			return <StyledSpin indicator={<LoadingOutlined style={{ fontSize: '64px' }} />} />;
 		} else {
-			return <StyledThumbnailsList emptyDataLogoCentered={true} />;
+			return <StyledThumbnailsList emptyDataLogoCentered={true} actions={thumbnailActions} />;
 		}
 	};
 
 	const handleDownloadWholeSearch = (): void => {
-		dispatch(actions.system.withProgressBar(async id => dispatch(actions.posts.downloadWholeSearch(id))));
+		dispatch(actions.system.withProgressBar(async (id) => dispatch(actions.posts.downloadWholeSearch(id))));
 	};
 
 	const handleBlacklistAll = (): void => {
@@ -67,19 +131,21 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleAddAllToFavorites = (): void => {
-		dispatch(actions.posts.addAllPostsToFavorites());
+		dispatch(actions.modals.addToFavoritesModal.setPostIdsToFavorite('all'));
+		dispatch(actions.modals.showModal('add-to-favorites'));
 	};
 
 	const handleAddSelectedToFavorites = (): void => {
-		dispatch(actions.posts.addSelectedPostsToFavorites());
+		dispatch(actions.modals.addToFavoritesModal.setPostIdsToFavorite('selected'));
+		dispatch(actions.modals.showModal('add-to-favorites'));
 	};
 
 	const handleDownloadAll = (): void => {
-		dispatch(actions.system.withProgressBar(async id => dispatch(actions.posts.downloadAllPosts(id))));
+		dispatch(actions.system.withProgressBar(async (id) => dispatch(actions.posts.downloadAllPosts(id))));
 	};
 
 	const handleDownloadSelected = (): void => {
-		dispatch(actions.system.withProgressBar(async id => dispatch(actions.posts.downloadSelectedPosts(id))));
+		dispatch(actions.system.withProgressBar(async (id) => dispatch(actions.posts.downloadSelectedPosts(id))));
 	};
 
 	const handleSaveSearch = async (): Promise<void> => {
@@ -111,19 +177,13 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			</Button>,
 			<Button key="2" onClick={handleDownloadSelected}>
 				Download Selected
-			</Button>
+			</Button>,
 		];
 	};
 
 	return (
 		<Container className={props.className}>
-			<PageHeader
-				ghost={false}
-				// onBack={() => window.history.back()}
-				title="Image List"
-				// subTitle="This is a subtitle"
-				extra={renderButtons()}
-			></PageHeader>
+			<PageHeader ghost={false} title="Image List" extra={renderButtons()}></PageHeader>
 			{renderThumbnailList()}
 		</Container>
 	);

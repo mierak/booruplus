@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Table, Tag, Row, Col, Spin, Card, Popconfirm } from 'antd';
+import { Table, Tag, Row, Col, Spin, Card, Popconfirm, Tooltip } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
 import { actions } from '../../store';
@@ -157,7 +157,9 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 				key="delete"
 				onConfirm={(): void => handlePreviewDelete(record, id)}
 			>
-				<DeleteOutlined />
+				<Tooltip title="Delete preview" destroyTooltipOnHide>
+					<DeleteOutlined />
+				</Tooltip>
 			</Popconfirm>,
 		];
 	};

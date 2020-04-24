@@ -32,6 +32,8 @@ const Page: React.FunctionComponent = () => {
 				require('antd/dist/antd.css');
 			}
 			setLoaded(true);
+			const keys = await dispatch(actions.favorites.fetchAllKeys());
+			dispatch(actions.favorites.setExpandedKeys(keys));
 		})();
 	}, []);
 

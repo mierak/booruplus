@@ -13,6 +13,8 @@ export type View = 'thumbnails' | 'image' | 'dashboard' | 'online-search' | 'sav
 
 export type SearchMode = 'online' | 'offline' | 'favorites' | 'saved-search-offline' | 'saved-search-online' | 'most-viewed';
 
+export type ActiveModal = 'none' | 'add-to-favorites' | 'add-favorites-directory' | 'delete-favorites-directory' | 'move-to-directory';
+
 export interface OfflineOptions {
 	blacklisted: boolean;
 	favorite: boolean;
@@ -37,3 +39,12 @@ export interface TagHistory {
 	date: string;
 	count: number;
 }
+
+export interface TreeNode {
+	title: string | React.ReactNode;
+	key: string;
+	children: TreeNode[];
+	postIds: number[];
+}
+
+export type TreeData = TreeNode[];

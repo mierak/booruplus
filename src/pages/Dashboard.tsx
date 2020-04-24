@@ -25,6 +25,7 @@ const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 		dispatch(actions.dashboard.fetchBlacklistedPostCount());
 		dispatch(actions.dashboard.fetchFavoritePostCount());
 		dispatch(actions.dashboard.fetchTagCount());
+		dispatch(actions.favorites.fetchTreeData());
 	}, []);
 
 	const downloadedPostCount = useSelector((state: RootState) => state.dashboard.totalDownloadedPosts);

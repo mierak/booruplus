@@ -9,16 +9,23 @@ import { RootState } from 'store/types';
 import Thumbnail from './Thumbnail';
 import EmptyThumbnails from './EmptyThumbnails';
 import LoadMoreButton from './search-form/LoadMoreButton';
+import { CardAction, ContextMenu } from 'types/components';
 
 interface Props {
 	className?: string;
 	emptyDataLogoCentered?: boolean;
+	contextMenu?: ContextMenu[];
+	actions?: CardAction[];
 }
 
-const Container = styled.div`
+interface ContainerProps {
+	height: string;
+}
+
+const Container = styled.div<ContainerProps>`
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-	grid-template-rows: repeat(auto-fit, 220px);
+	grid-template-rows: repeat(auto-fit, ${(props): string => props.height});
 	grid-gap: 10px;
 	margin: 10px 0 0 10px;
 	padding: 10 10px 10px 10;
@@ -42,8 +49,6 @@ const StyledLoadMoreButton = styled(LoadMoreButton)`
 	width: calc(100% - 20px);
 	grid-column: 1/-1;
 	margin-bottom: 15px;
-	/* position: absolute; */
-	/* bottom: 10px; */
 `;
 
 const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
@@ -51,28 +56,17 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const postCount = useSelector((state: RootState) => state.posts.posts.length);
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 	const activePostIndex = useSelector((state: RootState) => state.posts.activePostIndex);
+	const searchMode = useSelector((state: RootState) => state.system.searchMode);
 
 	useEffect(() => {
 		if (activeView === 'image') {
 			const list = document.getElementById('thumbnails-list');
+			const thumbnailHeight = props.actions !== undefined ? 230 : 190; //TODO fix scroll value
 			if (list && activePostIndex) {
-				list.scrollTo(0, 232 * activePostIndex - list.clientHeight / 2 + 116);
+				list.scrollTo(0, thumbnailHeight * activePostIndex - list.clientHeight / 2 + thumbnailHeight / 2);
 			}
 		}
 	});
-
-	const renderThumbnails = (): JSX.Element[] => {
-		const arr: JSX.Element[] = [];
-		for (let i = 0; i < postCount; i++) {
-			arr.push(<Thumbnail key={i} index={i}></Thumbnail>);
-		}
-
-		return arr;
-	};
-
-	const renderNoData = (): JSX.Element => {
-		return <StyledEmptyThumbnails centered={props.emptyDataLogoCentered} />;
-	};
 
 	const handleKeyPress = (event: KeyboardEvent): void => {
 		switch (event.keyCode) {
@@ -93,11 +87,31 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 		};
 	}, []);
 
+	const renderThumbnails = (): React.ReactNode => {
+		const arr: JSX.Element[] = [];
+		for (let i = 0; i < postCount; i++) {
+			arr.push(<Thumbnail key={i} index={i} contextMenu={props.contextMenu} actions={props.actions}></Thumbnail>);
+		}
+
+		return arr;
+	};
+
+	const renderNoData = (): React.ReactNode => {
+		return <StyledEmptyThumbnails centered={props.emptyDataLogoCentered} />;
+	};
+
+	const renderLoadMoreButton = (): React.ReactNode | undefined => {
+		if (postCount <= 0 || searchMode === 'favorites') {
+			return undefined;
+		}
+		return <StyledLoadMoreButton />;
+	};
+
 	return (
 		<>
-			<Container className={props.className} id="thumbnails-list">
+			<Container className={props.className} id="thumbnails-list" height={props.actions !== undefined ? '200px' : '170px'}>
 				{postCount === 0 ? renderNoData() : renderThumbnails()}
-				{postCount > 0 && <StyledLoadMoreButton />}
+				{renderLoadMoreButton()}
 			</Container>
 		</>
 	);
@@ -105,7 +119,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 
 ThumbnailsList.propTypes = {
 	emptyDataLogoCentered: PropTypes.bool,
-	className: PropTypes.string
+	className: PropTypes.string,
 };
 
 export default React.memo(ThumbnailsList);

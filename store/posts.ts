@@ -16,8 +16,8 @@ export interface PostsState {
 }
 
 const initialState: PostsState = {
-	activePostIndex: 0,
-	posts: []
+	activePostIndex: undefined,
+	posts: [],
 };
 
 const postsSlice = createSlice({
@@ -39,13 +39,13 @@ const postsSlice = createSlice({
 			state.posts.push(...action.payload);
 		},
 		updatePost: (state, action: PayloadAction<Post>): void => {
-			const index = state.posts.findIndex(p => p.id === action.payload.id);
+			const index = state.posts.findIndex((p) => p.id === action.payload.id);
 			state.posts[index] = action.payload;
 		},
 		updatePosts: (state, action: PayloadAction<Post[]>): void => {
 			const posts = action.payload;
-			posts.forEach(post => {
-				const index = state.posts.findIndex(p => p.id === post.id);
+			posts.forEach((post) => {
+				const index = state.posts.findIndex((p) => p.id === post.id);
 				state.posts[index] = post;
 			});
 		},
@@ -56,13 +56,13 @@ const postsSlice = createSlice({
 			state.posts[action.payload.index].selected = action.payload.selected;
 		},
 		setPostSelected: (state, action: PayloadAction<{ post: Post; selected: boolean }>): void => {
-			const post = state.posts.find(p => p.id === action.payload.post.id);
+			const post = state.posts.find((p) => p.id === action.payload.post.id);
 			post && (post.selected = action.payload.selected);
 		},
 		setPostBlacklisted: (state, action: PayloadAction<{ index: number; blacklisted: 1 | 0 }>): void => {
 			state.posts[action.payload.index].blacklisted = action.payload.blacklisted;
-		}
-	}
+		},
+	},
 });
 
 export default postsSlice.reducer;
@@ -70,13 +70,13 @@ export default postsSlice.reducer;
 const deduplicateAndCheckTagsAgainstDb = async (tags: string[]): Promise<string[]> => {
 	const deduplicated = Array.from(new Set(tags));
 	const checked = await Promise.all(
-		deduplicated.map(async tag => {
+		deduplicated.map(async (tag) => {
 			const exists = await db.tags.checkIfExists(tag);
 			if (!exists) return tag;
 		})
 	);
 	const checkedAndFiltered: string[] = [];
-	checked.forEach(val => val !== undefined && checkedAndFiltered.push(val));
+	checked.forEach((val) => val !== undefined && checkedAndFiltered.push(val));
 	return checkedAndFiltered;
 };
 
@@ -159,7 +159,7 @@ const downloadPosts = (posts: Post[], taskId?: number): AppThunk => async (dispa
 };
 
 const downloadSelectedPosts = (taskId?: number): AppThunk => async (dispatch, getState): Promise<void> => {
-	const posts = getState().posts.posts.filter(p => p.selected);
+	const posts = getState().posts.posts.filter((p) => p.selected);
 	return dispatch(downloadPosts(posts, taskId));
 };
 const downloadAllPosts = (taskId?: number): AppThunk<void> => async (dispatch, getState): Promise<void> => {
@@ -171,13 +171,13 @@ const downloadWholeSearch = (taskId?: number): AppThunk => async (dispatch, getS
 	try {
 		const tags = getState().onlineSearchForm.selectedTags;
 		const excludedTags = getState().onlineSearchForm.excludededTags;
-		const tagsString = tags.map(tag => tag.tag);
-		const excludedTagString = excludedTags.map(tag => tag.tag);
+		const tagsString = tags.map((tag) => tag.tag);
+		const excludedTagString = excludedTags.map((tag) => tag.tag);
 		const options: api.PostApiOptions = {
 			limit: 100,
 			page: 0,
 			rating: getState().onlineSearchForm.rating,
-			apiKey: getState().settings.apiKey
+			apiKey: getState().settings.apiKey,
 		};
 
 		let posts = await api.getPostsForTags(tagsString, options, excludedTagString);
@@ -187,7 +187,7 @@ const downloadWholeSearch = (taskId?: number): AppThunk => async (dispatch, getS
 		while (posts.length > 0) {
 			const newOptions = {
 				...options,
-				page: ++lastPage
+				page: ++lastPage,
 			};
 			posts = await api.getPostsForTags(tagsString, newOptions, excludedTagString);
 			totalPosts.push(...posts);
@@ -225,8 +225,8 @@ const blacklistPost = (post: Post): AppThunk => async (dispatch): Promise<void> 
 const blacklistSelectedPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		const deleteImage = useDeleteImage();
-		const posts = getState().posts.posts.filter(p => p.selected);
-		posts.forEach(p => {
+		const posts = getState().posts.posts.filter((p) => p.selected);
+		posts.forEach((p) => {
 			const post = copyAndBlacklistPost(p);
 			deleteImage(post);
 			db.posts.update(post);
@@ -241,7 +241,7 @@ const blackListAllPosts = (): AppThunk => async (dispatch, getStsate): Promise<v
 	try {
 		const deleteImage = useDeleteImage();
 		const posts = getStsate().posts.posts;
-		posts.forEach(p => {
+		posts.forEach((p) => {
 			const post = copyAndBlacklistPost(p);
 			deleteImage(post);
 			db.posts.update(post);
@@ -268,8 +268,8 @@ const changePostProperties = (post: Post, options: PostPropertyOptions): AppThun
 
 const addSelectedPostsToFavorites = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
-		const posts = getState().posts.posts.filter(p => p.selected);
-		posts.forEach(p => {
+		const posts = getState().posts.posts.filter((p) => p.selected);
+		posts.forEach((p) => {
 			const post = { ...p };
 			post.favorite = 1;
 			post.blacklisted = 0;
@@ -285,7 +285,7 @@ const addSelectedPostsToFavorites = (): AppThunk => async (dispatch, getState): 
 const addAllPostsToFavorites = (): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
 		const posts = getState().posts.posts;
-		posts.forEach(p => {
+		posts.forEach((p) => {
 			const post = { ...p };
 			post.favorite = 1;
 			post.blacklisted = 0;
@@ -339,5 +339,5 @@ export const actions = {
 	addAllPostsToFavorites,
 	incrementViewCount,
 	previousPost,
-	nextPost
+	nextPost,
 };

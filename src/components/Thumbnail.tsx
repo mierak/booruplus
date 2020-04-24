@@ -1,30 +1,27 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { CheckCircleTwoTone, LoadingOutlined } from '@ant-design/icons';
+import { Card, Popconfirm, Spin, Menu, Dropdown } from 'antd';
 
 import { actions } from '../../store';
-import { RootState, PostPropertyOptions, AppDispatch } from '../../store/types';
+import { RootState, AppDispatch } from '../../store/types';
 
-import { Card, Popconfirm, notification, Tooltip, Spin } from 'antd';
-import {
-	HeartOutlined,
-	HeartFilled,
-	DownloadOutlined,
-	DeleteOutlined,
-	CheckCircleTwoTone,
-	LoadingOutlined,
-	PlusOutlined
-} from '@ant-design/icons';
-import { IconType } from 'antd/lib/notification';
+import { CardAction, ContextMenu } from 'types/components';
+import { renderPostCardAction } from 'util/componentUtils';
 
 interface Props {
 	index: number;
+	contextMenu?: ContextMenu[];
+	actions?: CardAction[];
 }
 
 interface CardProps {
 	postindex: number;
 	isactive: string;
 	theme: 'dark' | 'light';
+	height: string;
 }
 
 interface SelectedIndexes {
@@ -36,7 +33,11 @@ const StyledCard = styled(Card)<CardProps>`
 	border: ${(props): false | 0 | 'dashed 1px black' | 'dashed 1px white' | undefined =>
 		props.isactive === 'true' && props.theme === 'dark' ? 'dashed 1px white' : 'dashed 1px black'};
 	width: 170px;
-	height: 222px;
+	height: ${(props): string => props.height};
+	&& > .ant-card-actions > li {
+		margin-top: 2px;
+		margin-bottom: 2px;
+	}
 `;
 
 const StyledImageContainer = styled.div`
@@ -57,7 +58,6 @@ const StyledThumbnailImage = styled.img`
 const Thumbnail = (props: Props): React.ReactElement => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const searchMode = useSelector((state: RootState) => state.system.searchMode);
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 	const post = useSelector((state: RootState) =>
 		props.index >= 0 && props.index < state.posts.posts.length ? state.posts.posts[props.index] : undefined
@@ -67,14 +67,6 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [_, setFavoriteState] = useState(post && post.favorite); //TODO replace this thumbnails action hack(icon refresh)
 	const [loaded, setLoaded] = useState(true);
-
-	const openNotificationWithIcon = (type: IconType, title: string, description: string, duration?: number): void => {
-		notification[type]({
-			message: title,
-			description: description,
-			duration: duration ? duration : 2
-		});
-	};
 
 	const handleThumbnailClick = (event: React.MouseEvent): void => {
 		if (event.ctrlKey) {
@@ -87,133 +79,118 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		}
 	};
 
-	const handleFavorite = (): void => {
-		if (post) {
-			const options: PostPropertyOptions = { favorite: 1, blacklisted: 0 };
-			dispatch(actions.posts.changePostProperties(post, options));
-			const description = 'Post succesfuly added to favorites.';
-			openNotificationWithIcon('success', 'Post updated', description);
-		}
-	};
+	interface PopConfirmProps {
+		children: React.ReactElement;
+		title: string;
+		okText: string;
+		cancelText: string;
+		action: () => void;
+	}
 
-	const handleRemoveFavorite = (): void => {
-		if (post) {
-			const options: PostPropertyOptions = { favorite: 0 };
-			dispatch(actions.posts.changePostProperties(post, options));
-			const description = 'Post successfuly removed from favorites.';
-			openNotificationWithIcon('success', 'Post updated', description);
-		}
-	};
-
-	const handleSave = (): void => {
-		if (post) {
-			dispatch(actions.posts.downloadPost(post));
-			openNotificationWithIcon('success', 'Post downloaded', 'Image was successfuly saved to disk.');
-		}
-	};
-
-	const renderWithTooltip = (element: JSX.Element, text: string, key: string): JSX.Element => {
+	const renderWithPopconfirm = (props: PopConfirmProps): React.ReactNode => {
 		return (
-			<Tooltip title={text} key={key}>
-				{element}
-			</Tooltip>
-		);
-	};
-
-	const handleBlacklistClick = (): void => {
-		if (post) {
-			dispatch(actions.posts.blacklistPost(post));
-			openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
-		}
-	};
-
-	const renderActions = (): JSX.Element[] => {
-		const favorite = renderWithTooltip(
-			<HeartFilled key="heart-filled" onClick={handleRemoveFavorite} />,
-			'Remove from favorites',
-			'heart-filled'
-		);
-		const notFavorite = renderWithTooltip(
-			<HeartOutlined key="heart-outlined" onClick={handleFavorite} />,
-			'Add to favorites',
-			'heart-outlined'
-		);
-		const download = renderWithTooltip(<DownloadOutlined key="download" onClick={handleSave} />, 'Download post image', 'download');
-		const blackist = renderWithTooltip(
 			<Popconfirm
-				title="Are you sure you want to blacklist this image?"
-				cancelText="Blacklist"
-				okText="Cancel"
-				onCancel={handleBlacklistClick}
+				title={props.title}
+				cancelText={props.okText}
+				okText={props.cancelText}
+				onCancel={props.action}
 				okType="default"
 				cancelButtonProps={{
-					type: 'primary'
+					type: 'primary',
 				}}
 			>
-				<DeleteOutlined key="delete" />
-			</Popconfirm>,
-			'Blacklist post',
-			'delete'
+				{props.children}
+			</Popconfirm>
 		);
-
-		const arr: JSX.Element[] = [];
-		if (post && post.favorite === 1) {
-			arr.push(favorite);
-		} else {
-			arr.push(notFavorite);
-		}
-		arr.push(download, blackist);
-
-		if (searchMode === 'saved-search-offline' || searchMode === 'saved-search-online') {
-			arr.push(
-				renderWithTooltip(
-					<PlusOutlined
-						key="preview"
-						// TODO Add confirmation of adding, add posibility to delete preview, change icon
-						onClick={(): void => {
-							post &&
-								dispatch(
-									actions.savedSearches.addPreviewToActiveSavedSearch(
-										`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`
-									)
-								);
-						}}
-					/>,
-					'Add post as Saved Search preview',
-					'add-preview'
-				)
-			);
-		}
-		return arr;
 	};
 
-	return (
-		<StyledCard
-			bodyStyle={{ height: '172px', width: '170px', padding: '0' }}
-			postindex={props.index}
-			isactive={isActive.toString()}
-			theme={theme}
-			actions={renderActions()}
-			hoverable
-		>
-			<StyledImageContainer onClick={(event: React.MouseEvent): void => handleThumbnailClick(event)}>
-				{post && post.selected ? (
-					<CheckCircleTwoTone style={{ fontSize: '20px', position: 'absolute', top: '5px', right: '5px' }} />
-				) : (
-					<></>
-				)}
-				{post && (
-					<StyledThumbnailImage
-						src={`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`}
-						style={{ display: loaded ? 'block' : 'none' }}
-						onLoad={(): void => setLoaded(true)}
-						onLoadStart={(): void => setLoaded(false)}
-					></StyledThumbnailImage>
-				)}
-				{!loaded && <Spin indicator={<LoadingOutlined style={{ fontSize: '32px' }} />} />}
-			</StyledImageContainer>
-		</StyledCard>
-	);
+	const renderActions = (): React.ReactNode[] => {
+		if (props.actions === undefined) {
+			return [];
+		}
+
+		const actions: React.ReactNode[] = [];
+
+		props.actions.forEach((action) => {
+			if (!post) {
+				throw new Error('Cannot render post actions because post is undefined');
+			}
+			if (action.condition) {
+				if (!action.condition(post)) {
+					return;
+				}
+			}
+
+			if (!action.popConfirm) {
+				actions.push(renderPostCardAction(action.icon, action.key, action.tooltip, action.onClick, post));
+			} else {
+				const handler = (): void => action.onClick(post);
+				const popConfirmProps: PopConfirmProps = {
+					title: action.popConfirm.title,
+					okText: action.popConfirm.okText,
+					cancelText: action.popConfirm.cancelText,
+					action: handler,
+					children: renderPostCardAction(action.icon, action.key, action.tooltip),
+				};
+				actions.push(renderWithPopconfirm(popConfirmProps));
+			}
+		});
+
+		return actions;
+	};
+
+	const renderThumbNail = (): React.ReactNode => {
+		return (
+			<StyledCard
+				bodyStyle={{ height: '170px', width: '170px', padding: '0' }}
+				postindex={props.index}
+				isactive={isActive.toString()}
+				theme={theme}
+				actions={renderActions()}
+				hoverable
+				height={props.actions !== undefined ? '200px' : '172px'}
+			>
+				<StyledImageContainer onClick={(event: React.MouseEvent): void => handleThumbnailClick(event)}>
+					{post && post.selected ? (
+						<CheckCircleTwoTone style={{ fontSize: '20px', position: 'absolute', top: '5px', right: '5px' }} />
+					) : (
+						<></>
+					)}
+					{post && (
+						<StyledThumbnailImage
+							src={`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`}
+							style={{ display: loaded ? 'block' : 'none' }}
+							onLoad={(): void => setLoaded(true)}
+							onLoadStart={(): void => setLoaded(false)}
+						></StyledThumbnailImage>
+					)}
+					{!loaded && <Spin indicator={<LoadingOutlined style={{ fontSize: '32px' }} />} />}
+				</StyledImageContainer>
+			</StyledCard>
+		);
+	};
+
+	const renderWithContextMenu = (): React.ReactNode => {
+		let actions = [<></>];
+		if (props.contextMenu && post) {
+			actions = props.contextMenu.map((action) => {
+				return (
+					<Menu.Item key={action.key} onClick={(): void => action.action(post)}>
+						{action.title}
+					</Menu.Item>
+				);
+			});
+		}
+		const menu = <Menu>{actions}</Menu>;
+
+		return (
+			<Dropdown overlay={menu} trigger={['contextMenu']}>
+				{renderThumbNail()}
+			</Dropdown>
+		);
+	};
+
+	return <>{props.contextMenu !== undefined ? renderWithContextMenu() : renderThumbNail()}</>;
 };
 
 export default React.memo(Thumbnail);

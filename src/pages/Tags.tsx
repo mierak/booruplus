@@ -72,7 +72,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 	const generateFilterObject = (name: string, _value?: unknown): ColumnFilterItem => {
 		return {
 			text: capitalize(name),
-			value: name
+			value: name,
 		};
 	};
 
@@ -82,7 +82,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 			generateFilterObject('character'),
 			generateFilterObject('copyright'),
 			generateFilterObject('metadata'),
-			generateFilterObject('tag')
+			generateFilterObject('tag'),
 		];
 	};
 
@@ -116,7 +116,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 					title="Type"
 					dataIndex="type"
 					width={100}
-					onFilter={(value: TagType, record: Tag): boolean => record.type === value}
+					onFilter={(value: TagType | string | number | boolean, record: Tag): boolean => record.type === value}
 					filters={getTypeFilters()}
 					render={renderTag}
 				/>

@@ -11,6 +11,8 @@ import settingsReducer, { actions as settings } from './settings';
 import dashboardReducer, { actions as dashboard } from './dashboard';
 import tasksReducer, { actions as tasks } from './tasks';
 import loadingStatesReducer, { actions as loadingStates } from './loadingStates';
+import favoritesReducer, { actions as favorites } from './favorites';
+import modalsReducer, { actions as modals } from './modals/index';
 import { RootState } from './types';
 
 export const mainReducer = combineReducers({
@@ -23,12 +25,14 @@ export const mainReducer = combineReducers({
 	settings: settingsReducer,
 	dashboard: dashboardReducer,
 	tasks: tasksReducer,
-	loadingStates: loadingStatesReducer
+	loadingStates: loadingStatesReducer,
+	favorites: favoritesReducer,
+	modals: modalsReducer,
 });
 
 export const store = configureStore({
 	reducer: mainReducer,
-	middleware: [...getDefaultMiddleware<RootState>()]
+	middleware: [...getDefaultMiddleware<RootState>()],
 });
 
 export const actions = {
@@ -41,5 +45,7 @@ export const actions = {
 	settings,
 	dashboard,
 	tasks,
-	loadingStates
+	loadingStates,
+	favorites,
+	modals,
 };
