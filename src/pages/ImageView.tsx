@@ -27,6 +27,7 @@ const StyledThumbnailsList = styled(ThumbnailsList)`
 
 const StyledLayout = styled(Layout)`
 	overflow-y: hidden;
+	height: 100vh;
 `;
 
 const ImageView: React.FunctionComponent<Props> = (props: Props) => {

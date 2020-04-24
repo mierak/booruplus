@@ -1,7 +1,6 @@
 ## TODO
 
 - Make Tag page actually useful
-- Favorites categories
 - Tests
 - Loader in ImageView
 - Typesafe IPC
@@ -10,6 +9,7 @@
 - Thumbnails downlaoding
 - Option to load dashboard stats on app start
 - Add option to move selected/all favorites between directories
+- ~~Favorites categories~~
 - ~~Change base64 based dtos with blob based ones~~
 - ~~Loader when starting up app~~
 - ~~Implement Download Search onClick~~
@@ -43,3 +43,7 @@
 
 - WithProgressBar to actually make sense
 - Make task ID start at 0
+
+## LOW PRIORITY
+
+- Extract all inlined urls

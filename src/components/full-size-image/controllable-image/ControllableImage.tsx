@@ -1,16 +1,18 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
-import { Button, Popover } from 'antd';
-import { PlusOutlined, MinusOutlined, PicCenterOutlined, TagsOutlined, GlobalOutlined } from '@ant-design/icons';
-
+import { useLoadImage } from 'hooks/useImageBus';
 import { Renderer } from './renderer';
-import { Post } from 'types/gelbooruTypes';
-import { useDispatch } from 'react-redux';
+
 import { AppDispatch } from 'store/types';
 import { actions } from 'store/';
-import TagsPopover from './TagsPopover';
-import { useLoadImage } from 'hooks/useImageBus';
+
+import { Post } from 'types/gelbooruTypes';
+import { ImageControl } from 'types/components';
+
+import TagsPopover from '../TagsPopover';
+import ImageControls from '../ImageControls';
 
 interface Props {
 	url: string;
@@ -21,16 +23,6 @@ interface Props {
 
 const Container = styled.div`
 	position: relative;
-`;
-
-const StyledControlsContainer = styled.div`
-	position: absolute;
-	display: grid;
-	grid-template-columns: 1fr;
-	grid-template-rows: repeat(4, 1fr);
-	grid-row-gap: 5px;
-	top: 25px;
-	left: 25px;
 `;
 
 const ControllableImage: React.FunctionComponent<Props> = ({ url, className, post, showControls }: Props) => {
@@ -48,12 +40,13 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 				width: container.clientWidth,
 				height: container.clientHeight,
 				offsetX: viewport.getBoundingClientRect().left,
-				offsetY: viewport.getBoundingClientRect().top
+				offsetY: viewport.getBoundingClientRect().top,
 			});
 		}
 	};
 
 	const handleZoomIn = (): void => {
+		console.log('hue');
 		renderer && renderer.zoomIn();
 	};
 
@@ -79,32 +72,43 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 		dispatch(actions.system.setTagsPopovervisible(visible));
 	};
 
-	const renderTagsButton = (): React.ReactNode => {
-		// eslint-disable-next-line react/prop-types
-		const content = <TagsPopover tags={post.tags} />;
-		return (
-			<Popover
-				content={content}
-				key="btn-show-tags"
-				trigger="click"
-				autoAdjustOverflow={true}
-				onVisibleChange={handleTagsPopoverVisibilityChange}
-			>
-				<Button type="primary" title="Show Tags" icon={<TagsOutlined />} />
-			</Popover>
-		);
-	};
-
-	const renderZoomButtons = (): React.ReactNode => {
-		const btnZoomIn = <Button type="primary" key="btn-zoomin" title="Zoom in" icon={<PlusOutlined />} onClick={handleZoomIn} />;
-		const btnZoomOut = <Button type="primary" key="bton-zoomout" title="Zoom out" icon={<MinusOutlined />} onClick={handleZoomOut} />;
-		const btnCenter = <Button type="primary" key="btn-center" title="Center image" icon={<PicCenterOutlined />} onClick={handleCenter} />;
-		const btnShowTags = renderTagsButton();
-		const btnOpenWeb = (
-			<Button type="primary" key="btn-open-web" title="Open in browser" icon={<GlobalOutlined />} onClick={handleOpenWeb} />
-		);
-		return <StyledControlsContainer>{[btnZoomIn, btnZoomOut, btnCenter, btnShowTags, btnOpenWeb]}</StyledControlsContainer>;
-	};
+	const imageControls: ImageControl[] = [
+		{
+			icon: 'plus-outlined',
+			key: 'image-control-zoom-in',
+			tooltip: 'Zoom in',
+			onClick: handleZoomIn,
+		},
+		{
+			icon: 'minus-outlined',
+			key: 'image-control-zoom-out',
+			tooltip: 'Zoom out',
+			onClick: handleZoomOut,
+		},
+		{
+			icon: 'pic-center-outlined',
+			key: 'image-control-center',
+			tooltip: 'Center Image',
+			onClick: handleCenter,
+		},
+		{
+			icon: 'tags-outlined',
+			key: 'image-control-show-tags',
+			tooltip: 'Show tags',
+			popOver: {
+				content: <TagsPopover tags={post.tags} />,
+				autoAdjustOverflow: true,
+				onVisibleChange: handleTagsPopoverVisibilityChange,
+				trigger: 'click',
+			},
+		},
+		{
+			icon: 'global-outlined',
+			key: 'image-control-open-web',
+			tooltip: 'Open in browser',
+			onClick: handleOpenWeb,
+		},
+	];
 
 	useEffect(() => {
 		if (containerRef.current && viewportRef.current) {
@@ -141,13 +145,13 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 			};
 			loadImage(
 				post,
-				async response => {
+				async (response) => {
 					const buffer = new Blob([response.data]);
 
 					objectUrl = URL.createObjectURL(buffer);
 					!url.includes('webm') && (img.src = objectUrl);
 				},
-				response => {
+				(response) => {
 					!url.includes('webm') && (img.src = response.fileUrl);
 				}
 			);
@@ -160,7 +164,7 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 
 	return (
 		<Container ref={containerRef} className={className}>
-			{showControls && renderZoomButtons()}
+			{showControls && <ImageControls actions={imageControls} />}
 			<canvas ref={viewportRef} height={1000} width={1000} />
 		</Container>
 	);

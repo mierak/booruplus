@@ -1,10 +1,21 @@
 import React from 'react';
-import { HeartOutlined, DownloadOutlined, DeleteOutlined, CloseOutlined, PlusOutlined, FolderOutlined } from '@ant-design/icons';
+import {
+	HeartOutlined,
+	DownloadOutlined,
+	DeleteOutlined,
+	CloseOutlined,
+	PlusOutlined,
+	MinusOutlined,
+	FolderOutlined,
+	PicCenterOutlined,
+	TagsOutlined,
+	GlobalOutlined,
+} from '@ant-design/icons';
 import { Icon } from 'types/components';
 import { Post } from 'types/gelbooruTypes';
 import { Tooltip } from 'antd';
 
-const getIcon = (icon: Icon, onClick: (() => void) | undefined): React.ReactElement => {
+export const getIcon = (icon: Icon, onClick?: (() => void) | undefined): React.ReactElement => {
 	switch (icon) {
 		case 'delete-outlined':
 			return <DeleteOutlined onClick={onClick} />;
@@ -16,8 +27,16 @@ const getIcon = (icon: Icon, onClick: (() => void) | undefined): React.ReactElem
 			return <CloseOutlined onClick={onClick} />;
 		case 'plus-outlined':
 			return <PlusOutlined onClick={onClick} />;
+		case 'minus-outlined':
+			return <MinusOutlined onClick={onClick} />;
 		case 'folder-outlined':
 			return <FolderOutlined onClick={onClick} />;
+		case 'pic-center-outlined':
+			return <PicCenterOutlined onClick={onClick} />;
+		case 'tags-outlined':
+			return <TagsOutlined onClick={onClick} />;
+		case 'global-outlined':
+			return <GlobalOutlined onClick={onClick} />;
 	}
 };
 

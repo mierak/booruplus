@@ -5,17 +5,20 @@ import styled from 'styled-components';
 import { RootState } from '../../store/types';
 import { actions } from '../../store';
 
-import { isFilenameVideo } from 'util/utils';
+import { isFilenameVideo, getImageExtensionFromFilename } from 'util/utils';
 
 import EmptyThumbnails from './EmptyThumbnails';
-import ControllableImage from './controllable-image/ControllableImage';
-import Video from './Video';
+import ControllableImage from './full-size-image/controllable-image/ControllableImage';
+import Video from './full-size-image/Video';
+import Gif from './full-size-image/Gif';
 
 interface Props {
 	className?: string;
 }
 
-const Container = styled.div``;
+const Container = styled.div`
+	height: 100%;
+`;
 
 const StyledControllableImage = styled(ControllableImage)`
 	position: relative;
@@ -30,10 +33,20 @@ const StyledControllableImage = styled(ControllableImage)`
 const StyledVideo = styled(Video)`
 	max-width: 100%;
 	max-height: 100vh;
-	display: block;
+	display: flex;
+	height: 100%;
 	margin-left: auto;
 	margin-right: auto;
 	overflow: hidden;
+`;
+
+const StyledGif = styled(Gif)`
+	max-width: 100%;
+	max-height: 100vh;
+	margin-left: auto;
+	margin-right: auto;
+	overflow: hidden;
+	height: 100%;
 `;
 
 const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
@@ -46,6 +59,8 @@ const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 		if (post) {
 			if (isFilenameVideo(post.image)) {
 				return <StyledVideo post={post} />;
+			} else if (getImageExtensionFromFilename(post.image) === 'gif') {
+				return <StyledGif post={post} />;
 			} else {
 				return <StyledControllableImage url={post.fileUrl} post={post} showControls />;
 			}
