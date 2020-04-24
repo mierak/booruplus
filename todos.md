@@ -9,6 +9,7 @@
 - Thumbnails downlaoding
 - Option to load dashboard stats on app start
 - Add option to move selected/all favorites between directories
+- Expand active posts to not use only one state
 - ~~Favorites categories~~
 - ~~Change base64 based dtos with blob based ones~~
 - ~~Loader when starting up app~~
@@ -32,9 +33,9 @@
 ## BUG
 
 - Fix buggy behaviour of tag search with debounce
-- Gifs not played, due to canvas not supporting them - change to native \<img\>
 - Fix light mode
 - Two searches in quick succession sometimes add the results together instead of overwriting the first one
+- ~~Gifs not played, due to canvas not supporting them - change to native \<img\>~~
 - ~~Investigate escaping of characters in URL, ie. plus in "6+girls" is sent unescaped~~
 - ~~Unable to start search at page 1+~~
 - ~~Selected posts from pages higher than 0 not downloading(maybe even all posts?)~~

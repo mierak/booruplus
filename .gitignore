@@ -87,8 +87,8 @@ typings/
 
 # Electron-Forge
 out/
-.todos
-.todos.md
+todos
+todos.md
 
 .vscode/
 
