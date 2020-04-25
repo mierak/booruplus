@@ -1,6 +1,9 @@
 # Changelog
-## VERSION - TITLE - DATE
+## 0.1.2 - TITLE - DATE
 - Added basic controls (show tags, open in browser) to gifs and videos
+- Light Mode:
+	- Fixed scrollbars background and border
+	- Fixed active thumbnail border in thumbnails view
 - BUG FIX: Animated gifs were showing only the first frame
 
 ## 0.1.1 - Favorites directory tree - 24.4.2020

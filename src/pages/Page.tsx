@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
 
 import { actions } from '../../store';
 import { RootState, AppDispatch } from '../../store/types';
@@ -13,7 +14,9 @@ import Tags from './Tags';
 import Dashboard from './Dashboard';
 import Thumbnails from './Thumbnails';
 import Settings from './Settings';
+
 import 'ant-design-pro/dist/ant-design-pro.css';
+import '../css/index.css';
 
 const Page: React.FunctionComponent = () => {
 	const [loaded, setLoaded] = useState(false);
@@ -27,8 +30,10 @@ const Page: React.FunctionComponent = () => {
 			const set = await dispatch(actions.settings.loadSettings('user'));
 
 			if (set.theme === 'dark') {
+				require('../css/scrollbar.dark.css');
 				require('antd/dist/antd.dark.css');
 			} else {
+				require('../css/scrollbar.light.css');
 				require('antd/dist/antd.css');
 			}
 			setLoaded(true);

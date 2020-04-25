@@ -9,7 +9,7 @@ import { actions } from '../../store';
 import { RootState, AppDispatch } from '../../store/types';
 
 import { CardAction, ContextMenu } from 'types/components';
-import { renderPostCardAction } from 'util/componentUtils';
+import { renderPostCardAction, getThumbnailBorder } from 'util/componentUtils';
 
 interface Props {
 	index: number;
@@ -30,8 +30,7 @@ interface SelectedIndexes {
 }
 
 const StyledCard = styled(Card)<CardProps>`
-	border: ${(props): false | 0 | 'dashed 1px black' | 'dashed 1px white' | undefined =>
-		props.isactive === 'true' && props.theme === 'dark' ? 'dashed 1px white' : 'dashed 1px black'};
+	border: ${(props): false | 0 | 'dashed 1px black' | 'dashed 1px white' | undefined => getThumbnailBorder(props.isactive, props.theme)};
 	width: 170px;
 	height: ${(props): string => props.height};
 	&& > .ant-card-actions > li {

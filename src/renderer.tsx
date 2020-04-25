@@ -29,7 +29,6 @@
 import ReactDOM from 'react-dom';
 import App from './app';
 import React from 'react';
-import './index.css';
 // const ReactRedux = require('react-redux');
 
 // if (process.env.NODE_ENV === 'development') {

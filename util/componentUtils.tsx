@@ -54,3 +54,9 @@ export const renderPostCardAction = (
 		</Tooltip>
 	);
 };
+
+export const getThumbnailBorder = (active: string, theme: 'dark' | 'light'): undefined | 'dashed 1px black' | 'dashed 1px white' => {
+	if (active === 'false') return undefined;
+	if (theme === 'dark') return 'dashed 1px white';
+	else return 'dashed 1px black';
+};
