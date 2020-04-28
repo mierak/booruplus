@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Table, Card, Tag as AntTag } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 
-import { actions } from 'store/';
+import { actions, thunks } from 'store/';
 import { TagHistory, AppDispatch, RootState } from 'store/types';
 
 import { getTagColor } from 'util/utils';
@@ -42,18 +42,18 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 
 	const handleReload = (): void => {
 		if (type === 'most-favorited') {
-			dispatch(actions.dashboard.fetchMostFavoritedTags());
+			dispatch(thunks.dashboard.fetchMostFavoritedTags());
 		} else {
-			dispatch(actions.dashboard.fetchMostSearchedTags());
+			dispatch(thunks.dashboard.fetchMostSearchedTags());
 		}
 	};
 
 	useEffect(() => {
 		if (dataSource.length === 0) {
 			if (type === 'most-favorited') {
-				dispatch(actions.dashboard.fetchMostFavoritedTags());
+				// dispatch(thunks.dashboard.fetchMostFavoritedTags());
 			} else {
-				dispatch(actions.dashboard.fetchMostSearchedTags());
+				// dispatch(thunks.dashboard.fetchMostSearchedTags());
 			}
 		}
 	}, []);
@@ -64,7 +64,7 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 				<a
 					onClick={(): void => {
 						dispatch(actions.onlineSearchForm.setSelectedTags([record.tag]));
-						dispatch(actions.onlineSearchForm.fetchPosts());
+						dispatch(thunks.onlineSearchForm.fetchPosts());
 						dispatch(actions.system.setActiveView('thumbnails'));
 					}}
 				>
@@ -74,7 +74,7 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 				<a
 					onClick={(): void => {
 						dispatch(actions.downloadedSearchForm.setSelectedTags([record.tag]));
-						dispatch(actions.downloadedSearchForm.fetchPosts());
+						dispatch(thunks.downloadedSearchForm.fetchPosts);
 						dispatch(actions.system.setActiveView('thumbnails'));
 					}}
 					style={{ float: 'right' }}

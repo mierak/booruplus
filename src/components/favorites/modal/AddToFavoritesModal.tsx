@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Modal, Tree, Button } from 'antd';
 import { EventDataNode, DataNode } from 'rc-tree/lib/interface';
 
-import { actions } from 'store/';
+import { actions, thunks } from 'store/';
 import { RootState, AppDispatch, TreeNode } from 'store/types';
 
 import { openNotificationWithIcon } from 'types/components';
@@ -49,7 +49,7 @@ const AddtoFavoritesModal: React.FunctionComponent = () => {
 			return;
 		}
 		try {
-			await dispatch(actions.favorites.addPostsToDirectory(postIdsToFavorite, !selectedNode ? 'root' : selectedNode.key));
+			await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToFavorite, key: !selectedNode ? 'root' : selectedNode.key }));
 			openNotificationWithIcon('success', 'Success', 'Post was successfuly added to directory');
 		} catch (err) {
 			openNotificationWithIcon('warning', 'Warning!', `Could not add post to directory: Reason: ${err}`, 5);

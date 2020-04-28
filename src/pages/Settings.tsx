@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { FolderOpenOutlined, FolderOutlined, SaveOutlined } from '@ant-design/icons';
 import { Button, Card, Input, Form, Select, Row, Col, Descriptions, notification, InputNumber } from 'antd';
 
-import { actions } from '../../store';
+import { actions, thunks } from '../../store';
 import { RootState, AppDispatch } from '../../store/types';
 
 const Container = styled.div`
@@ -31,7 +31,7 @@ const Settings: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const [apiKeyValidationStatus, setApiKeyValidationStatus] = useState<ApiKeyValidationStatus>({
 		message: '',
-		validateStatus: ''
+		validateStatus: '',
 	});
 
 	const imagesFolderPath = useSelector((state: RootState) => state.settings.imagesFolderPath);
@@ -48,7 +48,7 @@ const Settings: React.FunctionComponent = () => {
 	};
 
 	const handleThemeChange = (value: 'dark' | 'light'): void => {
-		dispatch(actions.settings.updateTheme(value)).then(() => {
+		dispatch(thunks.settings.updateTheme(value)).then(() => {
 			window.api.send('theme-changed');
 		});
 	};
@@ -56,7 +56,7 @@ const Settings: React.FunctionComponent = () => {
 	const handleSelectDirectory = (): void => {
 		window.api.invoke('open-select-directory-dialog').then((response: { canceled: boolean; filePaths: string[] }) => {
 			if (!response.canceled) {
-				dispatch(actions.settings.updateImagePath(response.filePaths[0]));
+				dispatch(thunks.settings.updateImagePath(response.filePaths[0]));
 			}
 		});
 	};
@@ -66,34 +66,34 @@ const Settings: React.FunctionComponent = () => {
 		if (!validateApiKey(key)) {
 			setApiKeyValidationStatus({
 				message: 'Wrong API key format. Did you copy it properly?',
-				validateStatus: 'error'
+				validateStatus: 'error',
 			});
 		} else {
 			setApiKeyValidationStatus({
 				message: '',
-				validateStatus: 'success'
+				validateStatus: 'success',
 			});
 		}
 		dispatch(actions.settings.setApiKey(key));
 	};
 
 	const handleMostViewedCountChange = (value: number | undefined): void => {
-		value && dispatch(actions.settings.updateMostViewedCount(value));
+		value && dispatch(thunks.settings.updateMostViewedCount(value));
 	};
 
 	const handleSaveSettings = async (): Promise<void> => {
 		if (validateApiKey(apiKey)) {
-			await dispatch(actions.settings.saveSettings());
+			await dispatch(thunks.settings.saveSettings());
 			notification.success({
 				message: 'Settings saved',
 				description: 'Settings were succesfuly saved to database',
-				duration: 2
+				duration: 2,
 			});
 		} else {
 			notification.error({
 				message: 'Invalid API key',
 				description: 'Please enter valid API key',
-				duration: 0
+				duration: 0,
 			});
 		}
 	};

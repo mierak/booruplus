@@ -1,12 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { db } from '../db';
-
-import { AppThunk } from './types';
-import { actions as globalActions } from '.';
-
 import { Tag, Rating } from '../types/gelbooruTypes';
-import { FilterOptions } from 'db/types';
+import { thunks } from './internal';
 
 export interface DownloadedSearchFormState {
 	selectedTags: Tag[];
@@ -117,69 +112,26 @@ const downloadedSearchFormSlice = createSlice({
 			return initialState;
 		},
 	},
+	extraReducers: (builder) => {
+		builder.addCase(thunks.savedSearches.searchOffline.pending, (state, action) => {
+			state.selectedTags = action.meta.arg.tags;
+			state.excludededTags = action.meta.arg.excludedTags;
+			state.page = 0;
+		});
+		builder.addCase(thunks.downloadedSearchForm.loadTagsByPattern.fulfilled, (state, action) => {
+			state.tagOptions = action.payload;
+		});
+		builder.addCase(thunks.tags.searchTagOffline.pending, (state, action) => {
+			state.page = 0;
+			state.selectedTags = [action.meta.arg];
+			state.excludededTags = [];
+		});
+		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.pending, (state) => {
+			state.page = state.page + 1;
+		});
+	},
 });
 
-const getFilterOptions = (state: DownloadedSearchFormState): FilterOptions => {
-	return {
-		blacklisted: state.showBlacklisted,
-		nonBlacklisted: state.showNonBlacklisted,
-		limit: state.postLimit,
-		offset: state.postLimit * state.page,
-		rating: state.rating,
-		showGifs: state.showGifs,
-		showImages: state.showImages,
-		showVideos: state.showVideos,
-		showFavorites: state.showFavorites,
-	};
-};
-
-const loadByPatternFromDb = (pattern: string): AppThunk => async (dispatch): Promise<void> => {
-	try {
-		const tags = await db.tags.getByPattern(pattern);
-		dispatch(globalActions.downloadedSearchForm.setTagOptions(tags));
-	} catch (err) {
-		console.error('Error while loading tags by pattern from db', err);
-	}
-};
-
-const fetchPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
-	try {
-		dispatch(globalActions.system.setFetchingPosts(true));
-		dispatch(globalActions.posts.setPosts([]));
-		const state = getState().downloadedSearchForm;
-		const tags = state.selectedTags.map((tag) => tag.tag);
-		const excludedTags = state.excludededTags.map((tag) => tag.tag);
-
-		const options = getFilterOptions(state);
-		const posts =
-			tags.length !== 0 ? await db.posts.getForTagsWithOptions(options, tags, excludedTags) : await db.posts.getAllWithOptions(options);
-		dispatch(globalActions.system.setFetchingPosts(false));
-
-		posts.forEach(async (post) => {
-			dispatch(globalActions.posts.addPosts([post]));
-		});
-
-		dispatch(globalActions.posts.setPosts(posts));
-		db.tagSearchHistory.saveSearch(state.selectedTags);
-	} catch (err) {
-		console.error('Error while fetching posts from db', err);
-	}
-};
-
-export const fetchMorePosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
-	try {
-		dispatch(downloadedSearchFormSlice.actions.incrementPage());
-		const state = getState().downloadedSearchForm;
-		const tags = state.selectedTags.map((tag) => tag.tag);
-
-		const options = getFilterOptions(state);
-		const posts = tags.length !== 0 ? await db.posts.getForTagsWithOptions(options, tags) : await db.posts.getAllWithOptions(options);
-		dispatch(globalActions.posts.addPosts(posts));
-	} catch (err) {
-		console.error('Error while fetching more posts from db', err);
-	}
-};
-
-export const actions = { ...downloadedSearchFormSlice.actions, loadByPatternFromDb, fetchPosts, fetchMorePosts };
+export const actions = { ...downloadedSearchFormSlice.actions };
 
 export default downloadedSearchFormSlice.reducer;

@@ -28,6 +28,34 @@ export const saveOrUpdateFromApi = async (post: Post): Promise<Post> => {
 	return savedPost;
 };
 
+export const bulkSaveOrUpdateFromApi = async (posts: Post[]): Promise<Post[]> => {
+	const savedPosts = await db.transaction(
+		'rw',
+		db.posts,
+		db.postsTags,
+		async (): Promise<Post[]> => {
+			const savedPosts = await db.posts.bulkGet(posts.map((post) => post.id));
+			const result: Post[] = [];
+			for (const [index, post] of savedPosts.entries()) {
+				if (post === undefined) {
+					db.posts.put(posts[index]);
+					result.push(posts[index]);
+				} else {
+					const clone = { ...posts[index] };
+					clone.favorite = post.favorite;
+					clone.blacklisted = post.blacklisted;
+					clone.downloaded = post.downloaded;
+					clone.viewCount = post.viewCount;
+					db.posts.put(clone);
+					result.push(clone);
+				}
+			}
+			return result;
+		}
+	);
+	return savedPosts;
+};
+
 export const update = async (post: Post): Promise<number> => {
 	return db.transaction('rw', db.posts, db.postsTags, async () => {
 		const postClone = { ...post };

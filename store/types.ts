@@ -9,6 +9,11 @@ export type AppThunk<T = void> = ThunkAction<Promise<T>, RootState, unknown, Act
 
 export type AppDispatch = typeof store.dispatch;
 
+export interface ThunkApi {
+	dispatch: AppDispatch;
+	state: RootState;
+}
+
 export type View = 'thumbnails' | 'image' | 'dashboard' | 'online-search' | 'saved-searches' | 'favorites' | 'tag-list' | 'settings';
 
 export type SearchMode = 'online' | 'offline' | 'favorites' | 'saved-search-offline' | 'saved-search-online' | 'most-viewed';
@@ -48,3 +53,7 @@ export interface TreeNode {
 }
 
 export type TreeData = TreeNode[];
+
+export interface RatingCounts {
+	[key: string]: number;
+}

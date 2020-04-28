@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Table, Tag, Row, Col, Spin, Card, Popconfirm, Tooltip } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
-import { actions } from '../../store';
+import { actions, thunks } from '../../store';
 import { RootState, AppDispatch } from '../../store/types';
 
 import { SavedSearch, Tag as GelbooruTag } from '../../types/gelbooruTypes';
@@ -73,25 +73,15 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 	const isLoading = useSelector((state: RootState) => state.onlineSearchForm.loading);
 
 	useEffect(() => {
-		dispatch(actions.savedSearches.loadSavedSearchesFromDb()); //TODO loading state
+		dispatch(thunks.savedSearches.loadSavedSearchesFromDb()); //TODO loading state
 	}, []);
 
-	const handleOnlineSearch = async (savedSearch: SavedSearch): Promise<void> => {
-		dispatch(actions.system.setFetchingPosts(true));
-		dispatch(actions.system.setSearchMode('saved-search-online'));
-		dispatch(actions.system.setActiveView('thumbnails'));
-		dispatch(actions.savedSearches.setActiveSaveSearch(savedSearch));
-		await dispatch(actions.savedSearches.searchSavedTagSearchOnline(savedSearch));
-		dispatch(actions.system.setFetchingPosts(false));
+	const handleOnlineSearch = (savedSearch: SavedSearch): void => {
+		dispatch(thunks.savedSearches.searchOnline(savedSearch));
 	};
 
-	const handleOfflineSearch = async (savedSearch: SavedSearch): Promise<void> => {
-		dispatch(actions.system.setFetchingPosts(true));
-		dispatch(actions.system.setSearchMode('saved-search-offline'));
-		dispatch(actions.system.setActiveView('thumbnails'));
-		dispatch(actions.savedSearches.setActiveSaveSearch(savedSearch));
-		await dispatch(actions.savedSearches.searchSavedTagSearchOffline(savedSearch));
-		dispatch(actions.system.setFetchingPosts(false));
+	const handleOfflineSearch = (savedSearch: SavedSearch): void => {
+		dispatch(thunks.savedSearches.searchOffline(savedSearch));
 	};
 
 	const handleDelete = (savedSearch: SavedSearch): void => {
@@ -99,7 +89,7 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handlePreviewDelete = (record: SavedSearch, previewId: number): void => {
-		dispatch(actions.savedSearches.removePreview(record, previewId));
+		dispatch(thunks.savedSearches.removePreview({ savedSearch: record, previewId }));
 	};
 
 	const renderActions = (_: unknown, record: SavedSearch): JSX.Element => {

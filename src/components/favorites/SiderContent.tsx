@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { EventDataNode } from 'rc-tree/lib/interface';
 import { Dropdown, Menu, Tree } from 'antd';
 
-import { actions } from 'store';
+import { actions, thunks } from 'store';
 import { AppDispatch, RootState } from 'store/types';
 
 interface PProps {
@@ -55,7 +55,8 @@ const SiderContent: React.FunctionComponent = () => {
 
 	useEffect(() => {
 		(async (): Promise<void> => {
-			dispatch(actions.favorites.fetchTreeData());
+			dispatch(thunks.favorites.fetchAllKeys());
+			dispatch(thunks.favorites.fetchTreeData());
 		})();
 	}, []);
 
@@ -131,11 +132,11 @@ const SiderContent: React.FunctionComponent = () => {
 				blockNode
 				treeData={rootNode?.children}
 				onRightClick={handleTreeRightClick}
-				onExpand={(keys, { expanded, node }): void => {
+				onExpand={(_, { expanded, node }): void => {
 					node.expanded = true;
 				}}
 				onSelect={(selectedKeys, info): void => {
-					dispatch(actions.favorites.fetchPostsInDirectory(info.node.key.toString()));
+					dispatch(thunks.favorites.fetchPostsInDirectory(info.node.key.toString()));
 					dispatch(actions.favorites.setActiveNodeKey(info.node.key.toString()));
 				}}
 				onClick={(): void => setVisible(false)}

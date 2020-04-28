@@ -1,4 +1,4 @@
-import { Post, PostDto, Tag, Rating, postParser } from '../types/gelbooruTypes';
+import { Post, PostDto, Tag, postParser, PostSearchOptions } from '../types/gelbooruTypes';
 import { delay, escapeTag } from '../util/utils';
 
 const BASE_URL = 'https://gelbooru.com/index.php?page=dapi&q=index&json=1';
@@ -7,14 +7,7 @@ const BASE_POST_URL = `${BASE_URL}&s=post`;
 
 const parsePost = postParser();
 
-export interface PostApiOptions {
-	limit?: number;
-	rating?: Rating;
-	page?: number;
-	apiKey?: string;
-}
-
-export const getPostsForTags = async (tags: string[], options: PostApiOptions = {}, excludedTags?: string[]): Promise<Post[]> => {
+export const getPostsForTags = async (tags: string[], options: PostSearchOptions = {}, excludedTags?: string[]): Promise<Post[]> => {
 	//handle Optional params
 	if (!options.limit) options.limit = 100;
 	if (options.rating && options.rating !== 'any') tags.push(`rating:${options.rating}`);
@@ -27,7 +20,7 @@ export const getPostsForTags = async (tags: string[], options: PostApiOptions = 
 	try {
 		const response = await fetch(url);
 		const responsePosts: PostDto[] = await response.json();
-		const posts = responsePosts.map(postDto => parsePost(postDto));
+		const posts = responsePosts.map((postDto) => parsePost(postDto));
 		return posts;
 	} catch (err) {
 		console.error('Error while fetching posts from api', err);

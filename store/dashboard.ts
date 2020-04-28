@@ -1,15 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { db } from '../db';
-import { actions as globalActions } from '.';
-
-import { AppThunk, TagHistory } from './types';
+import { TagHistory, RatingCounts } from './types';
 import { Tag, Post } from '../types/gelbooruTypes';
-import { notification } from 'antd';
-
-interface RatingCounts {
-	[key: string]: number;
-}
+import { thunks } from './internal';
 
 interface DashboardState {
 	totalDownloadedPosts: number;
@@ -32,7 +25,7 @@ const initialState: DashboardState = {
 	mostDownloadedTag: -1,
 	mostSearchedTags: [],
 	ratingCounts: undefined,
-	mostFavoritedTags: []
+	mostFavoritedTags: [],
 };
 
 const dashboardSlice = createSlice({
@@ -62,117 +55,44 @@ const dashboardSlice = createSlice({
 		},
 		setMostFavoritedTags: (state, action: PayloadAction<{ tag: Tag | undefined; count: number }[]>): void => {
 			state.mostFavoritedTags = action.payload;
-		}
-	}
+		},
+	},
+	extraReducers: (builder) => {
+		builder.addCase(thunks.dashboard.fetchDownloadedPostCount.fulfilled, (state, action) => {
+			state.totalDownloadedPosts = action.payload;
+		});
+		builder.addCase(thunks.dashboard.fetchBlacklistedPostCount.fulfilled, (state, action) => {
+			state.totalBlacklistedPosts = action.payload;
+		});
+		builder.addCase(thunks.dashboard.fetchFavoritePostCount.fulfilled, (state, action) => {
+			state.totalFavoritesPosts = action.payload;
+		});
+		builder.addCase(thunks.dashboard.fetchTagCount.fulfilled, (state, action) => {
+			state.totalTags = action.payload;
+		});
+		builder.addCase(thunks.dashboard.fetchRatingCounts.fulfilled, (state, action) => {
+			state.ratingCounts = action.payload;
+		});
+		builder.addCase(thunks.dashboard.fetchMostSearchedTags.pending, (state, _) => {
+			state.mostSearchedTags = [];
+		});
+		builder.addCase(thunks.dashboard.fetchMostSearchedTags.fulfilled, (state, action) => {
+			state.mostSearchedTags = action.payload;
+		});
+		builder.addCase(thunks.dashboard.fetchMostFavoritedTags.pending, (state, _) => {
+			state.mostFavoritedTags = [];
+		});
+		builder.addCase(thunks.dashboard.fetchMostFavoritedTags.fulfilled, (state, action) => {
+			state.mostFavoritedTags = action.payload;
+		});
+		builder.addCase(thunks.dashboard.fetchMostViewedPosts.fulfilled, (state, action) => {
+			state.mostViewedPosts = action.payload;
+		});
+	},
 });
-
-const fetchDownloadedPostCount = (): AppThunk => async (dispatch): Promise<void> => {
-	try {
-		const count = await db.posts.getDownloadedCount();
-		dispatch(dashboardSlice.actions.setTotalDownloadedPosts(count));
-	} catch (err) {
-		console.error('Error while fetching downloaded post count from db', err);
-	}
-};
-
-const fetchBlacklistedPostCount = (): AppThunk => async (dispatch): Promise<void> => {
-	try {
-		const count = await db.posts.getBlacklistedCount();
-		dispatch(dashboardSlice.actions.setTotalBlacklistedPosts(count));
-	} catch (err) {
-		console.error('Error while fetching blacklisted post count from db', err);
-	}
-};
-
-const fetchFavoritePostCount = (): AppThunk => async (dispatch): Promise<void> => {
-	try {
-		const count = await db.posts.getFavoriteCount();
-		dispatch(dashboardSlice.actions.setTotalFavoritePosts(count));
-	} catch (err) {
-		console.error('Error while fetching favorite post count from db', err);
-	}
-};
-
-const fetchTagCount = (): AppThunk => async (dispatch): Promise<void> => {
-	try {
-		const count = await db.tags.getCount();
-		dispatch(dashboardSlice.actions.setTotalTags(count));
-	} catch (err) {
-		console.error('Error while fetching tag count from db', err);
-	}
-};
-
-const fetchRatingCounts = (): AppThunk => async (dispatch): Promise<void> => {
-	try {
-		dispatch(globalActions.loadingStates.setRatingDistributionChartLoading(true));
-		const safeCount = await db.posts.getCountForRating('safe');
-		const questionableCount = await db.posts.getCountForRating('questionable');
-		const explicitCount = await db.posts.getCountForRating('explicit');
-		dispatch(dashboardSlice.actions.setRatingCounts({ safe: safeCount, questionable: questionableCount, explicit: explicitCount }));
-		dispatch(globalActions.loadingStates.setRatingDistributionChartLoading(false));
-	} catch (err) {
-		console.error('Error while fetching rating counts', err);
-		notification.error({
-			message: 'Error',
-			description: 'Error occured while fetching rating distributions from database. Please contact developers',
-			duration: 2
-		});
-	}
-};
-
-const fetchMostSearchedTags = (): AppThunk => async (dispatch): Promise<void> => {
-	try {
-		dispatch(dashboardSlice.actions.setMostsearchedTags([]));
-		dispatch(globalActions.loadingStates.setMostSearchedTagsLoading(true));
-		const tags = await db.tagSearchHistory.getMostSearched();
-		dispatch(dashboardSlice.actions.setMostsearchedTags(tags));
-		dispatch(globalActions.loadingStates.setMostSearchedTagsLoading(false));
-	} catch (err) {
-		console.error('Error while fetching most searched tags from db', err);
-		notification.error({
-			message: 'Error',
-			description: 'Error occured while fetching most searched tags from database. Please contact developers',
-			duration: 2
-		});
-	}
-};
-
-const fetchMostViewedPosts = (limit = 20): AppThunk => async (dispatch): Promise<void> => {
-	try {
-		const posts = await db.posts.getMostViewed(limit);
-		dispatch(dashboardSlice.actions.setMostViewedPosts(posts));
-	} catch (err) {
-		console.error('Error while fetching most viewed posts from db', err);
-	}
-};
-
-const fetchMostFavoritedTags = (limit = 20): AppThunk => async (dispatch): Promise<void> => {
-	try {
-		dispatch(dashboardSlice.actions.setMostFavoritedTags([]));
-		dispatch(globalActions.loadingStates.setMostFavoritedTagsLoading(true));
-		const tags = await db.tags.getMostFavorited(limit);
-		dispatch(dashboardSlice.actions.setMostFavoritedTags(tags));
-		dispatch(globalActions.loadingStates.setMostFavoritedTagsLoading(false));
-	} catch (err) {
-		console.error('Error while fetching most favorited tags', err);
-		notification.error({
-			message: 'Error',
-			description: 'Error occured while fetching most favorited tags from database. Please contact developers',
-			duration: 2
-		});
-	}
-};
 
 export const actions = {
 	...dashboardSlice.actions,
-	fetchDownloadedPostCount,
-	fetchBlacklistedPostCount,
-	fetchFavoritePostCount,
-	fetchTagCount,
-	fetchRatingCounts,
-	fetchMostSearchedTags,
-	fetchMostViewedPosts,
-	fetchMostFavoritedTags
 };
 
 export default dashboardSlice.reducer;

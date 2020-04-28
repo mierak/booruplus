@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { PageHeader, Button, Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
-import { actions } from '../../store';
+import { actions, thunks } from '../../store';
 import { RootState, AppDispatch } from '../../store/types';
 
 import ThumbnailsList from '../components/ThumbnailsList';
@@ -54,18 +54,18 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleBlacklist = (post: Post): void => {
-		dispatch(actions.posts.blacklistPost(post));
+		dispatch(thunks.posts.blacklistPost(post));
 		openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
 	};
 
 	const handleDownload = (post: Post): void => {
-		dispatch(actions.posts.downloadPost(post));
+		dispatch(thunks.posts.downloadPost(post));
 		openNotificationWithIcon('success', 'Post downloaded', 'Image was successfuly saved to disk.');
 	};
 
 	const handleAddPreview = (post: Post): void => {
 		dispatch(
-			actions.savedSearches.addPreviewToActiveSavedSearch(`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`)
+			thunks.savedSearches.addPreviewToActiveSavedSearch(`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`)
 		);
 		openNotificationWithIcon('success', 'Preview added', 'Preview was successfuly added to saved search');
 	};
@@ -119,15 +119,15 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleDownloadWholeSearch = (): void => {
-		dispatch(actions.system.withProgressBar(async (id) => dispatch(actions.posts.downloadWholeSearch(id))));
+		dispatch(actions.system.withProgressBar(async (id) => dispatch(thunks.posts.downloadWholeSearch(id))));
 	};
 
 	const handleBlacklistAll = (): void => {
-		dispatch(actions.posts.blackListAllPosts());
+		dispatch(thunks.posts.blackListAllPosts());
 	};
 
 	const handleBlacklistSelected = (): void => {
-		dispatch(actions.posts.blacklistSelectedPosts());
+		dispatch(thunks.posts.blacklistSelectedPosts());
 	};
 
 	const handleAddAllToFavorites = (): void => {
@@ -141,15 +141,15 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleDownloadAll = (): void => {
-		dispatch(actions.system.withProgressBar(async (id) => dispatch(actions.posts.downloadAllPosts(id))));
+		dispatch(actions.system.withProgressBar(async (id) => dispatch(thunks.posts.downloadAllPosts(id))));
 	};
 
 	const handleDownloadSelected = (): void => {
-		dispatch(actions.system.withProgressBar(async (id) => dispatch(actions.posts.downloadSelectedPosts(id))));
+		dispatch(actions.system.withProgressBar(async (id) => dispatch(thunks.posts.downloadSelectedPosts(id))));
 	};
 
 	const handleSaveSearch = async (): Promise<void> => {
-		dispatch(actions.savedSearches.saveSearch(selectedTags, excludedTags, rating));
+		dispatch(thunks.savedSearches.saveSearch({ tags: selectedTags, excludedTags, rating }));
 	};
 
 	const renderButtons = (): JSX.Element[] => {

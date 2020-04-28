@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Statistic, Row, Col, Card } from 'antd';
 
 import { RootState } from 'store/types';
-import { actions } from 'store';
+import { thunks } from 'store';
 
 import RatingDistributionsChart from '../components/dashboard/RatingDistributionsChart';
 import TagStatistic from '../components/dashboard/TagStatistic';
@@ -21,11 +21,11 @@ const Container = styled.div`
 const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 	useEffect(() => {
-		dispatch(actions.dashboard.fetchDownloadedPostCount());
-		dispatch(actions.dashboard.fetchBlacklistedPostCount());
-		dispatch(actions.dashboard.fetchFavoritePostCount());
-		dispatch(actions.dashboard.fetchTagCount());
-		dispatch(actions.favorites.fetchTreeData());
+		dispatch(thunks.dashboard.fetchDownloadedPostCount());
+		dispatch(thunks.dashboard.fetchBlacklistedPostCount());
+		dispatch(thunks.dashboard.fetchFavoritePostCount());
+		dispatch(thunks.dashboard.fetchTagCount());
+		// dispatch(thunks.favorites.fetchTreeData());
 	}, []);
 
 	const downloadedPostCount = useSelector((state: RootState) => state.dashboard.totalDownloadedPosts);

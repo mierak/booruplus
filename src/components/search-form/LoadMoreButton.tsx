@@ -2,8 +2,10 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from 'antd';
 
-import { AppDispatch, RootState, AppThunk } from 'store/types';
-import { actions } from 'store/';
+import { AppDispatch, RootState, ThunkApi } from 'store/types';
+import { actions, thunks } from 'store/';
+import { AsyncThunkAction } from '@reduxjs/toolkit';
+import { Post } from 'types/gelbooruTypes';
 
 interface Props {
 	className?: string;
@@ -11,34 +13,34 @@ interface Props {
 
 const LoadMoreButton: React.FunctionComponent<Props> = ({ className }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
-	const isLoadingMore = useSelector((state: RootState) => state.system.isLoadingMore);
+	const isSearchDisabled = useSelector((state: RootState) => state.system.isSearchDisabled);
 	const searchMode = useSelector((state: RootState) => state.system.searchMode);
 
-	const getLoadMore = (): (() => AppThunk) => {
+	const getLoadMore = (): (() => AsyncThunkAction<Post[], void, ThunkApi>) | undefined => {
 		switch (searchMode) {
 			case 'online':
 			case 'saved-search-online':
-				return actions.onlineSearchForm.fetchMorePosts;
+				return thunks.onlineSearchForm.fetchMorePosts;
 			case 'offline':
 			case 'saved-search-offline':
-				return actions.downloadedSearchForm.fetchMorePosts;
+				return thunks.downloadedSearchForm.fetchMorePosts;
 			case 'favorites':
-				return actions.posts.fetchFavorites;
+				break;
+			//return thunks.posts.fetchFavorites;
 			case 'most-viewed':
-				return actions.posts.fetchMostViewedPosts; // CONSIDER not needed?
+				break;
+			//return thunks.posts.fetchMostViewedPosts; // CONSIDER not needed?
 		}
 	};
 
 	const handleLoadMore = async (): Promise<void> => {
 		const loadMore = getLoadMore();
 
-		dispatch(actions.system.setLoadingMore(true));
-		await dispatch(loadMore());
-		dispatch(actions.system.setLoadingMore(false));
+		loadMore && (await dispatch(loadMore()));
 	};
 
 	return (
-		<Button className={className} key="thumbnails-list-load-more-button" disabled={isLoadingMore} onClick={handleLoadMore}>
+		<Button className={className} key="thumbnails-list-load-more-button" disabled={isSearchDisabled} onClick={handleLoadMore}>
 			Load More
 		</Button>
 	);

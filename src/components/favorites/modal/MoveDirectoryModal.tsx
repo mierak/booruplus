@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Modal, Tree, Button } from 'antd';
 import { EventDataNode, DataNode } from 'rc-tree/lib/interface';
 
-import { actions } from 'store/';
+import { actions, thunks } from 'store/';
 import { RootState, AppDispatch, TreeNode } from 'store/types';
 
 import { openNotificationWithIcon } from 'types/components';
@@ -51,10 +51,10 @@ const MoveDirectoryModal: React.FunctionComponent = () => {
 		try {
 			dispatch(actions.favorites.setSelectedNodeKey(selectedNode ? selectedNode.key.toString() : 'root'));
 			for (const id of postIdsToFavorite) {
-				await dispatch(actions.favorites.removePostFromActiveDirectory(id));
-				await dispatch(actions.favorites.addPostToDirectory(id, !selectedNode ? 'root' : selectedNode.key));
+				await dispatch(thunks.favorites.removePostFromActiveDirectory(id));
+				await dispatch(thunks.favorites.addPostsToDirectory({ ids: [id], key: !selectedNode ? 'root' : selectedNode.key }));
 			}
-			await dispatch(actions.favorites.fetchPostsInDirectory());
+			await dispatch(thunks.favorites.fetchPostsInDirectory());
 			openNotificationWithIcon('success', 'Success', 'Successfuly moved post to folder');
 		} catch (err) {
 			openNotificationWithIcon('error', 'Error!', `Reason: '${err}`, 5);

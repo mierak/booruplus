@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { SelectValue } from 'antd/lib/select';
 import { Select, Spin } from 'antd';
 
-import { actions } from '../../../store';
+import { actions, thunks } from '../../../store';
 import { RootState, SearchMode } from '../../../store/types';
 
 import { Tag } from '../../../types/gelbooruTypes';
@@ -38,8 +38,7 @@ const TagSearch: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	};
 
 	useEffect(() => {
-		const load =
-			(mode === 'offline' && actions.downloadedSearchForm.loadByPatternFromDb) || actions.onlineSearchForm.getTagsByPatternFromApi;
+		const load = (mode === 'offline' && thunks.downloadedSearchForm.loadTagsByPattern) || thunks.onlineSearchForm.getTagsByPatternFromApi;
 		debounced.length >= 2 && dispatch(load(debounced));
 	}, [debounced]);
 

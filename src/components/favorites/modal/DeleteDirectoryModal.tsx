@@ -6,6 +6,7 @@ import { actions } from 'store/';
 import { AppDispatch, RootState } from 'store/types';
 
 import { openNotificationWithIcon } from 'types/components';
+import { thunks } from 'store';
 
 const DeleteDirectoryModal: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
@@ -18,7 +19,7 @@ const DeleteDirectoryModal: React.FunctionComponent = () => {
 			return;
 		}
 		try {
-			await dispatch(actions.favorites.deleteDirectoryAndChildren(selectedNodeKey));
+			await dispatch(thunks.favorites.deleteDirectoryAndChildren(selectedNodeKey));
 			openNotificationWithIcon('success', 'Success', 'Successfuly deleted folder');
 		} catch (err) {
 			openNotificationWithIcon('error', 'Error!', `Reason: '${err}`, 5);

@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Button } from 'antd';
 
 import { RootState, SearchMode } from '../../../store/types';
-import { actions } from '../../../store';
+import { thunks } from '../../../store';
 
 interface Props {
 	mode: SearchMode;
@@ -23,7 +23,7 @@ const SaveSearchButton: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	);
 
 	const handleSaveSearch = async (): Promise<void> => {
-		dispatch(actions.savedSearches.saveSearch(selectedTags, excludedTags, rating));
+		dispatch(thunks.savedSearches.saveSearch({ tags: selectedTags, excludedTags: excludedTags, rating }));
 	};
 
 	return (

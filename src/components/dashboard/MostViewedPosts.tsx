@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Card, Empty, Tooltip } from 'antd';
 import { CheckCircleTwoTone, ReloadOutlined } from '@ant-design/icons';
 
-import { actions } from 'store/';
+import { actions, thunks } from 'store/';
 import { AppDispatch, RootState } from 'store/types';
 
 import { Post } from 'types/gelbooruTypes';
@@ -73,7 +73,7 @@ const MostViewedPosts: React.FunctionComponent = () => {
 
 	useEffect(() => {
 		if (mostViewedPosts.length === 0) {
-			dispatch(actions.dashboard.fetchMostViewedPosts(mostViewedCount));
+			dispatch(thunks.dashboard.fetchMostViewedPosts(mostViewedCount));
 		}
 	}, []);
 
@@ -85,7 +85,7 @@ const MostViewedPosts: React.FunctionComponent = () => {
 	};
 
 	const handleReload = (): void => {
-		dispatch(actions.dashboard.fetchMostViewedPosts(mostViewedCount));
+		dispatch(thunks.dashboard.fetchMostViewedPosts(mostViewedCount));
 	};
 
 	const renderMostViewedPosts = (): React.ReactNode => {

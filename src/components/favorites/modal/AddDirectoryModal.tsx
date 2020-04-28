@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Button, Input, Form } from 'antd';
 
-import { actions } from 'store/';
+import { actions, thunks } from 'store/';
 import { AppDispatch, RootState } from 'store/types';
 
 import { openNotificationWithIcon } from 'types/components';
@@ -35,7 +35,7 @@ const AddDirectoryModal: React.FunctionComponent = () => {
 			return;
 		}
 		try {
-			await dispatch(actions.favorites.addDirectory(selectedNodeKey, text));
+			await dispatch(thunks.favorites.addDirectory({ parentKey: selectedNodeKey, title: text }));
 			openNotificationWithIcon('success', 'Success', 'Successfuly added sub folder');
 		} catch (err) {
 			openNotificationWithIcon('error', 'Error!', `Reason: ${err}`, 5);

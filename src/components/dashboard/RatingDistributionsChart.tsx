@@ -5,7 +5,7 @@ import { Pie } from 'ant-design-pro/lib/Charts';
 import { Card, Empty, Spin } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 
-import { actions } from 'store/';
+import { thunks } from 'store/';
 import { RootState, AppDispatch } from 'store/types';
 
 const StyledRatingDistributionsCard = styled(Card)`
@@ -50,21 +50,21 @@ const RatingDistributionsChart: React.FunctionComponent = () => {
 
 	useEffect(() => {
 		if (!ratingCounts) {
-			dispatch(actions.dashboard.fetchRatingCounts());
+			dispatch(thunks.dashboard.fetchRatingCounts());
 		}
 	}, []);
 
 	const ratingCountsData =
 		ratingCounts &&
-		Object.keys(ratingCounts).map(key => {
+		Object.keys(ratingCounts).map((key) => {
 			return {
 				x: key,
-				y: ratingCounts[key]
+				y: ratingCounts[key],
 			};
 		});
 
 	const handleReload = (): void => {
-		dispatch(actions.dashboard.fetchRatingCounts());
+		dispatch(thunks.dashboard.fetchRatingCounts());
 	};
 
 	const renderRatingDistributions = (): React.ReactNode => {
@@ -85,7 +85,7 @@ const RatingDistributionsChart: React.FunctionComponent = () => {
 						title="Rating"
 						subTitle="Rating"
 						total={(): number => {
-							const total = (ratingCountsData && ratingCountsData.map(data => data.y).reduce((acc, val) => (acc = acc + val))) || 0;
+							const total = (ratingCountsData && ratingCountsData.map((data) => data.y).reduce((acc, val) => (acc = acc + val))) || 0;
 							return total;
 						}}
 						height={200}

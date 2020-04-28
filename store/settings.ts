@@ -1,13 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { db } from '../db';
-
-import { Settings, AppThunk } from './types';
+import { Settings } from './types';
+import { thunks } from './internal';
 
 const initialState: Settings = {
 	imagesFolderPath: '',
 	theme: 'dark',
-	mostViewedCount: 28
+	mostViewedCount: 28,
 };
 
 const settingsSlice = createSlice({
@@ -28,103 +27,27 @@ const settingsSlice = createSlice({
 		},
 		setMostViewedCount: (state, action: PayloadAction<number>): void => {
 			state.mostViewedCount = action.payload;
-		}
-	}
+		},
+	},
+	extraReducers: (builder) => {
+		builder.addCase(thunks.settings.loadSettings.fulfilled, (state, action) => {
+			return action.payload;
+		});
+		builder.addCase(thunks.settings.updateImagePath.fulfilled, (state, action) => {
+			state.imagesFolderPath = action.payload;
+		});
+		builder.addCase(thunks.settings.updateTheme.fulfilled, (state, action) => {
+			state.theme = action.payload;
+		});
+		builder.addCase(thunks.settings.updateApiKey.fulfilled, (state, action) => {
+			state.apiKey = action.payload;
+		});
+		builder.addCase(thunks.settings.updateMostViewedCount.fulfilled, (state, action) => {
+			state.mostViewedCount = action.payload;
+		});
+	},
 });
 
-const loadSettings = (name?: string): AppThunk<Settings> => async (dispatch): Promise<Settings> => {
-	try {
-		const settings = await db.settings.loadSettings(name);
-		if (settings) {
-			dispatch(settingsSlice.actions.setSettings(settings));
-		} else {
-			throw 'Settings could not be loaded from database';
-		}
-		return Promise.resolve(settings);
-	} catch (err) {
-		console.error(err);
-		return Promise.reject(err);
-	}
-};
-
-const updateImagePath = (path: string): AppThunk<string> => async (dispatch, getState): Promise<string> => {
-	try {
-		const settings = { ...getState().settings };
-		settings.imagesFolderPath = path;
-		dispatch(settingsSlice.actions.setImagesFolderPath(path));
-		return await db.settings.saveSettings({ name: 'user', values: settings });
-	} catch (err) {
-		console.error('Error while updating image path setting', err);
-		return Promise.reject(err);
-	}
-};
-
-const updateTheme = (theme: 'dark' | 'light'): AppThunk<string> => async (_, getState): Promise<string> => {
-	try {
-		const settings = { ...getState().settings };
-		settings.theme = theme;
-		return await db.settings.saveSettings({ name: 'user', values: settings });
-	} catch (err) {
-		console.error('Error while updating theme', err);
-		return Promise.reject(err);
-	}
-};
-
-const updateApiKey = (key: string): AppThunk<string> => async (dispatch, getState): Promise<string> => {
-	try {
-		const settings = { ...getState().settings };
-		settings.apiKey = key;
-		dispatch(settingsSlice.actions.setApiKey(key));
-		return await db.settings.saveSettings({ name: 'user', values: settings });
-	} catch (err) {
-		console.error('Error while updating API key');
-		return Promise.reject(err);
-	}
-};
-
-const updateMostViewedCount = (count: number): AppThunk<string> => async (dispatch, getState): Promise<string> => {
-	try {
-		const settings = { ...getState().settings };
-		settings.mostViewedCount = count;
-		dispatch(settingsSlice.actions.setMostViewedCount(count));
-		return await db.settings.saveSettings({ name: 'user', values: settings });
-	} catch (err) {
-		console.error('Error while updating most viewed count key');
-		return Promise.reject(err);
-	}
-};
-
-const updateGelbooruUsername = (username: string): AppThunk<string> => async (dispatch, getState): Promise<string> => {
-	try {
-		const settings = { ...getState().settings };
-		settings.gelbooruUsername = username;
-		dispatch(settingsSlice.actions.setGelbooruUsername(username));
-		return await db.settings.saveSettings({ name: 'user', values: settings });
-	} catch (err) {
-		console.error('Error while updating username key');
-		return Promise.reject(err);
-	}
-};
-
-const saveSettings = (): AppThunk<string> => async (_, getState): Promise<string> => {
-	try {
-		const settings = { ...getState().settings };
-		return await db.settings.saveSettings({ name: 'user', values: settings });
-	} catch (err) {
-		console.error('Error while updating username key');
-		return Promise.reject(err);
-	}
-};
-
-export const actions = {
-	...settingsSlice.actions,
-	loadSettings,
-	updateImagePath,
-	updateTheme,
-	updateApiKey,
-	updateGelbooruUsername,
-	updateMostViewedCount,
-	saveSettings
-};
+export const actions = settingsSlice.actions;
 
 export default settingsSlice.reducer;

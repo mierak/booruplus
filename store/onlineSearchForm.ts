@@ -1,11 +1,9 @@
 import { Tag, Rating } from '../types/gelbooruTypes';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { actions as globalActions } from '.';
-import { AppThunk, OfflineOptions } from './types';
+import { OfflineOptions } from './types';
 
-import * as api from '../service/apiService';
-import { db } from '../db';
+import { thunks } from './internal';
 
 export interface SearchFormState {
 	selectedTags: Tag[];
@@ -28,8 +26,8 @@ export const initialState: SearchFormState = {
 	tagOptions: [],
 	offlineOptions: {
 		blacklisted: false,
-		favorite: false
-	}
+		favorite: false,
+	},
 };
 
 const searchFormSlice = createSlice({
@@ -43,11 +41,11 @@ const searchFormSlice = createSlice({
 			!state.excludededTags.includes(action.payload) && state.excludededTags.push(action.payload);
 		},
 		removeTag: (state, action: PayloadAction<Tag>): void => {
-			const index = state.selectedTags.findIndex(t => t.id === action.payload.id);
+			const index = state.selectedTags.findIndex((t) => t.id === action.payload.id);
 			state.selectedTags.splice(index, 1);
 		},
 		removeExcludedTag: (state, action: PayloadAction<Tag>): void => {
-			const index = state.excludededTags.findIndex(t => t.id === action.payload.id);
+			const index = state.excludededTags.findIndex((t) => t.id === action.payload.id);
 			state.excludededTags.splice(index, 1);
 		},
 		clearTags: (state): void => {
@@ -79,99 +77,28 @@ const searchFormSlice = createSlice({
 		},
 		clear: (): SearchFormState => {
 			return initialState;
-		}
-	}
+		},
+	},
+	extraReducers: (builder) => {
+		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.fulfilled, (state, action) => {
+			state.tagOptions = action.payload;
+		});
+		builder.addCase(thunks.onlineSearchForm.fetchMorePosts.fulfilled, (state) => {
+			state.page = state.page + 1;
+		});
+		builder.addCase(thunks.savedSearches.searchOnline.pending, (state, action) => {
+			state.page = 0;
+			state.selectedTags = action.meta.arg.tags;
+			state.excludededTags = action.meta.arg.excludedTags;
+		});
+		builder.addCase(thunks.tags.searchTagOnline.pending, (state, action) => {
+			state.page = 0;
+			state.selectedTags = [action.meta.arg];
+			state.excludededTags = [];
+		});
+	},
 });
 
-const getTagsByPatternFromApi = (value: string): AppThunk => async (dispatch, getState): Promise<void> => {
-	try {
-		dispatch(globalActions.system.setTagOptionsLoading(true));
-		const tags = await api.getTagsByPattern(value, getState().settings.apiKey);
-		dispatch(searchFormSlice.actions.setTagOptions(tags));
-	} catch (err) {
-		console.error('Error occured while fetching posts from api by pattern', err);
-	}
-	dispatch(globalActions.system.setTagOptionsLoading(false));
-};
-const fetchPostsFromApi = (): AppThunk => async (dispatch, getState): Promise<void> => {
-	try {
-		dispatch(globalActions.system.setFetchingPosts(true));
-		dispatch(globalActions.posts.setPosts([]));
-		//construct string of tags
-		const tags = getState().onlineSearchForm.selectedTags;
-		const excludedTags = getState().onlineSearchForm.excludededTags;
-		const tagsString = tags.map(tag => tag.tag);
-		const excludedTagString = excludedTags.map(tag => tag.tag);
-		const options: api.PostApiOptions = {
-			limit: getState().onlineSearchForm.limit,
-			page: getState().onlineSearchForm.page,
-			rating: getState().onlineSearchForm.rating,
-			apiKey: getState().settings.apiKey
-		};
-		//get posts from api
-		const posts = await api.getPostsForTags(tagsString, options, excludedTagString);
-		dispatch(globalActions.system.setFetchingPosts(false));
-		//validate posts against db - check favorite/blacklisted/downloaded state
-
-		posts.forEach(async post => {
-			dispatch(globalActions.posts.addPosts([await db.posts.saveOrUpdateFromApi(post)]));
-		});
-		// dispatch(globalActions.posts.setPosts(validatedPosts));
-		db.tagSearchHistory.saveSearch(tags);
-	} catch (err) {
-		console.error('Error while fetching from api', err);
-	}
-};
-
-const fetchPostsFromDb = (): AppThunk => async (dispatch, getState): Promise<void> => {
-	try {
-		const tagsString = getState().onlineSearchForm.selectedTags.map(tag => tag.tag);
-		const posts = await db.posts.getForTags(...tagsString);
-		dispatch(globalActions.posts.setPosts(posts));
-	} catch (err) {
-		console.error('Erroru occured while fetching posts from db', err);
-	}
-};
-
-const fetchPosts = (): AppThunk<void> => async (dispatch): Promise<void> => {
-	try {
-		return dispatch(fetchPostsFromApi());
-	} catch (err) {
-		console.error('Error occured while trying to fetch posts', err);
-		return Promise.reject(err);
-	}
-};
-
-const fetchMorePosts = (): AppThunk<void> => async (dispatch, getState): Promise<void> => {
-	try {
-		const page = getState().onlineSearchForm.page;
-		const tags = getState().onlineSearchForm.selectedTags;
-		const tagsString = tags.map(tag => tag.tag);
-		const options: api.PostApiOptions = {
-			limit: getState().onlineSearchForm.limit,
-			page: page + 1,
-			rating: getState().onlineSearchForm.rating,
-			apiKey: getState().settings.apiKey
-		};
-		dispatch(searchFormSlice.actions.setPage(page + 1));
-		const posts = await api.getPostsForTags(tagsString, options);
-		posts.forEach(async post => {
-			dispatch(globalActions.posts.addPosts([await db.posts.saveOrUpdateFromApi(post)]));
-		});
-		return Promise.resolve();
-	} catch (err) {
-		console.error('Error while loading more posts', err);
-		return Promise.reject(err);
-	}
-};
-
-export const actions = {
-	...searchFormSlice.actions,
-	getTagsByPatternFromApi,
-	fetchPostsFromApi,
-	fetchPostsFromDb,
-	fetchPosts,
-	fetchMorePosts
-};
+export const actions = searchFormSlice.actions;
 
 export default searchFormSlice.reducer;

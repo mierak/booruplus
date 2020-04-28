@@ -46,7 +46,6 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 	};
 
 	const handleZoomIn = (): void => {
-		console.log('hue');
 		renderer && renderer.zoomIn();
 	};
 

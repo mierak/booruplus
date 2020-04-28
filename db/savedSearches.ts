@@ -47,7 +47,7 @@ export const createAndSave = async (rating: Rating, tags: Tag[], excludedTags: T
 	});
 };
 
-export const getAll = async (): Promise<SavedSearch[] | void> => {
+export const getAll = async (): Promise<SavedSearch[]> => {
 	const savedSearches = await db.savedSearches.toArray().catch((err: Error) => {
 		console.error(err);
 		throw err;

@@ -1,5 +1,6 @@
 import { Tag, Rating } from '../types/gelbooruTypes';
 import { Entity } from '../db/types';
+import { db } from 'db';
 
 export const getTagColor = (tag: Tag | string): string | undefined => {
 	const type = typeof tag === 'string' ? tag : tag.type;
@@ -124,4 +125,17 @@ export const compareTagArrays = (arr1: Tag[], arr2: Tag[]): boolean => {
 	const both = [...arr1Strings, ...arr2Strings];
 
 	return both.every((tag) => arr1Strings.includes(tag) && arr2Strings.includes(tag));
+};
+
+export const deduplicateAndCheckTagsAgainstDb = async (tags: string[]): Promise<string[]> => {
+	const deduplicated = Array.from(new Set(tags));
+	const checked = await Promise.all(
+		deduplicated.map(async (tag) => {
+			const exists = await db.tags.checkIfExists(tag);
+			if (!exists) return tag;
+		})
+	);
+	const checkedAndFiltered: string[] = [];
+	checked.forEach((val) => val !== undefined && checkedAndFiltered.push(val));
+	return checkedAndFiltered;
 };

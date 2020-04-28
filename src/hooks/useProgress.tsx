@@ -4,7 +4,7 @@ import { Progress as AntProgress, message } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { useSelector, Provider } from 'react-redux';
 import { RootState, AppDispatch } from 'store/types';
-import { actions, store } from 'store';
+import { store, thunks } from 'store';
 import { MessageType } from 'antd/lib/message';
 
 interface Props {
@@ -39,7 +39,7 @@ const Progress: React.FunctionComponent<Props> = ({ id }: Props) => {
 };
 
 export const useProgress = async (dispatch: AppDispatch): Promise<[number, MessageType]> => {
-	const id = await dispatch(actions.tasks.create());
+	const id = await dispatch(thunks.tasks.create());
 
 	const close = message.loading({
 		content: (
@@ -50,7 +50,7 @@ export const useProgress = async (dispatch: AppDispatch): Promise<[number, Messa
 				<div style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}>
 					<a
 						onClick={(): void => {
-							dispatch(actions.tasks.setCanceled({ id, value: true }));
+							// dispatch(actions.tasks.setCanceled({ id, value: true }));
 						}}
 						style={{ paddingLeft: '16px' }}
 					>
@@ -61,7 +61,7 @@ export const useProgress = async (dispatch: AppDispatch): Promise<[number, Messa
 			</div>
 		),
 		duration: 0,
-		icon: <></>
+		icon: <></>,
 	});
 
 	return [id, close];

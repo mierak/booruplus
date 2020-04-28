@@ -6,7 +6,7 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import { AppDispatch, RootState } from 'store/types';
 import { Tag } from 'types/gelbooruTypes';
-import { actions } from 'store/';
+import { actions, thunks } from 'store/';
 import { getTagColor, sortTagsByType } from 'util/utils';
 
 interface Props {
@@ -31,7 +31,7 @@ const TagsPopover: React.FunctionComponent<Props> = ({ tags }: Props) => {
 			setLoading(true);
 			const fetchTags = async (): Promise<void> => {
 				containerRef.current && containerRef.current.scrollTo(0, 0);
-				const response = await dispatch(actions.tags.fetchTags(tags));
+				const response = await dispatch(thunks.tags.fetchTags(tags));
 				setFetchedTags(sortTagsByType(response));
 				setLoading(false);
 			};
@@ -45,23 +45,11 @@ const TagsPopover: React.FunctionComponent<Props> = ({ tags }: Props) => {
 
 	const renderActions = (_: unknown, record: Tag): React.ReactNode => {
 		const handleOnlineSearch = async (): Promise<void> => {
-			dispatch(actions.system.setFetchingPosts(true));
-			dispatch(actions.onlineSearchForm.clear());
-			dispatch(actions.onlineSearchForm.setSelectedTags([record]));
-			dispatch(actions.system.setSearchMode('online'));
-			dispatch(actions.system.setActiveView('thumbnails'));
-			await dispatch(actions.onlineSearchForm.fetchPosts());
-			dispatch(actions.system.setFetchingPosts(false));
+			await dispatch(thunks.tags.searchTagOnline(record));
 		};
 
 		const handleOfflineSearch = async (): Promise<void> => {
-			dispatch(actions.system.setFetchingPosts(true));
-			dispatch(actions.downloadedSearchForm.clear());
-			dispatch(actions.downloadedSearchForm.setSelectedTags([record]));
-			dispatch(actions.system.setSearchMode('offline'));
-			dispatch(actions.system.setActiveView('thumbnails'));
-			await dispatch(actions.downloadedSearchForm.fetchPosts());
-			dispatch(actions.system.setFetchingPosts(false));
+			await dispatch(thunks.tags.searchTagOffline(record));
 		};
 
 		const handleAddOnline = (): void => {

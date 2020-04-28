@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Layout } from 'antd';
 
-import { actions } from '../../store';
+import { actions, thunks } from '../../store';
 import ThumbnailsList from '../components/ThumbnailsList';
 
 import SiderContent from '../components/favorites/SiderContent';
@@ -24,27 +24,27 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 
 	useEffect(() => {
 		const renderThumbnailList = async (): Promise<void> => {
-			dispatch(actions.favorites.fetchPostsInDirectory('root'));
+			dispatch(thunks.favorites.fetchPostsInDirectory('root'));
 		};
 		renderThumbnailList();
 		dispatch(actions.system.setSearchMode('favorites'));
 	}, []);
 
 	const handleBlacklist = (post: Post): void => {
-		dispatch(actions.posts.blacklistPost(post));
+		dispatch(thunks.posts.blacklistPost(post));
 		openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
 	};
 
 	const handleDownload = (post: Post): void => {
-		dispatch(actions.posts.downloadPost(post));
+		dispatch(thunks.posts.downloadPost(post));
 		openNotificationWithIcon('success', 'Post downloaded', 'Image was successfuly saved to disk.');
 	};
 
 	const handleRemoveFromDirectory = async (post: Post): Promise<void> => {
 		try {
-			await dispatch(actions.favorites.removePostFromActiveDirectory(post.id));
+			await dispatch(thunks.favorites.removePostFromActiveDirectory(post.id));
 			if (!activeDirectory) throw new Error('Could not reload posts in active directory, because active directory is undefined');
-			await dispatch(actions.favorites.fetchPostsInDirectory(activeDirectory)); // TODO change to just remove from store/posts array
+			await dispatch(thunks.favorites.fetchPostsInDirectory(activeDirectory)); // TODO change to just remove from store/posts array
 			openNotificationWithIcon('success', 'Success', 'Successfuly removed post from directory');
 		} catch (err) {
 			openNotificationWithIcon('error', 'Error!', `Reason: ${err}`, 5);

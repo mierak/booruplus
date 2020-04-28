@@ -24,12 +24,12 @@ let window: BrowserWindow;
 const createWindow = (): BrowserWindow => {
 	if (!isProd) {
 		installExtension(REACT_DEVELOPER_TOOLS)
-			.then(name => console.log(`Added Extension:  ${name}`))
-			.catch(err => console.log('An error occurred: ', err));
+			.then((name) => console.log(`Added Extension:  ${name}`))
+			.catch((err) => console.log('An error occurred: ', err));
 
 		installExtension(REDUX_DEVTOOLS)
-			.then(name => console.log(`Added Extension:  ${name}`))
-			.catch(err => console.log('An error occurred: ', err));
+			.then((name) => console.log(`Added Extension:  ${name}`))
+			.catch((err) => console.log('An error occurred: ', err));
 	}
 	// Create the browser window.
 
@@ -39,14 +39,14 @@ const createWindow = (): BrowserWindow => {
 		webPreferences: {
 			webSecurity: false,
 			contextIsolation: true,
-			preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
+			preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
 		},
-		show: false
+		show: false,
 	});
 	// and load the index.html of the app.
 
 	if (!isProd) {
-		mainWindow.webContents.openDevTools();
+		// mainWindow.webContents.openDevTools();
 	} else {
 		mainWindow.removeMenu();
 	}
@@ -56,14 +56,13 @@ const createWindow = (): BrowserWindow => {
 };
 
 const createSplashScreen = (): BrowserWindow => {
-	console.log('create splash');
 	const splashScreen = new BrowserWindow({
 		width: 640,
 		height: 360,
 		darkTheme: true,
 		frame: false,
 		resizable: false,
-		autoHideMenuBar: true
+		autoHideMenuBar: true,
 	});
 
 	splashScreen.loadURL(path.resolve(__dirname, './splash_screen.html'));
@@ -112,18 +111,19 @@ app.on('window-all-closed', () => {
 // In this file you can include the rest of your app's specific main process
 
 // code. You can also put them in separate files and import them here.
-ipcMain.on('createWindow', (event, args) => {
-	const win = new BrowserWindow({
-		height: 600,
 
-		width: 800,
-		webPreferences: {
-			webSecurity: false,
-			contextIsolation: true,
-			preload: __dirname + '/preload.js'
-		}
-	});
-});
+// ipcMain.on('createWindow', (_, _) => {
+// 	new BrowserWindow({
+// 		height: 600,
+
+// 		width: 800,
+// 		webPreferences: {
+// 			webSecurity: false,
+// 			contextIsolation: true,
+// 			preload: __dirname + '/preload.js'
+// 		}
+// 	});
+// });
 
 let settings: Settings;
 
@@ -135,7 +135,7 @@ ipcMain.on('theme-changed', async () => {
 	const options: MessageBoxOptions = {
 		message: 'Changing theme requires application restart. Would you like to restart now?',
 		buttons: ['Ok', 'Cancel'],
-		title: 'Restart required'
+		title: 'Restart required',
 	};
 	const result = await dialog.showMessageBox(window, options);
 	if (result.response === 0) {
@@ -154,14 +154,14 @@ ipcMain.on('open-path', (event: IpcMainEvent, value: string) => {
 
 ipcMain.handle('save-image', async (event: IpcMainInvokeEvent, dto: SavePostDto) => {
 	if (dto.data) {
-		await fs.promises.mkdir(`${settings.imagesFolderPath}/${dto.post.directory}`, { recursive: true }).catch(err => {
+		await fs.promises.mkdir(`${settings.imagesFolderPath}/${dto.post.directory}`, { recursive: true }).catch((err) => {
 			console.error(err);
 			//TODO handle gracefully
 			throw err;
 		});
 		await fs.promises
 			.writeFile(`${settings.imagesFolderPath}/${dto.post.directory}/${dto.post.image}`, Buffer.from(dto.data), 'binary')
-			.catch(err => {
+			.catch((err) => {
 				console.error(err);
 				//TODO handle gracefuly
 				throw err;

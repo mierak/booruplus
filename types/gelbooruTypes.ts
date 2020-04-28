@@ -130,3 +130,10 @@ export interface PostTag {
 	tag: string;
 	post: Post;
 }
+
+export interface PostSearchOptions {
+	limit?: number;
+	rating?: Rating;
+	page?: number;
+	apiKey?: string;
+}

@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { View, SearchMode, AppThunk } from './types';
 import { useProgress } from '../src/hooks/useProgress';
+import { thunks } from './internal';
 
 export interface SystemState {
 	activeView: View;
@@ -13,7 +14,7 @@ export interface SystemState {
 	isLoadingImage: boolean;
 	isTagOptionsLoading: boolean;
 	isTagTableLoading: boolean;
-	isLoadingMore: boolean;
+	isSearchDisabled: boolean;
 }
 
 const initialState: SystemState = {
@@ -27,7 +28,7 @@ const initialState: SystemState = {
 	isLoadingImage: false,
 	isTagOptionsLoading: false,
 	isTagTableLoading: false,
-	isLoadingMore: false,
+	isSearchDisabled: false,
 };
 
 const systemSlice = createSlice({
@@ -64,9 +65,71 @@ const systemSlice = createSlice({
 		setTagTableLoading: (state, action: PayloadAction<boolean>): void => {
 			state.isTagTableLoading = action.payload;
 		},
-		setLoadingMore: (state, action: PayloadAction<boolean>): void => {
-			state.isLoadingMore = action.payload;
+		setSearchDisabled: (state, action: PayloadAction<boolean>): void => {
+			state.isSearchDisabled = action.payload;
 		},
+	},
+	extraReducers: (builder) => {
+		builder.addCase(thunks.onlineSearchForm.fetchPosts.pending, (state) => {
+			state.activeView = 'thumbnails';
+			state.isSearchFormDrawerVsibile = false;
+			state.isDownloadedSearchFormDrawerVisible = false;
+			state.isSearchDisabled = true;
+			state.isFetchingPosts = true;
+		});
+		builder.addCase(thunks.onlineSearchForm.fetchMorePosts.pending, (state) => {
+			state.isSearchDisabled = true;
+		});
+		builder.addCase(thunks.downloadedSearchForm.fetchPosts.pending, (state) => {
+			state.isSearchDisabled = true;
+			state.isFetchingPosts = true;
+			state.activeView = 'thumbnails';
+			state.isSearchFormDrawerVsibile = false;
+			state.isDownloadedSearchFormDrawerVisible = false;
+		});
+		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.pending, (state) => {
+			state.isSearchDisabled = true;
+		});
+		builder.addCase(thunks.downloadedSearchForm.fetchPosts.fulfilled, (state) => {
+			state.isSearchDisabled = false;
+			state.isFetchingPosts = false;
+		});
+		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.fulfilled, (state) => {
+			state.isSearchDisabled = false;
+			state.isFetchingPosts = false;
+		});
+		builder.addCase(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled, (state) => {
+			state.isSearchDisabled = false;
+			state.isFetchingPosts = false;
+		});
+		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.pending, (state) => {
+			state.isTagOptionsLoading = true;
+		});
+		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.fulfilled, (state) => {
+			state.isTagOptionsLoading = false;
+		});
+		builder.addCase(thunks.tags.loadAllTagsFromDbWithStats.pending, (state) => {
+			state.isTagTableLoading = true;
+		});
+		builder.addCase(thunks.tags.loadAllTagsFromDbWithStats.fulfilled, (state) => {
+			state.isTagTableLoading = false;
+		});
+		builder.addCase(thunks.savedSearches.searchOnline.pending, (state) => {
+			state.searchMode = 'saved-search-online';
+			state.activeView = 'thumbnails';
+		});
+		builder.addCase(thunks.savedSearches.searchOffline.pending, (state) => {
+			state.searchMode = 'saved-search-offline';
+			state.activeView = 'thumbnails';
+		});
+		builder.addCase(thunks.tags.searchTagOnline.pending, (state) => {
+			state.searchMode = 'online';
+			state.activeView = 'thumbnails';
+		});
+		builder.addCase(thunks.tags.searchTagOffline.pending, (state) => {
+			state.searchMode = 'online';
+			state.activeView = 'thumbnails';
+		});
 	},
 });
 

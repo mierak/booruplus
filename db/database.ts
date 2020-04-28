@@ -56,6 +56,12 @@ class Database extends Dexie {
 		this.version(11).stores({
 			favoritesTree: 'key',
 		});
+		this.version(12).stores({
+			posts: 'id, rating, *tags, extension, downloaded, viewCount, blacklisted',
+		});
+		this.version(13).stores({
+			posts: 'id, rating, *tags, extension, downloaded, viewCount, blacklisted, favorite',
+		});
 		this.tagSearchHistory = this.table('tagSearchHistory');
 		this.settings = this.table('settings');
 		this.posts = this.table('posts');

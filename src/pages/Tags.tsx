@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { ColumnFilterItem } from 'antd/lib/table/interface';
 import { Table, Tag as AntTag } from 'antd';
 
-import { actions } from '../../store';
+import { thunks } from '../../store';
 import { RootState } from '../../store/types';
 
 import { Tag, TagType } from '../../types/gelbooruTypes';
@@ -31,17 +31,17 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 
 	useEffect(() => {
 		// dispatch(loadAllTagsFromDb());
-		dispatch(actions.tags.loadAllTagsFromDbWithStats());
+		dispatch(thunks.tags.loadAllTagsFromDbWithStats());
 	}, []);
 
 	// const getFilteredTags = (): void => {};
 
 	const handleOnlineSearch = (tag: Tag): void => {
-		dispatch(actions.tags.searcTagOnline(tag));
+		dispatch(thunks.tags.searchTagOnline(tag));
 	};
 
 	const handleOfflineSearch = (tag: Tag): void => {
-		dispatch(actions.tags.searchTagOffline(tag));
+		dispatch(thunks.tags.searchTagOffline(tag));
 	};
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

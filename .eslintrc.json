@@ -50,7 +50,8 @@
 		"@typescript-eslint/prefer-string-starts-ends-with": "error",
 		"@typescript-eslint/type-annotation-spacing": "error",
 		"@typescript-eslint/unbound-method": "error",
-		"@typescript-eslint/no-unused-vars": 1,
+		"no-unused-vars": "off",
+		"@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "[_]" }],
 		"react/no-unescaped-entities": 1
 		// "react/prop-types": 0
 		// "@typescript-eslint/no-explicit-function-return-type": "ignore"
