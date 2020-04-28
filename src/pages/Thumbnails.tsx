@@ -54,7 +54,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleBlacklist = (post: Post): void => {
-		dispatch(thunks.posts.blacklistPost(post));
+		dispatch(thunks.posts.blacklistPosts([post]));
 		openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
 	};
 
@@ -119,11 +119,11 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleDownloadWholeSearch = (): void => {
-		dispatch(actions.system.withProgressBar(async (id) => dispatch(thunks.posts.downloadWholeSearch(id))));
+		dispatch(thunks.posts.downloadWholeSearch());
 	};
 
 	const handleBlacklistAll = (): void => {
-		dispatch(thunks.posts.blackListAllPosts());
+		dispatch(thunks.posts.blacklistAllPosts());
 	};
 
 	const handleBlacklistSelected = (): void => {
@@ -141,11 +141,11 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleDownloadAll = (): void => {
-		dispatch(actions.system.withProgressBar(async (id) => dispatch(thunks.posts.downloadAllPosts(id))));
+		dispatch(thunks.posts.downloadAllPosts());
 	};
 
 	const handleDownloadSelected = (): void => {
-		dispatch(actions.system.withProgressBar(async (id) => dispatch(thunks.posts.downloadSelectedPosts(id))));
+		dispatch(thunks.posts.downloadSelectedPosts());
 	};
 
 	const handleSaveSearch = async (): Promise<void> => {

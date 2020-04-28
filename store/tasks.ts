@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { thunks } from './internal';
 
 interface Task {
 	id: number;
@@ -38,6 +39,11 @@ const tasksSlice = createSlice({
 		setCanceled: (state, action: PayloadAction<{ id: number; value: boolean }>): void => {
 			state.tasks[action.payload.id].isCanceled = action.payload.value;
 		},
+	},
+	extraReducers: (builder) => {
+		builder.addCase(thunks.tasks.create.fulfilled, (state, action) => {
+			state.lastId = action.payload;
+		});
 	},
 });
 

@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { View, SearchMode, AppThunk } from './types';
-import { useProgress } from '../src/hooks/useProgress';
+import { View, SearchMode } from './types';
 import { thunks } from './internal';
 
 export interface SystemState {
@@ -133,12 +132,6 @@ const systemSlice = createSlice({
 	},
 });
 
-const withProgressBar = (actionCallback: (taskId: number) => Promise<void>): AppThunk<void> => async (dispatch): Promise<void> => {
-	const [id, close] = await useProgress(dispatch);
-	await actionCallback(id);
-	close();
-};
-
-export const actions = { ...systemSlice.actions, withProgressBar };
+export const actions = systemSlice.actions;
 
 export default systemSlice.reducer;

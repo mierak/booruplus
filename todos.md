@@ -36,6 +36,7 @@
 - Fix buggy behaviour of tag search with debounce
 - Fix light mode
 - Two searches in quick succession sometimes add the results together instead of overwriting the first one
+- Gifs with Height > Width go offscreen
 - ~~Gifs not played, due to canvas not supporting them - change to native \<img\>~~
 - ~~Investigate escaping of characters in URL, ie. plus in "6+girls" is sent unescaped~~
 - ~~Unable to start search at page 1+~~

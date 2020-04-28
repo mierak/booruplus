@@ -4,7 +4,19 @@ import { Tag } from 'types/gelbooruTypes';
 import * as api from 'service/apiService';
 import { thunks } from '..';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { deduplicateAndCheckTagsAgainstDb } from 'util/utils';
+
+const deduplicateAndCheckTagsAgainstDb = async (tags: string[]): Promise<string[]> => {
+	const deduplicated = Array.from(new Set(tags));
+	const checked = await Promise.all(
+		deduplicated.map(async (tag) => {
+			const exists = await db.tags.checkIfExists(tag);
+			if (!exists) return tag;
+		})
+	);
+	const checkedAndFiltered: string[] = [];
+	checked.forEach((val) => val !== undefined && checkedAndFiltered.push(val));
+	return checkedAndFiltered;
+};
 
 const loadAllTagsFromDb = createAsyncThunk<Tag[], void, ThunkApi>(
 	'tags/loadAllTagsFromDb',

@@ -31,7 +31,7 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 	}, []);
 
 	const handleBlacklist = (post: Post): void => {
-		dispatch(thunks.posts.blacklistPost(post));
+		dispatch(thunks.posts.blacklistPosts([post]));
 		openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
 	};
 

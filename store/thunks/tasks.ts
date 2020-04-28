@@ -1,10 +1,12 @@
-import { AppThunk } from 'store/types';
-import { actions } from '..';
+import { ThunkApi } from 'store/types';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
-const create = (): AppThunk<number> => async (dispatch, getState): Promise<number> => {
-	const newId = getState().tasks.lastId + 1;
-	dispatch(actions.tasks.add(newId));
-	return newId;
-};
+const create = createAsyncThunk<number, void, ThunkApi>(
+	'tasks/create',
+	async (_, thunkApi): Promise<number> => {
+		const newId = thunkApi.getState().tasks.lastId + 1;
+		return newId;
+	}
+);
 
 export const tasksThunk = { create };

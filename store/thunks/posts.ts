@@ -1,14 +1,29 @@
 import { db } from 'db';
 import * as api from 'service/apiService';
-import { AppThunk, ThunkApi } from 'store/types';
+import { ThunkApi } from 'store/types';
 import { actions } from '../internal';
 import { useSaveImage, useDeleteImage } from 'hooks/useImageBus';
 import { Post, PostSearchOptions } from 'types/gelbooruTypes';
-import { delay, deduplicateAndCheckTagsAgainstDb } from 'util/utils';
+import { delay } from 'util/utils';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { thunks } from 'store/internal';
+import { useProgress } from 'hooks/useProgress';
 
 const saveImage = useSaveImage();
+const deleteImage = useDeleteImage();
+
+const deduplicateAndCheckTagsAgainstDb = async (tags: string[]): Promise<string[]> => {
+	const deduplicated = Array.from(new Set(tags));
+	const checked = await Promise.all(
+		deduplicated.map(async (tag) => {
+			const exists = await db.tags.checkIfExists(tag);
+			if (!exists) return tag;
+		})
+	);
+	const checkedAndFiltered: string[] = [];
+	checked.forEach((val) => val !== undefined && checkedAndFiltered.push(val));
+	return checkedAndFiltered;
+};
 
 const copyAndBlacklistPost = (p: Post): Post => {
 	const post = { ...p };
@@ -17,23 +32,6 @@ const copyAndBlacklistPost = (p: Post): Post => {
 	post.favorite = 0;
 	post.selected = false;
 	return post;
-};
-
-const downloadPost2 = (post: Post): AppThunk => async (dispatch, getState): Promise<void> => {
-	try {
-		const updatedPost = { ...post };
-		saveImage(updatedPost);
-		updatedPost.downloaded = 1;
-		updatedPost.blacklisted = 0;
-		db.posts.update(updatedPost);
-
-		dispatch(actions.posts.updatePost(updatedPost));
-		const filteredTags = await deduplicateAndCheckTagsAgainstDb(updatedPost.tags);
-		const tagsFromApi = await api.getTagsByNames(filteredTags, getState().settings.apiKey);
-		db.tags.saveBulk(tagsFromApi);
-	} catch (err) {
-		console.error('Error while downloading post', err);
-	}
 };
 
 const downloadPost = createAsyncThunk<Post, Post, ThunkApi>(
@@ -50,65 +48,79 @@ const downloadPost = createAsyncThunk<Post, Post, ThunkApi>(
 	}
 );
 
-const downloadPosts = (posts: Post[], taskId?: number): AppThunk => async (dispatch, getState): Promise<void> => {
-	try {
-		const saveImage = useSaveImage();
+const downloadPosts = createAsyncThunk<Post[], { posts: Post[]; taskId?: number }, ThunkApi>(
+	'posts/downloadPosts',
+	async (params, thunkApi): Promise<Post[]> => {
+		const state = thunkApi.getState();
+
 		const tagsToSave: string[] = [];
 		const updatedPosts: Post[] = [];
 		let postsDone = 0;
 
-		for (const p of posts) {
-			await (async (): Promise<void> => {
-				const post = { ...p };
-				post.downloaded = 1;
-				post.blacklisted = 0;
-				post.selected = false;
-				await db.posts.update(post);
-				await saveImage(post);
+		for (const p of params.posts) {
+			const post = { ...p };
+			saveImage(post);
+			post.downloaded = 1;
+			post.blacklisted = 0;
+			db.posts.update(post);
 
-				taskId && dispatch(actions.tasks.setProgress({ id: taskId, progress: (postsDone++ / (posts.length - 1)) * 100 }));
+			await db.posts.update(post);
+			await saveImage(post);
 
-				updatedPosts.push(post);
-				tagsToSave.push(...post.tags);
-				return Promise.resolve();
-			})();
+			params.taskId &&
+				thunkApi.dispatch(actions.tasks.setProgress({ id: params.taskId, progress: (postsDone++ / (params.posts.length - 1)) * 100 }));
 
-			if (taskId && getState().tasks.tasks[taskId].isCanceled) {
+			updatedPosts.push(post);
+			tagsToSave.push(...post.tags);
+
+			if (params.taskId && state.tasks.tasks[params.taskId].isCanceled) {
 				break;
 			}
 		}
 
-		dispatch(actions.posts.updatePosts(updatedPosts));
 		const filteredTags = await deduplicateAndCheckTagsAgainstDb(tagsToSave);
-		const tagsFromApi = await api.getTagsByNames(filteredTags, getState().settings.apiKey);
+		const tagsFromApi = await api.getTagsByNames(filteredTags, state.settings.apiKey);
 		db.tags.saveBulk(tagsFromApi);
-		return Promise.resolve();
-	} catch (err) {
-		console.error('Error while downloading all posts', err);
-		return Promise.reject(err);
+		return updatedPosts;
 	}
-};
+);
 
-const downloadSelectedPosts = (taskId?: number): AppThunk => async (dispatch, getState): Promise<void> => {
-	const posts = getState().posts.posts.filter((p) => p.selected);
-	return dispatch(downloadPosts(posts, taskId));
-};
-const downloadAllPosts = (taskId?: number): AppThunk<void> => async (dispatch, getState): Promise<void> => {
-	const posts = getState().posts.posts;
-	return dispatch(downloadPosts(posts, taskId));
-};
+const downloadSelectedPosts = createAsyncThunk<void, void, ThunkApi>(
+	'posts/downloadSelectedPosts',
+	async (_, thunkApi): Promise<void> => {
+		const [id, close] = await useProgress(thunkApi.dispatch);
+		const posts = thunkApi.getState().posts.posts.filter((p) => p.selected);
+		await thunkApi.dispatch(downloadPosts({ posts, taskId: id }));
+		close();
+		return Promise.resolve();
+	}
+);
 
-const downloadWholeSearch = (taskId?: number): AppThunk => async (dispatch, getState): Promise<void> => {
-	try {
-		const tags = getState().onlineSearchForm.selectedTags;
-		const excludedTags = getState().onlineSearchForm.excludededTags;
+const downloadAllPosts = createAsyncThunk<void, void, ThunkApi>(
+	'posts/downloadAllPosts',
+	async (_, thunkApi): Promise<void> => {
+		const [id, close] = await useProgress(thunkApi.dispatch);
+		const posts = thunkApi.getState().posts.posts;
+		await thunkApi.dispatch(downloadPosts({ posts, taskId: id }));
+		close();
+		return Promise.resolve();
+	}
+);
+
+const downloadWholeSearch = createAsyncThunk<void, void, ThunkApi>(
+	'posts/downloadWholeSearch',
+	async (_, thunkApi): Promise<void> => {
+		const [id, close] = await useProgress(thunkApi.dispatch);
+		const state = thunkApi.getState();
+		const tags = state.onlineSearchForm.selectedTags;
+		const excludedTags = state.onlineSearchForm.excludededTags;
 		const tagsString = tags.map((tag) => tag.tag);
 		const excludedTagString = excludedTags.map((tag) => tag.tag);
 		const options: PostSearchOptions = {
 			limit: 100,
 			page: 0,
-			rating: getState().onlineSearchForm.rating,
-			apiKey: getState().settings.apiKey,
+			rating: state.onlineSearchForm.rating,
+			apiKey: state.settings.apiKey,
 		};
 
 		let posts = await api.getPostsForTags(tagsString, options, excludedTagString);
@@ -124,96 +136,47 @@ const downloadWholeSearch = (taskId?: number): AppThunk => async (dispatch, getS
 			totalPosts.push(...posts);
 			await delay(2000);
 		}
-		return dispatch(downloadPosts(totalPosts, taskId));
-	} catch (err) {
-		console.error('Error while downloading whole search', err);
-		return Promise.reject(err);
+		await thunkApi.dispatch(downloadPosts({ posts: totalPosts, taskId: id }));
+		close();
+		return Promise.resolve();
 	}
-};
+);
 
-const blacklistPost = (post: Post): AppThunk => async (dispatch): Promise<void> => {
-	try {
-		const deleteImage = useDeleteImage();
-		const updatedPost = copyAndBlacklistPost(post);
-		deleteImage(updatedPost);
-		await db.posts.update(updatedPost);
-
-		dispatch(actions.posts.removePost(updatedPost));
-	} catch (err) {
-		console.error('Error occured while blacklisting a post', err, post);
-	}
-};
-
-const blacklistSelectedPosts = (): AppThunk => async (dispatch, getState): Promise<void> => {
-	try {
-		const deleteImage = useDeleteImage();
-		const posts = getState().posts.posts.filter((p) => p.selected);
-		posts.forEach((p) => {
+const blacklistPosts = createAsyncThunk<Post[], Post[], ThunkApi>(
+	'posts/blacklistPosts',
+	async (posts): Promise<Post[]> => {
+		const resultPosts: Post[] = [];
+		for (const p of posts) {
 			const post = copyAndBlacklistPost(p);
 			deleteImage(post);
 			db.posts.update(post);
-			dispatch(actions.posts.removePost(post));
-		});
-	} catch (err) {
-		console.error('Error occured while blacklisting selected posts', err);
+			resultPosts.push(post);
+		}
+		return resultPosts;
 	}
-};
+);
 
-const blackListAllPosts = (): AppThunk => async (dispatch, getStsate): Promise<void> => {
-	try {
-		const deleteImage = useDeleteImage();
-		const posts = getStsate().posts.posts;
-		posts.forEach((p) => {
-			const post = copyAndBlacklistPost(p);
-			deleteImage(post);
-			db.posts.update(post);
-			dispatch(actions.posts.removePost(post));
-		});
-	} catch (err) {
-		console.error('Error occured while blacklisting all posts', err);
+const blacklistAllPosts = createAsyncThunk<void, void, ThunkApi>(
+	'posts/blacklistAllPosts',
+	async (_, thunkApi): Promise<void> => {
+		thunkApi.dispatch(blacklistPosts(thunkApi.getState().posts.posts));
 	}
-};
+);
 
-const addSelectedPostsToFavorites = (): AppThunk => async (dispatch, getState): Promise<void> => {
-	try {
-		const posts = getState().posts.posts.filter((p) => p.selected);
-		posts.forEach((p) => {
-			const post = { ...p };
-			post.favorite = 1;
-			post.blacklisted = 0;
-			post.selected = false;
-			db.posts.update(post);
-			dispatch(actions.posts.updatePost(post));
-		});
-	} catch (err) {
-		console.error('Erroro ccured while adding selected posts to favorites', err);
+const blacklistSelectedPosts = createAsyncThunk<void, void, ThunkApi>(
+	'posts/blacklistSelectedPosts',
+	async (_, thunkApi): Promise<void> => {
+		const posts = thunkApi.getState().posts.posts.filter((post) => post.selected);
+		thunkApi.dispatch(blacklistPosts(posts));
 	}
-};
+);
 
-const addAllPostsToFavorites = (): AppThunk => async (dispatch, getState): Promise<void> => {
-	try {
-		const posts = getState().posts.posts;
-		posts.forEach((p) => {
-			const post = { ...p };
-			post.favorite = 1;
-			post.blacklisted = 0;
-			post.selected = false;
-			db.posts.update(post);
-			dispatch(actions.posts.updatePost(post));
-		});
-	} catch (err) {
-		console.error('Error occured while adding selected posts to favorites', err);
+const incrementViewCount = createAsyncThunk<Post, Post, ThunkApi>(
+	'posts/incrementViewCount',
+	async (post): Promise<Post> => {
+		return db.posts.incrementviewcount(post);
 	}
-};
-
-const incrementViewCount = (post: Post): AppThunk => async (_): Promise<void> => {
-	try {
-		await db.posts.incrementviewcount(post);
-		// dispatch(actions.posts.updatePost(updatedPost));
-	} catch (err) {
-		console.error('Error while incrementing viewCount of post', err, post);
-	}
-};
+);
 
 export const postsThunk = {
 	downloadPosts,
@@ -221,10 +184,8 @@ export const postsThunk = {
 	downloadAllPosts,
 	downloadPost,
 	downloadWholeSearch,
-	blacklistPost,
+	blacklistPosts,
 	blacklistSelectedPosts,
-	blackListAllPosts,
-	addSelectedPostsToFavorites,
-	addAllPostsToFavorites,
+	blacklistAllPosts,
 	incrementViewCount,
 };

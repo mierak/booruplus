@@ -46,7 +46,7 @@ const createWindow = (): BrowserWindow => {
 	// and load the index.html of the app.
 
 	if (!isProd) {
-		// mainWindow.webContents.openDevTools();
+		mainWindow.webContents.openDevTools();
 	} else {
 		mainWindow.removeMenu();
 	}

@@ -3,6 +3,10 @@ const plugins = require('./webpack.plugins');
 const path = require('path');
 const WorkerPlugin = require('worker-plugin');
 
+rules.push({
+	test: /\.css$/,
+	use: [{ loader: 'style-loader' }, { loader: 'css-loader' }]
+});
 plugins.push(new WorkerPlugin());
 
 module.exports = {
