@@ -1,5 +1,5 @@
 # Changelog
-## 0.1.2 - TITLE - DATE
+## 0.1.2 - Download tasks panel - 30.4.2020
 - Added basic controls (show tags, open in browser) to gifs and videos
 - Added Downloads drawer which saves all your batch downloads and allows you to view what posts were downloaded. For now it stores an infinite amount of download tasks
 - Light Mode:
