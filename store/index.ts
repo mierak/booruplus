@@ -1,15 +1,17 @@
 import { combineReducers } from 'redux';
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 
-import { dashboardThunk } from './thunks/dashboard';
-import { postsThunk } from './thunks/posts';
-import { savedSearchesThunk } from './thunks/savedSearches';
-import { settingsThunk } from './thunks/settings';
-import { tagsThunk } from './thunks/tags';
-import { tasksThunk } from './thunks/tasks';
-import { favoritesThunk } from './thunks/favorites';
-import { downloadedSearchFormThunk } from './thunks/downloadedSearchForm';
-import { onlineSearchFormThunk } from './thunks/onlineSearchForm';
+// import { dashboardThunk } from './thunks/dashboard';
+// import { postsThunk } from './thunks/posts';
+// import { savedSearchesThunk } from './thunks/savedSearches';
+// import { settingsThunk } from './thunks/settings';
+// import { tagsThunk } from './thunks/tags';
+// import { tasksThunk } from './thunks/tasks';
+// import { favoritesThunk } from './thunks/favorites';
+// import { downloadedSearchFormThunk } from './thunks/downloadedSearchForm';
+// import { onlineSearchFormThunk } from './thunks/onlineSearchForm';
+
+// import { thunks as thunksObj } from './thunks';
 
 import onlineSearchFormReducer from './onlineSearchForm';
 import postsReducer from './posts';
@@ -37,6 +39,8 @@ import { actions as tasks } from './tasks';
 import { actions as loadingStates } from './loadingStates';
 import { actions as favorites } from './favorites';
 import { actions as modals } from './modals/index';
+
+import * as allThunks from './thunks';
 
 export const mainReducer = combineReducers({
 	system: systemReducer,
@@ -74,13 +78,5 @@ export const actions = {
 };
 
 export const thunks = {
-	onlineSearchForm: onlineSearchFormThunk,
-	downloadedSearchForm: downloadedSearchFormThunk,
-	favorites: favoritesThunk,
-	dashboard: dashboardThunk,
-	posts: postsThunk,
-	savedSearches: savedSearchesThunk,
-	settings: settingsThunk,
-	tags: tagsThunk,
-	tasks: tasksThunk,
+	...allThunks,
 };

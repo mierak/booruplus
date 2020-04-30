@@ -1,7 +1,10 @@
-import { ThunkApi } from 'store/types';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-const create = createAsyncThunk<number, void, ThunkApi>(
+import { db } from 'db';
+
+import { ThunkApi, Task } from 'store/types';
+
+export const create = createAsyncThunk<number, void, ThunkApi>(
 	'tasks/create',
 	async (_, thunkApi): Promise<number> => {
 		const newId = thunkApi.getState().tasks.lastId + 1;
@@ -9,4 +12,9 @@ const create = createAsyncThunk<number, void, ThunkApi>(
 	}
 );
 
-export const tasksThunk = { create };
+export const rehydrateFromDb = createAsyncThunk<Task[], void, ThunkApi>(
+	'tasks/rehydrateFromDb',
+	async (): Promise<Task[]> => {
+		return await db.tasks.getAll();
+	}
+);

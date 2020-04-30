@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { OfflineOptions } from './types';
 
-import { thunks } from './internal';
+import * as thunks from './thunks';
 
 export interface SearchFormState {
 	selectedTags: Tag[];
@@ -80,6 +80,7 @@ const searchFormSlice = createSlice({
 		},
 	},
 	extraReducers: (builder) => {
+		console.log(thunks);
 		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.fulfilled, (state, action) => {
 			state.tagOptions = action.payload;
 		});

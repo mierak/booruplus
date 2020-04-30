@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { thunks } from './internal';
+import * as thunks from './thunks';
 
 interface LoadingStates {
 	isMostFavoritedTagsLoading: boolean;

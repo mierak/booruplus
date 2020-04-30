@@ -58,8 +58,8 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 		openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
 	};
 
-	const handleDownload = (post: Post): void => {
-		dispatch(thunks.posts.downloadPost(post));
+	const handleDownload = async (post: Post): Promise<void> => {
+		await dispatch(thunks.posts.downloadPost({ post }));
 		openNotificationWithIcon('success', 'Post downloaded', 'Image was successfuly saved to disk.');
 	};
 
@@ -118,8 +118,9 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 		}
 	};
 
-	const handleDownloadWholeSearch = (): void => {
+	const handleDownloadWholeSearch = async (): Promise<void> => {
 		dispatch(thunks.posts.downloadWholeSearch());
+		close();
 	};
 
 	const handleBlacklistAll = (): void => {
@@ -140,11 +141,11 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 		dispatch(actions.modals.showModal('add-to-favorites'));
 	};
 
-	const handleDownloadAll = (): void => {
-		dispatch(thunks.posts.downloadAllPosts());
+	const handleDownloadAll = async (): Promise<void> => {
+		await dispatch(thunks.posts.downloadAllPosts());
 	};
 
-	const handleDownloadSelected = (): void => {
+	const handleDownloadSelected = async (): Promise<void> => {
 		dispatch(thunks.posts.downloadSelectedPosts());
 	};
 

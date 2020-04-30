@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { TagHistory, RatingCounts } from './types';
 import { Tag, Post } from '../types/gelbooruTypes';
-import { thunks } from './internal';
+import * as thunks from './thunks';
 
 interface DashboardState {
 	totalDownloadedPosts: number;

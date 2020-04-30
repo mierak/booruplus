@@ -44,10 +44,11 @@
 
 ## REFACTOR
 
-- WithProgressBar to actually make sense
+- ~~WithProgressBar to actually make sense~~
 - Make task ID start at 0
 
 ## LOW PRIORITY
 
 - Extract all inlined urls
 - Add toggles for loading stats on app start
+- Limit download tasks, maybe add a way to view older tasks. Add task retention setting.

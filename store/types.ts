@@ -16,7 +16,14 @@ export interface ThunkApi {
 
 export type View = 'thumbnails' | 'image' | 'dashboard' | 'online-search' | 'saved-searches' | 'favorites' | 'tag-list' | 'settings';
 
-export type SearchMode = 'online' | 'offline' | 'favorites' | 'saved-search-offline' | 'saved-search-online' | 'most-viewed';
+export type SearchMode =
+	| 'online'
+	| 'offline'
+	| 'favorites'
+	| 'saved-search-offline'
+	| 'saved-search-online'
+	| 'most-viewed'
+	| 'open-download';
 
 export type ActiveModal = 'none' | 'add-to-favorites' | 'add-favorites-directory' | 'delete-favorites-directory' | 'move-to-directory';
 
@@ -56,4 +63,16 @@ export type TreeData = TreeNode[];
 
 export interface RatingCounts {
 	[key: string]: number;
+}
+
+export type TaskState = 'preparing' | 'downloading' | 'completed' | 'failed' | 'canceled';
+
+export interface Task {
+	id: number;
+	timestampStarted: number;
+	timestampDone?: number;
+	items: number;
+	itemsDone: number;
+	state: TaskState;
+	postIds: number[];
 }

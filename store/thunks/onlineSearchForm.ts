@@ -6,7 +6,7 @@ import { db } from 'db';
 import { ThunkApi, RootState } from 'store/types';
 import { Post, Tag, PostSearchOptions } from 'types/gelbooruTypes';
 
-const getPostApiOptions = (state: RootState, incrementPage?: boolean): PostSearchOptions => {
+export const getPostApiOptions = (state: RootState, incrementPage?: boolean): PostSearchOptions => {
 	return {
 		limit: state.onlineSearchForm.limit,
 		page: incrementPage ? state.onlineSearchForm.page + 1 : state.onlineSearchForm.page,
@@ -15,7 +15,7 @@ const getPostApiOptions = (state: RootState, incrementPage?: boolean): PostSearc
 	};
 };
 
-const checkPostsAgainstDb = createAsyncThunk<Post[], Post[], ThunkApi>(
+export const checkPostsAgainstDb = createAsyncThunk<Post[], Post[], ThunkApi>(
 	'posts/checkPostsAgainstdb',
 	async (posts, _): Promise<Post[]> => {
 		const result = db.posts.bulkSaveOrUpdateFromApi(posts);
@@ -23,7 +23,7 @@ const checkPostsAgainstDb = createAsyncThunk<Post[], Post[], ThunkApi>(
 	}
 );
 
-const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
+export const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
 	'posts/fetchPosts',
 	async (_, thunkApi): Promise<Post[]> => {
 		const { dispatch } = thunkApi;
@@ -42,14 +42,14 @@ const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
 	}
 );
 
-const getTagsByPatternFromApi = createAsyncThunk<Tag[], string, ThunkApi>(
+export const getTagsByPatternFromApi = createAsyncThunk<Tag[], string, ThunkApi>(
 	'posts/getTagsByPatternFromApi',
 	async (value: string, thunkApi): Promise<Tag[]> => {
 		return api.getTagsByPattern(value, thunkApi.getState().settings.apiKey);
 	}
 );
 
-const fetchMorePosts = createAsyncThunk<Post[], void, ThunkApi>(
+export const fetchMorePosts = createAsyncThunk<Post[], void, ThunkApi>(
 	'posts/fetchMorePosts',
 	async (_, thunkApi): Promise<Post[]> => {
 		const getState = thunkApi.getState;
@@ -64,10 +64,3 @@ const fetchMorePosts = createAsyncThunk<Post[], void, ThunkApi>(
 		return posts;
 	}
 );
-
-export const onlineSearchFormThunk = {
-	getTagsByPatternFromApi,
-	fetchMorePosts,
-	fetchPosts,
-	checkPostsAgainstDb,
-};

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Post } from '../types/gelbooruTypes';
-import { thunks } from './internal';
+import * as thunks from './thunks';
 
 export interface PostsState {
 	activePostIndex: number | undefined;
@@ -72,6 +72,19 @@ const postsSlice = createSlice({
 			state.posts = [];
 			state.activePostIndex = undefined;
 		});
+		builder.addCase(thunks.downloadedSearchForm.fetchPosts.pending, (state) => {
+			state.posts = [];
+			state.activePostIndex = undefined;
+		});
+		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state) => {
+			state.posts = [];
+			state.activePostIndex = undefined;
+		});
+		builder.addCase(thunks.posts.fetchPostsByIds.fulfilled, (state, action) => {
+			for (const post of action.payload) {
+				state.posts.push(post);
+			}
+		});
 		builder.addCase(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled, (state, action) => {
 			for (const post of action.payload) {
 				state.posts.push(post);
@@ -79,10 +92,6 @@ const postsSlice = createSlice({
 		});
 		builder.addCase(thunks.favorites.fetchPostsInDirectory.fulfilled, (state, action) => {
 			state.posts = action.payload;
-		});
-
-		builder.addCase(thunks.downloadedSearchForm.fetchPosts.pending, (state) => {
-			state.posts = [];
 		});
 		builder.addCase(thunks.downloadedSearchForm.fetchPosts.fulfilled, (state, action) => {
 			for (const post of action.payload) {

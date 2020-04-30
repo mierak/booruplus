@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TreeNode } from './types';
-import { thunks } from './internal';
+import * as thunks from './thunks';
 
 interface FavoritesState {
 	treeData: TreeNode[];

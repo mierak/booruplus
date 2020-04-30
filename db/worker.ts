@@ -6,6 +6,7 @@ import * as savedSearches from './savedSearches';
 import * as settings from './settings';
 import * as tagSearchHistory from './tagSearchHistory';
 import * as favoritesTree from './favoritesTree';
+import * as tasks from './tasks';
 
 export const dbWorker = {
 	posts,
@@ -13,7 +14,8 @@ export const dbWorker = {
 	savedSearches,
 	settings,
 	tagSearchHistory,
-	favoritesTree
+	favoritesTree,
+	tasks,
 };
 
 expose(dbWorker);

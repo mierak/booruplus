@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button } from 'antd';
 
 import { AppDispatch, RootState, ThunkApi } from 'store/types';
-import { actions, thunks } from 'store/';
+import { thunks } from 'store/';
 import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { Post } from 'types/gelbooruTypes';
 

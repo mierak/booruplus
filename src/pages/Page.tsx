@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState, AppDispatch } from '../../store/types';
 
-import AppLayout from '../components/Layout';
+import AppLayout from '../components/layout/Layout';
 import ImageView from './ImageView';
 import SearchForm from '../components/OnlineSearchForm';
 import SavedSearches from './SavedSearches';
@@ -23,7 +23,6 @@ const Page: React.FunctionComponent = () => {
 
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 	const settings = useSelector((state: RootState) => state.settings);
-
 	useEffect(() => {
 		(async (): Promise<void> => {
 			await dispatch(thunks.settings.loadSettings('user'));

@@ -35,7 +35,7 @@ const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 
 	return (
 		<Container className={props.className}>
-			<Row gutter={10} style={{ marginBottom: '10px' }}>
+			<Row gutter={[10, 10]}>
 				<Col xs={6}>
 					<Card>
 						<Statistic title="Downloaded Posts" value={downloadedPostCount}></Statistic>

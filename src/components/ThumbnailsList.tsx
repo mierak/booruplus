@@ -101,7 +101,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const renderLoadMoreButton = (): React.ReactNode | undefined => {
-		if (postCount <= 0 || searchMode === 'favorites') {
+		if (postCount <= 0 || searchMode === 'favorites' || searchMode === 'open-download') {
 			return undefined;
 		}
 		return <StyledLoadMoreButton />;

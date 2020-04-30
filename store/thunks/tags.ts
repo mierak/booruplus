@@ -2,10 +2,11 @@ import { AppThunk, ThunkApi } from 'store/types';
 import { db } from 'db';
 import { Tag } from 'types/gelbooruTypes';
 import * as api from 'service/apiService';
-import { thunks } from '..';
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import * as onlineSearchFormThunk from './onlineSearchForm';
+import * as downloadedSearchFormThunk from './downloadedSearchForm';
 
-const deduplicateAndCheckTagsAgainstDb = async (tags: string[]): Promise<string[]> => {
+export const deduplicateAndCheckTagsAgainstDb = async (tags: string[]): Promise<string[]> => {
 	const deduplicated = Array.from(new Set(tags));
 	const checked = await Promise.all(
 		deduplicated.map(async (tag) => {
@@ -18,7 +19,7 @@ const deduplicateAndCheckTagsAgainstDb = async (tags: string[]): Promise<string[
 	return checkedAndFiltered;
 };
 
-const loadAllTagsFromDb = createAsyncThunk<Tag[], void, ThunkApi>(
+export const loadAllTagsFromDb = createAsyncThunk<Tag[], void, ThunkApi>(
 	'tags/loadAllTagsFromDb',
 	async (): Promise<Tag[]> => {
 		const tags = await db.tags.getAll();
@@ -26,7 +27,7 @@ const loadAllTagsFromDb = createAsyncThunk<Tag[], void, ThunkApi>(
 	}
 );
 
-const loadAllTagsFromDbWithStats = createAsyncThunk<Tag[], void, ThunkApi>(
+export const loadAllTagsFromDbWithStats = createAsyncThunk<Tag[], void, ThunkApi>(
 	'tags/loadAllTagsFromDbWithStats',
 	async (): Promise<Tag[]> => {
 		const tags = await db.tags.getAll();
@@ -46,45 +47,31 @@ const loadAllTagsFromDbWithStats = createAsyncThunk<Tag[], void, ThunkApi>(
 	}
 );
 
-const loadByPatternFromDb = createAsyncThunk<Tag[], string, ThunkApi>(
+export const loadByPatternFromDb = createAsyncThunk<Tag[], string, ThunkApi>(
 	'tags/loadByPatternFromDb',
 	async (pattern): Promise<Tag[]> => {
 		return db.tags.getByPattern(pattern);
 	}
 );
 
-const downloadTags = createAsyncThunk<Tag[], string[], ThunkApi>(
-	'tags/download',
-	/**
-	 * @param tags tags to be downloaded, tags will be first checked against DB and deduplicated
-	 * @returns an array of Tag objects containing tags that have been downloaded
-	 */
-	async (tags, thunkApi): Promise<Tag[]> => {
-		const filteredTags = await deduplicateAndCheckTagsAgainstDb(tags);
-		const tagsFromApi = await api.getTagsByNames(filteredTags, thunkApi.getState().settings.apiKey);
-		db.tags.saveBulk(tagsFromApi);
-		return tagsFromApi;
-	}
-);
-
-const searchTagOnline = createAsyncThunk<Tag, Tag, ThunkApi>(
+export const searchTagOnline = createAsyncThunk<Tag, Tag, ThunkApi>(
 	'tags/searchOnline',
 	async (tag, thunkApi): Promise<Tag> => {
-		thunkApi.dispatch(thunks.onlineSearchForm.fetchPosts());
+		thunkApi.dispatch(onlineSearchFormThunk.fetchPosts());
 		return tag;
 	}
 );
 
-const searchTagOffline = createAsyncThunk<Tag, Tag, ThunkApi>(
+export const searchTagOffline = createAsyncThunk<Tag, Tag, ThunkApi>(
 	'tags/searchOffline',
 	async (tag, thunkApi): Promise<Tag> => {
-		thunkApi.dispatch(thunks.downloadedSearchForm.fetchPosts());
+		thunkApi.dispatch(downloadedSearchFormThunk.fetchPosts());
 		return tag;
 	}
 );
 
 // TODO make into a proper Thunk - used only in TagsPopover
-const fetchTags = (tags: string[]): AppThunk<Tag[]> => async (_, getState): Promise<Tag[]> => {
+export const fetchTags = (tags: string[]): AppThunk<Tag[]> => async (_, getState): Promise<Tag[]> => {
 	try {
 		const tagsFromDb: Tag[] = [];
 		const notFoundTags: string[] = [];
@@ -102,14 +89,4 @@ const fetchTags = (tags: string[]): AppThunk<Tag[]> => async (_, getState): Prom
 		console.error('Error while loading multiple tags from DB', err);
 		return Promise.reject(err);
 	}
-};
-
-export const tagsThunk = {
-	loadAllTagsFromDb,
-	loadAllTagsFromDbWithStats,
-	loadByPatternFromDb,
-	downloadTags,
-	searchTagOnline,
-	searchTagOffline,
-	fetchTags,
 };

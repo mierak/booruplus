@@ -2,6 +2,7 @@
 import Dexie from 'dexie';
 import { Post, Tag, PostTag } from '../types/gelbooruTypes';
 import { SettingsPair, SavedSearch, FavoritesTreeNode } from './types';
+import { Task } from 'store/types';
 
 class Database extends Dexie {
 	posts: Dexie.Table<Post, number>;
@@ -11,6 +12,7 @@ class Database extends Dexie {
 	settings: Dexie.Table<SettingsPair, string>;
 	tagSearchHistory: Dexie.Table<{ tag: Tag; date: string }, number>;
 	favoritesTree: Dexie.Table<FavoritesTreeNode, string>;
+	tasks: Dexie.Table<Task, number>;
 
 	constructor(databaseName: string) {
 		super(databaseName);
@@ -62,6 +64,9 @@ class Database extends Dexie {
 		this.version(13).stores({
 			posts: 'id, rating, *tags, extension, downloaded, viewCount, blacklisted, favorite',
 		});
+		this.version(14).stores({
+			tasks: 'id, timestampStarted, timestampDone',
+		});
 		this.tagSearchHistory = this.table('tagSearchHistory');
 		this.settings = this.table('settings');
 		this.posts = this.table('posts');
@@ -69,6 +74,7 @@ class Database extends Dexie {
 		this.tags = this.table('tags');
 		this.postsTags = this.table('postsTags');
 		this.favoritesTree = this.table('favoritesTree');
+		this.tasks = this.table('tasks');
 	}
 }
 

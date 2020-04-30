@@ -2,36 +2,37 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import { db } from 'db';
 
-import { thunks } from '..';
 import { ThunkApi } from 'store/types';
 
 import { Rating, SavedSearch, Tag } from 'types/gelbooruTypes';
 
 import { notification } from 'antd';
+import * as onlineSearchFormThunk from './onlineSearchForm';
+import * as downloadedSearchFormThunk from './downloadedSearchForm';
 
-const searchOnline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi>(
+export const searchOnline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi>(
 	'savedSearches/searchOnline',
 	async (savedSearch, thunkApi): Promise<SavedSearch> => {
 		const clone = { ...savedSearch };
 		clone.lastSearched = new Date().toUTCString();
 		db.savedSearches.save(clone);
-		thunkApi.dispatch(thunks.onlineSearchForm.fetchPosts());
+		thunkApi.dispatch(onlineSearchFormThunk.fetchPosts());
 		return clone;
 	}
 );
 
-const searchOffline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi>(
+export const searchOffline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi>(
 	'savedSearches/searchOffline',
 	async (savedSearch, thunkApi): Promise<SavedSearch> => {
 		const clone = { ...savedSearch };
 		clone.lastSearched = new Date().toUTCString();
 		db.savedSearches.save(clone);
-		thunkApi.dispatch(thunks.downloadedSearchForm.fetchPosts());
+		thunkApi.dispatch(downloadedSearchFormThunk.fetchPosts());
 		return clone;
 	}
 );
 
-const saveSearch = createAsyncThunk<SavedSearch, { tags: Tag[]; excludedTags: Tag[]; rating: Rating }, ThunkApi>(
+export const saveSearch = createAsyncThunk<SavedSearch, { tags: Tag[]; excludedTags: Tag[]; rating: Rating }, ThunkApi>(
 	'savedSearches/save',
 	async (params): Promise<SavedSearch> => {
 		const id = await db.savedSearches.createAndSave(params.rating, params.tags, params.excludedTags);
@@ -56,14 +57,14 @@ const saveSearch = createAsyncThunk<SavedSearch, { tags: Tag[]; excludedTags: Ta
 	}
 );
 
-const loadSavedSearchesFromDb = createAsyncThunk<SavedSearch[], void, ThunkApi>(
+export const loadSavedSearchesFromDb = createAsyncThunk<SavedSearch[], void, ThunkApi>(
 	'savedSearches/loadFromDb',
 	async (): Promise<SavedSearch[]> => {
 		return db.savedSearches.getAll();
 	}
 );
 
-const addPreviewToActiveSavedSearch = createAsyncThunk<SavedSearch | undefined, string, ThunkApi>(
+export const addPreviewToActiveSavedSearch = createAsyncThunk<SavedSearch | undefined, string, ThunkApi>(
 	'savedSearches/addPreviewToActive',
 	async (previewUrl, thunkApi): Promise<SavedSearch | undefined> => {
 		const blob = await (await fetch(previewUrl)).blob();
@@ -75,7 +76,7 @@ const addPreviewToActiveSavedSearch = createAsyncThunk<SavedSearch | undefined, 
 	}
 );
 
-const removePreview = createAsyncThunk<
+export const removePreview = createAsyncThunk<
 	{ savedSearchId: number; previewId: number },
 	{ savedSearch: SavedSearch; previewId: number },
 	ThunkApi
@@ -86,12 +87,3 @@ const removePreview = createAsyncThunk<
 		return { savedSearchId: params.savedSearch.id, previewId: params.previewId };
 	}
 );
-
-export const savedSearchesThunk = {
-	searchOnline,
-	searchOffline,
-	saveSearch,
-	loadSavedSearchesFromDb,
-	addPreviewToActiveSavedSearch,
-	removePreview,
-};

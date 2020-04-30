@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Tag, Rating } from '../types/gelbooruTypes';
-import { thunks } from './internal';
+import * as thunks from './thunks';
 
 export interface DownloadedSearchFormState {
 	selectedTags: Tag[];

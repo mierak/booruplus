@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Layout, Menu, Affix, Drawer } from 'antd';
+import { Layout, Menu, Affix } from 'antd';
 import {
 	DashboardOutlined,
 	UnorderedListOutlined,
@@ -10,14 +10,14 @@ import {
 	FormOutlined,
 	SaveOutlined,
 	SettingOutlined,
+	DownloadOutlined,
 } from '@ant-design/icons';
 
-import { actions } from '../../store';
-import { RootState, View } from '../../store/types';
+import { actions } from '../../../store';
+import { RootState, View } from '../../../store/types';
 
-import OnlineSearchForm from './OnlineSearchForm';
-import DownloadedSearchForm from './DownloadedSearchForm';
-import Modals from './Modals';
+import Modals from '../Modals';
+import Drawers from './Drawers';
 
 const { Content, Sider } = Layout;
 
@@ -28,16 +28,10 @@ interface Props {
 
 const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
-	const searchFormDrawerVisible = useSelector((state: RootState) => state.system.isSearchFormDrawerVsibile);
-	const downloadedSearchFormDrawerVisible = useSelector((state: RootState) => state.system.isDownloadedSearchFormDrawerVisible);
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 
 	const handleMenuClick = (view: View): void => {
 		dispatch(actions.system.setActiveView(view));
-	};
-
-	const handleSearchFormDrawerClose = (): void => {
-		dispatch(actions.system.setSearchFormDrawerVisible(false));
 	};
 
 	const handleSearchFormDrawerOpen = (): void => {
@@ -48,8 +42,8 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 		dispatch(actions.system.setDownloadedSearchFormDrawerVisible(true));
 	};
 
-	const handleDownloadedSearchFormDrawerClose = (): void => {
-		dispatch(actions.system.setDownloadedSearchFormDrawerVisible(false));
+	const handleTasksDrawerOpen = (): void => {
+		dispatch(actions.system.setTasksDrawerVisible(true));
 	};
 
 	return (
@@ -91,6 +85,10 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 								<FormOutlined />
 								<span>Offline Search</span>
 							</Menu.Item>
+							<Menu.Item key="tasks" onClick={handleTasksDrawerOpen}>
+								<DownloadOutlined />
+								<span>Downloads</span>
+							</Menu.Item>
 							<Menu.Item key="settings" onClick={(): void => handleMenuClick('settings')}>
 								<SettingOutlined />
 								<span>Settings</span>
@@ -100,26 +98,8 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 				</Affix>
 				<Layout>
 					<Content>
-						<Drawer
-							title="New Online Search"
-							placement="right"
-							width={700}
-							closable={true}
-							visible={searchFormDrawerVisible}
-							onClose={handleSearchFormDrawerClose}
-						>
-							<OnlineSearchForm />
-						</Drawer>
-						<Drawer
-							title="New Offline Search"
-							placement="right"
-							width={700}
-							visible={downloadedSearchFormDrawerVisible}
-							onClose={handleDownloadedSearchFormDrawerClose}
-						>
-							<DownloadedSearchForm />
-						</Drawer>
 						{props.children}
+						<Drawers />
 					</Content>
 				</Layout>
 			</Layout>

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Settings } from './types';
-import { thunks } from './internal';
+import * as thunks from './thunks';
 
 const initialState: Settings = {
 	imagesFolderPath: '',

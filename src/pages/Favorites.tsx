@@ -36,7 +36,7 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleDownload = (post: Post): void => {
-		dispatch(thunks.posts.downloadPost(post));
+		dispatch(thunks.posts.downloadPost({ post }));
 		openNotificationWithIcon('success', 'Post downloaded', 'Image was successfuly saved to disk.');
 	};
 

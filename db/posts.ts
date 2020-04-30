@@ -64,10 +64,9 @@ export const update = async (post: Post): Promise<number> => {
 	});
 };
 
-export const updateBulk = async (posts: Post[]): Promise<number | void> => {
-	return db.posts.bulkPut(posts).catch((err) => {
-		console.error(err);
-		throw err;
+export const bulkSave = async (posts: Post[]): Promise<number | void> => {
+	return db.transaction('rw', db.posts, db.postsTags, async () => {
+		return db.posts.bulkPut(posts);
 	});
 };
 

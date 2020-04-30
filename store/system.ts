@@ -1,12 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { View, SearchMode } from './types';
-import { thunks } from './internal';
+import * as thunks from './thunks';
 
 export interface SystemState {
 	activeView: View;
 	searchMode: SearchMode;
 	isSearchFormDrawerVsibile: boolean;
 	isDownloadedSearchFormDrawerVisible: boolean;
+	isTasksDrawerVisible: boolean;
 	isTagsPopoverVisible: boolean;
 	isImageViewThumbnailsCollapsed: boolean;
 	isFetchingPosts: boolean;
@@ -21,6 +22,7 @@ const initialState: SystemState = {
 	searchMode: 'online',
 	isSearchFormDrawerVsibile: false,
 	isDownloadedSearchFormDrawerVisible: false,
+	isTasksDrawerVisible: false,
 	isTagsPopoverVisible: false,
 	isImageViewThumbnailsCollapsed: true,
 	isFetchingPosts: false,
@@ -45,6 +47,9 @@ const systemSlice = createSlice({
 		},
 		setDownloadedSearchFormDrawerVisible: (state, action: PayloadAction<boolean>): void => {
 			state.isDownloadedSearchFormDrawerVisible = action.payload;
+		},
+		setTasksDrawerVisible: (state, action: PayloadAction<boolean>): void => {
+			state.isTasksDrawerVisible = action.payload;
 		},
 		setTagsPopovervisible: (state, action: PayloadAction<boolean>): void => {
 			state.isTagsPopoverVisible = action.payload;
@@ -128,6 +133,20 @@ const systemSlice = createSlice({
 		builder.addCase(thunks.tags.searchTagOffline.pending, (state) => {
 			state.searchMode = 'online';
 			state.activeView = 'thumbnails';
+		});
+		builder.addCase(thunks.posts.downloadPosts.pending, (state) => {
+			state.isTasksDrawerVisible = true;
+		});
+		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state) => {
+			state.isTasksDrawerVisible = false;
+			state.isSearchDisabled = true;
+			state.isFetchingPosts = true;
+			state.activeView = 'thumbnails';
+			state.searchMode = 'open-download';
+		});
+		builder.addCase(thunks.posts.fetchPostsByIds.fulfilled, (state) => {
+			state.isSearchDisabled = false;
+			state.isFetchingPosts = false;
 		});
 	},
 });

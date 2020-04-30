@@ -2,7 +2,7 @@ import { SavedSearch } from '../types/gelbooruTypes';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { db } from 'db';
-import { thunks } from './internal';
+import * as thunks from './thunks';
 
 export interface SavedSearchesState {
 	savedSearches: SavedSearch[];

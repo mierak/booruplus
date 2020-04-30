@@ -8,7 +8,7 @@ import { DownloadedSearchFormState } from 'store/downloadedSearchForm';
 
 import { Tag, Post } from 'types/gelbooruTypes';
 
-const getFilterOptions = (state: DownloadedSearchFormState): FilterOptions => {
+export const getFilterOptions = (state: DownloadedSearchFormState): FilterOptions => {
 	return {
 		blacklisted: state.showBlacklisted,
 		nonBlacklisted: state.showNonBlacklisted,
@@ -22,14 +22,14 @@ const getFilterOptions = (state: DownloadedSearchFormState): FilterOptions => {
 	};
 };
 
-const loadTagsByPattern = createAsyncThunk<Tag[], string, ThunkApi>(
+export const loadTagsByPattern = createAsyncThunk<Tag[], string, ThunkApi>(
 	'downloadedSearchForm/loadTagsByPattern',
 	async (pattern): Promise<Tag[]> => {
 		return db.tags.getByPattern(pattern);
 	}
 );
 
-const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
+export const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
 	'downloadedSearchForm/fetchPosts',
 	async (_, thunkApi): Promise<Post[]> => {
 		const state = thunkApi.getState();
@@ -65,5 +65,3 @@ export const fetchMorePosts = createAsyncThunk<Post[], void, ThunkApi>(
 		return posts;
 	}
 );
-
-export const downloadedSearchFormThunk = { loadTagsByPattern, fetchPosts, fetchMorePosts };
