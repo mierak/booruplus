@@ -23,6 +23,11 @@ const Container = styled.div`
 	justify-content: center;
 `;
 
+const StyledImg = styled.img`
+	max-height: 100%;
+	max-width: 1005;
+`;
+
 const Gif: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
@@ -55,7 +60,7 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 	];
 	return (
 		<Container className={props.className}>
-			<img src={props.post.fileUrl} />
+			<StyledImg src={props.post.fileUrl} />
 			<ImageControls actions={imageControls} />
 		</Container>
 	);

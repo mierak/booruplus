@@ -27,16 +27,16 @@
 ## CONSIDER
 
 - Adding last search from DB to one? level cache
-- ~~Refresh button on dashboard instead of loading resources on every render~~
-- Add tasks page with past/current downloads
 - Extract API service and/or parsing to worker
+- ~~Refresh button on dashboard instead of loading resources on every render~~
+- ~~Add tasks page with past/current downloads~~
 
 ## BUG
 
-- Fix buggy behaviour of tag search with debounce
-- Fix light mode
-- Two searches in quick succession sometimes add the results together instead of overwriting the first one
-- Gifs with Height > Width go offscreen
+- ~~Fix buggy behaviour of tag search with debounce~~
+- ~~Two searches in quick succession sometimes add the results together instead of overwriting the first one~~
+- ~~Gifs with Height > Width go offscreen~~
+- ~~Fix light mode~~
 - ~~Gifs not played, due to canvas not supporting them - change to native \<img\>~~
 - ~~Investigate escaping of characters in URL, ie. plus in "6+girls" is sent unescaped~~
 - ~~Unable to start search at page 1+~~
@@ -45,7 +45,6 @@
 ## REFACTOR
 
 - ~~WithProgressBar to actually make sense~~
-- Make task ID start at 0
 
 ## LOW PRIORITY
 

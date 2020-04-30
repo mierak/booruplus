@@ -72,6 +72,9 @@ const searchFormSlice = createSlice({
 		setTagOptions: (state, action: PayloadAction<Tag[]>): void => {
 			state.tagOptions = action.payload;
 		},
+		clearTagOptions: (state): void => {
+			state.tagOptions = [];
+		},
 		setOfflineOptions: (state, action: PayloadAction<OfflineOptions>): void => {
 			state.offlineOptions = action.payload;
 		},

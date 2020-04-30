@@ -30,6 +30,7 @@ const tasksSlice = createSlice({
 	extraReducers: (builder) => {
 		builder.addCase(thunks.tasks.rehydrateFromDb.fulfilled, (state, action) => {
 			state.tasks = action.payload;
+			state.lastId = Math.max(...action.payload.map((task) => task.id));
 		});
 		builder.addCase(thunks.tasks.create.fulfilled, (state, action) => {
 			state.lastId = action.payload;

@@ -31,6 +31,10 @@ const TagSearch: React.FunctionComponent<Props> = ({ mode }: Props) => {
 		(state: RootState): Tag[] => (mode === 'offline' && state.downloadedSearchForm.tagOptions) || state.onlineSearchForm.tagOptions
 	);
 
+	const load = (mode === 'offline' && thunks.downloadedSearchForm.loadTagsByPattern) || thunks.onlineSearchForm.getTagsByPatternFromApi;
+	const clear = (mode === 'offline' && actions.downloadedSearchForm.clearTagOptions) || actions.onlineSearchForm.clearTagOptions;
+	const addTag = (mode === 'offline' && actions.downloadedSearchForm.addTag) || actions.onlineSearchForm.addTag;
+
 	const debounced = useDebounce(value, 300);
 
 	const handleChange = async (e: SelectValue): Promise<void> => {
@@ -38,13 +42,12 @@ const TagSearch: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	};
 
 	useEffect(() => {
-		const load = (mode === 'offline' && thunks.downloadedSearchForm.loadTagsByPattern) || thunks.onlineSearchForm.getTagsByPatternFromApi;
 		debounced.length >= 2 && dispatch(load(debounced));
+		debounced.length < 2 && dispatch(clear());
 	}, [debounced]);
 
 	const handleSelect = (e: SelectValue): void => {
 		const tag = options.find((t: Tag) => t.tag === e.toString());
-		const addTag = (mode === 'offline' && actions.downloadedSearchForm.addTag) || actions.onlineSearchForm.addTag;
 		tag && dispatch(addTag(tag));
 	};
 

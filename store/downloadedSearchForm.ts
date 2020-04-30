@@ -60,6 +60,9 @@ const downloadedSearchFormSlice = createSlice({
 		setTagOptions: (state, action: PayloadAction<Tag[]>): void => {
 			state.tagOptions = action.payload;
 		},
+		clearTagOptions: (state): void => {
+			state.tagOptions = [];
+		},
 		setRating: (state, action: PayloadAction<Rating>): void => {
 			state.rating = action.payload;
 		},
