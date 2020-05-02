@@ -4,13 +4,12 @@
 - Tests
 - Loader in ImageView
 - Typesafe IPC
-- Make forms responsive
 - Refactor excluded/selected tags components
 - Thumbnails downlaoding
-- Option to load dashboard stats on app start
 - Add option to move selected/all favorites between directories
 - Expand active posts to not use only one state
 - Import/Export database
+- ~~Option to load dashboard stats on app start~~
 - ~~Favorites categories~~
 - ~~Change base64 based dtos with blob based ones~~
 - ~~Loader when starting up app~~
@@ -34,6 +33,7 @@
 ## BUG
 
 - Fix scroll to thumbnail
+- Recheck images path settings reload from DB with IPC communication 
 - ~~Fix buggy behaviour of tag search with debounce~~
 - ~~Two searches in quick succession sometimes add the results together instead of overwriting the first one~~
 - ~~Gifs with Height > Width go offscreen~~
@@ -49,6 +49,8 @@
 
 ## LOW PRIORITY
 
+- Make forms responsive
+- Investigate slow API key input box
 - Extract all inlined urls
 - Add toggles for loading stats on app start
 - Limit download tasks, maybe add a way to view older tasks. Add task retention setting.

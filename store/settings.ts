@@ -64,12 +64,6 @@ const settingsSlice = createSlice({
 		builder.addCase(thunks.settings.updateTheme.fulfilled, (state, action) => {
 			state.theme = action.payload;
 		});
-		builder.addCase(thunks.settings.updateApiKey.fulfilled, (state, action) => {
-			state.apiKey = action.payload;
-		});
-		builder.addCase(thunks.settings.updateMostViewedCount.fulfilled, (state, action) => {
-			state.dashboard.mostViewedCount = action.payload;
-		});
 		builder.addCase(thunks.settings.saveSettings.rejected, (state, action) => {
 			console.error(action.error.message);
 		});

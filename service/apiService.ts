@@ -13,7 +13,11 @@ export const getPostsForTags = async (tags: string[], options: PostSearchOptions
 	if (options.rating && options.rating !== 'any') tags.push(`rating:${options.rating}`);
 
 	//construct API URL
-	let url = `${BASE_POST_URL}${options.apiKey}&limit=${options.limit}&tags=${tags.join(' ')}`;
+	let url = `${BASE_POST_URL}`;
+	options.apiKey && (url = url.concat(options.apiKey));
+	url = url.concat(`&limit=${options.limit}`);
+	tags.length > 0 && (url = url.concat(`&tags=${tags.join(' ')}`));
+
 	if (excludedTags && excludedTags.length > 0) url += ` -${excludedTags.join(' -')}`;
 	if (options.page) url += `&pid=${options.page}`;
 

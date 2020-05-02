@@ -35,26 +35,6 @@ export const updateTheme = createAsyncThunk<'dark' | 'light', 'dark' | 'light', 
 	}
 );
 
-export const updateApiKey = createAsyncThunk<string, string, ThunkApi>(
-	'settings/updateApiKey',
-	async (key, thunkApi): Promise<string> => {
-		const settings = { ...thunkApi.getState().settings };
-		settings.apiKey = key;
-		await db.settings.saveSettings({ name: 'user', values: settings });
-		return key;
-	}
-);
-
-export const updateMostViewedCount = createAsyncThunk<number, number, ThunkApi>(
-	'settings/updateMostviewedCount',
-	async (count, thunkApi): Promise<number> => {
-		const settings = { ...thunkApi.getState().settings };
-		settings.dashboard.mostViewedCount = count;
-		await db.settings.saveSettings({ name: 'user', values: settings });
-		return count;
-	}
-);
-
 export const saveSettings = createAsyncThunk<void, void, ThunkApi>(
 	'settings/saveSettings',
 	async (_, thunkApi): Promise<void> => {

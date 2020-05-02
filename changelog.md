@@ -1,4 +1,8 @@
 # Changelog
+## 0.1.3 - Settings are now in modal - DATE
+- Changed Settings to be contained in a Modal window
+- Added options to disable loading of dashboard statistics on App start
+
 ## 0.1.2 - Download tasks panel - 30.4.2020
 - Added basic controls (show tags, open in browser) to gifs and videos
 - Added Downloads drawer which saves all your batch downloads and allows you to view what posts were downloaded. For now it stores an infinite amount of download tasks
