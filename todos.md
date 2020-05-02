@@ -9,6 +9,7 @@
 - Add option to move selected/all favorites between directories
 - Expand active posts to not use only one state
 - Import/Export database
+- Add sorting of searches
 - ~~Option to load dashboard stats on app start~~
 - ~~Favorites categories~~
 - ~~Change base64 based dtos with blob based ones~~

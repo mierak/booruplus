@@ -13,7 +13,7 @@ export const getPostsForTags = async (tags: string[], options: PostSearchOptions
 	if (options.rating && options.rating !== 'any') tags.push(`rating:${options.rating}`);
 
 	//construct API URL
-	let url = `${BASE_POST_URL}`;
+	let url = BASE_POST_URL;
 	options.apiKey && (url = url.concat(options.apiKey));
 	url = url.concat(`&limit=${options.limit}`);
 	tags.length > 0 && (url = url.concat(`&tags=${tags.join(' ')}`));
@@ -34,7 +34,11 @@ export const getPostsForTags = async (tags: string[], options: PostSearchOptions
 
 export const getPostById = async (id: number, apiKey?: string): Promise<Post | undefined> => {
 	try {
-		const response = await fetch(`${BASE_POST_URL}${apiKey}&id=${id}`);
+		let url = BASE_POST_URL;
+		apiKey && (url = url.concat(apiKey));
+		url = url.concat(`&id=${id}`);
+
+		const response = await fetch(url);
 		const post: Post = await response.json();
 		return post;
 	} catch (err) {
@@ -45,7 +49,11 @@ export const getPostById = async (id: number, apiKey?: string): Promise<Post | u
 
 export const getTags = async (page = 0, apiKey?: string): Promise<Tag[]> => {
 	try {
-		const response = await fetch(`${BASE_TAG_URL}${apiKey}&pid=${page}`);
+		let url = BASE_TAG_URL;
+		apiKey && (url = url.concat(apiKey));
+		url = url.concat(`&pid=${page}`);
+
+		const response = await fetch(url);
 		const tags: Tag[] = await response.json();
 		return tags;
 	} catch (err) {
@@ -56,7 +64,11 @@ export const getTags = async (page = 0, apiKey?: string): Promise<Tag[]> => {
 
 export const getTagById = async (id: number, apiKey?: string): Promise<Tag | undefined> => {
 	try {
-		const response = await fetch(`${BASE_TAG_URL}${apiKey}&id=${id}`);
+		let url = BASE_TAG_URL;
+		apiKey && (url = url.concat(apiKey));
+		url = url.concat(`&id=${id}`);
+
+		const response = await fetch(url);
 		const tag: Tag = await response.json();
 		return tag;
 	} catch (err) {
@@ -67,7 +79,11 @@ export const getTagById = async (id: number, apiKey?: string): Promise<Tag | und
 
 export const getTagByName = async (name: string, apiKey?: string): Promise<Tag | undefined> => {
 	try {
-		const response = await fetch(`${BASE_TAG_URL}${apiKey}&name=${escapeTag(name)}`);
+		let url = BASE_TAG_URL;
+		apiKey && (url = url.concat(apiKey));
+		url = url.concat(`&name=${escapeTag(name)}`);
+
+		const response = await fetch(url);
 		const tag: Tag = await response.json();
 		return tag;
 	} catch (err) {
@@ -86,7 +102,11 @@ export const getTagsByNames = async (names: string[], apiKey?: string): Promise<
 
 		const tagsFromApi: Tag[][] = [];
 		for (const batch of batches) {
-			const response = await fetch(`${BASE_TAG_URL}${apiKey}&names=${escapeTag(batch.join(' '))}`);
+			let url = BASE_TAG_URL;
+			apiKey && (url = url.concat(apiKey));
+			url = url.concat(`&names=${escapeTag(batch.join(' '))}`);
+
+			const response = await fetch(url);
 			const tags: Tag[] = await response.json();
 			tagsFromApi.push(tags);
 			await delay(2000);
@@ -101,7 +121,11 @@ export const getTagsByNames = async (names: string[], apiKey?: string): Promise<
 
 export const getTagsByPattern = async (pattern: string, apiKey?: string): Promise<Tag[]> => {
 	try {
-		const response = await fetch(`${BASE_TAG_URL}${apiKey}&limit=30&name_pattern=%${escapeTag(pattern)}%`);
+		let url = BASE_TAG_URL;
+		apiKey && (url = url.concat(apiKey));
+		url = url.concat(`&limit=30&name_pattern=%${escapeTag(pattern)}%`);
+
+		const response = await fetch(url);
 		const tags: Tag[] = await response.json();
 		return tags;
 	} catch (err) {
