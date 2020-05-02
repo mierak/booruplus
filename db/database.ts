@@ -86,7 +86,14 @@ db.on('populate', () => {
 		values: {
 			imagesFolderPath: 'C:\\temp', // TODO change to userfolder
 			theme: 'light',
-			mostViewedCount: 28,
+			dashboard: {
+				mostViewedCount: 28,
+				loadMostFavoritedTags: true,
+				loadMostSearchedTags: true,
+				loadMostViewedPosts: true,
+				loadRatingDistributionChart: true,
+				loadTagStatistics: true,
+			},
 		},
 	};
 	db.settings.put(settings);

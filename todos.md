@@ -33,6 +33,7 @@
 
 ## BUG
 
+- Fix scroll to thumbnail
 - ~~Fix buggy behaviour of tag search with debounce~~
 - ~~Two searches in quick succession sometimes add the results together instead of overwriting the first one~~
 - ~~Gifs with Height > Width go offscreen~~
@@ -51,3 +52,4 @@
 - Extract all inlined urls
 - Add toggles for loading stats on app start
 - Limit download tasks, maybe add a way to view older tasks. Add task retention setting.
+- Change cancelling of settings modal to not reload from DB

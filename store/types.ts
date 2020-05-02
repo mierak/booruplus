@@ -14,7 +14,7 @@ export interface ThunkApi {
 	state: RootState;
 }
 
-export type View = 'thumbnails' | 'image' | 'dashboard' | 'online-search' | 'saved-searches' | 'favorites' | 'tag-list' | 'settings';
+export type View = 'thumbnails' | 'image' | 'dashboard' | 'online-search' | 'saved-searches' | 'favorites' | 'tag-list';
 
 export type SearchMode =
 	| 'online'
@@ -25,7 +25,13 @@ export type SearchMode =
 	| 'most-viewed'
 	| 'open-download';
 
-export type ActiveModal = 'none' | 'add-to-favorites' | 'add-favorites-directory' | 'delete-favorites-directory' | 'move-to-directory';
+export type ActiveModal =
+	| 'none'
+	| 'add-to-favorites'
+	| 'add-favorites-directory'
+	| 'delete-favorites-directory'
+	| 'move-to-directory'
+	| 'settings';
 
 export interface OfflineOptions {
 	blacklisted: boolean;
@@ -38,12 +44,21 @@ export interface PostPropertyOptions {
 	downloaded?: 0 | 1;
 }
 
+export interface DashboardSettings {
+	mostViewedCount: number;
+	loadMostSearchedTags: boolean;
+	loadMostFavoritedTags: boolean;
+	loadMostViewedPosts: boolean;
+	loadTagStatistics: boolean;
+	loadRatingDistributionChart: boolean;
+}
+
 export interface Settings {
 	imagesFolderPath: string;
 	theme: 'dark' | 'light';
 	apiKey?: string;
 	gelbooruUsername?: string;
-	mostViewedCount: number;
+	dashboard: DashboardSettings;
 }
 
 export interface TagHistory {

@@ -49,7 +49,7 @@ export const updateMostViewedCount = createAsyncThunk<number, number, ThunkApi>(
 	'settings/updateMostviewedCount',
 	async (count, thunkApi): Promise<number> => {
 		const settings = { ...thunkApi.getState().settings };
-		settings.mostViewedCount = count;
+		settings.dashboard.mostViewedCount = count;
 		await db.settings.saveSettings({ name: 'user', values: settings });
 		return count;
 	}
@@ -58,7 +58,7 @@ export const updateMostViewedCount = createAsyncThunk<number, number, ThunkApi>(
 export const saveSettings = createAsyncThunk<void, void, ThunkApi>(
 	'settings/saveSettings',
 	async (_, thunkApi): Promise<void> => {
-		const settings = { ...thunkApi.getState().settings };
+		const settings = thunkApi.getState().settings;
 		await db.settings.saveSettings({ name: 'user', values: settings });
 	}
 );

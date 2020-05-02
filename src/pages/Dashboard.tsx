@@ -20,18 +20,22 @@ const Container = styled.div`
 
 const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
-	useEffect(() => {
-		dispatch(thunks.dashboard.fetchDownloadedPostCount());
-		dispatch(thunks.dashboard.fetchBlacklistedPostCount());
-		dispatch(thunks.dashboard.fetchFavoritePostCount());
-		dispatch(thunks.dashboard.fetchTagCount());
-		// dispatch(thunks.favorites.fetchTreeData());
-	}, []);
 
 	const downloadedPostCount = useSelector((state: RootState) => state.dashboard.totalDownloadedPosts);
 	const blacklistedPostCount = useSelector((state: RootState) => state.dashboard.totalBlacklistedPosts);
 	const favoritePostCount = useSelector((state: RootState) => state.dashboard.totalFavoritesPosts);
 	const tagCount = useSelector((state: RootState) => state.dashboard.totalTags);
+	const shouldLoadStatistics = useSelector((state: RootState) => state.settings.dashboard.loadTagStatistics);
+
+	useEffect(() => {
+		if (shouldLoadStatistics) {
+			dispatch(thunks.dashboard.fetchDownloadedPostCount());
+			dispatch(thunks.dashboard.fetchBlacklistedPostCount());
+			dispatch(thunks.dashboard.fetchFavoritePostCount());
+			dispatch(thunks.dashboard.fetchTagCount());
+		}
+		// dispatch(thunks.favorites.fetchTreeData());
+	}, []);
 
 	return (
 		<Container className={props.className}>
@@ -57,7 +61,7 @@ const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 					</Card>
 				</Col>
 			</Row>
-			<Row gutter={10} style={{ marginBottom: '10px' }}>
+			<Row gutter={[10, 10]}>
 				<Col xs={8}>
 					<RatingDistributionsChart />
 				</Col>
@@ -68,7 +72,7 @@ const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 					<TagStatistic title="Most Favorited Tags" type="most-favorited" />
 				</Col>
 			</Row>
-			<Row gutter={10} style={{ marginBottom: '10px' }}>
+			<Row gutter={[10, 10]}>
 				<Col span={24}>
 					<MostViewedPosts />
 				</Col>

@@ -68,12 +68,13 @@ const StyledMeta = styled(Card.Meta)`
 const MostViewedPosts: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const mostViewedCount = useSelector((state: RootState) => state.settings.mostViewedCount);
+	const mostViewedCount = useSelector((state: RootState) => state.settings.dashboard.mostViewedCount);
 	const mostViewedPosts = useSelector((state: RootState) => state.dashboard.mostViewedPosts);
+	const shouldLoad = useSelector((state: RootState) => state.settings.dashboard.loadMostViewedPosts);
 
 	useEffect(() => {
 		if (mostViewedPosts.length === 0) {
-			dispatch(thunks.dashboard.fetchMostViewedPosts(mostViewedCount));
+			shouldLoad && dispatch(thunks.dashboard.fetchMostViewedPosts(mostViewedCount));
 		}
 	}, []);
 

@@ -33,6 +33,7 @@ const StyledListCard = styled(Card)`
 const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
+	const settings = useSelector((state: RootState) => state.settings.dashboard);
 	const dataSource = useSelector((state: RootState) =>
 		type === 'most-searched' ? state.dashboard.mostSearchedTags : state.dashboard.mostFavoritedTags
 	);
@@ -51,9 +52,9 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 	useEffect(() => {
 		if (dataSource.length === 0) {
 			if (type === 'most-favorited') {
-				// dispatch(thunks.dashboard.fetchMostFavoritedTags());
+				settings.loadMostFavoritedTags && dispatch(thunks.dashboard.fetchMostFavoritedTags());
 			} else {
-				// dispatch(thunks.dashboard.fetchMostSearchedTags());
+				settings.loadMostSearchedTags && dispatch(thunks.dashboard.fetchMostSearchedTags());
 			}
 		}
 	}, []);

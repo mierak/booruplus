@@ -1,12 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Settings } from './types';
+import { Settings, DashboardSettings } from './types';
 import * as thunks from './thunks';
 
 const initialState: Settings = {
 	imagesFolderPath: '',
 	theme: 'dark',
-	mostViewedCount: 28,
+	dashboard: {
+		mostViewedCount: 28,
+		loadMostSearchedTags: true,
+		loadMostFavoritedTags: true,
+		loadMostViewedPosts: true,
+		loadTagStatistics: true,
+		loadRatingDistributionChart: true,
+	},
 };
 
 const settingsSlice = createSlice({
@@ -26,7 +33,25 @@ const settingsSlice = createSlice({
 			state.apiKey = action.payload;
 		},
 		setMostViewedCount: (state, action: PayloadAction<number>): void => {
-			state.mostViewedCount = action.payload;
+			state.dashboard.mostViewedCount = action.payload;
+		},
+		setDashboardSettings: (state, action: PayloadAction<DashboardSettings>): void => {
+			state.dashboard = action.payload;
+		},
+		setLoadMostSearchedTags: (state, action: PayloadAction<boolean>): void => {
+			state.dashboard.loadMostSearchedTags = action.payload;
+		},
+		setLoadMostFavoritedTags: (state, action: PayloadAction<boolean>): void => {
+			state.dashboard.loadMostFavoritedTags = action.payload;
+		},
+		setLoadMostViewedPosts: (state, action: PayloadAction<boolean>): void => {
+			state.dashboard.loadMostViewedPosts = action.payload;
+		},
+		setLoadTagStatistics: (state, action: PayloadAction<boolean>): void => {
+			state.dashboard.loadTagStatistics = action.payload;
+		},
+		setLoadRatingDistribution: (state, action: PayloadAction<boolean>): void => {
+			state.dashboard.loadRatingDistributionChart = action.payload;
 		},
 	},
 	extraReducers: (builder) => {
@@ -43,7 +68,10 @@ const settingsSlice = createSlice({
 			state.apiKey = action.payload;
 		});
 		builder.addCase(thunks.settings.updateMostViewedCount.fulfilled, (state, action) => {
-			state.mostViewedCount = action.payload;
+			state.dashboard.mostViewedCount = action.payload;
+		});
+		builder.addCase(thunks.settings.saveSettings.rejected, (state, action) => {
+			console.error(action.error.message);
 		});
 	},
 });

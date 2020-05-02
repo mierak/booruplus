@@ -125,3 +125,11 @@ export const compareTagArrays = (arr1: Tag[], arr2: Tag[]): boolean => {
 
 	return both.every((tag) => arr1Strings.includes(tag) && arr2Strings.includes(tag));
 };
+
+export const validateApiKey = (key?: string): boolean => {
+	if (!key || key.length === 0) {
+		return true;
+	} else {
+		return /^(?=.*&api_key=)(?=.*&user_id=)(?=.*[a-z0-9]{64})(?=.*[0-9]{1,}).*$/.test(key);
+	}
+};

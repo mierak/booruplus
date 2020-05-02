@@ -45,12 +45,13 @@ const RatingDistributionsChart: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
 
 	const theme = useSelector((state: RootState) => state.settings.theme);
+	const shouldLoad = useSelector((state: RootState) => state.settings.dashboard.loadRatingDistributionChart);
 	const ratingCounts = useSelector((state: RootState) => state.dashboard.ratingCounts);
 	const isRatingDistributionChartLoading = useSelector((state: RootState) => state.loadingStates.isRatingDistributionChartLoading);
 
 	useEffect(() => {
 		if (!ratingCounts) {
-			dispatch(thunks.dashboard.fetchRatingCounts());
+			shouldLoad && dispatch(thunks.dashboard.fetchRatingCounts());
 		}
 	}, []);
 

@@ -11,7 +11,6 @@ import Favorites from './Favorites';
 import Tags from './Tags';
 import Dashboard from './Dashboard';
 import Thumbnails from './Thumbnails';
-import Settings from './Settings';
 
 import 'ant-design-pro/dist/ant-design-pro.css';
 import '../css/index.css';
@@ -59,8 +58,6 @@ const Page: React.FunctionComponent = () => {
 				return <Favorites />;
 			case 'tag-list':
 				return <Tags />;
-			case 'settings':
-				return <Settings />;
 			default:
 				return null;
 		}

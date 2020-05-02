@@ -89,7 +89,12 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 								<DownloadOutlined />
 								<span>Downloads</span>
 							</Menu.Item>
-							<Menu.Item key="settings" onClick={(): void => handleMenuClick('settings')}>
+							<Menu.Item
+								key="settings"
+								onClick={(): void => {
+									dispatch(actions.modals.showModal('settings'));
+								}}
+							>
 								<SettingOutlined />
 								<span>Settings</span>
 							</Menu.Item>
