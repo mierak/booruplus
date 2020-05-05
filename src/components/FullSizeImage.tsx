@@ -71,7 +71,6 @@ const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 	useEffect(() => {
 		if (post) {
 			dispatch(thunks.posts.incrementViewCount(post));
-			dispatch(actions.system.setIsLoadingImage(true));
 		}
 	}, [index]);
 

@@ -43,7 +43,10 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 		if (videoRef.current && isFilenameVideo(post.image)) {
 			let objectUrl = '';
 			const source = document.createElement('source');
-			dispatch(actions.system.setIsLoadingImage(true));
+			dispatch(actions.loadingStates.setFullImageLoading(true));
+			source.onload = (): void => {
+				dispatch(actions.loadingStates.setFullImageLoading(false));
+			};
 			loadImage(
 				post,
 				(response) => {

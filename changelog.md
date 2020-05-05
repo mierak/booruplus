@@ -3,6 +3,7 @@
 - Changed Settings to be contained in a Modal window
 - Added options to disable loading of dashboard statistics on App start
 - Add pagination to Tags page, disabled filters for now
+- Added Loader to FullSizeImage
 - BUG FIX: Fixed most favorited tags and favorite post count not using data from the new tree structure.
 - BUG FIX: Fixed autoscrolling of thumbnails list in side panel
 

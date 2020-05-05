@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { Spin } from 'antd';
 
 import { useLoadImage } from 'hooks/useImageBus';
 import { Renderer } from './renderer';
 
-import { AppDispatch } from 'store/types';
+import { AppDispatch, RootState } from 'store/types';
 import { actions } from 'store/';
 
 import { Post } from 'types/gelbooruTypes';
@@ -13,6 +14,7 @@ import { ImageControl } from 'types/components';
 
 import TagsPopover from '../TagsPopover';
 import ImageControls from '../ImageControls';
+import LoadingMask from '../../../components/LoadingMask';
 
 interface Props {
 	url: string;
@@ -28,6 +30,9 @@ const Container = styled.div`
 const ControllableImage: React.FunctionComponent<Props> = ({ url, className, post, showControls }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const loadImage = useLoadImage();
+
+	const isLoading = useSelector((state: RootState) => state.loadingStates.isFullImageLoading);
+
 	const containerRef = useRef<HTMLDivElement>(null);
 	const viewportRef = useRef<HTMLCanvasElement>(null);
 	const renderer = useState<Renderer>(new Renderer())[0];
@@ -134,11 +139,11 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 		const viewport = viewportRef.current;
 		const container = containerRef.current;
 		let objectUrl = '';
+		dispatch(actions.loadingStates.setFullImageLoading(true));
 		if (renderer && viewport && container) {
-			dispatch(actions.system.setIsLoadingImage(true));
 			const img = new Image();
 			img.onload = (): void => {
-				dispatch(actions.system.setIsLoadingImage(false));
+				dispatch(actions.loadingStates.setFullImageLoading(false));
 				initViewport(viewport, container);
 				renderer.renderImage(img);
 			};
@@ -165,6 +170,7 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 		<Container ref={containerRef} className={className}>
 			{showControls && <ImageControls actions={imageControls} />}
 			<canvas ref={viewportRef} height={1000} width={1000} />
+			<LoadingMask visible={isLoading} />
 		</Container>
 	);
 };

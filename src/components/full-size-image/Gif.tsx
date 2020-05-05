@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
@@ -9,6 +9,7 @@ import { Post } from 'types/gelbooruTypes';
 import TagsPopover from './TagsPopover';
 import { ImageControl } from 'types/components';
 import ImageControls from './ImageControls';
+import { useLoadImage } from 'hooks/useImageBus';
 
 interface Props {
 	className?: string;
@@ -30,6 +31,10 @@ const StyledImg = styled.img`
 
 const Gif: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
+	const loadImage = useLoadImage();
+	const imgRef = useRef<HTMLImageElement>(null);
+
+	const [url, setUrl] = useState('');
 
 	const handleOpenWeb = (): void => {
 		window.api.send('open-in-browser', `https://gelbooru.com/index.php?page=post&s=view&id=${props.post.id}`);
@@ -38,6 +43,34 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 	const handleTagsPopoverVisibilityChange = (visible: boolean): void => {
 		dispatch(actions.system.setTagsPopovervisible(visible));
 	};
+
+	useEffect(() => {
+		let objectUrl = '';
+		dispatch(actions.loadingStates.setFullImageLoading(true));
+		if (imgRef.current) {
+			imgRef.current.onload = (): void => {
+				dispatch(actions.loadingStates.setFullImageLoading(false));
+			};
+		}
+		loadImage(
+			props.post,
+			async (response) => {
+				const buffer = new Blob([response.data]);
+
+				if (url.includes('gif')) {
+					objectUrl = URL.createObjectURL(buffer);
+					setUrl(objectUrl);
+				}
+			},
+			(response) => {
+				url.includes('gif') && setUrl(response.fileUrl);
+			}
+		);
+
+		return (): void => {
+			URL.revokeObjectURL(objectUrl);
+		};
+	}, [props.post]);
 
 	const imageControls: ImageControl[] = [
 		{
@@ -60,7 +93,7 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 	];
 	return (
 		<Container className={props.className}>
-			<StyledImg src={props.post.fileUrl} />
+			<StyledImg src={props.post.fileUrl} ref={imgRef} />
 			<ImageControls actions={imageControls} />
 		</Container>
 	);

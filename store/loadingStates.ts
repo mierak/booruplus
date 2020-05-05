@@ -5,12 +5,14 @@ interface LoadingStates {
 	isMostFavoritedTagsLoading: boolean;
 	isMostSearchedTagsLoading: boolean;
 	isRatingDistributionChartLoading: boolean;
+	isFullImageLoading: boolean;
 }
 
 const initialState: LoadingStates = {
 	isMostFavoritedTagsLoading: false,
 	isMostSearchedTagsLoading: false,
 	isRatingDistributionChartLoading: false,
+	isFullImageLoading: false,
 };
 
 const loadingState = createSlice({
@@ -25,6 +27,9 @@ const loadingState = createSlice({
 		},
 		setRatingDistributionChartLoading: (state, action: PayloadAction<boolean>): void => {
 			state.isRatingDistributionChartLoading = action.payload;
+		},
+		setFullImageLoading: (state, action: PayloadAction<boolean>): void => {
+			state.isFullImageLoading = action.payload;
 		},
 	},
 	extraReducers: (builder) => {

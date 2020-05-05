@@ -11,7 +11,6 @@ export interface SystemState {
 	isTagsPopoverVisible: boolean;
 	isImageViewThumbnailsCollapsed: boolean;
 	isFetchingPosts: boolean;
-	isLoadingImage: boolean;
 	isTagOptionsLoading: boolean;
 	isTagTableLoading: boolean;
 	isSearchDisabled: boolean;
@@ -26,7 +25,6 @@ const initialState: SystemState = {
 	isTagsPopoverVisible: false,
 	isImageViewThumbnailsCollapsed: true,
 	isFetchingPosts: false,
-	isLoadingImage: false,
 	isTagOptionsLoading: false,
 	isTagTableLoading: false,
 	isSearchDisabled: false,
@@ -59,9 +57,6 @@ const systemSlice = createSlice({
 		},
 		setFetchingPosts: (state, action: PayloadAction<boolean>): void => {
 			state.isFetchingPosts = action.payload;
-		},
-		setIsLoadingImage: (state, action: PayloadAction<boolean>): void => {
-			state.isLoadingImage = action.payload;
 		},
 		setTagOptionsLoading: (state, action: PayloadAction<boolean>): void => {
 			state.isTagOptionsLoading = action.payload;

@@ -2,7 +2,6 @@
 
 - Make Tag page actually useful
 - Tests
-- Loader in ImageView
 - Typesafe IPC
 - Refactor excluded/selected tags components
 - Thumbnails downlaoding
@@ -10,6 +9,7 @@
 - Expand active posts to not use only one state
 - Import/Export database
 - Add sorting of searches
+- ~~Loader in ImageView~~
 - ~~Option to load dashboard stats on app start~~
 - ~~Favorites categories~~
 - ~~Change base64 based dtos with blob based ones~~
@@ -33,8 +33,8 @@
 
 ## BUG
 
-- Fix scroll to thumbnail
 - Recheck images path settings reload from DB with IPC communication 
+- ~~Fix scroll to thumbnail~~
 - ~~Fix buggy behaviour of tag search with debounce~~
 - ~~Two searches in quick succession sometimes add the results together instead of overwriting the first one~~
 - ~~Gifs with Height > Width go offscreen~~
@@ -53,6 +53,6 @@
 - Make forms responsive
 - Investigate slow API key input box
 - Extract all inlined urls
-- Add toggles for loading stats on app start
 - Limit download tasks, maybe add a way to view older tasks. Add task retention setting.
 - Change cancelling of settings modal to not reload from DB
+- ~~Add toggles for loading stats on app start~~
