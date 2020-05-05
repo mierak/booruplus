@@ -1,14 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { ColumnFilterItem } from 'antd/lib/table/interface';
 import { Table, Tag as AntTag } from 'antd';
 
 import { thunks } from '../../store';
-import { RootState } from '../../store/types';
+import { RootState, AppDispatch } from '../../store/types';
 
 import { Tag, TagType } from '../../types/gelbooruTypes';
 import { capitalize, getTagColor } from '../../util/utils';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 const { Column } = Table;
 
@@ -22,17 +23,28 @@ const Container = styled.div`
 `;
 
 const Tags: React.FunctionComponent<Props> = (props: Props) => {
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 
 	const tags = useSelector((state: RootState) => state.tags.tags);
 	const tagsLoading = useSelector((state: RootState) => state.system.isTagTableLoading);
+
+	const [tagsCount, setTagsCount] = useState(0);
+	const tagsPerPage = 19;
 	// const [searchText, setSearchText] = useState<unknown>();
 	// const [searchedColumn, setSearchedColumn] = useState<string>('');
 
 	useEffect(() => {
 		// dispatch(loadAllTagsFromDb());
-		dispatch(thunks.tags.loadAllTagsFromDbWithStats());
+		dispatch(thunks.tags.getCount())
+			.then(unwrapResult)
+			.then((result) => setTagsCount(result));
+		dispatch(thunks.tags.loadAllWithLimitAndOffset({ limit: tagsPerPage, offset: 0 }));
+		console.log('hue');
 	}, []);
+
+	const handleChangePage = (page: number): void => {
+		dispatch(thunks.tags.loadAllWithLimitAndOffset({ limit: tagsPerPage, offset: (page - 1) * tagsPerPage }));
+	};
 
 	// const getFilteredTags = (): void => {};
 
@@ -99,28 +111,32 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 			<Table
 				size="small"
 				dataSource={tags}
-				pagination={false}
+				pagination={{
+					pageSize: tagsPerPage,
+					total: tagsCount,
+					onChange: handleChangePage,
+				}}
 				loading={tagsLoading}
 				rowKey="id"
 				rowClassName={(_record, index): string => (index % 2 === 0 ? 'table-row-light' : 'table-row-dark')}
 			>
-				<Column title="Id" dataIndex="id" width={100} sorter={(a: Tag, b: Tag): number => a.id - b.id} />
+				<Column title="Id" dataIndex="id" width={100} /*sorter={(a: Tag, b: Tag): number => a.id - b.id} */ />
 				<Column
 					title="Tag"
 					dataIndex="tag"
 					ellipsis
-					filterDropdownVisible={true}
-					sorter={(a: Tag, b: Tag): number => a.tag.localeCompare(b.tag)}
+					// filterDropdownVisible={true}
+					// sorter={(a: Tag, b: Tag): number => a.tag.localeCompare(b.tag)}
 				/>
 				<Column
 					title="Type"
 					dataIndex="type"
 					width={100}
 					onFilter={(value: TagType | string | number | boolean, record: Tag): boolean => record.type === value}
-					filters={getTypeFilters()}
+					//filters={getTypeFilters()}
 					render={renderTag}
 				/>
-				<Column title="Count" dataIndex="count" width={100} sorter={(a: Tag, b: Tag): number => a.count - b.count} />
+				<Column title="Count" dataIndex="count" width={100} /*sorter={(a: Tag, b: Tag): number => a.count - b.count}*/ />
 				<Column
 					title="Ambiguous"
 					dataIndex="ambiguous"
@@ -136,35 +152,35 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 				<Column
 					title="Favorites Count"
 					dataIndex="favoriteCount"
-					sorter={(a: Tag, b: Tag): number => {
+					/*sorter={(a: Tag, b: Tag): number => {
 						if (a.favoriteCount !== undefined && b.favoriteCount !== undefined) {
 							return a.favoriteCount - b.favoriteCount;
 						} else {
 							return 0;
 						}
-					}}
+					}}*/
 				/>
 				<Column
 					title="Blacklisted Count"
 					dataIndex="blacklistedCount"
-					sorter={(a: Tag, b: Tag): number => {
+					/*sorter={(a: Tag, b: Tag): number => {
 						if (a.blacklistedCount !== undefined && b.blacklistedCount !== undefined) {
 							return a.blacklistedCount - b.blacklistedCount;
 						} else {
 							return 0;
 						}
-					}}
+					}}*/
 				/>
 				<Column
 					title="Downloaded Count"
 					dataIndex="downloadedCount"
-					sorter={(a: Tag, b: Tag): number => {
+					/*sorter={(a: Tag, b: Tag): number => {
 						if (a.downloadedCount !== undefined && b.downloadedCount !== undefined) {
 							return a.downloadedCount - b.downloadedCount;
 						} else {
 							return 0;
 						}
-					}}
+					}}*/
 				/>
 				<Column title="Actions" dataIndex="" width={240} render={renderActions} />
 			</Table>

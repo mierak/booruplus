@@ -27,10 +27,17 @@ export const loadAllTagsFromDb = createAsyncThunk<Tag[], void, ThunkApi>(
 	}
 );
 
-export const loadAllTagsFromDbWithStats = createAsyncThunk<Tag[], void, ThunkApi>(
-	'tags/loadAllTagsFromDbWithStats',
-	async (): Promise<Tag[]> => {
-		const tags = await db.tags.getAll();
+export const getCount = createAsyncThunk<number, void, ThunkApi>(
+	'tags/getCount',
+	async (): Promise<number> => {
+		return db.tags.getCount();
+	}
+);
+
+export const loadAllWithLimitAndOffset = createAsyncThunk<Tag[], { limit: number; offset: number }, ThunkApi>(
+	'tags/loadAllWithLimitAndOffset',
+	async (params): Promise<Tag[]> => {
+		const tags = await db.tags.getAllWithLimitAndOffset(params.limit, params.offset);
 		if (tags) {
 			const tagsWithStats = await Promise.all(
 				tags.map(async (tag) => {
@@ -40,7 +47,6 @@ export const loadAllTagsFromDbWithStats = createAsyncThunk<Tag[], void, ThunkApi
 					return tag;
 				})
 			);
-			console.log('tagsWithStats', tagsWithStats);
 			return tagsWithStats;
 		}
 		return [];

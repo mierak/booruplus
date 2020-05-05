@@ -30,6 +30,8 @@ const StyledListCard = styled(Card)`
 	}
 `;
 
+const maxTagLength = 25;
+
 const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
@@ -43,7 +45,7 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 
 	const handleReload = (): void => {
 		if (type === 'most-favorited') {
-			dispatch(thunks.dashboard.fetchMostFavoritedTags());
+			dispatch(thunks.dashboard.fetchMostFavoritedTags(100));
 		} else {
 			dispatch(thunks.dashboard.fetchMostSearchedTags());
 		}
@@ -86,8 +88,9 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 		);
 	};
 
-	const renderTag = (_text: unknown, mostSearchedTag: TagHistory): React.ReactNode => {
-		return <AntTag color={getTagColor(mostSearchedTag.tag.type)}>{mostSearchedTag.tag.tag}</AntTag>;
+	const renderTag = (_text: unknown, record: TagHistory): React.ReactNode => {
+		const tagName = record.tag.tag.length <= maxTagLength ? record.tag.tag : `${record.tag.tag.substr(0, maxTagLength)}...`;
+		return <AntTag color={getTagColor(record.tag.type)}>{tagName}</AntTag>;
 	};
 
 	return (

@@ -24,6 +24,13 @@ export const getAll = async (): Promise<Tag[] | void> => {
 	return tags;
 };
 
+export const getAllWithLimitAndOffset = (limit = 100, offset = 0): Promise<Tag[]> => {
+	return db.tags
+		.offset(offset)
+		.limit(limit)
+		.toArray();
+};
+
 export const checkIfExists = async (tag: string): Promise<boolean> => {
 	const result = await db.tags
 		.where('tag')
@@ -43,7 +50,7 @@ export const getFavoriteCount = async (tag: string): Promise<number> => {
 	return db.posts
 		.where('tags')
 		.equals(tag)
-		.filter(post => post.favorite === 1)
+		.filter((post) => post.favorite === 1)
 		.count();
 };
 
@@ -51,7 +58,7 @@ export const getDownloadedCount = async (tag: string): Promise<number> => {
 	return db.posts
 		.where('tags')
 		.equals(tag)
-		.filter(post => post.downloaded === 1)
+		.filter((post) => post.downloaded === 1)
 		.count();
 };
 
@@ -59,12 +66,12 @@ export const getBlacklistedCount = async (tag: string): Promise<number> => {
 	return db.posts
 		.where('tags')
 		.equals(tag)
-		.filter(post => post.blacklisted === 1)
+		.filter((post) => post.blacklisted === 1)
 		.count();
 };
 
 export const getByPattern = async (pattern: string): Promise<Tag[]> => {
-	return db.tags.filter(tag => tag.tag.includes(pattern)).toArray();
+	return db.tags.filter((tag) => tag.tag.includes(pattern)).toArray();
 };
 
 export const getCount = async (): Promise<number> => {
@@ -74,16 +81,16 @@ export const getCount = async (): Promise<number> => {
 export const getMostFavorited = async (limit = 20): Promise<{ tag: Tag | undefined; count: number }[]> => {
 	const uniqueTags = await db.tags.orderBy('tag').uniqueKeys();
 	const favoriteCounts = await Promise.all(
-		uniqueTags.map(async tag => {
+		uniqueTags.map(async (tag) => {
 			return {
 				tag: await db.tags
 					.where('tag')
 					.equals(tag)
 					.first(),
-				count: await getFavoriteCount(tag.toString())
+				count: await getFavoriteCount(tag.toString()),
 			};
 		})
 	);
 	favoriteCounts.sort((a, b) => b.count - a.count);
-	return favoriteCounts.filter(tag => tag.count > 0).slice(0, limit);
+	return favoriteCounts.filter((tag) => tag.count > 0).slice(0, limit);
 };

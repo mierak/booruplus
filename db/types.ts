@@ -42,3 +42,7 @@ export interface FavoritesTreeNode {
 	childrenKeys: string[];
 	postIds: number[];
 }
+
+export interface Counts {
+	[key: string]: number;
+}

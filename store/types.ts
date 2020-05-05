@@ -91,3 +91,13 @@ export interface Task {
 	state: TaskState;
 	postIds: number[];
 }
+
+export interface FoundTags {
+	tag: Tag;
+	count: number;
+}
+
+export interface NotFoundTags {
+	tag: string;
+	count: number;
+}

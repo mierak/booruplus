@@ -98,6 +98,9 @@ export const downloadPosts = createAsyncThunk<void, { posts: Post[] }, ThunkApi>
 
 		const downloadedPosts: Post[] = [];
 		for await (const post of params.posts) {
+			if (post.downloaded === 1) {
+				continue;
+			}
 			thunkApi.dispatch(downloadPost({ post, taskId }));
 			downloadedPosts.push(post);
 

@@ -79,8 +79,14 @@ const dashboardSlice = createSlice({
 		builder.addCase(thunks.dashboard.fetchMostSearchedTags.fulfilled, (state, action) => {
 			state.mostSearchedTags = action.payload;
 		});
+		builder.addCase(thunks.dashboard.fetchMostSearchedTags.rejected, (_, action) => {
+			console.error(action.error.message);
+		});
 		builder.addCase(thunks.dashboard.fetchMostFavoritedTags.pending, (state, _) => {
 			state.mostFavoritedTags = [];
+		});
+		builder.addCase(thunks.dashboard.fetchMostFavoritedTags.rejected, (_, action) => {
+			console.error(action.error.message);
 		});
 		builder.addCase(thunks.dashboard.fetchMostFavoritedTags.fulfilled, (state, action) => {
 			state.mostFavoritedTags = action.payload;

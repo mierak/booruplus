@@ -229,13 +229,6 @@ export const getBlacklistedCount = async (): Promise<number> => {
 		.count();
 };
 
-export const getFavoriteCount = async (): Promise<number> => {
-	return db.posts
-		.where('favorite')
-		.equals(1)
-		.count();
-};
-
 export const getCountForRating = async (rating: Rating): Promise<number> => {
 	return db.posts
 		.where('rating')

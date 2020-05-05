@@ -2,6 +2,8 @@
 ## 0.1.3 - Settings are now in modal - DATE
 - Changed Settings to be contained in a Modal window
 - Added options to disable loading of dashboard statistics on App start
+- Add pagination to Tags page, disabled filters for now
+- BUG FIX: Fixed most favorited tags and favorite post count not using data from the new tree structure.
 
 ## 0.1.2 - Download tasks panel - 30.4.2020
 - Added basic controls (show tags, open in browser) to gifs and videos

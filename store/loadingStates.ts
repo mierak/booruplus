@@ -31,19 +31,28 @@ const loadingState = createSlice({
 		builder.addCase(thunks.dashboard.fetchRatingCounts.pending, (state, _) => {
 			state.isRatingDistributionChartLoading = true;
 		});
-		builder.addCase(thunks.dashboard.fetchRatingCounts.fulfilled, (state, _) => {
-			state.isRatingDistributionChartLoading = false;
-		});
 		builder.addCase(thunks.dashboard.fetchMostSearchedTags.pending, (state, _) => {
 			state.isMostSearchedTagsLoading = true;
-		});
-		builder.addCase(thunks.dashboard.fetchMostSearchedTags.fulfilled, (state, _) => {
-			state.isMostSearchedTagsLoading = false;
 		});
 		builder.addCase(thunks.dashboard.fetchMostFavoritedTags.pending, (state, _) => {
 			state.isMostFavoritedTagsLoading = true;
 		});
+		builder.addCase(thunks.dashboard.fetchRatingCounts.fulfilled, (state, _) => {
+			state.isRatingDistributionChartLoading = false;
+		});
+		builder.addCase(thunks.dashboard.fetchMostSearchedTags.fulfilled, (state, _) => {
+			state.isMostSearchedTagsLoading = false;
+		});
 		builder.addCase(thunks.dashboard.fetchMostFavoritedTags.fulfilled, (state, _) => {
+			state.isMostFavoritedTagsLoading = false;
+		});
+		builder.addCase(thunks.dashboard.fetchRatingCounts.rejected, (state, _) => {
+			state.isRatingDistributionChartLoading = false;
+		});
+		builder.addCase(thunks.dashboard.fetchMostSearchedTags.rejected, (state, _) => {
+			state.isMostSearchedTagsLoading = false;
+		});
+		builder.addCase(thunks.dashboard.fetchMostFavoritedTags.rejected, (state, _) => {
 			state.isMostFavoritedTagsLoading = false;
 		});
 	},

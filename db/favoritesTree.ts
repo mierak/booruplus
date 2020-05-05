@@ -1,5 +1,5 @@
 import db from './database';
-import { FavoritesTreeNode } from './types';
+import { FavoritesTreeNode, Counts } from './types';
 import { TreeNode } from 'store/types';
 
 export const addChildToNode = async (parentKey: string, title: string): Promise<string> => {
@@ -23,14 +23,6 @@ export const addChildToNode = async (parentKey: string, title: string): Promise<
 		return Promise.reject(err);
 	}
 };
-
-// const favoritesRootNode: FavoritesTreeNode = {
-// 	key: 'root',
-// 	title: 'root',
-// 	childrenKeys: [],
-// 	postsIds: []
-// };
-// db.favoritesTree.put(favoritesRootNode);
 
 const deleteChildrenRecursively = async (key: string): Promise<void> => {
 	try {
@@ -188,11 +180,27 @@ export const getAllKeys = async (): Promise<string[]> => {
 	}
 };
 
-// export const getNodePosts = async (key: string): Promise<Post[]> => {
-// 	try {
-// 		const postIds =
-// 	} catch (err) {
-// 		console.error('Error while fetching node posts from db', err);
-// 		return Promise.reject(err);
-// 	}
-// }
+export const getAllFavoriteTagsWithCounts = async (): Promise<{ tag: string; count: number }[]> => {
+	const allNodes = await db.favoritesTree.toArray(); // get all tree nodes
+	const allPostIds = allNodes.flatMap((node) => node.postIds); // get all post ids in favorites tree
+	const deduplicatedPostIds = new Set(allPostIds); // deduplicate post ids
+	const posts = await db.posts.bulkGet([...deduplicatedPostIds]); // get all posts
+	const allTags = posts.flatMap((post) => post.tags); // get all tags of posts
+
+	const counts: Counts = {}; // object to count unique tags
+	allTags.forEach((tag) => {
+		// count unique tags
+		counts[tag] = counts[tag] !== undefined ? counts[tag] + 1 : 1;
+	});
+
+	return Object.keys(counts).map((key) => {
+		return { tag: key, count: counts[key] };
+	});
+};
+
+export const getlAllPostIds = async (): Promise<number[]> => {
+	const allNodes = await db.favoritesTree.toArray();
+	const allPostIds = allNodes.flatMap((node) => node.postIds);
+	const deduplicatedPostIds = new Set(allPostIds);
+	return Array.from(deduplicatedPostIds);
+};

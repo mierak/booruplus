@@ -112,10 +112,10 @@ const systemSlice = createSlice({
 		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.fulfilled, (state) => {
 			state.isTagOptionsLoading = false;
 		});
-		builder.addCase(thunks.tags.loadAllTagsFromDbWithStats.pending, (state) => {
+		builder.addCase(thunks.tags.loadAllWithLimitAndOffset.pending, (state) => {
 			state.isTagTableLoading = true;
 		});
-		builder.addCase(thunks.tags.loadAllTagsFromDbWithStats.fulfilled, (state) => {
+		builder.addCase(thunks.tags.loadAllWithLimitAndOffset.fulfilled, (state) => {
 			state.isTagTableLoading = false;
 		});
 		builder.addCase(thunks.savedSearches.searchOnline.pending, (state) => {

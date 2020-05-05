@@ -11,10 +11,10 @@ interface Props {
 
 const TagSelectOption: React.FunctionComponent<Props> = (props: Props) => {
 	return (
-		<div>
+		<>
 			<Tag color={getTagColor(props.tag)}>{capitalize(props.tag.type)}</Tag>
 			{props.tag.tag} | Count: {props.tag.count}
-		</div>
+		</>
 	);
 };
 

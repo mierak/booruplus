@@ -23,10 +23,10 @@ const tagsSlice = createSlice({
 		builder.addCase(thunks.tags.loadAllTagsFromDb.fulfilled, (state, action) => {
 			state.tags = action.payload;
 		});
-		builder.addCase(thunks.tags.loadAllTagsFromDbWithStats.fulfilled, (state, action) => {
+		builder.addCase(thunks.tags.loadByPatternFromDb.fulfilled, (state, action) => {
 			state.tags = action.payload;
 		});
-		builder.addCase(thunks.tags.loadByPatternFromDb.fulfilled, (state, action) => {
+		builder.addCase(thunks.tags.loadAllWithLimitAndOffset.fulfilled, (state, action) => {
 			state.tags = action.payload;
 		});
 	},
