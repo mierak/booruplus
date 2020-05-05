@@ -56,7 +56,11 @@ const settingsSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder.addCase(thunks.settings.loadSettings.fulfilled, (state, action) => {
-			return action.payload;
+			const settings = { ...action.payload };
+			if (action.payload.dashboard === undefined) {
+				settings.dashboard = initialState.dashboard;
+			}
+			return settings;
 		});
 		builder.addCase(thunks.settings.updateImagePath.fulfilled, (state, action) => {
 			state.imagesFolderPath = action.payload;
