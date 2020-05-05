@@ -61,9 +61,14 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	useEffect(() => {
 		if (activeView === 'image') {
 			const list = document.getElementById('thumbnails-list');
-			const thumbnailHeight = props.actions !== undefined ? 230 : 190; //TODO fix scroll value
 			if (list && activePostIndex) {
-				list.scrollTo(0, thumbnailHeight * activePostIndex - list.clientHeight / 2 + thumbnailHeight / 2);
+				const thumbnailHeight = props.actions !== undefined ? 230 : 190;
+				const target = list.scrollHeight * (activePostIndex / postCount) - (list.clientHeight / 2 - thumbnailHeight / 2);
+				const current = list.scrollTop;
+				list.scrollTo({
+					top: target,
+					behavior: Math.abs(target - current) > 300 ? 'auto' : 'smooth',
+				});
 			}
 		}
 	});
