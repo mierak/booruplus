@@ -93,6 +93,7 @@ db.on('populate', () => {
 				loadMostViewedPosts: true,
 				loadRatingDistributionChart: true,
 				loadTagStatistics: true,
+				saveTagsNotFoundInDb: true,
 			},
 		},
 	};

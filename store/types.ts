@@ -51,6 +51,7 @@ export interface DashboardSettings {
 	loadMostViewedPosts: boolean;
 	loadTagStatistics: boolean;
 	loadRatingDistributionChart: boolean;
+	saveTagsNotFoundInDb: boolean;
 }
 
 export interface Settings {

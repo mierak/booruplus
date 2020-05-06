@@ -13,6 +13,7 @@ const initialState: Settings = {
 		loadMostViewedPosts: true,
 		loadTagStatistics: true,
 		loadRatingDistributionChart: true,
+		saveTagsNotFoundInDb: true,
 	},
 };
 
@@ -52,6 +53,9 @@ const settingsSlice = createSlice({
 		},
 		setLoadRatingDistribution: (state, action: PayloadAction<boolean>): void => {
 			state.dashboard.loadRatingDistributionChart = action.payload;
+		},
+		setSaveTagsNotFoundInDb: (state, action: PayloadAction<boolean>): void => {
+			state.dashboard.saveTagsNotFoundInDb = action.payload;
 		},
 	},
 	extraReducers: (builder) => {

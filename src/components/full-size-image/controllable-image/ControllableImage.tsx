@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Spin } from 'antd';
 
 import { useLoadImage } from 'hooks/useImageBus';
 import { Renderer } from './renderer';

@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import { RootState } from '../../store/types';
-import { actions, thunks } from '../../store';
+import { thunks } from '../../store';
 
 import { isFilenameVideo, getImageExtensionFromFilename } from 'util/utils';
 

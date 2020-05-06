@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { Form, Row, Col, Checkbox, InputNumber } from 'antd';
 
-import { thunks, actions } from 'store/';
+import { actions } from 'store/';
 import { RootState, AppDispatch } from 'store/types';
 
 const { Item } = Form;
@@ -37,6 +37,10 @@ const Dashboard: React.FunctionComponent = () => {
 		dispatch(actions.settings.setLoadRatingDistribution(event.target.checked));
 	};
 
+	const handleCheckboxSaveNotFoundTags = (event: CheckboxChangeEvent): void => {
+		dispatch(actions.settings.setSaveTagsNotFoundInDb(event.target.checked));
+	};
+
 	return (
 		<Form>
 			<Row>
@@ -64,6 +68,11 @@ const Dashboard: React.FunctionComponent = () => {
 							onChange={handleCheckboxRatingDistribution}
 						>
 							Rating Distribution Chart
+						</Checkbox>
+					</Item>
+					<Item wrapperCol={{ span: 16, offset: 5 }}>
+						<Checkbox name="chb-save-not-found-tags" checked={settings.saveTagsNotFoundInDb} onChange={handleCheckboxSaveNotFoundTags}>
+							Download Tags Not Found in DB
 						</Checkbox>
 					</Item>
 				</Col>

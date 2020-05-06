@@ -79,6 +79,7 @@ export const fetchMostFavoritedTags = createAsyncThunk<{ tag: Tag; count: number
 		tagsFromApi.forEach((tag) => {
 			const notFoundTag = notFoundTags.find((nf) => nf.tag === tag.tag);
 			if (!notFoundTag) throw new Error('Error while fetching most favorited tags while joining tags from api with counts.');
+			thunkApi.getState().settings.dashboard.saveTagsNotFoundInDb && db.tags.save(tag);
 			foundTags.push({ tag, count: notFoundTag.count });
 		});
 		return foundTags.sort((a, b) => b.count - a.count);
