@@ -84,9 +84,21 @@ const SiderContent: React.FunctionComponent = () => {
 				Delete
 			</Menu.Item>
 		);
+		const renameAction = (
+			<Menu.Item
+				onClick={(): void => {
+					setVisible(false);
+					dispatch(actions.modals.showModal('rename-favorites-directory'));
+				}}
+				key="3"
+			>
+				Rename
+			</Menu.Item>
+		);
 		return (
 			<Menu>
 				{contextMenuActions.includes('add') && addAction}
+				{contextMenuActions.includes('rename') && renameAction}
 				{contextMenuActions.includes('delete') && deleteAction}
 			</Menu>
 		);
@@ -100,7 +112,7 @@ const SiderContent: React.FunctionComponent = () => {
 		if (treeContainerRef.current && event.button === 2) {
 			setContextMenuActions(['add']);
 			setAlign([event.clientX - treeContainerRef.current.getBoundingClientRect().x, event.clientY]);
-			rootNode && dispatch(actions.favorites.setSelectedNodeKey(rootNode.key));
+			rootNode && dispatch(actions.favorites.setSelectedNodeKey(parseInt(rootNode.key)));
 
 			setTimeout(() => {
 				setVisible(true);
@@ -114,9 +126,9 @@ const SiderContent: React.FunctionComponent = () => {
 		}
 
 		if (treeContainerRef.current) {
-			setContextMenuActions(['add', 'delete']);
+			setContextMenuActions(['add', 'delete', 'rename']);
 			setAlign([info.event.clientX - treeContainerRef.current.getBoundingClientRect().x, info.event.clientY]);
-			info.node && dispatch(actions.favorites.setSelectedNodeKey(info.node.key.toString()));
+			info.node && dispatch(actions.favorites.setSelectedNodeKey(parseInt(info.node.key.toString())));
 		}
 
 		setTimeout(() => {
@@ -136,8 +148,8 @@ const SiderContent: React.FunctionComponent = () => {
 					node.expanded = true;
 				}}
 				onSelect={(selectedKeys, info): void => {
-					dispatch(thunks.favorites.fetchPostsInDirectory(info.node.key.toString()));
-					dispatch(actions.favorites.setActiveNodeKey(info.node.key.toString()));
+					dispatch(thunks.favorites.fetchPostsInDirectory(parseInt(info.node.key.toString())));
+					dispatch(actions.favorites.setActiveNodeKey(parseInt(info.node.key.toString())));
 				}}
 				onClick={(): void => setVisible(false)}
 				defaultExpandAll

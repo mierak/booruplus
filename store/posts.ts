@@ -41,9 +41,6 @@ const postsSlice = createSlice({
 				state.posts[index] = post;
 			});
 		},
-		setPostFavorite: (state, action: PayloadAction<{ index: number; favorite: 1 | 0 }>): void => {
-			state.posts[action.payload.index].favorite = action.payload.favorite;
-		},
 		setPostIndexSelected: (state, action: PayloadAction<{ index: number; selected: boolean }>): void => {
 			state.posts[action.payload.index].selected = action.payload.selected;
 		},
@@ -89,6 +86,9 @@ const postsSlice = createSlice({
 			for (const post of action.payload) {
 				state.posts.push(post);
 			}
+		});
+		builder.addCase(thunks.favorites.fetchPostsInDirectory.pending, (state) => {
+			state.posts = [];
 		});
 		builder.addCase(thunks.favorites.fetchPostsInDirectory.fulfilled, (state, action) => {
 			state.posts = action.payload;

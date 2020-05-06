@@ -24,7 +24,7 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 
 	useEffect(() => {
 		const renderThumbnailList = async (): Promise<void> => {
-			dispatch(thunks.favorites.fetchPostsInDirectory('root'));
+			dispatch(thunks.favorites.fetchPostsInDirectory(0));
 		};
 		renderThumbnailList();
 		dispatch(actions.system.setSearchMode('favorites'));

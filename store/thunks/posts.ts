@@ -31,7 +31,6 @@ const copyAndBlacklistPost = (p: Post): Post => {
 	const post = { ...p };
 	post.blacklisted = 1;
 	post.downloaded = 0;
-	post.favorite = 0;
 	post.selected = false;
 	return post;
 };

@@ -1,7 +1,6 @@
 import db from './database';
 import { Tag } from '../types/gelbooruTypes';
 
-//Tag
 export const save = async (tag: Tag): Promise<number | void> => {
 	return db.tags.put(tag).catch((err: Error) => {
 		console.error(err);
@@ -46,14 +45,6 @@ export const getTag = async (tag: string): Promise<Tag | undefined> => {
 		.first();
 };
 
-export const getFavoriteCount = async (tag: string): Promise<number> => {
-	return db.posts
-		.where('tags')
-		.equals(tag)
-		.filter((post) => post.favorite === 1)
-		.count();
-};
-
 export const getDownloadedCount = async (tag: string): Promise<number> => {
 	return db.posts
 		.where('tags')
@@ -76,21 +67,4 @@ export const getByPattern = async (pattern: string): Promise<Tag[]> => {
 
 export const getCount = async (): Promise<number> => {
 	return db.tags.count();
-};
-
-export const getMostFavorited = async (limit = 20): Promise<{ tag: Tag | undefined; count: number }[]> => {
-	const uniqueTags = await db.tags.orderBy('tag').uniqueKeys();
-	const favoriteCounts = await Promise.all(
-		uniqueTags.map(async (tag) => {
-			return {
-				tag: await db.tags
-					.where('tag')
-					.equals(tag)
-					.first(),
-				count: await getFavoriteCount(tag.toString()),
-			};
-		})
-	);
-	favoriteCounts.sort((a, b) => b.count - a.count);
-	return favoriteCounts.filter((tag) => tag.count > 0).slice(0, limit);
 };

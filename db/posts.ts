@@ -13,7 +13,6 @@ export const saveOrUpdateFromApi = async (post: Post): Promise<Post> => {
 		async (): Promise<Post> => {
 			const savedPost = await db.posts.get(clone.id);
 			if (savedPost) {
-				clone.favorite = savedPost.favorite;
 				clone.blacklisted = savedPost.blacklisted;
 				clone.downloaded = savedPost.downloaded;
 				clone.viewCount = savedPost.viewCount;
@@ -42,7 +41,6 @@ export const bulkSaveOrUpdateFromApi = async (posts: Post[]): Promise<Post[]> =>
 					result.push(posts[index]);
 				} else {
 					const clone = { ...posts[index] };
-					clone.favorite = post.favorite;
 					clone.blacklisted = post.blacklisted;
 					clone.downloaded = post.downloaded;
 					clone.viewCount = post.viewCount;
@@ -117,9 +115,6 @@ const filterPosts = (posts: Post[], options: FilterOptions): Post[] => {
 	}
 	if (!options.showImages) {
 		result = result.filter((post) => isExtensionVideo(post.extension) || post.extension === 'gif');
-	}
-	if (!options.showFavorites) {
-		result = result.filter((post) => post.favorite !== 1);
 	}
 
 	return result.slice(options.offset, options.limit + options.offset);

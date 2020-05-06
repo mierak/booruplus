@@ -38,8 +38,9 @@ export interface FilterOptions {
 
 export interface FavoritesTreeNode {
 	title: string;
-	key: string;
-	childrenKeys: string[];
+	key?: number;
+	parentKey: number;
+	childrenKeys: number[];
 	postIds: number[];
 }
 

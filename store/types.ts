@@ -29,6 +29,7 @@ export type ActiveModal =
 	| 'none'
 	| 'add-to-favorites'
 	| 'add-favorites-directory'
+	| 'rename-favorites-directory'
 	| 'delete-favorites-directory'
 	| 'move-to-directory'
 	| 'settings';

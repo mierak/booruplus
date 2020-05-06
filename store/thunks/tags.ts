@@ -43,7 +43,7 @@ export const loadAllWithLimitAndOffset = createAsyncThunk<Tag[], { limit: number
 				tags.map(async (tag) => {
 					tag.blacklistedCount = await db.tags.getBlacklistedCount(tag.tag);
 					tag.downloadedCount = await db.tags.getDownloadedCount(tag.tag);
-					tag.favoriteCount = await db.tags.getFavoriteCount(tag.tag);
+					tag.favoriteCount = 0; //TODO
 					return tag;
 				})
 			);

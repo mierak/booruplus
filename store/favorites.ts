@@ -5,15 +5,15 @@ import * as thunks from './thunks';
 interface FavoritesState {
 	treeData: TreeNode[];
 	rootNode: TreeNode | undefined;
-	activeNodeKey: string;
+	activeNodeKey: number;
 	expandedKeys: string[];
-	selectedNodeKey: string | undefined;
+	selectedNodeKey: number | undefined;
 }
 
 const initialState: FavoritesState = {
 	treeData: [],
 	rootNode: undefined,
-	activeNodeKey: 'root',
+	activeNodeKey: 0,
 	expandedKeys: [],
 	selectedNodeKey: undefined,
 };
@@ -28,7 +28,7 @@ const favoritesSlice = createSlice({
 		setRootNode: (state, action: PayloadAction<TreeNode>): void => {
 			state.rootNode = action.payload;
 		},
-		setActiveNodeKey: (state, action: PayloadAction<string>): void => {
+		setActiveNodeKey: (state, action: PayloadAction<number>): void => {
 			state.activeNodeKey = action.payload;
 		},
 		setExpandedKeys: (state, action: PayloadAction<string[]>): void => {
@@ -37,7 +37,7 @@ const favoritesSlice = createSlice({
 		addExpandedKey: (state, action: PayloadAction<string>): void => {
 			state.expandedKeys.push(action.payload);
 		},
-		setSelectedNodeKey: (state, action: PayloadAction<string | undefined>): void => {
+		setSelectedNodeKey: (state, action: PayloadAction<number | undefined>): void => {
 			state.selectedNodeKey = action.payload;
 		},
 	},

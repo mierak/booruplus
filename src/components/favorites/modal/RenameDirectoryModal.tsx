@@ -12,7 +12,7 @@ interface ValidationStatus {
 	message: string;
 }
 
-const AddDirectoryModal: React.FunctionComponent = () => {
+const RenameDirectoryModal: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const [text, setText] = useState('');
 	const [validationStatus, setValidationStatus] = useState<ValidationStatus>({
@@ -29,14 +29,14 @@ const AddDirectoryModal: React.FunctionComponent = () => {
 		}
 	};
 
-	const handleAddSubFolder = async (): Promise<void> => {
+	const handleRenameSubFolder = async (): Promise<void> => {
 		if (selectedNodeKey === undefined) {
-			openNotificationWithIcon('error', 'Failed to add subfolder', 'Failed to add subfolder because no node was selected');
+			openNotificationWithIcon('error', 'Failed to rename folder', 'Failed to rename folder because no node was selected');
 			return;
 		}
 		try {
-			await dispatch(thunks.favorites.addDirectory({ parentKey: selectedNodeKey, title: text }));
-			openNotificationWithIcon('success', 'Success', 'Successfuly added sub folder');
+			await dispatch(thunks.favorites.renameDirectory({ key: selectedNodeKey, title: text }));
+			openNotificationWithIcon('success', 'Success', 'Successfuly renamed sub folder');
 		} catch (err) {
 			openNotificationWithIcon('error', 'Error!', `Reason: ${err}`, 5);
 		}
@@ -48,7 +48,7 @@ const AddDirectoryModal: React.FunctionComponent = () => {
 	};
 
 	const handleConfirm = (): void => {
-		handleAddSubFolder();
+		handleRenameSubFolder();
 		dispatch(actions.modals.setVisible(false));
 		setText('');
 	};
@@ -75,7 +75,7 @@ const AddDirectoryModal: React.FunctionComponent = () => {
 	const renderModalFooter = (): React.ReactNode => {
 		return [
 			<Button type="primary" key="add" onClick={handleConfirm}>
-				Add
+				Rename
 			</Button>,
 			<Button key="cancel" onClick={handleClose}>
 				Cancel
@@ -92,4 +92,4 @@ const AddDirectoryModal: React.FunctionComponent = () => {
 	);
 };
 
-export default AddDirectoryModal;
+export default RenameDirectoryModal;

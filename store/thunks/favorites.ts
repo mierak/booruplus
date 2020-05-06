@@ -6,15 +6,15 @@ import { Post } from 'types/gelbooruTypes';
 export const fetchTreeData = createAsyncThunk<TreeNode, void, ThunkApi>(
 	'favorites/fetchTreeData',
 	async (): Promise<TreeNode> => {
-		return db.favoritesTree.getCompleteTree();
+		return db.favorites.getCompleteTree();
 	}
 );
 
-export const fetchPostsInDirectory = createAsyncThunk<Post[], string | undefined, ThunkApi>(
+export const fetchPostsInDirectory = createAsyncThunk<Post[], number | undefined, ThunkApi>(
 	'favorites/fetchPostsInDirectory',
-	async (key: string | undefined, thunkApi): Promise<Post[]> => {
-		const keyWtihDefaultValue = key ? key : thunkApi.getState().favorites.activeNodeKey;
-		const directory = await db.favoritesTree.getNodeWithoutChildren(keyWtihDefaultValue);
+	async (key: number | undefined, thunkApi): Promise<Post[]> => {
+		const keyWithDefault = key ?? thunkApi.getState().favorites.activeNodeKey;
+		const directory = await db.favorites.getNodeWithoutChildren(keyWithDefault);
 		return db.posts.getBulk(directory.postIds);
 	}
 );
@@ -22,23 +22,32 @@ export const fetchPostsInDirectory = createAsyncThunk<Post[], string | undefined
 export const fetchAllKeys = createAsyncThunk<string[], void, ThunkApi>(
 	'favorites/fetchAllKeys',
 	async (): Promise<string[]> => {
-		return db.favoritesTree.getAllKeys();
+		return db.favorites.getAllKeys();
 	}
 );
 
-export const addDirectory = createAsyncThunk<void, { parentKey: string; title: string }, ThunkApi>(
+export const addDirectory = createAsyncThunk<void, { parentKey: number; title: string }, ThunkApi>(
 	'favorites/addDirectory',
 	async (params, thunkApi): Promise<void> => {
-		await db.favoritesTree.addChildToNode(params.parentKey, params.title);
+		await db.favorites.addChildToNode(params.parentKey, params.title);
 		thunkApi.dispatch(fetchAllKeys());
 		thunkApi.dispatch(fetchTreeData());
 	}
 );
 
-export const deleteDirectoryAndChildren = createAsyncThunk<void, string, ThunkApi>(
+export const renameDirectory = createAsyncThunk<void, { key: number; title: string }, ThunkApi>(
+	'favorites/renameDirectory',
+	async (params, thunkApi): Promise<void> => {
+		await db.favorites.changeNodeTitle(params.key, params.title);
+		thunkApi.dispatch(fetchAllKeys());
+		thunkApi.dispatch(fetchTreeData());
+	}
+);
+
+export const deleteDirectoryAndChildren = createAsyncThunk<void, number, ThunkApi>(
 	'favorites/deleteDirectoryAndChildren',
-	async (key: string, thunkApi): Promise<void> => {
-		await db.favoritesTree.deleteNodeAndChildren(key);
+	async (key: number, thunkApi): Promise<void> => {
+		await db.favorites.deleteNodeAndChildren(key);
 		thunkApi.dispatch(fetchTreeData());
 		// TODO check if deleted directory was selected and select the root directory instead
 	}
@@ -47,7 +56,7 @@ export const deleteDirectoryAndChildren = createAsyncThunk<void, string, ThunkAp
 export const addPostsToDirectory = createAsyncThunk<void, { ids: number[]; key: string | number }, ThunkApi>(
 	'favorites/addPostsToDirectory',
 	async (params, thunkApi): Promise<void> => {
-		await db.favoritesTree.addPostsToNode(params.key.toString(), params.ids);
+		await db.favorites.addPostsToNode(parseInt(params.key.toString()), params.ids);
 		thunkApi.dispatch(fetchTreeData());
 	}
 );
@@ -58,7 +67,7 @@ export const removePostFromActiveDirectory = createAsyncThunk<void, number, Thun
 		const key = thunkApi.getState().favorites.activeNodeKey;
 		if (!key) throw new Error('Could not remove post from active directory because no directory is set as active');
 
-		await db.favoritesTree.removePostFromNode(key, id);
+		await db.favorites.removePostFromNode(key, id);
 		thunkApi.dispatch(fetchTreeData());
 	}
 );

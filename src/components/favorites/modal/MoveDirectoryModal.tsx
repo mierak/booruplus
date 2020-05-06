@@ -49,7 +49,7 @@ const MoveDirectoryModal: React.FunctionComponent = () => {
 			return;
 		}
 		try {
-			dispatch(actions.favorites.setSelectedNodeKey(selectedNode ? selectedNode.key.toString() : 'root'));
+			dispatch(actions.favorites.setSelectedNodeKey(selectedNode ? parseInt(selectedNode.key.toString()) : 0));
 			for (const id of postIdsToFavorite) {
 				await dispatch(thunks.favorites.removePostFromActiveDirectory(id));
 				await dispatch(thunks.favorites.addPostsToDirectory({ ids: [id], key: !selectedNode ? 'root' : selectedNode.key }));

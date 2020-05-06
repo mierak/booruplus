@@ -49,7 +49,7 @@ const AddtoFavoritesModal: React.FunctionComponent = () => {
 			return;
 		}
 		try {
-			await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToFavorite, key: !selectedNode ? 'root' : selectedNode.key }));
+			await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToFavorite, key: selectedNode?.key ?? 0 }));
 			openNotificationWithIcon('success', 'Success', 'Post was successfuly added to directory');
 		} catch (err) {
 			openNotificationWithIcon('warning', 'Warning!', `Could not add post to directory: Reason: ${err}`, 5);

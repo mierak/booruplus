@@ -41,7 +41,6 @@ export interface Post extends Entity {
 	fileUrl: string;
 	createdAt: string;
 	image: string;
-	favorite?: 0 | 1;
 	blacklisted?: 0 | 1;
 	downloaded?: 0 | 1;
 	selected: boolean;
@@ -79,7 +78,6 @@ export const postParser = (): ((params: PostDto) => Post) => {
 			fileUrl: params.file_url,
 			createdAt: params.created_at,
 			image: params.image,
-			favorite: params.favorite !== undefined ? params.favorite : 0,
 			blacklisted: params.blacklisted !== undefined ? params.blacklisted : 0,
 			downloaded: params.downloaded !== undefined ? params.downloaded : 0,
 			selected: false,

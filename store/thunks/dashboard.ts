@@ -23,7 +23,7 @@ export const fetchBlacklistedPostCount = createAsyncThunk<number, void, ThunkApi
 export const fetchFavoritePostCount = createAsyncThunk<number, void, ThunkApi>(
 	'dashboard/fetchFavoritePostCount',
 	async (): Promise<number> => {
-		const postIds = await db.favoritesTree.getlAllPostIds();
+		const postIds = await db.favorites.getlAllPostIds();
 		return postIds.length;
 	}
 );
@@ -55,7 +55,7 @@ export const fetchMostSearchedTags = createAsyncThunk<TagHistory[], void, ThunkA
 export const fetchMostFavoritedTags = createAsyncThunk<{ tag: Tag; count: number }[], number | undefined, ThunkApi>(
 	'dashboard/fetchMostFavoritedTags',
 	async (limit = 20, thunkApi): Promise<{ tag: Tag; count: number }[]> => {
-		const tags = await db.favoritesTree.getAllFavoriteTagsWithCounts();
+		const tags = await db.favorites.getAllFavoriteTagsWithCounts();
 		const sorted = tags.sort((a, b) => b.count - a.count).slice(0, limit < 100 ? limit : 100);
 
 		const notFoundTags: NotFoundTags[] = [];

@@ -64,7 +64,6 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	const isActive = useSelector((state: RootState) => props.index === state.posts.activePostIndex);
 	const theme = useSelector((state: RootState) => state.settings.theme);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const [_, setFavoriteState] = useState(post && post.favorite); //TODO replace this thumbnails action hack(icon refresh)
 	const [loaded, setLoaded] = useState(true);
 
 	const handleThumbnailClick = (event: React.MouseEvent): void => {

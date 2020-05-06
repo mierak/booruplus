@@ -2,20 +2,20 @@ import db from './database';
 import { FavoritesTreeNode, Counts } from './types';
 import { TreeNode } from 'store/types';
 
-export const addChildToNode = async (parentKey: string, title: string): Promise<string> => {
+export const addChildToNode = async (parentKey: number, title: string): Promise<number> => {
 	try {
-		const parent = await db.favoritesTree.get(parentKey);
+		const parent = await db.favorites.get(parentKey);
 		if (parent) {
 			//TODO handle duplicate titles/keys
 			const newNode: FavoritesTreeNode = {
 				title,
-				key: `${parent.key}.${title}`,
 				childrenKeys: [],
 				postIds: [],
+				parentKey,
 			};
-			parent.childrenKeys.push(newNode.key);
-			await db.favoritesTree.add(newNode);
-			return db.favoritesTree.put(parent);
+			const newNodeKey = await db.favorites.add(newNode);
+			parent.childrenKeys.push(newNodeKey);
+			return db.favorites.put(parent);
 		} else {
 			throw new Error('Parent Tree node was not found in the database, could not create a new leaf');
 		}
@@ -24,46 +24,56 @@ export const addChildToNode = async (parentKey: string, title: string): Promise<
 	}
 };
 
-const deleteChildrenRecursively = async (key: string): Promise<void> => {
+export const changeNodeTitle = async (key: number, title: string): Promise<number> => {
 	try {
-		const child = await db.favoritesTree.get(key);
+		const node = await db.favorites.get(key);
+		if (!node) throw new Error(`Node with key ${key} was not found in the database`);
+
+		const newNode = { ...node, title };
+		return db.favorites.put(newNode);
+	} catch (err) {
+		return Promise.reject(err);
+	}
+};
+
+const deleteChildrenRecursively = async (key: number): Promise<void> => {
+	try {
+		const child = await db.favorites.get(key);
 		if (!child) throw new Error(`Node with key ${key} was not found in the database`);
 
 		await Promise.all(child.childrenKeys.map(async (k) => deleteChildrenRecursively(k)));
 
-		return db.favoritesTree.delete(key);
+		return db.favorites.delete(key);
 	} catch (err) {
 		console.error(`Error while deleting children of key: ${key} recursively`, err);
 		return Promise.reject(err);
 	}
 };
 
-export const deleteNodeAndChildren = async (key: string): Promise<void> => {
+export const deleteNodeAndChildren = async (key: number): Promise<void> => {
 	try {
-		const match = key.match(/^.*(?=(\.))/);
-		if (match) {
-			const parentKey = match[0];
-			const parent = await db.favoritesTree.get(parentKey);
-			if (!parent) throw new Error(`Parent with key ${parentKey} was not found in the database`);
-			const newChildren = parent.childrenKeys.filter((k) => k !== key);
-			db.favoritesTree.update(parentKey, { childrenKeys: newChildren });
+		const node = await db.favorites.get(key);
+		if (!node) throw new Error(`Node with key ${key} was not found in the database`);
 
-			return deleteChildrenRecursively(key);
-		} else {
-			throw new Error(`Could not parse parent key from child key: ${key}`);
-		}
+		const parent = await db.favorites.get(node.parentKey);
+		if (!parent) throw new Error(`Parent with key ${node.parentKey} was not found in the database`);
+
+		const newChildren = parent.childrenKeys.filter((k) => k !== key);
+		db.favorites.update(node.parentKey, { childrenKeys: newChildren });
+
+		return deleteChildrenRecursively(key);
 	} catch (err) {
 		console.error('Error while deleting node tree', err);
 	}
 };
 
-export const getChildrenNodes = async (key: string): Promise<FavoritesTreeNode[]> => {
+export const getChildrenNodes = async (key: number): Promise<FavoritesTreeNode[]> => {
 	try {
-		const root = await db.favoritesTree.get(key);
+		const root = await db.favorites.get(key);
 		if (root) {
 			const children = await Promise.all(
 				root.childrenKeys.map(async (key) => {
-					const child = await db.favoritesTree.get(key);
+					const child = await db.favorites.get(key);
 					if (child) {
 						return child;
 					} else {
@@ -82,16 +92,16 @@ export const getChildrenNodes = async (key: string): Promise<FavoritesTreeNode[]
 };
 
 export const getTreeRoots = async (): Promise<FavoritesTreeNode[]> => {
-	return getChildrenNodes('root');
+	return getChildrenNodes(0);
 };
 
-const getChildrenRecursively = async (key: string): Promise<TreeNode> => {
+const getChildrenRecursively = async (key: number): Promise<TreeNode> => {
 	try {
-		const root = await db.favoritesTree.get(key);
-		if (root) {
+		const root = await db.favorites.get(key);
+		if (root && root.key !== undefined) {
 			const treeNode: TreeNode = {
 				title: root.title,
-				key: root.key,
+				key: root.key.toString(),
 				children: [],
 				postIds: root.postIds,
 			};
@@ -111,18 +121,18 @@ const getChildrenRecursively = async (key: string): Promise<TreeNode> => {
 };
 
 export const getCompleteTree = async (): Promise<TreeNode> => {
-	const root = await getChildrenRecursively('root');
+	const root = await getChildrenRecursively(0);
 	return root;
 };
 
-export const getNodeWithoutChildren = async (key: string): Promise<TreeNode> => {
+export const getNodeWithoutChildren = async (key: number): Promise<TreeNode> => {
 	try {
-		const node = await db.favoritesTree.get(key);
-		if (node) {
+		const node = await db.favorites.get(key);
+		if (node && node.key !== undefined) {
 			const treeNode: TreeNode = {
 				title: node.title,
 				children: [],
-				key: node.key,
+				key: node.key.toString(),
 				postIds: node.postIds,
 			};
 			return treeNode;
@@ -134,38 +144,38 @@ export const getNodeWithoutChildren = async (key: string): Promise<TreeNode> => 
 	}
 };
 
-export const addPostToNode = async (key: string, postId: number): Promise<number> => {
+export const addPostToNode = async (key: number, postId: number): Promise<number> => {
 	try {
-		const node = await db.favoritesTree.get(key);
+		const node = await db.favorites.get(key);
 		if (!node) throw new Error(`TreeNode with key ${key} was not found in the database`);
 		if (node.postIds.includes(postId)) throw new Error(`TreeNode already contains postId ${postId}`);
 		const newPosts = [...node.postIds, postId];
-		return db.favoritesTree.update(key, { postIds: newPosts });
+		return db.favorites.update(key, { postIds: newPosts });
 	} catch (err) {
 		return Promise.reject(err);
 	}
 };
 
-export const addPostsToNode = async (key: string, postIds: number[]): Promise<number> => {
+export const addPostsToNode = async (key: number, postIds: number[]): Promise<number> => {
 	try {
-		const node = await db.favoritesTree.get(key);
+		const node = await db.favorites.get(key);
 		if (!node) throw new Error(`TreeNode with key ${key} was not found in the database`);
 
 		const idsToAdd = postIds.filter((id) => !node.postIds.includes(id));
 
 		const newPosts = [...node.postIds, ...idsToAdd];
-		return db.favoritesTree.update(key, { postIds: newPosts });
+		return db.favorites.update(key, { postIds: newPosts });
 	} catch (err) {
 		return Promise.reject(err);
 	}
 };
 
-export const removePostFromNode = async (key: string, postId: number): Promise<number> => {
+export const removePostFromNode = async (key: number, postId: number): Promise<number> => {
 	try {
-		const node = await db.favoritesTree.get(key);
+		const node = await db.favorites.get(key);
 		if (!node) throw new Error(`TreeNode with key ${key} was not found in the database`);
 		const newPosts = node.postIds.filter((id) => id !== postId);
-		return db.favoritesTree.update(key, { postIds: newPosts });
+		return db.favorites.update(key, { postIds: newPosts });
 	} catch (err) {
 		return Promise.reject(err);
 	}
@@ -173,7 +183,7 @@ export const removePostFromNode = async (key: string, postId: number): Promise<n
 
 export const getAllKeys = async (): Promise<string[]> => {
 	try {
-		const keys = await db.favoritesTree.offset(0).keys();
+		const keys = await db.favorites.offset(0).keys();
 		return keys.map((val) => val.toString());
 	} catch (err) {
 		return Promise.reject(err);
@@ -181,7 +191,7 @@ export const getAllKeys = async (): Promise<string[]> => {
 };
 
 export const getAllFavoriteTagsWithCounts = async (): Promise<{ tag: string; count: number }[]> => {
-	const allNodes = await db.favoritesTree.toArray(); // get all tree nodes
+	const allNodes = await db.favorites.toArray(); // get all tree nodes
 	const allPostIds = allNodes.flatMap((node) => node.postIds); // get all post ids in favorites tree
 	const deduplicatedPostIds = new Set(allPostIds); // deduplicate post ids
 	const posts = await db.posts.bulkGet([...deduplicatedPostIds]); // get all posts
@@ -199,7 +209,7 @@ export const getAllFavoriteTagsWithCounts = async (): Promise<{ tag: string; cou
 };
 
 export const getlAllPostIds = async (): Promise<number[]> => {
-	const allNodes = await db.favoritesTree.toArray();
+	const allNodes = await db.favorites.toArray();
 	const allPostIds = allNodes.flatMap((node) => node.postIds);
 	const deduplicatedPostIds = new Set(allPostIds);
 	return Array.from(deduplicatedPostIds);

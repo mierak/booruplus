@@ -11,7 +11,7 @@ class Database extends Dexie {
 	postsTags: Dexie.Table<PostTag, number>;
 	settings: Dexie.Table<SettingsPair, string>;
 	tagSearchHistory: Dexie.Table<{ tag: Tag; date: string }, number>;
-	favoritesTree: Dexie.Table<FavoritesTreeNode, string>;
+	favorites: Dexie.Table<FavoritesTreeNode, number>;
 	tasks: Dexie.Table<Task, number>;
 
 	constructor(databaseName: string) {
@@ -67,13 +67,15 @@ class Database extends Dexie {
 		this.version(14).stores({
 			tasks: 'id, timestampStarted, timestampDone',
 		});
+		this.version(15).stores({ favorites: '++key' });
+		this.version(15).stores({ favoritesTree: null });
 		this.tagSearchHistory = this.table('tagSearchHistory');
 		this.settings = this.table('settings');
 		this.posts = this.table('posts');
 		this.savedSearches = this.table('savedSearches');
 		this.tags = this.table('tags');
 		this.postsTags = this.table('postsTags');
-		this.favoritesTree = this.table('favoritesTree');
+		this.favorites = this.table('favorites');
 		this.tasks = this.table('tasks');
 	}
 }
@@ -100,12 +102,13 @@ db.on('populate', () => {
 	db.settings.put(settings);
 
 	const favoritesRootNode: FavoritesTreeNode = {
-		key: 'root',
+		key: 0,
 		title: 'root',
 		childrenKeys: [],
 		postIds: [],
+		parentKey: 0,
 	};
-	db.favoritesTree.put(favoritesRootNode);
+	db.favorites.put(favoritesRootNode);
 });
 
 db.open().catch((err) => {
@@ -113,15 +116,16 @@ db.open().catch((err) => {
 });
 
 const checkAndAddFavoritesRootNode = async (): Promise<void> => {
-	const root = await db.favoritesTree.get('root');
+	const root = await db.favorites.get(0);
 	if (!root) {
 		const favoritesRootNode: FavoritesTreeNode = {
-			key: 'root',
+			key: 0,
 			title: 'root',
 			childrenKeys: [],
 			postIds: [],
+			parentKey: 0,
 		};
-		db.favoritesTree.put(favoritesRootNode);
+		db.favorites.put(favoritesRootNode);
 	}
 };
 checkAndAddFavoritesRootNode();
