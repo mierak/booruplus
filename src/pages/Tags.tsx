@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { ColumnFilterItem } from 'antd/lib/table/interface';
+import { ColumnFilterItem, FilterDropdownProps } from 'antd/lib/table/interface';
 import { Table, Tag as AntTag } from 'antd';
 
 import { thunks } from '../../store';
@@ -10,6 +10,7 @@ import { RootState, AppDispatch } from '../../store/types';
 import { Tag, TagType } from '../../types/gelbooruTypes';
 import { capitalize, getTagColor } from '../../util/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
+import TagSearchFilter from '../components/tags/TagSearchFilter';
 
 const { Column } = Table;
 
@@ -29,9 +30,8 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 	const tagsLoading = useSelector((state: RootState) => state.system.isTagTableLoading);
 
 	const [tagsCount, setTagsCount] = useState(0);
+	const [pattern, setPattern] = useState('');
 	const tagsPerPage = 19;
-	// const [searchText, setSearchText] = useState<unknown>();
-	// const [searchedColumn, setSearchedColumn] = useState<string>('');
 
 	useEffect(() => {
 		// dispatch(loadAllTagsFromDb());
@@ -39,11 +39,17 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 			.then(unwrapResult)
 			.then((result) => setTagsCount(result));
 		dispatch(thunks.tags.loadAllWithLimitAndOffset({ limit: tagsPerPage, offset: 0 }));
-		console.log('hue');
 	}, []);
 
+	useEffect(() => {
+		dispatch(thunks.tags.getCount(pattern))
+			.then(unwrapResult)
+			.then((result) => setTagsCount(result));
+		dispatch(thunks.tags.loadAllWithLimitAndOffset({ limit: tagsPerPage, offset: 0, pattern }));
+	}, [pattern]);
+
 	const handleChangePage = (page: number): void => {
-		dispatch(thunks.tags.loadAllWithLimitAndOffset({ limit: tagsPerPage, offset: (page - 1) * tagsPerPage }));
+		dispatch(thunks.tags.loadAllWithLimitAndOffset({ limit: tagsPerPage, offset: (page - 1) * tagsPerPage, pattern }));
 	};
 
 	// const getFilteredTags = (): void => {};
@@ -102,6 +108,14 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 		return <AntTag color={getTagColor(tag.type)}>{capitalize(tag.type)}</AntTag>;
 	};
 
+	const tagSearchFilterOnSearch = (pattern: string): void => {
+		setPattern(pattern);
+	};
+
+	const renderTagSearchFilterDropdown = (dropdownProps: FilterDropdownProps): React.ReactNode => {
+		return <TagSearchFilter onSearch={tagSearchFilterOnSearch} visible={dropdownProps.visible} />;
+	};
+
 	// const getAmbiguousFilters = (): ColumnFilterItem[] => {
 	// 	return [generateFilterObject('true'), generateFilterObject('false')];
 	// };
@@ -125,7 +139,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 					title="Tag"
 					dataIndex="tag"
 					ellipsis
-					// filterDropdownVisible={true}
+					filterDropdown={renderTagSearchFilterDropdown}
 					// sorter={(a: Tag, b: Tag): number => a.tag.localeCompare(b.tag)}
 				/>
 				<Column

@@ -23,11 +23,34 @@ export const getAll = async (): Promise<Tag[] | void> => {
 	return tags;
 };
 
-export const getAllWithLimitAndOffset = (limit = 100, offset = 0): Promise<Tag[]> => {
-	return db.tags
-		.offset(offset)
-		.limit(limit)
-		.toArray();
+interface Options {
+	pattern?: string;
+	limit?: number;
+	offset?: number;
+}
+
+export const getAllWithLimitAndOffset = async (options?: Options): Promise<Tag[]> => {
+	let res: Dexie.Collection<Tag, number> | undefined;
+	const result = db.tags;
+	if (options) {
+		const pattern = options.pattern;
+		if (pattern) {
+			res = result.filter((tag) => tag.tag.includes(pattern));
+		} else {
+			res = result.toCollection();
+		}
+		if (options.offset && res) {
+			res = res.offset(options.offset);
+		}
+		if (options.limit && res) {
+			res = res.limit(options.limit);
+		}
+	}
+	if (res) {
+		return res.toArray();
+	} else {
+		return result.toArray();
+	}
 };
 
 export const checkIfExists = async (tag: string): Promise<boolean> => {
@@ -65,6 +88,9 @@ export const getByPattern = async (pattern: string): Promise<Tag[]> => {
 	return db.tags.filter((tag) => tag.tag.includes(pattern)).toArray();
 };
 
-export const getCount = async (): Promise<number> => {
+export const getCount = async (pattern?: string): Promise<number> => {
+	if (pattern) {
+		return db.tags.filter((tag) => tag.tag.includes(pattern)).count();
+	}
 	return db.tags.count();
 };
