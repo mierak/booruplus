@@ -83,7 +83,6 @@ const searchFormSlice = createSlice({
 		},
 	},
 	extraReducers: (builder) => {
-		console.log(thunks);
 		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.fulfilled, (state, action) => {
 			state.tagOptions = action.payload;
 		});

@@ -1,6 +1,6 @@
 import { AppThunk, ThunkApi } from 'store/types';
 import { db } from 'db';
-import { Tag } from 'types/gelbooruTypes';
+import { Tag, TagType } from 'types/gelbooruTypes';
 import * as api from 'service/apiService';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import * as onlineSearchFormThunk from './onlineSearchForm';
@@ -27,14 +27,18 @@ export const loadAllTagsFromDb = createAsyncThunk<Tag[], void, ThunkApi>(
 	}
 );
 
-export const getCount = createAsyncThunk<number, string | undefined, ThunkApi>(
+export const getCount = createAsyncThunk<number, { pattern?: string; types?: TagType[] } | undefined, ThunkApi>(
 	'tags/getCount',
-	async (pattern): Promise<number> => {
-		return db.tags.getCount(pattern);
+	async (params): Promise<number> => {
+		return db.tags.getCount(params);
 	}
 );
 
-export const loadAllWithLimitAndOffset = createAsyncThunk<Tag[], { pattern?: string; limit: number; offset: number }, ThunkApi>(
+export const loadAllWithLimitAndOffset = createAsyncThunk<
+	Tag[],
+	{ pattern?: string; limit: number; offset: number; types?: TagType[] },
+	ThunkApi
+>(
 	'tags/loadAllWithLimitAndOffset',
 	async (params): Promise<Tag[]> => {
 		const tags = await db.tags.getAllWithLimitAndOffset(params);

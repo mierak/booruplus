@@ -1,5 +1,5 @@
 import db from './database';
-import { Tag } from '../types/gelbooruTypes';
+import { Tag, TagType } from '../types/gelbooruTypes';
 
 export const save = async (tag: Tag): Promise<number | void> => {
 	return db.tags.put(tag).catch((err: Error) => {
@@ -27,6 +27,7 @@ interface Options {
 	pattern?: string;
 	limit?: number;
 	offset?: number;
+	types?: TagType[];
 }
 
 export const getAllWithLimitAndOffset = async (options?: Options): Promise<Tag[]> => {
@@ -38,6 +39,10 @@ export const getAllWithLimitAndOffset = async (options?: Options): Promise<Tag[]
 			res = result.filter((tag) => tag.tag.includes(pattern));
 		} else {
 			res = result.toCollection();
+		}
+		if (options.types) {
+			const types = options.types;
+			res = res.filter((tag) => types.includes(tag.type));
 		}
 		if (options.offset && res) {
 			res = res.offset(options.offset);
@@ -88,9 +93,26 @@ export const getByPattern = async (pattern: string): Promise<Tag[]> => {
 	return db.tags.filter((tag) => tag.tag.includes(pattern)).toArray();
 };
 
-export const getCount = async (pattern?: string): Promise<number> => {
-	if (pattern) {
-		return db.tags.filter((tag) => tag.tag.includes(pattern)).count();
+interface Options {
+	pattern?: string;
+	types?: TagType[];
+}
+
+export const getCount = async (options?: Options): Promise<number> => {
+	if (options) {
+		let res: Dexie.Collection<Tag, number> | undefined;
+		const result = db.tags;
+		const pattern = options.pattern;
+		const types = options.types;
+		if (pattern) {
+			res = result.filter((tag) => tag.tag.includes(pattern));
+		} else {
+			res = result.toCollection();
+		}
+		if (types) {
+			res = res.filter((tag) => types.includes(tag.type));
+		}
+		return res.count();
 	}
 	return db.tags.count();
 };

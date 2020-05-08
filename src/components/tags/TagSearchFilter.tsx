@@ -4,6 +4,7 @@ import { Input, Space, Button } from 'antd';
 
 interface Props {
 	onSearch(pattern: string): void;
+	confirm(): void;
 	visible: boolean;
 }
 
@@ -17,11 +18,13 @@ const TagSearchFilter: React.FunctionComponent<Props> = (props: Props) => {
 
 	const handleSearch = (): void => {
 		props.onSearch(pattern);
+		props.confirm();
 	};
 
 	const handleReset = (): void => {
 		setPattern('');
 		props.onSearch('');
+		props.confirm();
 	};
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
