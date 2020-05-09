@@ -29,11 +29,23 @@ const tasksSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder.addCase(thunks.tasks.rehydrateFromDb.fulfilled, (state, action) => {
-			state.tasks = action.payload;
-			state.lastId = Math.max(...action.payload.map((task) => task.id));
+			const tasks: { [id: number]: Task } = {};
+			action.payload.forEach((task) => {
+				const id = task.id;
+				tasks[id] = task;
+			});
+			state.tasks = tasks;
+
+			state.lastId = Math.max(...action.payload.map((task) => task.id), 0);
 		});
 		builder.addCase(thunks.tasks.create.fulfilled, (state, action) => {
 			state.lastId = action.payload;
+		});
+		builder.addCase(thunks.tasks.cancel.fulfilled, (state, action) => {
+			state.tasks[action.payload.id] = action.payload;
+		});
+		builder.addCase(thunks.tasks.cancel.rejected, (_, action) => {
+			console.error(action.error.message);
 		});
 		builder.addCase(thunks.posts.downloadPosts.pending, (state, action) => {
 			const newId = state.lastId + 1;

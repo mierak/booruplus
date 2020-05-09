@@ -84,7 +84,7 @@ const postsSlice = createSlice({
 		});
 		builder.addCase(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled, (state, action) => {
 			for (const post of action.payload) {
-				state.posts.push(post);
+				post.blacklisted !== 1 && state.posts.push(post);
 			}
 		});
 		builder.addCase(thunks.favorites.fetchPostsInDirectory.pending, (state) => {
@@ -102,6 +102,10 @@ const postsSlice = createSlice({
 			for (const post of action.payload) {
 				state.posts.push(post);
 			}
+		});
+		builder.addCase(thunks.posts.blacklistPosts.fulfilled, (state, action) => {
+			const idsToRemove = action.payload.map((post) => post.id);
+			state.posts = state.posts.filter((post) => !idsToRemove.includes(post.id));
 		});
 	},
 });

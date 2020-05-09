@@ -102,7 +102,6 @@ const sortPosts = (posts: Post[], options: FilterOptions): Post[] => {
 				? posts.sort((a, b) => a.createdAt - b.createdAt)
 				: posts.sort((a, b) => b.createdAt - a.createdAt);
 		case 'date-downloaded':
-			console.log(posts);
 			return options.sortOrder === 'asc'
 				? posts.sort((a, b) => (a.downloadedAt ?? 0) - (b.downloadedAt ?? 0))
 				: posts.sort((a, b) => (b.downloadedAt ?? 0) - (a.downloadedAt ?? 0));

@@ -39,7 +39,7 @@ const TaskProgress: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleCancel = (): void => {
-		dispatch(actions.tasks.setState({ id: props.taskId, value: 'canceled' }));
+		dispatch(thunks.tasks.cancel(props.taskId));
 	};
 
 	const renderButtons = (): React.ReactNode => {

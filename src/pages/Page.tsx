@@ -25,6 +25,7 @@ const Page: React.FunctionComponent = () => {
 	useEffect(() => {
 		(async (): Promise<void> => {
 			await dispatch(thunks.settings.loadSettings('user'));
+			await dispatch(thunks.tasks.rehydrateFromDb());
 
 			if (settings.theme === 'dark') {
 				require('../css/scrollbar.dark.css');

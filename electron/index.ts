@@ -21,16 +21,17 @@ if (require('electron-squirrel-startup')) {
 }
 let window: BrowserWindow;
 
-const createWindow = (): BrowserWindow => {
-	if (!isProd) {
-		installExtension(REACT_DEVELOPER_TOOLS)
-			.then((name) => console.log(`Added Extension:  ${name}`))
-			.catch((err) => console.log('An error occurred: ', err));
+if (!isProd) {
+	installExtension(REACT_DEVELOPER_TOOLS)
+		.then((name) => console.log(`Added Extension:  ${name}`))
+		.catch((err) => console.log('An error occurred: ', err));
 
-		installExtension(REDUX_DEVTOOLS)
-			.then((name) => console.log(`Added Extension:  ${name}`))
-			.catch((err) => console.log('An error occurred: ', err));
-	}
+	installExtension(REDUX_DEVTOOLS)
+		.then((name) => console.log(`Added Extension:  ${name}`))
+		.catch((err) => console.log('An error occurred: ', err));
+}
+
+const createWindow = (): BrowserWindow => {
 	// Create the browser window.
 
 	const mainWindow = new BrowserWindow({

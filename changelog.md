@@ -1,4 +1,10 @@
 # Changelog
+## 0.1.4 - TITLE - DATE
+- BUG FIX: Tasks completely failing when no tasks were present in DB
+- BUG FIX: Tasks cancellation was not saved to database
+- BUG FIX: Blacklisted posts not removing from currently displayed posts
+- BUG FIX: Online search showing blacklisted posts
+
 ## 0.1.3 - New Tags page - 9.5.2020
 - Changed Settings to be contained in a Modal window
 - Added options to disable loading of dashboard statistics on App start

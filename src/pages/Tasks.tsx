@@ -17,15 +17,8 @@ const Container = styled.div`
 `;
 
 const Tasks: React.FunctionComponent<Props> = (props: Props) => {
-	const dispatch = useDispatch<AppDispatch>();
 	const taskIds = useSelector((state: RootState) => Object.keys(state.tasks.tasks));
 	const [tasksArray, setTasksArray] = useState<string[]>([]);
-
-	useEffect(() => {
-		(async (): Promise<void> => {
-			await dispatch(thunks.tasks.rehydrateFromDb());
-		})();
-	}, []);
 
 	useEffect(() => {
 		setTasksArray(taskIds.sort().reverse());

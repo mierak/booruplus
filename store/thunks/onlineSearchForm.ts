@@ -32,7 +32,6 @@ export const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
 		const getState = thunkApi.getState;
 
 		const options = getPostApiOptions(getState());
-		console.log('options', options);
 		const excludedTagString = getState().onlineSearchForm.excludededTags.map((tag) => tag.tag);
 		const tagsString = getState().onlineSearchForm.selectedTags.map((tag) => tag.tag);
 

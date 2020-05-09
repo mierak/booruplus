@@ -34,7 +34,7 @@ export const getPostsForTags = async (tags: string[], options: PostSearchOptions
 
 	if (tags.length > 0) url = url.concat(' ');
 	if (excludedTags && excludedTags.length > 0) url += `-${excludedTags.join(' -')}`;
-	console.log(getSortOptionString(options));
+
 	url = url.concat(getSortOptionString(options));
 
 	try {
