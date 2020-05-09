@@ -15,6 +15,8 @@ export const getFilterOptions = (state: DownloadedSearchFormState): FilterOption
 		limit: state.postLimit,
 		offset: state.postLimit * state.page,
 		rating: state.rating,
+		sort: state.sort,
+		sortOrder: state.sortOrder,
 		showGifs: state.showGifs,
 		showImages: state.showImages,
 		showVideos: state.showVideos,

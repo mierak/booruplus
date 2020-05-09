@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Tag, Rating } from '../types/gelbooruTypes';
 import * as thunks from './thunks';
+import { Sort, SortOrder } from './types';
 
 export interface DownloadedSearchFormState {
 	selectedTags: Tag[];
@@ -10,6 +11,8 @@ export interface DownloadedSearchFormState {
 	rating: Rating;
 	postLimit: number;
 	page: number;
+	sort: Sort;
+	sortOrder: SortOrder;
 	showNonBlacklisted: boolean;
 	showBlacklisted: boolean;
 	showFavorites: boolean;
@@ -25,6 +28,8 @@ const initialState: DownloadedSearchFormState = {
 	rating: 'any',
 	postLimit: 100,
 	page: 0,
+	sort: 'date-downloaded',
+	sortOrder: 'desc',
 	showNonBlacklisted: true,
 	showBlacklisted: false,
 	showFavorites: true,
@@ -74,6 +79,12 @@ const downloadedSearchFormSlice = createSlice({
 		},
 		incrementPage: (state): void => {
 			state.page = state.page + 1;
+		},
+		setSort: (state, action: PayloadAction<Sort>): void => {
+			state.sort = action.payload;
+		},
+		setSortOrder: (state, action: PayloadAction<SortOrder>): void => {
+			state.sortOrder = action.payload;
 		},
 		setShowNonBlacklisted: (state, action: PayloadAction<boolean>): void => {
 			state.showNonBlacklisted = action.payload;

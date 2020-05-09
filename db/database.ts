@@ -3,6 +3,7 @@ import Dexie from 'dexie';
 import { Post, Tag, PostTag } from '../types/gelbooruTypes';
 import { SettingsPair, SavedSearch, FavoritesTreeNode } from './types';
 import { Task } from 'store/types';
+import moment from 'moment';
 
 class Database extends Dexie {
 	posts: Dexie.Table<Post, number>;
@@ -69,6 +70,22 @@ class Database extends Dexie {
 		});
 		this.version(15).stores({ favorites: '++key' });
 		this.version(15).stores({ favoritesTree: null });
+		this.version(16).upgrade((tx) => {
+			return tx
+				.table('posts')
+				.toCollection()
+				.modify((post) => {
+					post.createdAt = moment(post.createdAt).unix();
+				});
+		});
+		this.version(17).upgrade((tx) => {
+			return tx
+				.table('posts')
+				.toCollection()
+				.modify((post) => {
+					post.downloadedAt = moment().valueOf();
+				});
+		});
 		this.tagSearchHistory = this.table('tagSearchHistory');
 		this.settings = this.table('settings');
 		this.posts = this.table('posts');

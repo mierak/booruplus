@@ -7,6 +7,19 @@ const BASE_POST_URL = `${BASE_URL}&s=post`;
 
 const parsePost = postParser();
 
+const getSortOptionString = (options: PostSearchOptions): string => {
+	if (!options.sort || !options.sortOrder) return '';
+
+	switch (options.sort) {
+		case 'date-updated':
+			return `sort:updated:${options.sortOrder}`;
+		case 'rating':
+			return `sort:rating:${options.sortOrder}`;
+		default:
+			return '';
+	}
+};
+
 export const getPostsForTags = async (tags: string[], options: PostSearchOptions = {}, excludedTags?: string[]): Promise<Post[]> => {
 	//handle Optional params
 	if (!options.limit) options.limit = 100;
@@ -16,10 +29,13 @@ export const getPostsForTags = async (tags: string[], options: PostSearchOptions
 	let url = BASE_POST_URL;
 	options.apiKey && (url = url.concat(options.apiKey));
 	url = url.concat(`&limit=${options.limit}`);
-	tags.length > 0 && (url = url.concat(`&tags=${tags.join(' ')}`));
-
-	if (excludedTags && excludedTags.length > 0) url += ` -${excludedTags.join(' -')}`;
 	if (options.page) url += `&pid=${options.page}`;
+	url = url.concat(`&tags=${tags.join(' ')}`);
+
+	if (tags.length > 0) url = url.concat(' ');
+	if (excludedTags && excludedTags.length > 0) url += `-${excludedTags.join(' -')}`;
+	console.log(getSortOptionString(options));
+	url = url.concat(getSortOptionString(options));
 
 	try {
 		const response = await fetch(url);

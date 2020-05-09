@@ -1,5 +1,7 @@
 import { getImageExtensionFromFilename } from '../util/utils';
 import { Entity } from '../db/types';
+import { Sort, SortOrder } from 'store/types';
+import moment from 'moment';
 
 export interface PostDto {
 	source: string;
@@ -39,10 +41,11 @@ export interface Post extends Entity {
 	score: number;
 	tags: string[];
 	fileUrl: string;
-	createdAt: string;
+	createdAt: number;
 	image: string;
 	blacklisted?: 0 | 1;
 	downloaded?: 0 | 1;
+	downloadedAt?: number;
 	selected: boolean;
 	extension: string;
 	viewCount: number;
@@ -76,7 +79,7 @@ export const postParser = (): ((params: PostDto) => Post) => {
 			sampleWidth: params.sample_width,
 			score: params.score,
 			fileUrl: params.file_url,
-			createdAt: params.created_at,
+			createdAt: moment(params.created_at).unix(),
 			image: params.image,
 			blacklisted: params.blacklisted !== undefined ? params.blacklisted : 0,
 			downloaded: params.downloaded !== undefined ? params.downloaded : 0,
@@ -134,4 +137,6 @@ export interface PostSearchOptions {
 	rating?: Rating;
 	page?: number;
 	apiKey?: string;
+	sort?: Sort;
+	sortOrder?: SortOrder;
 }

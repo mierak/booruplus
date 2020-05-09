@@ -12,6 +12,8 @@ export const getPostApiOptions = (state: RootState, incrementPage?: boolean): Po
 		page: incrementPage ? state.onlineSearchForm.page + 1 : state.onlineSearchForm.page,
 		rating: state.onlineSearchForm.rating,
 		apiKey: state.settings.apiKey,
+		sort: state.onlineSearchForm.sort,
+		sortOrder: state.onlineSearchForm.sortOrder,
 	};
 };
 
@@ -30,6 +32,7 @@ export const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
 		const getState = thunkApi.getState;
 
 		const options = getPostApiOptions(getState());
+		console.log('options', options);
 		const excludedTagString = getState().onlineSearchForm.excludededTags.map((tag) => tag.tag);
 		const tagsString = getState().onlineSearchForm.selectedTags.map((tag) => tag.tag);
 

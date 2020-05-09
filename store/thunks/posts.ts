@@ -10,6 +10,7 @@ import { ThunkApi } from 'store/types';
 
 import { Post, PostSearchOptions, Tag } from 'types/gelbooruTypes';
 import { delay } from 'util/utils';
+import moment from 'moment';
 
 const saveImage = useSaveImage();
 const deleteImage = useDeleteImage();
@@ -82,6 +83,7 @@ export const downloadPost = createAsyncThunk<Post, { post: Post; taskId?: number
 		await saveImage(updatedPost);
 		updatedPost.downloaded = 1;
 		updatedPost.blacklisted = 0;
+		updatedPost.downloadedAt = moment().valueOf();
 		db.posts.update(updatedPost);
 
 		!params.taskId && thunkApi.dispatch(downloadTags(updatedPost.tags));

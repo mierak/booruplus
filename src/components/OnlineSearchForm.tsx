@@ -13,6 +13,8 @@ import PageSelect from './search-form/PageSelect';
 import SelectedTags from './search-form/SelectedTags';
 import SubmitButton from './search-form/SubmitButton';
 import ExcludedTags from './search-form/ExcludedTags';
+import SortSelect from './search-form/SortSelect';
+import OrderSelect from './search-form/OrderSelect';
 
 interface Props {
 	className?: string;
@@ -42,13 +44,6 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 			</Form.Item>
 			<Row>
 				<Col span={12} style={{ paddingRight: 0 }}>
-					<Form.Item label="Rating" labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}>
-						<RatingSelect mode="online" />
-					</Form.Item>
-				</Col>
-			</Row>
-			<Row>
-				<Col span={12} style={{ paddingRight: 0 }}>
 					<Form.Item label="Post Count" labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}>
 						<PostCountSelect mode="online" />
 					</Form.Item>
@@ -56,6 +51,25 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 				<Col span={12}>
 					<Form.Item label="Page" labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
 						<PageSelect mode="online" />
+					</Form.Item>
+				</Col>
+			</Row>
+			<Row>
+				<Col span={12} style={{ paddingRight: 0 }}>
+					<Form.Item label="Sort" labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}>
+						<SortSelect mode="online" />
+					</Form.Item>
+				</Col>
+				<Col span={12}>
+					<Form.Item label="Order" labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
+						<OrderSelect mode="online" />
+					</Form.Item>
+				</Col>
+			</Row>
+			<Row>
+				<Col span={12} style={{ paddingRight: 0 }}>
+					<Form.Item label="Rating" labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}>
+						<RatingSelect mode="online" />
 					</Form.Item>
 				</Col>
 			</Row>

@@ -1,6 +1,5 @@
 ## TODO
 
-- Make Tag page actually useful
 - Tests
 - Typesafe IPC
 - Refactor excluded/selected tags components
@@ -8,7 +7,8 @@
 - Add option to move selected/all favorites between directories
 - Expand active posts to not use only one state
 - Import/Export database
-- Add sorting of searches
+- ~~Add sorting of searches~~
+- ~~Make Tag page actually useful~~
 - ~~Loader in ImageView~~
 - ~~Option to load dashboard stats on app start~~
 - ~~Favorites categories~~

@@ -6,6 +6,7 @@
 - Added Loader to FullSizeImage
 - Favorites directories can now be renamed
 - Tags page can now be searched by pattern and tag type with proper pagination
+- Added options to sort both online and offline searches
 - BUG FIX: Fixed most favorited tags and favorite post count not using data from the new tree structure.
 - BUG FIX: Fixed autoscrolling of thumbnails list in side panel
 

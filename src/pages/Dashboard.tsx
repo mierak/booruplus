@@ -57,7 +57,7 @@ const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 				</Col>
 				<Col xs={6}>
 					<Card>
-						<Statistic title="Tags With Downloaded Posts" value={tagCount}></Statistic>
+						<Statistic title="Tags in Database" value={tagCount}></Statistic>
 					</Card>
 				</Col>
 			</Row>

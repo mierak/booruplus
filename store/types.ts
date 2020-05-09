@@ -16,6 +16,10 @@ export interface ThunkApi {
 
 export type View = 'thumbnails' | 'image' | 'dashboard' | 'online-search' | 'saved-searches' | 'favorites' | 'tag-list';
 
+export type Sort = 'date-downloaded' | 'date-uploaded' | 'rating' | 'resolution' | 'date-updated' | 'none';
+
+export type SortOrder = 'asc' | 'desc';
+
 export type SearchMode =
 	| 'online'
 	| 'offline'

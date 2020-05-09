@@ -133,3 +133,5 @@ export const validateApiKey = (key?: string): boolean => {
 		return /^(?=.*&api_key=)(?=.*&user_id=)(?=.*[a-z0-9]{64})(?=.*[0-9]{1,}).*$/.test(key);
 	}
 };
+
+export const toAscii = (c: string): number => c.charCodeAt(0);

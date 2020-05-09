@@ -1,4 +1,4 @@
-import { Settings } from '../store/types';
+import { Settings, Sort, SortOrder } from '../store/types';
 import { Tag, Rating } from '../types/gelbooruTypes';
 
 export interface Entity {
@@ -30,6 +30,8 @@ export interface FilterOptions {
 	offset: number;
 	limit: number;
 	rating: Rating;
+	sort: Sort;
+	sortOrder: SortOrder;
 	showVideos: boolean;
 	showImages: boolean;
 	showGifs: boolean;

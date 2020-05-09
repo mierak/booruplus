@@ -1,7 +1,7 @@
 import { Tag, Rating } from '../types/gelbooruTypes';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { OfflineOptions } from './types';
+import { Sort, SortOrder } from './types';
 
 import * as thunks from './thunks';
 
@@ -13,7 +13,8 @@ export interface SearchFormState {
 	page: number;
 	loading: boolean;
 	tagOptions: Tag[];
-	offlineOptions: OfflineOptions;
+	sort: Sort;
+	sortOrder: SortOrder;
 }
 
 export const initialState: SearchFormState = {
@@ -24,10 +25,8 @@ export const initialState: SearchFormState = {
 	page: 0,
 	loading: false,
 	tagOptions: [],
-	offlineOptions: {
-		blacklisted: false,
-		favorite: false,
-	},
+	sort: 'date-uploaded',
+	sortOrder: 'desc',
 };
 
 const searchFormSlice = createSlice({
@@ -72,11 +71,14 @@ const searchFormSlice = createSlice({
 		setTagOptions: (state, action: PayloadAction<Tag[]>): void => {
 			state.tagOptions = action.payload;
 		},
+		setSort: (state, action: PayloadAction<Sort>): void => {
+			state.sort = action.payload;
+		},
+		setSortOrder: (state, action: PayloadAction<SortOrder>): void => {
+			state.sortOrder = action.payload;
+		},
 		clearTagOptions: (state): void => {
 			state.tagOptions = [];
-		},
-		setOfflineOptions: (state, action: PayloadAction<OfflineOptions>): void => {
-			state.offlineOptions = action.payload;
 		},
 		clear: (): SearchFormState => {
 			return initialState;

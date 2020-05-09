@@ -2,7 +2,7 @@ import db from './database';
 
 import { Post, Rating } from '../types/gelbooruTypes';
 import { FilterOptions } from './types';
-import { intersection, getRatingName, isExtensionVideo } from '../util/utils';
+import { intersection, getRatingName, isExtensionVideo, toAscii } from '../util/utils';
 
 export const saveOrUpdateFromApi = async (post: Post): Promise<Post> => {
 	const clone: Post = { ...post };
@@ -44,6 +44,7 @@ export const bulkSaveOrUpdateFromApi = async (posts: Post[]): Promise<Post[]> =>
 					clone.blacklisted = post.blacklisted;
 					clone.downloaded = post.downloaded;
 					clone.viewCount = post.viewCount;
+					clone.downloadedAt = post.downloadedAt;
 					db.posts.put(clone);
 					result.push(clone);
 				}
@@ -94,8 +95,27 @@ export const getAllBlacklisted = async (): Promise<Post[]> => {
 		.toArray();
 };
 
-// CONSIDER - Add cache to not run expensive filtering on fetchMore()
-const filterPosts = (posts: Post[], options: FilterOptions): Post[] => {
+const sortPosts = (posts: Post[], options: FilterOptions): Post[] => {
+	switch (options.sort) {
+		case 'date-updated':
+			return options.sortOrder === 'asc'
+				? posts.sort((a, b) => a.createdAt - b.createdAt)
+				: posts.sort((a, b) => b.createdAt - a.createdAt);
+		case 'date-downloaded':
+			console.log(posts);
+			return options.sortOrder === 'asc'
+				? posts.sort((a, b) => (a.downloadedAt ?? 0) - (b.downloadedAt ?? 0))
+				: posts.sort((a, b) => (b.downloadedAt ?? 0) - (a.downloadedAt ?? 0));
+		case 'rating':
+			return options.sortOrder === 'asc'
+				? posts.sort((a, b) => toAscii(a.rating) - toAscii(b.rating))
+				: posts.sort((a, b) => toAscii(b.rating) - toAscii(a.rating));
+		default:
+			return posts;
+	}
+};
+
+const filterByDownloadedBlacklistedRating = (posts: Post[], options: FilterOptions): Post[] => {
 	let result: Post[] = [];
 	if (options.blacklisted && options.nonBlacklisted) {
 		result = posts.filter((post) => post.downloaded === 1 || post.blacklisted === 1);
@@ -106,6 +126,12 @@ const filterPosts = (posts: Post[], options: FilterOptions): Post[] => {
 	}
 
 	result = result.filter((post) => options.rating === 'any' || post.rating === getRatingName(options.rating));
+	return result;
+};
+
+// CONSIDER - Add cache to not run expensive filtering on fetchMore()
+const filterPosts = (posts: Post[], options: FilterOptions): Post[] => {
+	let result: Post[] = posts;
 
 	if (!options.showGifs) {
 		result = result.filter((post) => post.extension !== 'gif');
@@ -122,8 +148,10 @@ const filterPosts = (posts: Post[], options: FilterOptions): Post[] => {
 
 export const getAllWithOptions = async (options: FilterOptions): Promise<Post[]> => {
 	const posts = await db.posts.offset(0).toArray();
-	const filteredPosts = filterPosts(posts, options);
-	return filteredPosts;
+	const filteredFirst = filterByDownloadedBlacklistedRating(posts, options);
+	const sorted = sortPosts(filteredFirst, options);
+	const filtered = filterPosts(sorted, options);
+	return filtered;
 };
 
 export const getFavorites = async (): Promise<Post[]> => {
@@ -163,7 +191,10 @@ export const getForTagsWithOptions = async (options: FilterOptions, tags: string
 			return !found;
 		});
 	}
-	return filterPosts(result, options);
+	const filteredFirst = filterByDownloadedBlacklistedRating(result, options);
+	const sorted = sortPosts(filteredFirst, options);
+	const filtered = filterPosts(sorted, options);
+	return filtered;
 };
 
 export const getForTags = async (...tags: string[]): Promise<Post[]> => {

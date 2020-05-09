@@ -14,6 +14,8 @@ import PageSelect from './search-form/PageSelect';
 import Checkboxes from './search-form/Checkboxes';
 import SubmitButton from './search-form/SubmitButton';
 import ExcludedTags from './search-form/ExcludedTags';
+import SortSelect from './search-form/SortSelect';
+import OrderSelect from './search-form/OrderSelect';
 
 interface Props {
 	className?: string;
@@ -52,6 +54,18 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 					<Col span={12}>
 						<Form.Item label="Page" labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
 							<PageSelect mode="offline" />
+						</Form.Item>
+					</Col>
+				</Row>
+				<Row>
+					<Col span={12} style={{ paddingRight: 0 }}>
+						<Form.Item label="Sort" labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}>
+							<SortSelect mode="offline" />
+						</Form.Item>
+					</Col>
+					<Col span={12}>
+						<Form.Item label="Order" labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
+							<OrderSelect mode="offline" />
 						</Form.Item>
 					</Col>
 				</Row>
