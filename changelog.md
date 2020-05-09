@@ -1,5 +1,5 @@
 # Changelog
-## 0.1.3 - New Tags page - DATE
+## 0.1.3 - New Tags page - 9.5.2020
 - Changed Settings to be contained in a Modal window
 - Added options to disable loading of dashboard statistics on App start
 - Add pagination to Tags page, disabled filters for now
