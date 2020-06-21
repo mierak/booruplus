@@ -87,9 +87,9 @@ typings/
 
 # Electron-Forge
 out/
-todos
-todos.md
+dist/
 
 .vscode/
 
 chika_dance.gif
+todos.md

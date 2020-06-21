@@ -1,12 +1,12 @@
 ## TODO
 
-- Tests
 - Typesafe IPC
 - Refactor excluded/selected tags components
 - Thumbnails downlaoding
 - Add option to move selected/all favorites between directories
 - Expand active posts to not use only one state
 - Import/Export database
+- ~~Tests~~
 - ~~Add sorting of searches~~
 - ~~Make Tag page actually useful~~
 - ~~Loader in ImageView~~

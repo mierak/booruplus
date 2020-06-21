@@ -11,7 +11,7 @@
 		"make": "electron-forge make",
 		"publish": "electron-forge publish",
 		"lint": "eslint --ext .ts,.tsx .",
-		"test": "jest --verbose",
+		"test": "jest --verbose --maxWorkers=3",
 		"coverage": "jest --coverage --silent --maxWorkers=3"
 	},
 	"keywords": [],
