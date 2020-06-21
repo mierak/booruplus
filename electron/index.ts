@@ -2,9 +2,9 @@ import { app, dialog, BrowserWindow, ipcMain, IpcMainInvokeEvent, IpcMainEvent, 
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 import fs from 'fs';
 
-import { Settings } from '../store/types';
-import { SavePostDto } from '../types/processDto';
-import { Post } from '../types/gelbooruTypes';
+import { Settings } from '../src/store/types';
+import { SavePostDto } from '../src/types/processDto';
+import { Post } from '../src/types/gelbooruTypes';
 
 import path from 'path';
 

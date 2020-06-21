@@ -4,10 +4,10 @@ import styled from 'styled-components';
 import { Table, Card, Tag as AntTag } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 
-import { actions, thunks } from 'store/';
-import { TagHistory, AppDispatch, RootState } from 'store/types';
+import { actions, thunks } from '../../store';
+import { TagHistory, AppDispatch, RootState } from '../../store/types';
 
-import { getTagColor } from 'util/utils';
+import { getTagColor } from '../../util/utils';
 
 interface Props {
 	className?: string;
@@ -77,7 +77,7 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 				<a
 					onClick={(): void => {
 						dispatch(actions.downloadedSearchForm.setSelectedTags([record.tag]));
-						dispatch(thunks.downloadedSearchForm.fetchPosts);
+						dispatch(thunks.downloadedSearchForm.fetchPosts());
 						dispatch(actions.system.setActiveView('thumbnails'));
 					}}
 					style={{ float: 'right' }}

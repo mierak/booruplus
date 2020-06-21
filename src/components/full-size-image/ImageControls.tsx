@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ImageControl } from 'types/components';
+import { ImageControl } from '../../types/components';
 import { Button, Popover } from 'antd';
-import { getIcon } from '../../../util/componentUtils';
+import { getIcon } from '../../util/componentUtils';
 
 interface ContainerProps {
 	count: number;

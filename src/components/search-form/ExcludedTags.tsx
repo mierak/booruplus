@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { Tag as AntTag, Card } from 'antd';
 
-import { RootState, SearchMode } from '../../../store/types';
-import { actions } from '../../../store';
+import { RootState } from '../../store/types';
+import { actions } from '../../store';
 
-import { Tag } from '../../../types/gelbooruTypes';
-import { getTagColor } from '../../../util/utils';
+import { Tag } from '../../types/gelbooruTypes';
+import { getTagColor } from '../../util/utils';
 
 const StyledCard = styled(Card)`
 	border-color: ${(props): string => (props.theme === 'light' ? 'rgb(217, 217, 217);' : '#434343')};
@@ -19,7 +19,7 @@ const StyledCard = styled(Card)`
 `;
 
 interface Props {
-	mode: SearchMode;
+	mode: 'online' | 'offline';
 }
 
 const ExcludedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
@@ -27,7 +27,7 @@ const ExcludedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
 
 	const theme = useSelector((state: RootState) => state.settings.theme);
 	const excludededTags = useSelector(
-		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.excludededTags) || state.onlineSearchForm.excludededTags
+		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.excludedTags) || state.onlineSearchForm.excludedTags
 	);
 
 	const handleTagClose = (tag: Tag): void => {
@@ -68,7 +68,7 @@ const ExcludedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	};
 
 	return (
-		<StyledCard theme={theme} onDrop={handleDrop} onDragOver={allowDrop}>
+		<StyledCard theme={theme} onDrop={handleDrop} onDragOver={allowDrop} data-testid='excluded-tags-container'>
 			{renderExcludedTags()}
 		</StyledCard>
 	);

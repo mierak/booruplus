@@ -2,16 +2,17 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Select } from 'antd';
 
-import { RootState, SearchMode } from '../../../store/types';
-import { actions } from '../../../store';
+import { RootState } from '../../store/types';
+import { actions } from '../../store';
 
-import { Rating } from '../../../types/gelbooruTypes';
+import { Rating } from '../../types/gelbooruTypes';
 
 interface Props {
-	mode: SearchMode;
+	mode: 'online' | 'offline';
+	open?: boolean;
 }
 
-const RatingSelect: React.FunctionComponent<Props> = ({ mode }: Props) => {
+const RatingSelect: React.FunctionComponent<Props> = ({ mode, open }: Props) => {
 	const dispatch = useDispatch();
 	const rating = useSelector(
 		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.rating) || state.onlineSearchForm.rating
@@ -23,17 +24,17 @@ const RatingSelect: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	};
 
 	return (
-		<Select defaultValue={rating} value={rating} onChange={handleRatingSelect}>
-			<Select.Option key="any" value="any">
+		<Select defaultValue={rating} value={rating} onChange={handleRatingSelect} open={open} virtual={false}>
+			<Select.Option key='any' value='any'>
 				Any
 			</Select.Option>
-			<Select.Option key="safe" value="safe">
+			<Select.Option key='safe' value='safe'>
 				Safe
 			</Select.Option>
-			<Select.Option key="questionable" value="questionable">
+			<Select.Option key='questionable' value='questionable'>
 				Questionable
 			</Select.Option>
-			<Select.Option key="explicit" value="explicit">
+			<Select.Option key='explicit' value='explicit'>
 				Explicit
 			</Select.Option>
 		</Select>

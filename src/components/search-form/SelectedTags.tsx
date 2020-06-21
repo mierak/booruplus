@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { Tag as AntTag, Card } from 'antd';
 
-import { RootState, SearchMode } from '../../../store/types';
-import { actions } from '../../../store';
+import { RootState, SearchMode } from '../../store/types';
+import { actions } from '../../store';
 
-import { Tag } from '../../../types/gelbooruTypes';
-import { getTagColor } from '../../../util/utils';
+import { Tag } from '../../types/gelbooruTypes';
+import { getTagColor } from '../../util/utils';
 
 const StyledCard = styled(Card)`
 	border-color: ${(props): string => (props.theme === 'light' ? 'rgb(217, 217, 217);' : '#434343')};
@@ -55,6 +55,7 @@ const SelectedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	const renderSelectedTags = (): JSX.Element[] => {
 		return selectedTags.map((tag: Tag) => (
 			<AntTag
+				data-testid='tag-test'
 				key={tag.id}
 				color={getTagColor(tag)}
 				closable
@@ -69,7 +70,7 @@ const SelectedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	};
 
 	return (
-		<StyledCard theme={theme} onDrop={handleDrop} onDragOver={allowDrop}>
+		<StyledCard theme={theme} onDrop={handleDrop} onDragOver={allowDrop} data-testid='selected-tags-container'>
 			{renderSelectedTags()}
 		</StyledCard>
 	);

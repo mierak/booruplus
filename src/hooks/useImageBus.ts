@@ -1,10 +1,10 @@
-import { Post } from '../../types/gelbooruTypes';
-import { LoadPostResponse, SuccessfulLoadPostResponse, SavePostDto } from '../../types/processDto';
+import { Post } from '../types/gelbooruTypes';
+import { LoadPostResponse, SuccessfulLoadPostResponse, SavePostDto } from '../types/processDto';
 
 const sendImage = async (post: Post, buffer: ArrayBuffer): Promise<void> => {
 	const dto: SavePostDto = {
 		data: buffer,
-		post
+		post,
 	};
 	return window.api.invoke('save-image', dto);
 };

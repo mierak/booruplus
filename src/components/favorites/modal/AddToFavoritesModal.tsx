@@ -4,10 +4,10 @@ import styled from 'styled-components';
 import { Modal, Tree, Button } from 'antd';
 import { EventDataNode, DataNode } from 'rc-tree/lib/interface';
 
-import { actions, thunks } from 'store/';
-import { RootState, AppDispatch, TreeNode } from 'store/types';
+import { actions, thunks } from '../../../store';
+import { RootState, AppDispatch, TreeNode } from '../../../store/types';
 
-import { openNotificationWithIcon } from 'types/components';
+import { openNotificationWithIcon } from '../../../types/components';
 
 interface Info {
 	event: string;
@@ -25,7 +25,7 @@ const StyledDirectoryTree = styled(Tree.DirectoryTree)`
 const AddtoFavoritesModal: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const treeData = useSelector((state: RootState) => state.favorites.treeData);
+	const treeData = useSelector((state: RootState) => state.favorites.rootNode?.children);
 	const expandedKeys = useSelector((state: RootState) => state.favorites.expandedKeys);
 	const postIdsToFavorite = useSelector((state: RootState) => state.modals.addToFavoritesModal.postIdsToFavorite);
 
@@ -44,16 +44,14 @@ const AddtoFavoritesModal: React.FunctionComponent = () => {
 			openNotificationWithIcon(
 				'error',
 				'Failed to add post to directory',
-				'Could not add post to directory because no post id was supplied.'
+				'Could not add post to directory because no post id was supplied.',
+				5
 			);
+			dispatch(actions.modals.setVisible(false));
 			return;
 		}
-		try {
-			await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToFavorite, key: selectedNode?.key ?? 0 }));
-			openNotificationWithIcon('success', 'Success', 'Post was successfuly added to directory');
-		} catch (err) {
-			openNotificationWithIcon('warning', 'Warning!', `Could not add post to directory: Reason: ${err}`, 5);
-		}
+		await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToFavorite, key: selectedNode?.key ?? 0 }));
+		openNotificationWithIcon('success', 'Success', 'Post was successfuly added to directory');
 		dispatch(actions.modals.setVisible(false));
 	};
 

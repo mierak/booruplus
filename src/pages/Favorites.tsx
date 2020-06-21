@@ -3,13 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Layout } from 'antd';
 
-import { actions, thunks } from '../../store';
+import { actions, thunks } from '../store';
 import ThumbnailsList from '../components/ThumbnailsList';
 
 import SiderContent from '../components/favorites/SiderContent';
-import { Post } from 'types/gelbooruTypes';
-import { RootState, AppDispatch } from 'store/types';
-import { CardAction, openNotificationWithIcon } from 'types/components';
+import { Post } from '../types/gelbooruTypes';
+import { RootState, AppDispatch } from '../store/types';
+import { CardAction, openNotificationWithIcon } from '../types/components';
 
 interface Props {
 	className?: string;
@@ -41,14 +41,9 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleRemoveFromDirectory = async (post: Post): Promise<void> => {
-		try {
-			await dispatch(thunks.favorites.removePostFromActiveDirectory(post.id));
-			if (!activeDirectory) throw new Error('Could not reload posts in active directory, because active directory is undefined');
-			await dispatch(thunks.favorites.fetchPostsInDirectory(activeDirectory)); // TODO change to just remove from store/posts array
-			openNotificationWithIcon('success', 'Success', 'Successfuly removed post from directory');
-		} catch (err) {
-			openNotificationWithIcon('error', 'Error!', `Reason: ${err}`, 5);
-		}
+		await dispatch(thunks.favorites.removePostsFromActiveDirectory([post.id]));
+		await dispatch(thunks.favorites.fetchPostsInDirectory(activeDirectory)); // TODO change to just remove from store/posts array
+		openNotificationWithIcon('success', 'Success', 'Successfuly removed post from directory');
 	};
 
 	const handleMoveToDirectory = (post: Post): void => {

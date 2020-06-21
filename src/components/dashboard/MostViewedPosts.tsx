@@ -4,10 +4,10 @@ import styled from 'styled-components';
 import { Card, Empty, Tooltip } from 'antd';
 import { CheckCircleTwoTone, ReloadOutlined } from '@ant-design/icons';
 
-import { actions, thunks } from 'store/';
-import { AppDispatch, RootState } from 'store/types';
+import { actions, thunks } from '../../store';
+import { AppDispatch, RootState } from '../../store/types';
 
-import { Post } from 'types/gelbooruTypes';
+import { Post } from '../../types/gelbooruTypes';
 
 const StyledMostViewedGrid = styled.div`
 	display: grid;
@@ -94,7 +94,7 @@ const MostViewedPosts: React.FunctionComponent = () => {
 			return (
 				<StyledThumbnailCard hoverable key={post.id} onClick={(): void => handleMostViewedImageClick(post)}>
 					<StyledImageContainer>
-						<img src={`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`} />
+						<img src={`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`} alt="most-viewed-thumbnail" />
 					</StyledImageContainer>
 					<StyledMeta
 						description={

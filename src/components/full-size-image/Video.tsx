@@ -2,16 +2,16 @@ import React, { useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
-import { useLoadImage } from 'hooks/useImageBus';
-import { AppDispatch } from 'store/types';
+import { useLoadImage } from '../../hooks/useImageBus';
+import { AppDispatch } from '../../store/types';
 
-import { Post } from 'types/gelbooruTypes';
+import { Post } from '../../types/gelbooruTypes';
 
-import { isFilenameVideo } from 'util/utils';
-import { actions } from 'store/';
+import { isFilenameVideo } from '../../util/utils';
+import { actions } from '../../store';
 import ImageControls from './ImageControls';
 import TagsPopover from './TagsPopover';
-import { ImageControl } from 'types/components';
+import { ImageControl } from '../../types/components';
 
 interface Props {
 	className?: string;
@@ -33,6 +33,7 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 
 	const playVideo = (sourceElement: HTMLSourceElement): void => {
 		if (videoRef.current) {
+			videoRef.current.muted = true;
 			videoRef.current.appendChild(sourceElement);
 			videoRef.current.load();
 			videoRef.current.play();
@@ -43,6 +44,7 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 		if (videoRef.current && isFilenameVideo(post.image)) {
 			let objectUrl = '';
 			const source = document.createElement('source');
+			source.setAttribute('data-testid', 'video-source');
 			dispatch(actions.loadingStates.setFullImageLoading(true));
 			source.onload = (): void => {
 				dispatch(actions.loadingStates.setFullImageLoading(false));
@@ -51,7 +53,6 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 				post,
 				(response) => {
 					const buffer = new Blob([response.data]);
-
 					objectUrl = URL.createObjectURL(buffer);
 					source.setAttribute('src', objectUrl);
 					playVideo(source);
@@ -98,7 +99,7 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 
 	return (
 		<Container className={className}>
-			<StyledVideo ref={videoRef} key={post.id} controls autoPlay loop muted />
+			<StyledVideo ref={videoRef} key={post.id} controls autoPlay loop aria-label='video' />
 			<ImageControls actions={imageControls} />
 		</Container>
 	);

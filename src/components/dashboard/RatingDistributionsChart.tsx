@@ -5,8 +5,8 @@ import { Pie } from 'ant-design-pro/lib/Charts';
 import { Card, Empty, Spin } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 
-import { thunks } from 'store/';
-import { RootState, AppDispatch } from 'store/types';
+import { thunks } from '../../store';
+import { RootState, AppDispatch } from '../../store/types';
 
 const StyledRatingDistributionsCard = styled(Card)`
 	height: 100%;

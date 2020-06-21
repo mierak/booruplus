@@ -5,11 +5,11 @@ import { FilterDropdownProps, TablePaginationConfig } from 'antd/lib/table/inter
 import { SearchOutlined } from '@ant-design/icons';
 import { Table, Tag as AntTag, Space, Button } from 'antd';
 
-import { thunks } from '../../store';
-import { RootState, AppDispatch } from '../../store/types';
+import { thunks } from '../store';
+import { RootState, AppDispatch } from '../store/types';
 
-import { Tag, TagType } from '../../types/gelbooruTypes';
-import { capitalize, getTagColor } from '../../util/utils';
+import { Tag, TagType } from '../types/gelbooruTypes';
+import { capitalize, getTagColor } from '../util/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
 import TagSearchFilter from '../components/tags/TagSearchFilter';
 import TypeSearchFilter from '../components/tags/TypeSearchFilter';
@@ -18,6 +18,7 @@ const { Column } = Table;
 
 interface Props {
 	className?: string;
+	tagsPerPage?: number;
 }
 
 const Container = styled.div`
@@ -35,7 +36,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 	const [pattern, setPattern] = useState('');
 	const [selectedTypes, setSelectedTypes] = useState<TagType[]>(['artist', 'character', 'copyright', 'metadata', 'tag']);
 	const [page, setPage] = useState<number>(1);
-	const tagsPerPage = 16;
+	const tagsPerPage = props.tagsPerPage ?? 16;
 
 	useEffect(() => {
 		dispatch(thunks.tags.getCount())
@@ -102,10 +103,10 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 
 		return (
 			<Space>
-				<Button type="link" onClick={handleOnline}>
+				<Button type='link' onClick={handleOnline}>
 					Online Search
 				</Button>
-				<Button type="link" onClick={handleOffline}>
+				<Button type='link' onClick={handleOffline}>
 					Offline Search
 				</Button>
 			</Space>
@@ -119,22 +120,22 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 	return (
 		<Container className={props.className}>
 			<Table
-				size="small"
+				size='small'
 				dataSource={tags}
 				pagination={getPaginationProps()}
 				loading={tagsLoading}
-				rowKey="id"
+				rowKey='id'
 				bordered
 				rowClassName={(_record, index): string => (index % 2 === 0 ? 'table-row-light' : 'table-row-dark')}
 			>
-				<Column title="Id" dataIndex="id" width={100} />
-				<Column title="Tag" dataIndex="tag" ellipsis filterIcon={<SearchOutlined />} filterDropdown={renderTagSearchFilterDropdown} />
-				<Column title="Type" dataIndex="type" width={100} filterDropdown={renderTypeSearchFilterDropdown} render={renderTag} />
-				<Column title="Count" dataIndex="count" width={100} />
-				<Column title="Favorites Count" dataIndex="favoriteCount" />
-				<Column title="Blacklisted Count" dataIndex="blacklistedCount" />
-				<Column title="Downloaded Count" dataIndex="downloadedCount" />
-				<Column title="Actions" dataIndex="" width={260} render={renderActions} />
+				<Column title='Id' dataIndex='id' width={100} />
+				<Column title='Tag' dataIndex='tag' ellipsis filterIcon={<SearchOutlined />} filterDropdown={renderTagSearchFilterDropdown} />
+				<Column title='Type' dataIndex='type' width={100} filterDropdown={renderTypeSearchFilterDropdown} render={renderTag} />
+				<Column title='Count' dataIndex='count' width={100} />
+				<Column title='Favorites Count' dataIndex='favoriteCount' />
+				<Column title='Blacklisted Count' dataIndex='blacklistedCount' />
+				<Column title='Downloaded Count' dataIndex='downloadedCount' />
+				<Column title='Actions' dataIndex='' width={260} render={renderActions} />
 			</Table>
 		</Container>
 	);

@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import { EventDataNode } from 'rc-tree/lib/interface';
 import { Dropdown, Menu, Tree } from 'antd';
 
-import { actions, thunks } from 'store';
-import { AppDispatch, RootState } from 'store/types';
+import { actions, thunks } from '../../store';
+import { AppDispatch, RootState } from '../../store/types';
 
 interface PProps {
 	x: number;
@@ -64,7 +64,7 @@ const SiderContent: React.FunctionComponent = () => {
 	const renderMenu = (): JSX.Element => {
 		const addAction = (
 			<Menu.Item
-				key="1"
+				key='1'
 				onClick={(): void => {
 					setVisible(false);
 					dispatch(actions.modals.showModal('add-favorites-directory'));
@@ -79,7 +79,7 @@ const SiderContent: React.FunctionComponent = () => {
 					setVisible(false);
 					dispatch(actions.modals.showModal('delete-favorites-directory'));
 				}}
-				key="2"
+				key='2'
 			>
 				Delete
 			</Menu.Item>
@@ -90,7 +90,7 @@ const SiderContent: React.FunctionComponent = () => {
 					setVisible(false);
 					dispatch(actions.modals.showModal('rename-favorites-directory'));
 				}}
-				key="3"
+				key='3'
 			>
 				Rename
 			</Menu.Item>
@@ -144,6 +144,7 @@ const SiderContent: React.FunctionComponent = () => {
 				blockNode
 				treeData={rootNode?.children}
 				onRightClick={handleTreeRightClick}
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				onExpand={(_, { expanded, node }): void => {
 					node.expanded = true;
 				}}
@@ -159,7 +160,7 @@ const SiderContent: React.FunctionComponent = () => {
 			<Dropdown overlay={renderMenu()} visible={visible}>
 				<DummyContextMenuPositionerDiv x={align[0]} y={align[1]} />
 			</Dropdown>
-			{<StyledTreeEmptySpace onMouseDown={handleEmptySpaceClick} />}
+			{<StyledTreeEmptySpace data-testid='sider-content-empty-space' onMouseDown={handleEmptySpaceClick} />}
 		</StyledSiderContentContainer>
 	);
 };

@@ -4,12 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { PageHeader, Button, Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
-import { actions, thunks } from '../../store';
-import { RootState, AppDispatch } from '../../store/types';
+import { actions, thunks } from '../store';
+import { RootState, AppDispatch } from '../store/types';
 
 import ThumbnailsList from '../components/ThumbnailsList';
-import { CardAction, openNotificationWithIcon } from 'types/components';
-import { Post } from 'types/gelbooruTypes';
+import { CardAction, openNotificationWithIcon } from '../types/components';
+import { Post } from '../types/gelbooruTypes';
 
 interface Props {
 	className?: string;
@@ -42,7 +42,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.selectedTags) || state.onlineSearchForm.selectedTags
 	);
 	const excludedTags = useSelector(
-		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.excludededTags) || state.onlineSearchForm.excludededTags
+		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.excludedTags) || state.onlineSearchForm.excludedTags
 	);
 	const rating = useSelector(
 		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.rating) || state.onlineSearchForm.rating
@@ -92,7 +92,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			popConfirm: {
 				okText: 'Blacklist',
 				cancelText: 'Cancel',
-				title: 'Are you sure you want to blacklist this image?',
+				title: 'Blacklist image?',
 			},
 		},
 		{
@@ -120,7 +120,6 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 
 	const handleDownloadWholeSearch = async (): Promise<void> => {
 		dispatch(thunks.posts.downloadWholeSearch());
-		close();
 	};
 
 	const handleBlacklistAll = (): void => {
@@ -155,28 +154,28 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 
 	const renderButtons = (): JSX.Element[] => {
 		return [
-			<Button key="9" onClick={handleDownloadWholeSearch}>
+			<Button key='9' onClick={handleDownloadWholeSearch}>
 				Download Search
 			</Button>,
-			<Button key="8" onClick={handleSaveSearch}>
+			<Button key='8' onClick={handleSaveSearch}>
 				Save Search
 			</Button>,
-			<Button key="7" onClick={handleBlacklistAll}>
+			<Button key='7' onClick={handleBlacklistAll}>
 				Blacklist All
 			</Button>,
-			<Button key="6" onClick={handleBlacklistSelected}>
+			<Button key='6' onClick={handleBlacklistSelected}>
 				Blacklist Selected
 			</Button>,
-			<Button key="5" onClick={handleAddAllToFavorites}>
+			<Button key='5' onClick={handleAddAllToFavorites}>
 				Add All To Favorites
 			</Button>,
-			<Button key="4" onClick={handleAddSelectedToFavorites}>
+			<Button key='4' onClick={handleAddSelectedToFavorites}>
 				Add Selected To Favorites
 			</Button>,
-			<Button key="3" onClick={handleDownloadAll}>
+			<Button key='3' onClick={handleDownloadAll}>
 				Download All
 			</Button>,
-			<Button key="2" onClick={handleDownloadSelected}>
+			<Button key='2' onClick={handleDownloadSelected}>
 				Download Selected
 			</Button>,
 		];
@@ -184,7 +183,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 
 	return (
 		<Container className={props.className}>
-			<PageHeader ghost={false} title="Image List" extra={renderButtons()}></PageHeader>
+			<PageHeader ghost={false} title='Image List' extra={renderButtons()}></PageHeader>
 			{renderThumbnailList()}
 		</Container>
 	);

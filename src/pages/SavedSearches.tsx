@@ -1,15 +1,14 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Table, Tag, Row, Col, Spin, Card, Popconfirm, Tooltip } from 'antd';
+import { Table, Tag, Row, Col, Card, Popconfirm, Tooltip, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
-import { actions, thunks } from '../../store';
-import { RootState, AppDispatch } from '../../store/types';
+import { actions, thunks } from '../store';
+import { RootState, AppDispatch } from '../store/types';
 
-import { SavedSearch, Tag as GelbooruTag } from '../../types/gelbooruTypes';
-import { LoadingOutlined } from '@ant-design/icons';
-import { getTagColor } from '../../util/utils';
+import { SavedSearch, Tag as GelbooruTag } from '../types/gelbooruTypes';
+import { getTagColor } from '../util/utils';
 
 const { Column } = Table;
 
@@ -26,13 +25,6 @@ const Container = styled.div`
 const StyledTag = styled(Tag)`
 	margin-top: 5px;
 	margin-bottom: 5px;
-`;
-
-const StyledSpin = styled(Spin)`
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform: translate(0, -50%);
 `;
 
 const StyledCard = styled(Card)`
@@ -70,7 +62,6 @@ const StyledPreviewsContainer = styled.div`
 const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const savedSearches = useSelector((state: RootState) => state.savedSearches.savedSearches);
-	const isLoading = useSelector((state: RootState) => state.onlineSearchForm.loading);
 
 	useEffect(() => {
 		dispatch(thunks.savedSearches.loadSavedSearchesFromDb()); //TODO loading state
@@ -96,25 +87,29 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 		return (
 			<Row>
 				<Col span={8}>
-					<a
+					<Button
+						type='link'
 						onClick={(): void => {
 							handleOnlineSearch(record);
 						}}
 					>
 						Online
-					</a>
+					</Button>
 				</Col>
 				<Col span={8}>
-					<a
+					<Button
+						type='link'
 						onClick={(): void => {
 							handleOfflineSearch(record);
 						}}
 					>
 						Offline
-					</a>
+					</Button>
 				</Col>
 				<Col span={8}>
-					<a onClick={(): void => handleDelete(record)}>Delete</a>
+					<Button type='link' onClick={(): void => handleDelete(record)}>
+						Delete
+					</Button>
 				</Col>
 			</Row>
 		);
@@ -141,13 +136,14 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 	const renderPreviewActions = (record: SavedSearch, id: number): JSX.Element[] => {
 		return [
 			<Popconfirm
-				title="Delete preview from Saved Search?"
-				okText="Delete"
-				cancelText="Cancel"
-				key="delete"
+				data-testid='button-delete-preview'
+				title='Delete preview from Saved Search?'
+				okText='Delete'
+				cancelText='Cancel'
+				key='delete'
 				onConfirm={(): void => handlePreviewDelete(record, id)}
 			>
-				<Tooltip title="Delete preview" destroyTooltipOnHide>
+				<Tooltip title='Delete preview' destroyTooltipOnHide>
 					<DeleteOutlined />
 				</Tooltip>
 			</Popconfirm>,
@@ -160,7 +156,7 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 				{record.previews.map((preview) => {
 					return (
 						<StyledCard key={preview.id} actions={renderPreviewActions(record, preview.id)}>
-							<StyledPreviewImage src={preview.objectUrl} />
+							<StyledPreviewImage src={preview.objectUrl} data-testid='preview-image' />
 						</StyledCard>
 					);
 				})}
@@ -172,11 +168,11 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 		return (
 			<Table
 				dataSource={savedSearches}
-				rowKey="id"
+				rowKey='id'
 				pagination={false}
 				bordered
 				sortDirections={['ascend', 'descend']}
-				size="small"
+				size='small'
 				rowClassName={(record, index): string => (index % 2 === 0 ? 'table-row-light' : 'table-row-dark')}
 				expandable={{
 					rowExpandable: (record: SavedSearch): boolean => record.lastSearched !== undefined,
@@ -184,20 +180,16 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 				expandedRowRender={renderPreviews}
 				style={{ overflowX: 'hidden' }}
 			>
-				<Column title="Tags" dataIndex="tags" key="tagsCol" render={renderTags} filterDropdownVisible={true} />
-				<Column title="Excluded Tags" dataIndex="excludedTags" key="excludedTagsCol" render={renderTags} filterDropdownVisible={true} />
-				<Column title="Rating" dataIndex="rating" key="ratingCol" />
-				<Column title="Last Searched" dataIndex="lastSearched" key="lastSearchedCol" render={renderLastSearched} />
-				<Column title="Actions" dataIndex="" key="action" width={220} render={renderActions} />
+				<Column title='Tags' dataIndex='tags' key='tagsCol' render={renderTags} filterDropdownVisible={true} />
+				<Column title='Excluded Tags' dataIndex='excludedTags' key='excludedTagsCol' render={renderTags} filterDropdownVisible={true} />
+				<Column title='Rating' dataIndex='rating' key='ratingCol' />
+				<Column title='Last Searched' dataIndex='lastSearched' key='lastSearchedCol' render={renderLastSearched} />
+				<Column title='Actions' dataIndex='' key='action' width={220} render={renderActions} />
 			</Table>
 		);
 	};
 
-	const renderSpinner = (): JSX.Element => {
-		return <StyledSpin size="large" indicator={<LoadingOutlined style={{ fontSize: '150px' }} />} />;
-	};
-
-	return <Container className={props.className}>{isLoading ? renderSpinner() : renderTable()}</Container>;
+	return <Container className={props.className}>{renderTable()}</Container>;
 };
 
 export default SavedSearches;

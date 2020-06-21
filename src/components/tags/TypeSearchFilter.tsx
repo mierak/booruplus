@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Checkbox, Space, Button } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
-import { TagType } from 'types/gelbooruTypes';
-import { capitalize } from 'util/utils';
+import { TagType } from '../../types/gelbooruTypes';
+import { capitalize } from '../../util/utils';
 
 interface Props {
 	className?: string;
@@ -42,7 +42,7 @@ const TypeSearchFilter: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	return (
-		<div style={{ padding: 8 }} onKeyPress={handleEnterPress}>
+		<div style={{ padding: 8 }} onKeyPress={handleEnterPress} data-testid="type-search-filter-container">
 			<Space direction="vertical">
 				{types.map((type) => {
 					return (

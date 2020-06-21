@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+// eslint-disable-next-line no-undef
 const { contextBridge, ipcRenderer } = require('electron');
 
 //TODO extract valid channels to enum
@@ -14,7 +16,7 @@ contextBridge.exposeInMainWorld('api', {
 			'settings-loaded',
 			'theme-changed',
 			'open-in-browser',
-			'open-path'
+			'open-path',
 		];
 		if (validChannels.includes(channel)) {
 			ipcRenderer.send(channel, data);
@@ -30,7 +32,7 @@ contextBridge.exposeInMainWorld('api', {
 	removeListener: (channel, listener) => {
 		ipcRenderer.removeListener(channel, listener);
 	},
-	removeAllListeners: channel => {
+	removeAllListeners: (channel) => {
 		ipcRenderer.removeAllListeners(channel);
 	},
 	invoke: (channel, data) => {
@@ -42,5 +44,5 @@ contextBridge.exposeInMainWorld('api', {
 				console.error('invoke error');
 			}
 		}
-	}
+	},
 });

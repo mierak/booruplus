@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Layout } from 'antd';
 
-import { actions } from '../../store';
-import { RootState } from '../../store/types';
+import { actions } from '../store';
+import { RootState } from '../store/types';
 
 import ThumbnailsList from '../components/ThumbnailsList';
 import FullSizeImage from '../components/FullSizeImage';
@@ -53,7 +53,7 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 					dispatch(actions.system.setImageViewThumbnailsCollapsed(!thumbnailsListvisible));
 				}}
 			>
-				<StyledThumbnailsList />
+				<StyledThumbnailsList sidebar />
 			</Layout.Sider>
 		</Container>
 	);

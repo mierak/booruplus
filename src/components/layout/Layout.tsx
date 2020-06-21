@@ -13,8 +13,8 @@ import {
 	DownloadOutlined,
 } from '@ant-design/icons';
 
-import { actions } from '../../../store';
-import { RootState, View } from '../../../store/types';
+import { actions } from '../../store';
+import { RootState, View } from '../../store/types';
 
 import Modals from '../Modals';
 import Drawers from './Drawers';

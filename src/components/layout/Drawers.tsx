@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Drawer } from 'antd';
 
-import { AppDispatch, RootState } from 'store/types';
-import { actions } from 'store/';
+import { AppDispatch, RootState } from '../../store/types';
+import { actions } from '../../store';
 import DownloadedSearchForm from '../DownloadedSearchForm';
 import OnlineSearchForm from '../OnlineSearchForm';
 import Tasks from '../../pages/Tasks';

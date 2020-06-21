@@ -2,11 +2,11 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button } from 'antd';
 
-import { RootState, SearchMode } from '../../../store/types';
-import { thunks } from '../../../store';
+import { RootState } from '../../store/types';
+import { thunks } from '../../store';
 
 interface Props {
-	mode: SearchMode;
+	mode: 'online' | 'offline';
 }
 
 const SaveSearchButton: React.FunctionComponent<Props> = ({ mode }: Props) => {
@@ -16,7 +16,7 @@ const SaveSearchButton: React.FunctionComponent<Props> = ({ mode }: Props) => {
 		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.selectedTags) || state.onlineSearchForm.selectedTags
 	);
 	const excludedTags = useSelector(
-		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.excludededTags) || state.onlineSearchForm.excludededTags
+		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.excludedTags) || state.onlineSearchForm.excludedTags
 	);
 	const rating = useSelector(
 		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.rating) || state.onlineSearchForm.rating

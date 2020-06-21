@@ -2,14 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
-import { actions } from 'store/';
-import { AppDispatch } from 'store/types';
+import { actions } from '../../store';
+import { AppDispatch } from '../../store/types';
 
-import { Post } from 'types/gelbooruTypes';
+import { Post } from '../../types/gelbooruTypes';
 import TagsPopover from './TagsPopover';
-import { ImageControl } from 'types/components';
+import { ImageControl } from '../../types/components';
 import ImageControls from './ImageControls';
-import { useLoadImage } from 'hooks/useImageBus';
+import { useLoadImage } from '../../hooks/useImageBus';
 
 interface Props {
 	className?: string;
@@ -54,16 +54,13 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 		}
 		loadImage(
 			props.post,
-			async (response) => {
+			(response) => {
 				const buffer = new Blob([response.data]);
-
-				if (url.includes('gif')) {
-					objectUrl = URL.createObjectURL(buffer);
-					setUrl(objectUrl);
-				}
+				objectUrl = URL.createObjectURL(buffer);
+				setUrl(objectUrl);
 			},
 			(response) => {
-				url.includes('gif') && setUrl(response.fileUrl);
+				setUrl(response.fileUrl);
 			}
 		);
 
@@ -93,7 +90,7 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 	];
 	return (
 		<Container className={props.className}>
-			<StyledImg src={props.post.fileUrl} ref={imgRef} />
+			<StyledImg src={url} ref={imgRef} data-testid='full-image-gif' />
 			<ImageControls actions={imageControls} />
 		</Container>
 	);

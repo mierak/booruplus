@@ -2,7 +2,7 @@ import React from 'react';
 import { Empty, Button } from 'antd';
 import { useDispatch } from 'react-redux';
 
-import { actions } from '../../store';
+import { actions } from '../store';
 
 interface Props {
 	className?: string;

@@ -4,10 +4,10 @@ import styled from 'styled-components';
 import { Modal, Tree, Button } from 'antd';
 import { EventDataNode, DataNode } from 'rc-tree/lib/interface';
 
-import { actions, thunks } from 'store/';
-import { RootState, AppDispatch, TreeNode } from 'store/types';
+import { actions, thunks } from '../../../store';
+import { RootState, AppDispatch, TreeNode } from '../../../store/types';
 
-import { openNotificationWithIcon } from 'types/components';
+import { openNotificationWithIcon } from '../../../types/components';
 
 interface Info {
 	event: string;
@@ -25,7 +25,7 @@ const StyledDirectoryTree = styled(Tree.DirectoryTree)`
 const MoveDirectoryModal: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const treeData = useSelector((state: RootState) => state.favorites.treeData);
+	const treeData = useSelector((state: RootState) => state.favorites.rootNode?.children);
 	const expandedKeys = useSelector((state: RootState) => state.favorites.expandedKeys);
 	const postIdsToFavorite = useSelector((state: RootState) => state.modals.addToFavoritesModal.postIdsToFavorite);
 
@@ -44,28 +44,24 @@ const MoveDirectoryModal: React.FunctionComponent = () => {
 			openNotificationWithIcon(
 				'error',
 				'Failed to add post to directory',
-				'Could not add post to directory because no post id was supplied.'
+				'Could not add post to directory because no post id was supplied.',
+				5
 			);
+			dispatch(actions.modals.setVisible(false));
 			return;
 		}
-		try {
-			dispatch(actions.favorites.setSelectedNodeKey(selectedNode ? parseInt(selectedNode.key.toString()) : 0));
-			for (const id of postIdsToFavorite) {
-				await dispatch(thunks.favorites.removePostFromActiveDirectory(id));
-				await dispatch(thunks.favorites.addPostsToDirectory({ ids: [id], key: !selectedNode ? 'root' : selectedNode.key }));
-			}
-			await dispatch(thunks.favorites.fetchPostsInDirectory());
-			openNotificationWithIcon('success', 'Success', 'Successfuly moved post to folder');
-		} catch (err) {
-			openNotificationWithIcon('error', 'Error!', `Reason: '${err}`, 5);
-		}
+		dispatch(actions.favorites.setSelectedNodeKey(selectedNode ? parseInt(selectedNode.key.toString()) : 0));
+		await dispatch(thunks.favorites.removePostsFromActiveDirectory(postIdsToFavorite));
+		await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToFavorite, key: !selectedNode ? 0 : selectedNode.key }));
+		await dispatch(thunks.favorites.fetchPostsInDirectory());
+		openNotificationWithIcon('success', 'Success', 'Successfuly moved post to folder');
 		dispatch(actions.modals.setVisible(false));
 	};
 
 	const renderModalFooter = (): React.ReactNode => {
 		return [
 			<Button type="primary" key="add" onClick={handleConfirm}>
-				Add
+				Move
 			</Button>,
 			<Button key="cancel" onClick={handleClose}>
 				Cancel

@@ -2,14 +2,14 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { useLoadImage } from 'hooks/useImageBus';
+import { useLoadImage } from '../../../hooks/useImageBus';
 import { Renderer } from './renderer';
 
-import { AppDispatch, RootState } from 'store/types';
-import { actions } from 'store/';
+import { AppDispatch, RootState } from '../../../store/types';
+import { actions } from '../../../store';
 
-import { Post } from 'types/gelbooruTypes';
-import { ImageControl } from 'types/components';
+import { Post } from '../../../types/gelbooruTypes';
+import { ImageControl } from '../../../types/components';
 
 import TagsPopover from '../TagsPopover';
 import ImageControls from '../ImageControls';
@@ -166,9 +166,9 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 	}, [url]);
 
 	return (
-		<Container ref={containerRef} className={className}>
+		<Container ref={containerRef} className={className} data-testid='controllable-image-container'>
 			{showControls && <ImageControls actions={imageControls} />}
-			<canvas ref={viewportRef} height={1000} width={1000} />
+			<canvas ref={viewportRef} height={1000} width={1000} aria-label='canvas' />
 			<LoadingMask visible={isLoading} />
 		</Container>
 	);

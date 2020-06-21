@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import { FolderOpenOutlined, FolderOutlined } from '@ant-design/icons';
 import { Form, Input, Button, Select } from 'antd';
 
-import { AppDispatch, RootState } from 'store/types';
-import { thunks } from 'store/';
+import { AppDispatch, RootState } from '../../store/types';
+import { thunks } from '../../store';
 
 const { Item } = Form;
 

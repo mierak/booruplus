@@ -1,12 +1,13 @@
 import React from 'react';
-import { Modal, Button, Tabs, notification } from 'antd';
-import { actions, thunks } from 'store/';
+import { Modal, Button, Tabs } from 'antd';
+import { actions, thunks } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from 'store/types';
+import { AppDispatch, RootState } from '../../store/types';
 import General from './General';
 import Dashboard from './Dashboard';
 import Gelbooru from './Gelbooru';
-import { validateApiKey } from 'util/utils';
+import { validateApiKey } from '../../util/utils';
+import { openNotificationWithIcon } from '../../types/components';
 
 interface Props {
 	className?: string;
@@ -28,17 +29,9 @@ const SettingsModal: React.FunctionComponent<Props> = (props: Props) => {
 		if (validateApiKey(apiKey)) {
 			await dispatch(thunks.settings.saveSettings());
 			dispatch(actions.modals.setVisible(false));
-			notification.success({
-				message: 'Settings saved',
-				description: 'Settings were succesfuly saved to database',
-				duration: 2,
-			});
+			openNotificationWithIcon('success', 'Settings saved', 'Settings were succesfuly saved to database', 2);
 		} else {
-			notification.error({
-				message: 'Invalid API key',
-				description: 'Please enter valid API key',
-				duration: 0,
-			});
+			openNotificationWithIcon('error', 'Invalid API key', 'Please enter valid API key', 5);
 		}
 	};
 

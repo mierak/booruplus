@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Descriptions, Form, Input } from 'antd';
 
-import { AppDispatch, RootState } from 'store/types';
-import { actions } from 'store/';
+import { AppDispatch, RootState } from '../../store/types';
+import { actions } from '../../store';
 
-import { validateApiKey } from 'util/utils';
+import { validateApiKey } from '../../util/utils';
 
 interface ApiKeyValidationStatus {
 	validateStatus: 'error' | 'success' | '';
@@ -30,6 +30,7 @@ const Gelbooru: React.FunctionComponent = () => {
 				message: 'Wrong API key format. Did you copy it properly?',
 				validateStatus: 'error',
 			});
+			return;
 		} else {
 			setApiKeyValidationStatus({
 				message: '',

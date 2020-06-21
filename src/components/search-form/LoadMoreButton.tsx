@@ -1,11 +1,11 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { Button } from 'antd';
 
-import { AppDispatch, RootState, ThunkApi } from 'store/types';
-import { thunks } from 'store/';
-import { AsyncThunkAction } from '@reduxjs/toolkit';
-import { Post } from 'types/gelbooruTypes';
+import { AppDispatch, RootState, ThunkApi } from '../../store/types';
+import { thunks } from '../../store';
+import { Post } from '../../types/gelbooruTypes';
 
 interface Props {
 	className?: string;
@@ -24,12 +24,8 @@ const LoadMoreButton: React.FunctionComponent<Props> = ({ className }: Props) =>
 			case 'offline':
 			case 'saved-search-offline':
 				return thunks.downloadedSearchForm.fetchMorePosts;
-			case 'favorites':
+			default:
 				break;
-			//return thunks.posts.fetchFavorites;
-			case 'most-viewed':
-				break;
-			//return thunks.posts.fetchMostViewedPosts; // CONSIDER not needed?
 		}
 	};
 

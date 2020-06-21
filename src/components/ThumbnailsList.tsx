@@ -3,19 +3,20 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-import { actions } from 'store';
-import { RootState } from 'store/types';
+import { actions } from '../store';
+import { RootState } from '../store/types';
 
 import Thumbnail from './Thumbnail';
 import EmptyThumbnails from './EmptyThumbnails';
 import LoadMoreButton from './search-form/LoadMoreButton';
-import { CardAction, ContextMenu } from 'types/components';
+import { CardAction, ContextMenu } from '../types/components';
 
 interface Props {
 	className?: string;
 	emptyDataLogoCentered?: boolean;
 	contextMenu?: ContextMenu[];
 	actions?: CardAction[];
+	sidebar?: boolean;
 }
 
 interface ContainerProps {
@@ -54,12 +55,11 @@ const StyledLoadMoreButton = styled(LoadMoreButton)`
 const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 	const postCount = useSelector((state: RootState) => state.posts.posts.length);
-	const activeView = useSelector((state: RootState) => state.system.activeView);
 	const activePostIndex = useSelector((state: RootState) => state.posts.activePostIndex);
 	const searchMode = useSelector((state: RootState) => state.system.searchMode);
 
 	useEffect(() => {
-		if (activeView === 'image') {
+		if (props.sidebar) {
 			const list = document.getElementById('thumbnails-list');
 			if (list && activePostIndex) {
 				const thumbnailHeight = props.actions !== undefined ? 230 : 190;
@@ -114,7 +114,12 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 
 	return (
 		<>
-			<Container className={props.className} id="thumbnails-list" height={props.actions !== undefined ? '200px' : '170px'}>
+			<Container
+				className={props.className}
+				id='thumbnails-list'
+				height={props.actions !== undefined ? '200px' : '170px'}
+				data-testid='asdftest'
+			>
 				{postCount === 0 ? renderNoData() : renderThumbnails()}
 				{renderLoadMoreButton()}
 			</Container>

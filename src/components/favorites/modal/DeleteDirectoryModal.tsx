@@ -2,11 +2,11 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Button } from 'antd';
 
-import { actions } from 'store/';
-import { AppDispatch, RootState } from 'store/types';
+import { actions } from '../../../store';
+import { AppDispatch, RootState } from '../../../store/types';
 
-import { openNotificationWithIcon } from 'types/components';
-import { thunks } from 'store';
+import { openNotificationWithIcon } from '../../../types/components';
+import { thunks } from '../../../store';
 
 const DeleteDirectoryModal: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
@@ -16,14 +16,12 @@ const DeleteDirectoryModal: React.FunctionComponent = () => {
 	const handleDelete = async (): Promise<void> => {
 		if (!selectedNodeKey) {
 			openNotificationWithIcon('error', 'Failed to delete folder', 'Failed to delete folder because no node was selected');
+			dispatch(actions.modals.setVisible(false));
 			return;
 		}
-		try {
-			await dispatch(thunks.favorites.deleteDirectoryAndChildren(selectedNodeKey));
-			openNotificationWithIcon('success', 'Success', 'Successfuly deleted folder');
-		} catch (err) {
-			openNotificationWithIcon('error', 'Error!', `Reason: '${err}`, 5);
-		}
+
+		await dispatch(thunks.favorites.deleteDirectoryAndChildren(selectedNodeKey));
+		openNotificationWithIcon('success', 'Success', 'Successfuly deleted folder');
 		dispatch(actions.modals.setVisible(false));
 	};
 

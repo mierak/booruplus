@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Button, Input, Form } from 'antd';
 
-import { actions, thunks } from 'store/';
-import { AppDispatch, RootState } from 'store/types';
+import { actions, thunks } from '../../../store';
+import { AppDispatch, RootState } from '../../../store/types';
 
-import { openNotificationWithIcon } from 'types/components';
+import { openNotificationWithIcon } from '../../../types/components';
 
 interface ValidationStatus {
 	validateStatus: 'error' | 'success' | '';
@@ -16,14 +16,14 @@ const AddDirectoryModal: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const [text, setText] = useState('');
 	const [validationStatus, setValidationStatus] = useState<ValidationStatus>({
-		validateStatus: '',
+		validateStatus: 'error',
 		message: '',
 	});
 	const selectedNodeKey = useSelector((state: RootState) => state.favorites.selectedNodeKey);
 
 	const validateName = (name?: string): boolean => {
 		if (!name || name.length === 0) {
-			return true;
+			return false;
 		} else {
 			return /^[a-zA-Z0-9 ]+$/.test(name);
 		}
@@ -32,13 +32,15 @@ const AddDirectoryModal: React.FunctionComponent = () => {
 	const handleAddSubFolder = async (): Promise<void> => {
 		if (selectedNodeKey === undefined) {
 			openNotificationWithIcon('error', 'Failed to add subfolder', 'Failed to add subfolder because no node was selected');
+			dispatch(actions.modals.setVisible(false));
 			return;
 		}
-		try {
+		if (validateName(text)) {
 			await dispatch(thunks.favorites.addDirectory({ parentKey: selectedNodeKey, title: text }));
 			openNotificationWithIcon('success', 'Success', 'Successfuly added sub folder');
-		} catch (err) {
-			openNotificationWithIcon('error', 'Error!', `Reason: ${err}`, 5);
+			dispatch(actions.modals.setVisible(false));
+		} else {
+			openNotificationWithIcon('error', 'Directory name cannot be empty', 'Please enter new directory name');
 		}
 	};
 
@@ -49,7 +51,6 @@ const AddDirectoryModal: React.FunctionComponent = () => {
 
 	const handleConfirm = (): void => {
 		handleAddSubFolder();
-		dispatch(actions.modals.setVisible(false));
 		setText('');
 	};
 

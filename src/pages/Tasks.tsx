@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { RootState, AppDispatch } from 'store/types';
+import { RootState } from '../store/types';
 
 import TaskProgress from '../components/TaskProgress';
 import { List } from 'antd';
-import { thunks } from 'store/';
 
 interface Props {
 	className?: string;

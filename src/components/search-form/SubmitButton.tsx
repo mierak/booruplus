@@ -2,11 +2,11 @@ import React from 'react';
 import { Popconfirm, Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { actions, thunks } from 'store/';
-import { AppDispatch, RootState, SearchMode } from 'store/types';
+import { actions, thunks } from '../../store';
+import { AppDispatch, RootState } from '../../store/types';
 
 interface Props {
-	mode: SearchMode;
+	mode: 'online' | 'offline';
 }
 
 const SubmitButton: React.FunctionComponent<Props> = ({ mode }: Props) => {

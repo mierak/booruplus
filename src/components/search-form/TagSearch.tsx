@@ -4,15 +4,16 @@ import styled from 'styled-components';
 import { SelectValue } from 'antd/lib/select';
 import { Select, Spin } from 'antd';
 
-import { actions, thunks } from '../../../store';
-import { RootState, SearchMode } from '../../../store/types';
+import { actions, thunks } from '../../store';
+import { RootState } from '../../store/types';
 
-import { Tag } from '../../../types/gelbooruTypes';
+import { Tag } from '../../types/gelbooruTypes';
 import TagSelectOption from '../TagSelectOption';
 import { useDebounce } from '../../hooks/useDebounce';
 
 interface Props {
-	mode: SearchMode;
+	mode: 'online' | 'offline';
+	open?: boolean;
 }
 
 const StyledSpin = styled(Spin)`
@@ -20,7 +21,7 @@ const StyledSpin = styled(Spin)`
 	width: 465px;
 `;
 
-const TagSearch: React.FunctionComponent<Props> = ({ mode }: Props) => {
+const TagSearch: React.FunctionComponent<Props> = ({ mode, open }: Props) => {
 	const dispatch = useDispatch();
 
 	const [selectValue] = useState('');
@@ -43,7 +44,7 @@ const TagSearch: React.FunctionComponent<Props> = ({ mode }: Props) => {
 
 	useEffect(() => {
 		debounced.length >= 2 && dispatch(load(debounced));
-		debounced.length < 2 && dispatch(clear());
+		debounced.length && debounced.length < 2 && dispatch(clear());
 	}, [debounced]);
 
 	const handleSelect = (e: SelectValue): void => {
@@ -67,7 +68,8 @@ const TagSearch: React.FunctionComponent<Props> = ({ mode }: Props) => {
 			onChange={handleSelect}
 			value={selectValue}
 			loading={isLoadingTags}
-			notFoundContent={isLoadingTags ? <StyledSpin tip="Fetching tags..." /> : null}
+			notFoundContent={isLoadingTags ? <StyledSpin tip='Fetching tags...' /> : null}
+			open={open}
 		>
 			{renderSelectOptions()}
 		</Select>

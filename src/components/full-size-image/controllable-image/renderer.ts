@@ -107,8 +107,10 @@ export class Renderer {
 			} else {
 				if (this._viewportSettings.width > this._viewportSettings.height) {
 					this._listenerVariables.scale = this._viewportSettings.height / this._img.height;
+					offsetByWidth = false;
 				} else {
 					this._listenerVariables.scale = this._viewportSettings.width / this._img.width;
+					offsetByWidth = true;
 				}
 			}
 
@@ -201,4 +203,6 @@ export class Renderer {
 			this._viewport.removeEventListener('mouseleave', this.handleMouseLeave);
 		}
 	};
+
+	getListenerVariables = (): ListenerVariables => ({ ...this._listenerVariables });
 }

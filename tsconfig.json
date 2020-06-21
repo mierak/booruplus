@@ -12,14 +12,14 @@
 		"resolveJsonModule": true,
 		"jsx": "react",
 		"paths": {
-			"store/*": ["store/*"],
-			"store/": ["store/index"],
-			"store": ["store/index"],
-			"db/*": ["db/*"],
-			"db": ["db/index"],
-			"service/*": ["service/*"],
-			"types/*": ["types/*"],
-			"util/*": ["util/*"],
+			"store/*": ["src/store/*"],
+			"store/": ["src/store/index"],
+			"store": ["src/store/index"],
+			"db/*": ["src/db/db/*"],
+			"db": ["src/db/db/index"],
+			"service/*": ["src/service/*"],
+			"types/*": ["src/types/*"],
+			"util/*": ["src/util/*"],
 			"hooks/*": ["src/hooks/*"],
 			"*": ["node_modules/*"]
 		},
@@ -28,15 +28,16 @@
 	},
 	"include": [
 		"src/**/*",
-		"types/**/*",
-		"store/**/*",
-		"service/**/*",
-		"util/**/*",
-		"db/**/*",
+		"src/types/**/***/*",
+		"src/store/**/*",
+		"src/service/**/*",
+		"src/util/**/*",
+		"src/db/db/**/*",
 		"electron/preload.js",
 		"window.d.ts",
-		"service/apiService.ts",
+		"src/service/apiService.ts",
 		"electron/index.ts",
-		"resizeObserver.d.ts"
+		"resizeObserver.d.ts",
+		"test/**/*"
 	]
 }

@@ -2,8 +2,8 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Progress, Popover } from 'antd';
 
-import { RootState, Task, AppDispatch } from 'store/types';
-import { actions, thunks } from 'store/';
+import { RootState, Task, AppDispatch } from '../store/types';
+import { thunks } from '../store';
 import moment from 'moment';
 
 interface Props {
@@ -53,6 +53,7 @@ const TaskProgress: React.FunctionComponent<Props> = (props: Props) => {
 				</Button>
 			);
 		task.state !== 'canceled' &&
+			task.state !== 'failed' &&
 			taskProgress < 1 &&
 			buttons.push(
 				<Button key="btn-task-cancel" type="link" onClick={handleCancel}>
@@ -77,6 +78,7 @@ const TaskProgress: React.FunctionComponent<Props> = (props: Props) => {
 		}
 	};
 
+	//TODO extract to own component and test
 	const renderWithTooltip = (children: React.ReactElement): React.ReactNode => {
 		const items: string[] = [];
 		items.push(`Added: ${formatTimestamp(task.timestampStarted)}`);

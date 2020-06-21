@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { RootState, AppDispatch } from '../../store/types';
+import { RootState, AppDispatch } from '../store/types';
 
 import AppLayout from '../components/layout/Layout';
 import ImageView from './ImageView';
-import SearchForm from '../components/OnlineSearchForm';
 import SavedSearches from './SavedSearches';
 import Favorites from './Favorites';
 import Tags from './Tags';
@@ -14,7 +13,7 @@ import Thumbnails from './Thumbnails';
 
 import 'ant-design-pro/dist/ant-design-pro.css';
 import '../css/index.css';
-import { thunks } from 'store';
+import { thunks } from '../store';
 
 const Page: React.FunctionComponent = () => {
 	const [loaded, setLoaded] = useState(false);
@@ -26,6 +25,7 @@ const Page: React.FunctionComponent = () => {
 		(async (): Promise<void> => {
 			await dispatch(thunks.settings.loadSettings('user'));
 			await dispatch(thunks.tasks.rehydrateFromDb());
+			await dispatch(thunks.favorites.fetchTreeData());
 
 			if (settings.theme === 'dark') {
 				require('../css/scrollbar.dark.css');
@@ -35,7 +35,6 @@ const Page: React.FunctionComponent = () => {
 				require('antd/dist/antd.css');
 			}
 			setLoaded(true);
-			dispatch(thunks.favorites.fetchTreeData());
 		})();
 	}, []);
 
@@ -51,16 +50,12 @@ const Page: React.FunctionComponent = () => {
 				return <Thumbnails />;
 			case 'image':
 				return <ImageView />;
-			case 'online-search':
-				return <SearchForm />;
 			case 'saved-searches':
 				return <SavedSearches />;
 			case 'favorites':
 				return <Favorites />;
 			case 'tag-list':
 				return <Tags />;
-			default:
-				return null;
 		}
 	};
 

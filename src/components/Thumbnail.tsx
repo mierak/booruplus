@@ -5,11 +5,11 @@ import styled from 'styled-components';
 import { CheckCircleTwoTone, LoadingOutlined } from '@ant-design/icons';
 import { Card, Popconfirm, Spin, Menu, Dropdown } from 'antd';
 
-import { actions } from '../../store';
-import { RootState, AppDispatch } from '../../store/types';
+import { actions } from '../store';
+import { RootState, AppDispatch } from '../store/types';
 
-import { CardAction, ContextMenu } from 'types/components';
-import { renderPostCardAction, getThumbnailBorder } from 'util/componentUtils';
+import { CardAction, ContextMenu, openNotificationWithIcon } from '../types/components';
+import { renderPostCardAction, getThumbnailBorder } from '../util/componentUtils';
 
 interface Props {
 	index: number;
@@ -18,7 +18,6 @@ interface Props {
 }
 
 interface CardProps {
-	postindex: number;
 	isactive: string;
 	theme: 'dark' | 'light';
 	height: string;
@@ -27,6 +26,14 @@ interface CardProps {
 interface SelectedIndexes {
 	first: number | undefined;
 	last: number | undefined;
+}
+
+interface PopConfirmProps {
+	children: React.ReactElement;
+	title: string;
+	okText: string;
+	cancelText: string;
+	action: () => void;
 }
 
 const StyledCard = styled(Card)<CardProps>`
@@ -77,14 +84,6 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		}
 	};
 
-	interface PopConfirmProps {
-		children: React.ReactElement;
-		title: string;
-		okText: string;
-		cancelText: string;
-		action: () => void;
-	}
-
 	const renderWithPopconfirm = (props: PopConfirmProps): React.ReactNode => {
 		return (
 			<Popconfirm
@@ -92,7 +91,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 				cancelText={props.okText}
 				okText={props.cancelText}
 				onCancel={props.action}
-				okType="default"
+				okType='default'
 				cancelButtonProps={{
 					type: 'primary',
 				}}
@@ -103,6 +102,10 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	};
 
 	const renderActions = (): React.ReactNode[] => {
+		if (!post) {
+			openNotificationWithIcon('error', 'Cannot find post', 'Cannot render post actions because post is undefined', 5);
+			return [];
+		}
 		if (props.actions === undefined) {
 			return [];
 		}
@@ -110,9 +113,6 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		const actions: React.ReactNode[] = [];
 
 		props.actions.forEach((action) => {
-			if (!post) {
-				throw new Error('Cannot render post actions because post is undefined');
-			}
 			if (action.condition) {
 				if (!action.condition(post)) {
 					return;
@@ -141,7 +141,6 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		return (
 			<StyledCard
 				bodyStyle={{ height: '170px', width: '170px', padding: '0' }}
-				postindex={props.index}
 				isactive={isActive.toString()}
 				theme={theme}
 				actions={renderActions()}
@@ -156,6 +155,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 					)}
 					{post && (
 						<StyledThumbnailImage
+							data-testid='thumbnail-image'
 							src={`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`}
 							style={{ display: loaded ? 'block' : 'none' }}
 							onLoad={(): void => setLoaded(true)}
