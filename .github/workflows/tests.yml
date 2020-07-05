@@ -15,7 +15,7 @@ jobs:
         run: npm install
       - name: Run tests
         run: npx jest --coverage
-      - uses: vebr/jest-lcov-reporter@0.2.0
+      - uses: vebr/jest-lcov-reporter@v0.2.0
         with:
           github-token: ${{ secrets.JEST_COVERAGE_TOKEN }}
           lcov-file: ./coverage/lcov.info
