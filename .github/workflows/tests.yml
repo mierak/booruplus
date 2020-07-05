@@ -25,4 +25,4 @@ jobs:
       - uses: ziishaned/jest-reporter-action@v0.0.1
         with:
           github-token: ${{ secrets.JEST_COVERAGE_TOKEN }}
-          test-command: npx jest --coverage
+          test-command: "npx jest --coverage"
