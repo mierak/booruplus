@@ -12,6 +12,7 @@ import Thumbnail from '../../src/components/Thumbnail';
 import '@testing-library/jest-dom';
 import { mPost } from '../helpers/test.helper';
 import * as utils from '../../src/types/components';
+import { getThumbnailUrl } from 'service/webService';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -42,10 +43,7 @@ describe('Thumbnail', () => {
 		);
 
 		// then
-		expect(screen.getByTestId('thumbnail-image')).toHaveAttribute(
-			'src',
-			`https://gelbooru.com/thumbnails/${posts[index].directory}/thumbnail_${posts[index].hash}.jpg`
-		);
+		expect(screen.getByTestId('thumbnail-image')).toHaveAttribute('src', getThumbnailUrl(posts[index].directory, posts[index].hash));
 	});
 	it('Dispatches setActivePostIndex() and setActiveView() when thumbnail is clicked', () => {
 		// given

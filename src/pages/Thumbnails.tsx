@@ -64,9 +64,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleAddPreview = (post: Post): void => {
-		dispatch(
-			thunks.savedSearches.addPreviewToActiveSavedSearch(`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`)
-		);
+		dispatch(thunks.savedSearches.addPreviewToActiveSavedSearch(getThumbnailUrl(post.directory, post.hash)));
 		openNotificationWithIcon('success', 'Preview added', 'Preview was successfuly added to saved search');
 	};
 

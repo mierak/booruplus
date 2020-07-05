@@ -11,6 +11,7 @@ jest.mock('../../../src/components/FullSizeImage', () => (): JSX.Element => <div
 import ImageView from '../../../src/pages/ImageView';
 import '@testing-library/jest-dom';
 import { mPost } from '../../helpers/test.helper';
+import { getThumbnailUrl } from 'service/webService';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -44,11 +45,11 @@ describe('pages/ImageView', () => {
 
 		// then
 		const thumbnails = screen.getAllByTestId('thumbnail-image');
-		expect(thumbnails[0]).toHaveAttribute('src', `https://gelbooru.com/thumbnails/${posts[0].directory}/thumbnail_${posts[0].hash}.jpg`);
-		expect(thumbnails[1]).toHaveAttribute('src', `https://gelbooru.com/thumbnails/${posts[1].directory}/thumbnail_${posts[1].hash}.jpg`);
-		expect(thumbnails[2]).toHaveAttribute('src', `https://gelbooru.com/thumbnails/${posts[2].directory}/thumbnail_${posts[2].hash}.jpg`);
-		expect(thumbnails[3]).toHaveAttribute('src', `https://gelbooru.com/thumbnails/${posts[3].directory}/thumbnail_${posts[3].hash}.jpg`);
-		expect(thumbnails[4]).toHaveAttribute('src', `https://gelbooru.com/thumbnails/${posts[4].directory}/thumbnail_${posts[4].hash}.jpg`);
+		expect(thumbnails[0]).toHaveAttribute('src', getThumbnailUrl(posts[0].directory, posts[0].hash));
+		expect(thumbnails[1]).toHaveAttribute('src', getThumbnailUrl(posts[1].directory, posts[1].hash));
+		expect(thumbnails[2]).toHaveAttribute('src', getThumbnailUrl(posts[2].directory, posts[2].hash));
+		expect(thumbnails[3]).toHaveAttribute('src', getThumbnailUrl(posts[3].directory, posts[3].hash));
+		expect(thumbnails[4]).toHaveAttribute('src', getThumbnailUrl(posts[4].directory, posts[4].hash));
 	});
 	it('Renders FullSizeImage', () => {
 		// given

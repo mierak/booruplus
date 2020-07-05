@@ -252,7 +252,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		fireEvent.click(screen.getByRole('button', { name: 'Open in browser' }));
 
 		// then
-		expect(ipcSendSpy).toBeCalledWith('open-in-browser', `https://gelbooru.com/index.php?page=post&s=view&id=${post.id}`);
+		expect(ipcSendSpy).toBeCalledWith('open-in-browser', getPostUrl(post.id));
 	});
 	it('Creates action that shows TagsPopover', () => {
 		// given

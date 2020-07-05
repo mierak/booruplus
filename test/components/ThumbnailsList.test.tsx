@@ -10,6 +10,7 @@ import { mState } from '../helpers/store.helper';
 import ThumbnailsList from '../../src/components/ThumbnailsList';
 import '@testing-library/jest-dom';
 import { mPost } from '../helpers/test.helper';
+import { getThumbnailUrl } from 'service/webService';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -54,10 +55,7 @@ describe('ThumbnailsList', () => {
 
 		// then
 		expect(screen.getByRole('button', { name: 'Load More' }));
-		expect(screen.getAllByTestId('thumbnail-image')[2]).toHaveAttribute(
-			'src',
-			`https://gelbooru.com/thumbnails/${posts[2].directory}/thumbnail_${posts[2].hash}.jpg`
-		);
+		expect(screen.getAllByTestId('thumbnail-image')[2]).toHaveAttribute('src', getThumbnailUrl(posts[2].directory, posts[2].hash));
 	});
 	it('Adds correct event listener to window and unregisters it on unmount', () => {
 		//given

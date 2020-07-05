@@ -10,6 +10,7 @@ import TagsPopover from './TagsPopover';
 import { ImageControl } from '../../types/components';
 import ImageControls from './ImageControls';
 import { useLoadImage } from '../../hooks/useImageBus';
+import { getPostUrl } from 'service/webService';
 
 interface Props {
 	className?: string;
@@ -37,7 +38,7 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 	const [url, setUrl] = useState('');
 
 	const handleOpenWeb = (): void => {
-		window.api.send('open-in-browser', `https://gelbooru.com/index.php?page=post&s=view&id=${props.post.id}`);
+		window.api.send('open-in-browser', getPostUrl(props.post.id));
 	};
 
 	const handleTagsPopoverVisibilityChange = (visible: boolean): void => {
