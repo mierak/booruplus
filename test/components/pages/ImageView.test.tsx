@@ -68,7 +68,7 @@ describe('pages/ImageView', () => {
 				},
 			})
 		);
-
+		(global as any).window.HTMLDivElement.prototype.scrollTo = jest.fn();
 		// when
 		render(
 			<Provider store={store}>

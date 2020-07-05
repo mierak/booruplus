@@ -1,5 +1,6 @@
 # Changelog
 ## 0.1.4 - TITLE - DATE
+- Thumbnails Page now scrolls to active post
 - BUG FIX: Tasks completely failing when no tasks were present in DB
 - BUG FIX: Tasks cancellation was not saved to database
 - BUG FIX: Blacklisted posts not removing from currently displayed posts

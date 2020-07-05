@@ -16,13 +16,13 @@ interface Props {
 }
 
 const Container = styled.div`
-	/* overflow-y: auto; */
+	overflow-y: hidden;
 	height: 100vh;
 `;
 
 const StyledThumbnailsList = styled(ThumbnailsList)`
-	overflow: hidden;
-	height: auto;
+	overflow: auto;
+	max-height: calc(100vh - 72px);
 `;
 
 const StyledSpin = styled(Spin)`

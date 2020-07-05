@@ -28,8 +28,8 @@ const Container = styled.div<ContainerProps>`
 	grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
 	grid-template-rows: repeat(auto-fit, ${(props): string => props.height});
 	grid-gap: 10px;
-	margin: 10px 0 0 10px;
-	padding: 10 10px 10px 10;
+	margin: 0 0 0 10px;
+	padding: 10px 10px 10px 0;
 	overflow-y: auto;
 	overflow-x: hidden;
 	height: calc(100vh - 15px);
@@ -53,22 +53,28 @@ const StyledLoadMoreButton = styled(LoadMoreButton)`
 `;
 
 const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
+	const listRef = React.useRef<HTMLDivElement>(null);
 	const dispatch = useDispatch();
 	const postCount = useSelector((state: RootState) => state.posts.posts.length);
 	const activePostIndex = useSelector((state: RootState) => state.posts.activePostIndex);
 	const searchMode = useSelector((state: RootState) => state.system.searchMode);
 
 	useEffect(() => {
-		if (props.sidebar) {
-			const list = document.getElementById('thumbnails-list');
-			if (list && activePostIndex) {
-				const thumbnailHeight = props.actions !== undefined ? 230 : 190;
+		const list = listRef.current;
+		// eslint-disable-next-line @typescript-eslint/unbound-method
+		if (list && activePostIndex) {
+			const thumbnailHeight = props.actions !== undefined ? 230 : 190;
+			const columns = Math.floor(list.clientWidth / 190);
+			const current = list.scrollTop;
+			if (props.sidebar) {
 				const target = list.scrollHeight * (activePostIndex / postCount) - (list.clientHeight / 2 - thumbnailHeight / 2);
-				const current = list.scrollTop;
 				list.scrollTo({
 					top: target,
 					behavior: Math.abs(target - current) > 300 ? 'auto' : 'smooth',
 				});
+			} else {
+				const target = list.scrollHeight * (Math.floor(activePostIndex / columns) / (postCount / columns)) - list.clientHeight / 2;
+				list.scrollTo({ top: target, behavior: Math.abs(target - current) > 300 ? 'auto' : 'smooth' });
 			}
 		}
 	});
@@ -114,12 +120,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 
 	return (
 		<>
-			<Container
-				className={props.className}
-				id='thumbnails-list'
-				height={props.actions !== undefined ? '200px' : '170px'}
-				data-testid='asdftest'
-			>
+			<Container ref={listRef} className={props.className} height={props.actions !== undefined ? '200px' : '170px'}>
 				{postCount === 0 ? renderNoData() : renderThumbnails()}
 				{renderLoadMoreButton()}
 			</Container>

@@ -216,7 +216,7 @@ describe('pages/Favorites', () => {
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.showModal.type, payload: 'move-to-directory' });
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.addToFavoritesModal.setPostIds.type, payload: [posts[2].id] });
 	});
-	it('Dispatches blacklistPosts() for correct post when Move button is pressed', async () => {
+	it('Dispatches blacklistPosts() for correct post when Blacklist button is pressed', async () => {
 		// given
 		const posts = [
 			mPost({ id: 1, directory: 'dir1', hash: 'hash1' }),
@@ -256,7 +256,7 @@ describe('pages/Favorites', () => {
 		expect(notificationMock).toBeCalledWith('success', 'Post deleted', 'Image was successfuly deleted from disk.');
 		notificationMock.mockClear();
 	});
-	it('Dispatches removePostsFromActiveDirectory() for correct and fetches posts again post when Move button is pressed', async () => {
+	it('Dispatches removePostsFromActiveDirectory() for correct post and fetches posts again post when Remove button is pressed', async () => {
 		// given
 		const posts = [
 			mPost({ id: 1, directory: 'dir1', hash: 'hash1' }),

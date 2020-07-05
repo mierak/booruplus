@@ -109,6 +109,19 @@ Object.defineProperties((global as any).HTMLElement.prototype, {
 			return this._jsdomMockClientHeight || 0;
 		},
 	},
+	scrollHeight: {
+		get: function(): number {
+			return this._jsdomMockScrollHeight || 0;
+		},
+	},
+	scrollTop: {
+		get: function(): number {
+			return this._jsdomMockScrollTop || 0;
+		},
+		set: function(value: number): void {
+			this._scrollTop = value;
+		},
+	},
 	getBoundingClientRect: {
 		value: function(): { top: number; right: number; bottom: number; left: number } {
 			return (

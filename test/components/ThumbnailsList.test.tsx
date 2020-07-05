@@ -13,6 +13,20 @@ import { mPost } from '../helpers/test.helper';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
+const mockList = (list: {
+	scrollTo: jest.Mock;
+	scrollTop: number;
+	clientHeight: number;
+	scrollHeight: number;
+	clientWidth?: number;
+}): void => {
+	(global as any).window.HTMLDivElement.prototype._jsdomMockScrollHeight = list.scrollHeight;
+	(global as any).window.HTMLDivElement.prototype._jsdomMockClientHeight = list.clientHeight;
+	(global as any).window.HTMLDivElement.prototype._jsdomMockScrollTop = list.scrollTop;
+	(global as any).window.HTMLDivElement.prototype.scrollTo = list.scrollTo;
+	(global as any).window.HTMLDivElement.prototype._jsdomMockClientWidth = list.clientWidth ?? 0;
+};
+
 describe('ThumbnailsList', () => {
 	const posts = [
 		mPost({ id: 1, directory: 'dir1', hash: 'hash1' }),
@@ -171,109 +185,172 @@ describe('ThumbnailsList', () => {
 		// then
 		expect(screen.queryByText('Load More')).toBeNull();
 	});
-	it('Scrolls to active post when active sidebar prop is true and thumbnails have no actions', () => {
-		//given
-		const activePostIndex = 40;
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: [...Array(100)].map((_, index) => mPost({ id: index })),
-					activePostIndex,
-				},
-			})
-		);
-		const scrollToSpy = jest.fn();
-		const list = {
-			scrollHeight: 8000,
-			clientHeight: 930,
-			scrollTop: 500,
-			scrollTo: scrollToSpy,
-		};
-		const getElementByIdMock = jest.fn().mockReturnValue(list);
-		(global as any).document.getElementById = getElementByIdMock;
-		const thumbnailHeight = 190;
-		const target = list.scrollHeight * (activePostIndex / 100) - (list.clientHeight / 2 - thumbnailHeight / 2);
+	describe('Prop sidebar = true', () => {
+		it('Scrolls to active post when thumbnails have no actions', () => {
+			//given
+			const activePostIndex = 40;
+			const store = mockStore(
+				mState({
+					posts: {
+						posts: [...Array(100)].map((_, index) => mPost({ id: index })),
+						activePostIndex,
+					},
+				})
+			);
+			const list = {
+				scrollHeight: 8000,
+				clientHeight: 930,
+				scrollTop: 500,
+				scrollTo: jest.fn(),
+			};
+			mockList(list);
+			const thumbnailHeight = 190;
+			const target = list.scrollHeight * (activePostIndex / 100) - (list.clientHeight / 2 - thumbnailHeight / 2);
 
-		// when
-		render(
-			<Provider store={store}>
-				<ThumbnailsList sidebar />
-			</Provider>
-		);
+			// when
+			render(
+				<Provider store={store}>
+					<ThumbnailsList sidebar />
+				</Provider>
+			);
 
-		// then
-		expect(getElementByIdMock).toHaveBeenCalledTimes(1);
-		expect(scrollToSpy).toHaveBeenCalledTimes(1);
-		expect(scrollToSpy).toHaveBeenCalledWith({ top: target, behavior: 'auto' });
+			// then
+			expect(list.scrollTo).toHaveBeenCalledTimes(1);
+			expect(list.scrollTo).toHaveBeenCalledWith({ top: target, behavior: 'auto' });
+		});
+		it('Scrolls to active post when thumbnails have actions', () => {
+			//given
+			const activePostIndex = 30;
+			const store = mockStore(
+				mState({
+					posts: {
+						posts: [...Array(100)].map((_, index) => mPost({ id: index })),
+						activePostIndex,
+					},
+				})
+			);
+			const list = {
+				scrollHeight: 8000,
+				clientHeight: 930,
+				scrollTop: 500,
+				scrollTo: jest.fn(),
+			};
+			mockList(list);
+			const thumbnailHeight = 230;
+			const target = list.scrollHeight * (activePostIndex / 100) - (list.clientHeight / 2 - thumbnailHeight / 2);
+
+			// when
+			render(
+				<Provider store={store}>
+					<ThumbnailsList sidebar actions={[]} />
+				</Provider>
+			);
+
+			// then
+			expect(list.scrollTo).toHaveBeenCalledTimes(1);
+			expect(list.scrollTo).toHaveBeenCalledWith({ top: target, behavior: 'auto' });
+		});
+		it('Uses smooth scroll when scroll distance is less than 300', () => {
+			//given
+			const activePostIndex = 60;
+			const store = mockStore(
+				mState({
+					posts: {
+						posts: [...Array(100)].map((_, index) => mPost({ id: index })),
+						activePostIndex,
+					},
+				})
+			);
+			const list = {
+				scrollHeight: 8000,
+				clientHeight: 930,
+				scrollTop: 4300,
+				scrollTo: jest.fn(),
+			};
+			mockList(list);
+			const thumbnailHeight = 230;
+			const target = list.scrollHeight * (activePostIndex / 100) - (list.clientHeight / 2 - thumbnailHeight / 2);
+
+			// when
+			render(
+				<Provider store={store}>
+					<ThumbnailsList sidebar actions={[]} />
+				</Provider>
+			);
+
+			// then
+			expect(list.scrollTo).toHaveBeenCalledTimes(1);
+			expect(list.scrollTo).toHaveBeenCalledWith({ top: target, behavior: 'smooth' });
+		});
 	});
-	it('Scrolls to active post when active sidebar prop is true and thumbnails have actions', () => {
-		//given
-		const activePostIndex = 30;
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: [...Array(100)].map((_, index) => mPost({ id: index })),
-					activePostIndex,
-				},
-			})
-		);
-		const scrollToSpy = jest.fn();
-		const list = {
-			scrollHeight: 8000,
-			clientHeight: 930,
-			scrollTop: 500,
-			scrollTo: scrollToSpy,
-		};
-		const getElementByIdMock = jest.fn().mockReturnValue(list);
-		(global as any).document.getElementById = getElementByIdMock;
-		const thumbnailHeight = 230;
-		const target = list.scrollHeight * (activePostIndex / 100) - (list.clientHeight / 2 - thumbnailHeight / 2);
+	describe('Prop sidebar = false', () => {
+		it('Scrolls to active post when thumbnails have no actions', () => {
+			//given
+			const activePostIndex = 40;
+			const posts = [...Array(100)].map((_, index) => mPost({ id: index }));
+			const store = mockStore(
+				mState({
+					posts: {
+						posts,
+						activePostIndex,
+					},
+				})
+			);
+			const list = {
+				scrollHeight: 8000,
+				clientHeight: 930,
+				scrollTop: 500,
+				clientWidth: 1900,
+				scrollTo: jest.fn(),
+			};
+			mockList(list);
+			const columns = Math.floor(list.clientWidth / 190);
+			const target = list.scrollHeight * (Math.floor(activePostIndex / columns) / (posts.length / columns)) - list.clientHeight / 2;
 
-		// when
-		render(
-			<Provider store={store}>
-				<ThumbnailsList sidebar actions={[]} />
-			</Provider>
-		);
+			// when
+			render(
+				<Provider store={store}>
+					<ThumbnailsList sidebar={false} />
+				</Provider>
+			);
 
-		// then
-		expect(getElementByIdMock).toHaveBeenCalledTimes(1);
-		expect(scrollToSpy).toHaveBeenCalledTimes(1);
-		expect(scrollToSpy).toHaveBeenCalledWith({ top: target, behavior: 'auto' });
-	});
-	it('Uses smooth scroll when scroll distance is less than 300', () => {
-		//given
-		const activePostIndex = 60;
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: [...Array(100)].map((_, index) => mPost({ id: index })),
-					activePostIndex,
-				},
-			})
-		);
-		const scrollToSpy = jest.fn();
-		const list = {
-			scrollHeight: 8000,
-			clientHeight: 930,
-			scrollTop: 4300,
-			scrollTo: scrollToSpy,
-		};
-		const getElementByIdMock = jest.fn().mockReturnValue(list);
-		(global as any).document.getElementById = getElementByIdMock;
-		const thumbnailHeight = 230;
-		const target = list.scrollHeight * (activePostIndex / 100) - (list.clientHeight / 2 - thumbnailHeight / 2);
+			// then
+			expect(list.scrollTo).toHaveBeenCalledTimes(1);
+			expect(list.scrollTo).toHaveBeenCalledWith({ top: target, behavior: 'auto' });
+		});
+		it('Uses smooth scroll when scroll distance is less than 300', () => {
+			//given
+			const activePostIndex = 60;
+			const posts = [...Array(100)].map((_, index) => mPost({ id: index }));
+			const store = mockStore(
+				mState({
+					posts: {
+						posts,
+						activePostIndex,
+					},
+				})
+			);
+			const list = {
+				scrollHeight: 3000,
+				clientHeight: 1000,
+				scrollTop: 1400,
+				clientWidth: 1900,
+				scrollTo: jest.fn(),
+			};
+			mockList(list);
+			const columns = Math.floor(list.clientWidth / 190);
+			const target = list.scrollHeight * (Math.floor(activePostIndex / columns) / (posts.length / columns)) - list.clientHeight / 2;
 
-		// when
-		render(
-			<Provider store={store}>
-				<ThumbnailsList sidebar actions={[]} />
-			</Provider>
-		);
+			// when
+			render(
+				<Provider store={store}>
+					<ThumbnailsList sidebar={false} actions={[]} />
+				</Provider>
+			);
 
-		// then
-		expect(getElementByIdMock).toHaveBeenCalledTimes(1);
-		expect(scrollToSpy).toHaveBeenCalledTimes(1);
-		expect(scrollToSpy).toHaveBeenCalledWith({ top: target, behavior: 'smooth' });
+			// then
+			expect(list.scrollTo).toHaveBeenCalledTimes(1);
+			expect(list.scrollTo).toHaveBeenCalledWith({ top: target, behavior: 'smooth' });
+		});
 	});
 });
