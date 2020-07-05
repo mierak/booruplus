@@ -12,7 +12,7 @@ import { actions } from '../../store';
 import ImageControls from './ImageControls';
 import TagsPopover from './TagsPopover';
 import { ImageControl } from '../../types/components';
-import { getPostUrl } from 'service/webService';
+import { getPostUrl } from '../../service/webService';
 
 interface Props {
 	className?: string;

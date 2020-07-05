@@ -10,7 +10,7 @@ import { RootState, AppDispatch } from '../store/types';
 
 import { CardAction, ContextMenu, openNotificationWithIcon } from '../types/components';
 import { renderPostCardAction, getThumbnailBorder } from '../util/componentUtils';
-import { getThumbnailUrl } from 'service/webService';
+import { getThumbnailUrl } from '../service/webService';
 
 interface Props {
 	index: number;

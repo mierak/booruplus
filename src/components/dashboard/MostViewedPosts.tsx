@@ -8,7 +8,7 @@ import { actions, thunks } from '../../store';
 import { AppDispatch, RootState } from '../../store/types';
 
 import { Post } from '../../types/gelbooruTypes';
-import { getThumbnailUrl } from 'service/webService';
+import { getThumbnailUrl } from '../../service/webService';
 
 const StyledMostViewedGrid = styled.div`
 	display: grid;

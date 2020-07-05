@@ -10,7 +10,7 @@ import { mState } from '../helpers/store.helper';
 import ThumbnailsList from '../../src/components/ThumbnailsList';
 import '@testing-library/jest-dom';
 import { mPost } from '../helpers/test.helper';
-import { getThumbnailUrl } from 'service/webService';
+import { getThumbnailUrl } from '../../src/service/webService';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 

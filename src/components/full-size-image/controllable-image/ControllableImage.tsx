@@ -14,7 +14,7 @@ import { ImageControl } from '../../../types/components';
 import TagsPopover from '../TagsPopover';
 import ImageControls from '../ImageControls';
 import LoadingMask from '../../../components/LoadingMask';
-import { getPostUrl } from 'service/webService';
+import { getPostUrl } from '../../../service/webService';
 
 interface Props {
 	url: string;

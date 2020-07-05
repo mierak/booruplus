@@ -14,7 +14,7 @@ import { Post } from '../../../src/types/gelbooruTypes';
 import { loadImageMock } from '../../helpers/imageBus.mock';
 import { createObjectURL, revokeObjectURL } from '../../helpers/window.mock';
 import { SuccessfulLoadPostResponse } from '../../../src/types/processDto';
-import { getPostUrl } from 'service/webService';
+import { getPostUrl } from '../../../src/service/webService';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 

@@ -12,7 +12,7 @@ import '@testing-library/jest-dom';
 import { mTag, mPost } from '../../helpers/test.helper';
 import { deleteImageMock } from '../../helpers/imageBus.mock';
 import * as utils from '../../../src/types/components';
-import { getThumbnailUrl } from 'service/webService';
+import { getThumbnailUrl } from '../../../src/service/webService';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 

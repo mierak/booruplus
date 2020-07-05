@@ -10,7 +10,7 @@ import TagsPopover from './TagsPopover';
 import { ImageControl } from '../../types/components';
 import ImageControls from './ImageControls';
 import { useLoadImage } from '../../hooks/useImageBus';
-import { getPostUrl } from 'service/webService';
+import { getPostUrl } from '../../service/webService';
 
 interface Props {
 	className?: string;

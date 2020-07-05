@@ -10,6 +10,7 @@ import { RootState, AppDispatch } from '../store/types';
 import ThumbnailsList from '../components/ThumbnailsList';
 import { CardAction, openNotificationWithIcon } from '../types/components';
 import { Post } from '../types/gelbooruTypes';
+import { getThumbnailUrl } from '../service/webService';
 
 interface Props {
 	className?: string;

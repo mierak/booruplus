@@ -16,6 +16,7 @@ import { loadImageMock } from '../../../helpers/imageBus.mock';
 import { createObjectURL, revokeObjectURL } from '../../../helpers/window.mock';
 import { SuccessfulLoadPostResponse } from '../../../../src/types/processDto';
 import { defineClientSize, defineClientBoundingRect } from '../../../helpers/utilities.helper';
+import { getPostUrl } from '../../../../src/service/webService';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 

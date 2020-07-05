@@ -10,7 +10,7 @@ import { mState } from '../../helpers/store.helper';
 
 import Gelbooru from '../../../src/components/settings/Gelbooru';
 import * as utils from '../../../src/util/utils';
-import { OPTIONS_URL } from 'service/webService';
+import { OPTIONS_URL } from '../../../src/service/webService';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 

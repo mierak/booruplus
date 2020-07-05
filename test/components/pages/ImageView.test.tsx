@@ -11,7 +11,7 @@ jest.mock('../../../src/components/FullSizeImage', () => (): JSX.Element => <div
 import ImageView from '../../../src/pages/ImageView';
 import '@testing-library/jest-dom';
 import { mPost } from '../../helpers/test.helper';
-import { getThumbnailUrl } from 'service/webService';
+import { getThumbnailUrl } from '../../../src/service/webService';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
