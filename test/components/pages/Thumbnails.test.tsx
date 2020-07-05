@@ -12,6 +12,7 @@ import '@testing-library/jest-dom';
 import { mTag, mPost } from '../../helpers/test.helper';
 import { deleteImageMock } from '../../helpers/imageBus.mock';
 import * as utils from '../../../src/types/components';
+import { getThumbnailUrl } from '../../../src/service/webService';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -127,7 +128,7 @@ describe('pages/Thumbnails', () => {
 		// then
 		const renderedPosts = screen.getAllByTestId('thumbnail-image');
 		renderedPosts.forEach((post, index) => {
-			expect(post).toHaveAttribute('src', `https://gelbooru.com/thumbnails/${posts[index].directory}/thumbnail_${posts[index].hash}.jpg`);
+			expect(post).toHaveAttribute('src', getThumbnailUrl(posts[index].directory, posts[index].hash));
 		});
 		expect(screen.getAllByRole('img', { name: 'heart' })).toHaveLength(5);
 		expect(screen.getAllByRole('img', { name: 'download' })).toHaveLength(3);
@@ -324,7 +325,7 @@ describe('pages/Thumbnails', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
 			type: thunks.savedSearches.addPreviewToActiveSavedSearch.pending.type,
-			meta: { arg: `https://gelbooru.com/thumbnails/${posts[3].directory}/thumbnail_${posts[3].hash}.jpg` },
+			meta: { arg: getThumbnailUrl(posts[3].directory, posts[3].hash) },
 		});
 		expect(notificationMock).toBeCalledWith('success', 'Preview added', 'Preview was successfuly added to saved search');
 		notificationMock.mockClear();

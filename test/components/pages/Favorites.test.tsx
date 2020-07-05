@@ -13,6 +13,7 @@ import { mTreeNode, mPost } from '../../helpers/test.helper';
 import { mockedDb } from '../../helpers/database.mock';
 import { deleteImageMock } from '../../helpers/imageBus.mock';
 import * as utils from '../../../src/types/components';
+import { getThumbnailUrl } from '../../../src/service/webService';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -142,7 +143,7 @@ describe('pages/Favorites', () => {
 		// then
 		const renderedPosts = screen.getAllByTestId('thumbnail-image');
 		renderedPosts.forEach((post, index) => {
-			expect(post).toHaveAttribute('src', `https://gelbooru.com/thumbnails/${posts[index].directory}/thumbnail_${posts[index].hash}.jpg`);
+			expect(post).toHaveAttribute('src', getThumbnailUrl(posts[index].directory, posts[index].hash));
 		});
 		expect(screen.getAllByRole('img', { name: 'close' })).toHaveLength(5);
 		expect(screen.getAllByRole('img', { name: 'download' })).toHaveLength(3);

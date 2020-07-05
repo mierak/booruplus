@@ -8,6 +8,7 @@ import { actions, thunks } from '../../store';
 import { AppDispatch, RootState } from '../../store/types';
 
 import { Post } from '../../types/gelbooruTypes';
+import { getThumbnailUrl } from '../../service/webService';
 
 const StyledMostViewedGrid = styled.div`
 	display: grid;
@@ -94,14 +95,14 @@ const MostViewedPosts: React.FunctionComponent = () => {
 			return (
 				<StyledThumbnailCard hoverable key={post.id} onClick={(): void => handleMostViewedImageClick(post)}>
 					<StyledImageContainer>
-						<img src={`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`} alt="most-viewed-thumbnail" />
+						<img src={getThumbnailUrl(post.directory, post.hash)} alt='most-viewed-thumbnail' />
 					</StyledImageContainer>
 					<StyledMeta
 						description={
 							<span>
 								Viewed {post.viewCount} times{' '}
 								{post.downloaded === 1 && (
-									<Tooltip destroyTooltipOnHide title="Downloaded">
+									<Tooltip destroyTooltipOnHide title='Downloaded'>
 										<CheckCircleTwoTone />
 									</Tooltip>
 								)}
@@ -113,7 +114,7 @@ const MostViewedPosts: React.FunctionComponent = () => {
 		});
 	};
 	return (
-		<StyledMostViewedCard title="Most Viewed Posts" size="small" extra={<ReloadOutlined onClick={handleReload} title="Reload" />}>
+		<StyledMostViewedCard title='Most Viewed Posts' size='small' extra={<ReloadOutlined onClick={handleReload} title='Reload' />}>
 			<StyledMostViewedGrid>
 				{mostViewedPosts.length > 0 ? renderMostViewedPosts() : <StyledEmpty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
 			</StyledMostViewedGrid>

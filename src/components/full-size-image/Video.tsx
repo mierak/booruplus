@@ -12,6 +12,7 @@ import { actions } from '../../store';
 import ImageControls from './ImageControls';
 import TagsPopover from './TagsPopover';
 import { ImageControl } from '../../types/components';
+import { getPostUrl } from '../../service/webService';
 
 interface Props {
 	className?: string;
@@ -70,7 +71,7 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 	}, [post]);
 
 	const handleOpenWeb = (): void => {
-		window.api.send('open-in-browser', `https://gelbooru.com/index.php?page=post&s=view&id=${post.id}`);
+		window.api.send('open-in-browser', getPostUrl(post.id));
 	};
 
 	const handleTagsPopoverVisibilityChange = (visible: boolean): void => {

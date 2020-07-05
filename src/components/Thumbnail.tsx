@@ -10,6 +10,7 @@ import { RootState, AppDispatch } from '../store/types';
 
 import { CardAction, ContextMenu, openNotificationWithIcon } from '../types/components';
 import { renderPostCardAction, getThumbnailBorder } from '../util/componentUtils';
+import { getThumbnailUrl } from '../service/webService';
 
 interface Props {
 	index: number;
@@ -156,7 +157,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 					{post && (
 						<StyledThumbnailImage
 							data-testid='thumbnail-image'
-							src={`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`}
+							src={getThumbnailUrl(post.directory, post.hash)}
 							style={{ display: loaded ? 'block' : 'none' }}
 							onLoad={(): void => setLoaded(true)}
 							onLoadStart={(): void => setLoaded(false)}

@@ -14,6 +14,7 @@ import { ImageControl } from '../../../types/components';
 import TagsPopover from '../TagsPopover';
 import ImageControls from '../ImageControls';
 import LoadingMask from '../../../components/LoadingMask';
+import { getPostUrl } from '../../../service/webService';
 
 interface Props {
 	url: string;
@@ -68,7 +69,7 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 	};
 
 	const handleOpenWeb = (): void => {
-		window.api.send('open-in-browser', `https://gelbooru.com/index.php?page=post&s=view&id=${post.id}`);
+		window.api.send('open-in-browser', getPostUrl(post.id));
 	};
 
 	const handleTagsPopoverVisibilityChange = (visible: boolean): void => {

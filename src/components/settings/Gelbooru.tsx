@@ -6,6 +6,7 @@ import { AppDispatch, RootState } from '../../store/types';
 import { actions } from '../../store';
 
 import { validateApiKey } from '../../util/utils';
+import { OPTIONS_URL } from '../../service/webService';
 
 interface ApiKeyValidationStatus {
 	validateStatus: 'error' | 'success' | '';
@@ -41,7 +42,7 @@ const Gelbooru: React.FunctionComponent = () => {
 	};
 
 	const handleOpenGelbooruSettings = (): void => {
-		window.api.send('open-in-browser', 'https://gelbooru.com/index.php?page=account&s=options');
+		window.api.send('open-in-browser', OPTIONS_URL);
 	};
 
 	return (
@@ -49,7 +50,7 @@ const Gelbooru: React.FunctionComponent = () => {
 			<Form>
 				<Item wrapperCol={{ offset: 4, span: 16 }}>
 					<Descriptions>
-						<Descriptions.Item key="api-key-description">
+						<Descriptions.Item key='api-key-description'>
 							This is generally not needed. But if you use this app excesivelly, Gelbooru might start limiting requests from you and you
 							need to authenticate. You can find your API key on the bottom of Settings on Gelbooru under
 							<a onClick={handleOpenGelbooruSettings}> Options</a>.
@@ -57,7 +58,7 @@ const Gelbooru: React.FunctionComponent = () => {
 					</Descriptions>
 				</Item>
 				<Item
-					label="API key"
+					label='API key'
 					labelCol={{ span: 4 }}
 					wrapperCol={{ span: 16 }}
 					hasFeedback

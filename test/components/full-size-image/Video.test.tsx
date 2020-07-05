@@ -14,6 +14,7 @@ import { loadImageMock } from '../../helpers/imageBus.mock';
 import { createObjectURL, revokeObjectURL } from '../../helpers/window.mock';
 import { SuccessfulLoadPostResponse } from '../../../src/types/processDto';
 import { Post } from '../../../src/types/gelbooruTypes';
+import { getPostUrl } from '../../../src/service/webService';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -97,7 +98,7 @@ describe('Video', () => {
 		fireEvent.click(screen.getByRole('button', { name: 'Open in browser' }));
 
 		// then
-		expect(ipcSendSpy).toBeCalledWith('open-in-browser', `https://gelbooru.com/index.php?page=post&s=view&id=${post.id}`);
+		expect(ipcSendSpy).toBeCalledWith('open-in-browser', getPostUrl(post.id));
 	});
 	it('Creates action that shows TagsPopover', () => {
 		// given

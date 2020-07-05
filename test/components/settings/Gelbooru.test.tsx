@@ -10,6 +10,7 @@ import { mState } from '../../helpers/store.helper';
 
 import Gelbooru from '../../../src/components/settings/Gelbooru';
 import * as utils from '../../../src/util/utils';
+import { OPTIONS_URL } from '../../../src/service/webService';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -105,6 +106,6 @@ describe('settings/Dashboard', () => {
 		fireEvent.click(screen.getByText('Options'));
 
 		// then
-		expect(ipcSendSpy).toBeCalledWith('open-in-browser', 'https://gelbooru.com/index.php?page=account&s=options');
+		expect(ipcSendSpy).toBeCalledWith('open-in-browser', OPTIONS_URL);
 	});
 });

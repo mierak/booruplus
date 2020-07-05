@@ -16,6 +16,7 @@ import { loadImageMock } from '../../../helpers/imageBus.mock';
 import { createObjectURL, revokeObjectURL } from '../../../helpers/window.mock';
 import { SuccessfulLoadPostResponse } from '../../../../src/types/processDto';
 import { defineClientSize, defineClientBoundingRect } from '../../../helpers/utilities.helper';
+import { getPostUrl } from '../../../../src/service/webService';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -252,7 +253,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		fireEvent.click(screen.getByRole('button', { name: 'Open in browser' }));
 
 		// then
-		expect(ipcSendSpy).toBeCalledWith('open-in-browser', `https://gelbooru.com/index.php?page=post&s=view&id=${post.id}`);
+		expect(ipcSendSpy).toBeCalledWith('open-in-browser', getPostUrl(post.id));
 	});
 	it('Creates action that shows TagsPopover', () => {
 		// given

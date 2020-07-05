@@ -10,6 +10,7 @@ import { RootState, AppDispatch } from '../store/types';
 import ThumbnailsList from '../components/ThumbnailsList';
 import { CardAction, openNotificationWithIcon } from '../types/components';
 import { Post } from '../types/gelbooruTypes';
+import { getThumbnailUrl } from '../service/webService';
 
 interface Props {
 	className?: string;
@@ -64,9 +65,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleAddPreview = (post: Post): void => {
-		dispatch(
-			thunks.savedSearches.addPreviewToActiveSavedSearch(`https://gelbooru.com/thumbnails/${post.directory}/thumbnail_${post.hash}.jpg`)
-		);
+		dispatch(thunks.savedSearches.addPreviewToActiveSavedSearch(getThumbnailUrl(post.directory, post.hash)));
 		openNotificationWithIcon('success', 'Preview added', 'Preview was successfuly added to saved search');
 	};
 
