@@ -2,12 +2,12 @@ name: Tests and coverage
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
-  build:
+  test-and-coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,6 +16,7 @@ jobs:
       - name: Run tests
         run: npx jest --coverage
       - uses: vebr/jest-lcov-reporter@v0.2.0
+      - name: Publish coverage
         with:
           github-token: ${{ secrets.JEST_COVERAGE_TOKEN }}
           lcov-file: ./coverage/lcov.info
