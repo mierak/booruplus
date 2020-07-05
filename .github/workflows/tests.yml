@@ -20,8 +20,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install modules
         run: npm install
-      - name: Run tests
-        run: npx jest
+#      - name: Run tests
+#        run: npx jest
       - uses: ziishaned/jest-reporter-action@v0.0.1
         with:
           github-token: ${{ secrets.JEST_COVERAGE_TOKEN }}
