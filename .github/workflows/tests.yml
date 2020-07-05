@@ -10,13 +10,14 @@ jobs:
   test-and-coverage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repo
+        uses: actions/checkout@v2
       - name: Install modules
         run: npm install
       - name: Run tests
         run: npx jest --coverage
-      - uses: vebr/jest-lcov-reporter@v0.2.0
       - name: Publish coverage
+        uses: vebr/jest-lcov-reporter@v0.2.0
         with:
           github-token: ${{ secrets.JEST_COVERAGE_TOKEN }}
           lcov-file: ./coverage/lcov.info
