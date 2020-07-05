@@ -169,6 +169,7 @@ describe('pages/Favorites', () => {
 				},
 			})
 		);
+		const notificationMock = jest.spyOn(utils, 'openNotificationWithIcon').mockImplementation();
 
 		// when
 		render(
@@ -181,6 +182,7 @@ describe('pages/Favorites', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({ type: thunks.posts.downloadPost.pending.type, meta: { arg: { post: posts[1] } } });
+		expect(notificationMock).toBeCalledWith('success', 'Post downloaded', 'Image was successfuly saved to disk.');
 	});
 	it('Dispatches showModal() and setPostIds() for correct post when Move button is pressed', async () => {
 		// given
@@ -259,11 +261,11 @@ describe('pages/Favorites', () => {
 	it('Dispatches removePostsFromActiveDirectory() for correct post and fetches posts again post when Remove button is pressed', async () => {
 		// given
 		const posts = [
-			mPost({ id: 1, directory: 'dir1', hash: 'hash1' }),
-			mPost({ id: 2, directory: 'dir2', hash: 'hash2' }),
-			mPost({ id: 3, directory: 'dir3', hash: 'hash3' }),
-			mPost({ id: 4, directory: 'dir4', hash: 'hash4', downloaded: 1 }),
-			mPost({ id: 5, directory: 'dir5', hash: 'hash5', downloaded: 1 }),
+			mPost({ id: 0, directory: 'dir1', hash: 'hash1' }),
+			mPost({ id: 1, directory: 'dir2', hash: 'hash2' }),
+			mPost({ id: 2, directory: 'dir3', hash: 'hash3' }),
+			mPost({ id: 3, directory: 'dir4', hash: 'hash4' }),
+			mPost({ id: 4, directory: 'dir5', hash: 'hash5' }),
 		];
 		const store = mockStore(
 			mState({
@@ -285,7 +287,7 @@ describe('pages/Favorites', () => {
 				<Favorites />
 			</Provider>
 		);
-		fireEvent.click(screen.getAllByRole('img', { name: 'close' })[4]);
+		fireEvent.click(screen.getAllByRole('img', { name: 'close' })[3]);
 		await waitFor(() => screen.getByText('Remove from Favorites?'));
 		fireEvent.click(screen.getByRole('button', { name: 'Remove' }));
 
