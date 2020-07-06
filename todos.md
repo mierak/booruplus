@@ -34,7 +34,7 @@
 ## BUG
 
 - Recheck images path settings reload from DB with IPC communication
-- ExpandedKeys are loaded only upon opening favorites page
+- ~~ExpandedKeys are loaded only upon opening favorites page~~
 - ~~Fix scroll to thumbnail~~
 - ~~Fix buggy behaviour of tag search with debounce~~
 - ~~Two searches in quick succession sometimes add the results together instead of overwriting the first one~~
