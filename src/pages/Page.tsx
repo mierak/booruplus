@@ -26,6 +26,7 @@ const Page: React.FunctionComponent = () => {
 			await dispatch(thunks.settings.loadSettings('user'));
 			await dispatch(thunks.tasks.rehydrateFromDb());
 			await dispatch(thunks.favorites.fetchTreeData());
+			await dispatch(thunks.favorites.fetchAllKeys());
 
 			if (settings.theme === 'dark') {
 				require('../css/scrollbar.dark.css');
