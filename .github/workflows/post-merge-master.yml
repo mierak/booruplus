@@ -1,0 +1,16 @@
+name: Post merge test
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  test-and-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Install modules
+        run: npm install
+      - name: Run tests
+        run: npx jest
