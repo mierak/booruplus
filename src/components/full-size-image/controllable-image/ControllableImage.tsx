@@ -10,6 +10,7 @@ import { actions } from '../../../store';
 
 import { Post } from '../../../types/gelbooruTypes';
 import { ImageControl } from '../../../types/components';
+import { IpcChannels } from '../../../types/processDto';
 
 import TagsPopover from '../TagsPopover';
 import ImageControls from '../ImageControls';
@@ -69,7 +70,7 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 	};
 
 	const handleOpenWeb = (): void => {
-		window.api.send('open-in-browser', getPostUrl(post.id));
+		window.api.send(IpcChannels.OPEN_IN_BROWSER, getPostUrl(post.id));
 	};
 
 	const handleTagsPopoverVisibilityChange = (visible: boolean): void => {

@@ -33,7 +33,7 @@
 		"src/service/**/*",
 		"src/util/**/*",
 		"src/db/db/**/*",
-		"electron/preload.js",
+		"electron/preload.ts",
 		"window.d.ts",
 		"src/service/apiService.ts",
 		"electron/index.ts",

@@ -6,6 +6,7 @@ import { useLoadImage } from '../../hooks/useImageBus';
 import { AppDispatch } from '../../store/types';
 
 import { Post } from '../../types/gelbooruTypes';
+import { IpcChannels } from '../../types/processDto';
 
 import { isFilenameVideo } from '../../util/utils';
 import { actions } from '../../store';
@@ -71,7 +72,7 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 	}, [post]);
 
 	const handleOpenWeb = (): void => {
-		window.api.send('open-in-browser', getPostUrl(post.id));
+		window.api.send(IpcChannels.OPEN_IN_BROWSER, getPostUrl(post.id));
 	};
 
 	const handleTagsPopoverVisibilityChange = (visible: boolean): void => {
