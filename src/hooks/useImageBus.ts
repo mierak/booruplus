@@ -1,12 +1,12 @@
 import { Post } from '../types/gelbooruTypes';
-import { LoadPostResponse, SuccessfulLoadPostResponse, SavePostDto } from '../types/processDto';
+import { LoadPostResponse, SuccessfulLoadPostResponse, SavePostDto, IpcChannels } from '../types/processDto';
 
 const sendImage = async (post: Post, buffer: ArrayBuffer): Promise<void> => {
 	const dto: SavePostDto = {
 		data: buffer,
 		post,
 	};
-	return window.api.invoke('save-image', dto);
+	return window.api.invoke(IpcChannels.SAVE_IMAGE, dto);
 };
 const sendSaveImageRequest = async (post: Post): Promise<void> => {
 	const response = await fetch(post.fileUrl);
@@ -15,7 +15,7 @@ const sendSaveImageRequest = async (post: Post): Promise<void> => {
 };
 
 const loadImage = (post: Post, onFullfiled: (response: SuccessfulLoadPostResponse) => void, onRejected: (post: Post) => void): void => {
-	window.api.invoke('load-image', post).then((response: LoadPostResponse) => {
+	window.api.invoke<LoadPostResponse>(IpcChannels.LOAD_IMAGE, post).then((response) => {
 		if (response.data) {
 			onFullfiled({ data: response.data, post: response.post });
 		} else {
@@ -42,7 +42,7 @@ export const useSaveImage = (): ((post: Post) => Promise<void>) => {
 
 export const useDeleteImage = (): ((post: Post) => void) => {
 	const deleteImage = (post: Post): void => {
-		window.api.invoke('delete-image', post);
+		window.api.invoke(IpcChannels.DELETE_IMAGE, post);
 	};
 
 	return deleteImage;

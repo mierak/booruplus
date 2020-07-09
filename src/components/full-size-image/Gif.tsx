@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { actions } from '../../store';
 import { AppDispatch } from '../../store/types';
 
+import { IpcChannels } from '../../types/processDto';
 import { Post } from '../../types/gelbooruTypes';
 import TagsPopover from './TagsPopover';
 import { ImageControl } from '../../types/components';
@@ -38,7 +39,7 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 	const [url, setUrl] = useState('');
 
 	const handleOpenWeb = (): void => {
-		window.api.send('open-in-browser', getPostUrl(props.post.id));
+		window.api.send(IpcChannels.OPEN_IN_BROWSER, getPostUrl(props.post.id));
 	};
 
 	const handleTagsPopoverVisibilityChange = (visible: boolean): void => {

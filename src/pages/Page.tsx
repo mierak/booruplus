@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState, AppDispatch } from '../store/types';
+import { IpcChannels } from '../types/processDto';
 
 import AppLayout from '../components/layout/Layout';
 import ImageView from './ImageView';
@@ -40,7 +41,7 @@ const Page: React.FunctionComponent = () => {
 	}, []);
 
 	useEffect(() => {
-		window.api.send('settings-loaded', settings);
+		window.api.send(IpcChannels.SETTINGS_LOADED, settings);
 	}, [settings]);
 
 	const renderView = (): React.ReactNode => {

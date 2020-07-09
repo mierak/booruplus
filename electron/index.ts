@@ -3,7 +3,7 @@ import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electro
 import fs from 'fs';
 
 import { Settings } from '../src/store/types';
-import { SavePostDto } from '../src/types/processDto';
+import { SavePostDto, IpcChannels } from '../src/types/processDto';
 import { Post } from '../src/types/gelbooruTypes';
 
 import path from 'path';
@@ -128,11 +128,11 @@ app.on('window-all-closed', () => {
 
 let settings: Settings;
 
-ipcMain.on('settings-loaded', (event: IpcMainEvent, value: Settings) => {
+ipcMain.on(IpcChannels.SETTINGS_LOADED, (event: IpcMainEvent, value: Settings) => {
 	settings = value;
 });
 
-ipcMain.on('theme-changed', async () => {
+ipcMain.on(IpcChannels.THEME_CHANGED, async () => {
 	const options: MessageBoxOptions = {
 		message: 'Changing theme requires application restart. Would you like to restart now?',
 		buttons: ['Ok', 'Cancel'],
@@ -145,15 +145,15 @@ ipcMain.on('theme-changed', async () => {
 	}
 });
 
-ipcMain.on('open-in-browser', (event: IpcMainEvent, value: string) => {
+ipcMain.on(IpcChannels.OPEN_IN_BROWSER, (event: IpcMainEvent, value: string) => {
 	shell.openExternal(value);
 });
 
-ipcMain.on('open-path', (event: IpcMainEvent, value: string) => {
+ipcMain.on(IpcChannels.OPEN_PATH, (event: IpcMainEvent, value: string) => {
 	shell.openItem(value);
 });
 
-ipcMain.handle('save-image', async (event: IpcMainInvokeEvent, dto: SavePostDto) => {
+ipcMain.handle(IpcChannels.SAVE_IMAGE, async (event: IpcMainInvokeEvent, dto: SavePostDto) => {
 	if (dto.data) {
 		await fs.promises.mkdir(`${settings.imagesFolderPath}/${dto.post.directory}`, { recursive: true }).catch((err) => {
 			console.error(err);
@@ -174,7 +174,7 @@ ipcMain.handle('save-image', async (event: IpcMainInvokeEvent, dto: SavePostDto)
 	}
 });
 
-ipcMain.handle('load-image', async (event: IpcMainInvokeEvent, post: Post) => {
+ipcMain.handle(IpcChannels.LOAD_IMAGE, async (event: IpcMainInvokeEvent, post: Post) => {
 	try {
 		const data = fs.readFileSync(`${settings.imagesFolderPath}/${post.directory}/${post.image}`);
 		console.log(`ipcMain: image-loaded | id: ${post.id}`);
@@ -184,7 +184,7 @@ ipcMain.handle('load-image', async (event: IpcMainInvokeEvent, post: Post) => {
 	}
 });
 
-ipcMain.handle('delete-image', async (event: IpcMainInvokeEvent, post: Post) => {
+ipcMain.handle(IpcChannels.DELETE_IMAGE, async (event: IpcMainInvokeEvent, post: Post) => {
 	try {
 		fs.unlinkSync(`${settings.imagesFolderPath}/${post.directory}/${post.image}`);
 		const dirs = post.directory.split('/');
@@ -197,7 +197,7 @@ ipcMain.handle('delete-image', async (event: IpcMainInvokeEvent, post: Post) => 
 	}
 });
 
-ipcMain.handle('open-select-directory-dialog', async () => {
+ipcMain.handle(IpcChannels.OPEN_SELECT_FOLDER_DIALOG, async () => {
 	const result = await dialog.showOpenDialog(window, { properties: ['openDirectory', 'createDirectory'] });
 	if (!result.canceled) {
 		settings.imagesFolderPath = result.filePaths[0];

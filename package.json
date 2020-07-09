@@ -61,7 +61,7 @@
 									"js": "./src/renderer.tsx",
 									"name": "main_window",
 									"preload": {
-										"js": "./electron/preload.js"
+										"js": "./electron/preload.ts"
 									},
 									"additionalChunks": [
 										"dexieworker"
