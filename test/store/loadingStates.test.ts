@@ -2,6 +2,7 @@ import { doDatabaseMock } from '../helpers/database.mock';
 doDatabaseMock();
 import reducer, { actions, initialState } from '../../src/store/loadingStates';
 import { thunks } from '../../src/store/';
+import { setFullscreenLoadingMaskMessage } from '../../src/store/commonActions';
 import { createAction } from '../helpers/test.helper';
 
 describe('store/loadingStates', () => {
@@ -134,5 +135,82 @@ describe('store/loadingStates', () => {
 
 		// then
 		expect(result.isMostFavoritedTagsLoading).toEqual(false);
+	});
+	it('Sets loading message and loadingMaskVisible on importDatabase pending', () => {
+		// given
+		const action = createAction(thunks.settings.importDatabase.pending.type, true);
+
+		// when
+		const result = reducer({ ...initialState, fullscreenLoadingMaskMessage: '', isFullscreenLoadingMaskVisible: false }, action);
+
+		// then
+		expect(result.fullscreenLoadingMaskMessage).toEqual('Importing data...');
+		expect(result.isFullscreenLoadingMaskVisible).toEqual(true);
+	});
+	it('Sets loading message and loadingMaskVisible on importDatabase fulfilled', () => {
+		// given
+		const action = createAction(thunks.settings.importDatabase.fulfilled.type, true);
+
+		// when
+		const result = reducer({ ...initialState, fullscreenLoadingMaskMessage: 'asdf', isFullscreenLoadingMaskVisible: true }, action);
+
+		// then
+		expect(result.fullscreenLoadingMaskMessage).toEqual(undefined);
+		expect(result.isFullscreenLoadingMaskVisible).toEqual(false);
+	});
+	it('Sets loading message and loadingMaskVisible on importDatabase rejected', () => {
+		// given
+		const action = createAction(thunks.settings.importDatabase.rejected.type, true);
+
+		// when
+		const result = reducer({ ...initialState, fullscreenLoadingMaskMessage: 'asdf', isFullscreenLoadingMaskVisible: true }, action);
+
+		// then
+		expect(result.fullscreenLoadingMaskMessage).toEqual(undefined);
+		expect(result.isFullscreenLoadingMaskVisible).toEqual(false);
+	});
+	it('Sets loading message and loadingMaskVisible on exportDatabase pending', () => {
+		// given
+		const action = createAction(thunks.settings.exportDatabase.pending.type, true);
+
+		// when
+		const result = reducer({ ...initialState, fullscreenLoadingMaskMessage: '', isFullscreenLoadingMaskVisible: false }, action);
+
+		// then
+		expect(result.fullscreenLoadingMaskMessage).toEqual('Exporting data...');
+		expect(result.isFullscreenLoadingMaskVisible).toEqual(true);
+	});
+	it('Sets loading message and loadingMaskVisible on exportDatabase fulfilled', () => {
+		// given
+		const action = createAction(thunks.settings.exportDatabase.fulfilled.type, true);
+
+		// when
+		const result = reducer({ ...initialState, fullscreenLoadingMaskMessage: 'asdf', isFullscreenLoadingMaskVisible: true }, action);
+
+		// then
+		expect(result.fullscreenLoadingMaskMessage).toEqual(undefined);
+		expect(result.isFullscreenLoadingMaskVisible).toEqual(false);
+	});
+	it('Sets loading message and loadingMaskVisible on exportDatabase rejected', () => {
+		// given
+		const action = createAction(thunks.settings.exportDatabase.rejected.type, true);
+
+		// when
+		const result = reducer({ ...initialState, fullscreenLoadingMaskMessage: 'asdf', isFullscreenLoadingMaskVisible: true }, action);
+
+		// then
+		expect(result.fullscreenLoadingMaskMessage).toEqual(undefined);
+		expect(result.isFullscreenLoadingMaskVisible).toEqual(false);
+	});
+	it('Sets loading mask message on setFullscreenLoadingMaskMessage', () => {
+		// given
+		const message = 'testmessage';
+		const action = createAction(setFullscreenLoadingMaskMessage.type, message);
+
+		// when
+		const result = reducer({ ...initialState, fullscreenLoadingMaskMessage: '' }, action);
+
+		// then
+		expect(result.fullscreenLoadingMaskMessage).toEqual(message);
 	});
 });
