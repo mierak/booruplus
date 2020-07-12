@@ -19,14 +19,9 @@ interface Props {
 }
 
 interface CardProps {
-	isactive: string;
-	theme: 'dark' | 'light';
-	height: string;
-}
-
-interface SelectedIndexes {
-	first: number | undefined;
-	last: number | undefined;
+	$isActive: string;
+	$theme: 'dark' | 'light';
+	$height: string;
 }
 
 interface PopConfirmProps {
@@ -38,9 +33,12 @@ interface PopConfirmProps {
 }
 
 const StyledCard = styled(Card)<CardProps>`
-	border: ${(props): false | 0 | 'dashed 1px black' | 'dashed 1px white' | undefined => getThumbnailBorder(props.isactive, props.theme)};
-	width: 170px;
-	height: ${(props): string => props.height};
+	&& {
+		border: ${(props): false | 0 | 'dashed 1px black' | 'dashed 1px white' | undefined =>
+			getThumbnailBorder(props.$isActive, props.$theme)};
+		width: 170px;
+		height: ${(props): string => props.$height};
+	}
 	&& > .ant-card-actions > li {
 		margin-top: 2px;
 		margin-bottom: 2px;
@@ -142,11 +140,11 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		return (
 			<StyledCard
 				bodyStyle={{ height: '170px', width: '170px', padding: '0' }}
-				isactive={isActive.toString()}
-				theme={theme}
+				$isActive={isActive.toString()}
+				$theme={theme}
 				actions={renderActions()}
 				hoverable
-				height={props.actions !== undefined ? '200px' : '172px'}
+				$height={props.actions !== undefined ? '200px' : '172px'}
 			>
 				<StyledImageContainer onClick={(event: React.MouseEvent): void => handleThumbnailClick(event)}>
 					{post && post.selected ? (

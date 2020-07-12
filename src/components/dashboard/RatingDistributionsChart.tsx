@@ -26,6 +26,13 @@ const StyledEmpty = styled(Empty)`
 	transform: translate(-50%, -50%);
 `;
 
+const StyledSpinContainer = styled.div`
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+`;
+
 const StyledPie = styled(Pie)`
 	&& .pie-sub-title {
 		color: ${(props): string => (props.theme === 'dark' ? 'rgba(255, 255, 255, 0.85)' : '')};
@@ -75,16 +82,18 @@ const RatingDistributionsChart: React.FunctionComponent = () => {
 			return (
 				<StyledRatingDistributionsLoadingCard title={title} size={size}>
 					<StyledEmpty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-					<StyledEmpty as={Spin} />
+					<StyledSpinContainer>
+						<Spin />
+					</StyledSpinContainer>
 				</StyledRatingDistributionsLoadingCard>
 			);
 		} else {
 			return (
-				<StyledRatingDistributionsCard title={title} size={size} extra={<ReloadOutlined onClick={handleReload} title="Reload" />}>
+				<StyledRatingDistributionsCard title={title} size={size} extra={<ReloadOutlined onClick={handleReload} title='Reload' />}>
 					<StyledPie
 						hasLegend
-						title="Rating"
-						subTitle="Rating"
+						title='Rating'
+						subTitle='Rating'
 						total={(): number => {
 							const total = (ratingCountsData && ratingCountsData.map((data) => data.y).reduce((acc, val) => (acc = acc + val))) || 0;
 							return total;

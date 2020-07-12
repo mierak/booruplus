@@ -6,6 +6,8 @@
 - BUG FIX: Blacklisted posts not removing from currently displayed posts
 - BUG FIX: Online search showing blacklisted posts
 - BUG FIX: All favorites directories are now set as expanded on app start
+- BUG FIX: Fixed light theme loading
+- BIG FIX: Fixed position of rating distibution chart spinner
 
 ## 0.1.3 - New Tags page - 9.5.2020
 - Changed Settings to be contained in a Modal window

@@ -39,4 +39,19 @@ describe('LoadingMask', () => {
 		// then
 		await waitFor(() => expect(screen.queryByRole('img', { name: 'loading' })).toBeNull());
 	});
+	it('Renders message', async () => {
+		// given
+		const store = mockStore(mState());
+		const message = 'test message';
+
+		// when
+		render(
+			<Provider store={store}>
+				<LoadingMask visible={false} delay={0} fullscreen message={message} />
+			</Provider>
+		);
+
+		// then
+		expect(screen.findByText(message));
+	});
 });

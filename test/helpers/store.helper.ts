@@ -90,6 +90,8 @@ const mLoadingStates = (ls?: Partial<LoadingStates>): LoadingStates => {
 		isMostFavoritedTagsLoading: ls?.isMostFavoritedTagsLoading ?? initialState.loadingStates.isMostFavoritedTagsLoading,
 		isMostSearchedTagsLoading: ls?.isMostSearchedTagsLoading ?? initialState.loadingStates.isMostSearchedTagsLoading,
 		isRatingDistributionChartLoading: ls?.isRatingDistributionChartLoading ?? initialState.loadingStates.isRatingDistributionChartLoading,
+		isFullscreenLoadingMaskVisible: ls?.isFullscreenLoadingMaskVisible ?? initialState.loadingStates.isFullscreenLoadingMaskVisible,
+		fullscreenLoadingMaskMessage: ls?.fullscreenLoadingMaskMessage,
 	};
 };
 

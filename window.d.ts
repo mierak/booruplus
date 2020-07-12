@@ -2,6 +2,7 @@
 import { Post } from 'src/types/gelbooruTypes';
 import { SavePostDto } from 'src/types/processDto';
 import { IpcChannels } from 'types/processDto';
+import log from 'electron-log';
 
 export declare global {
 	interface Window {
@@ -9,6 +10,7 @@ export declare global {
 			send<T = string>(channel: IpcChannels, data?: T): void;
 			invoke<T>(channel: IpcChannels, post?: Post | SavePostDto): Promise<T>;
 		};
+		log: typeof log.functions;
 	}
 }
 

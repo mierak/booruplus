@@ -49,6 +49,15 @@ const StyledGif = styled(Gif)`
 	height: 100%;
 `;
 
+const StyledEmptyThumbnails = styled(EmptyThumbnails)`
+	&& {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+	}
+`;
+
 const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 
@@ -65,7 +74,7 @@ const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 				return <StyledControllableImage url={post.fileUrl} post={post} showControls />;
 			}
 		}
-		return <EmptyThumbnails />;
+		return <StyledEmptyThumbnails />;
 	};
 
 	useEffect(() => {

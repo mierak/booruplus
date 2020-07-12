@@ -27,10 +27,12 @@ const StyledThumbnailsList = styled(ThumbnailsList)`
 `;
 
 const StyledSpin = styled(Spin)`
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform: translate(0, -50%);
+	&& {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+	}
 `;
 
 const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {

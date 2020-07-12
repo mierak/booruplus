@@ -51,6 +51,11 @@ const StyledThumbnailCard = styled(Card)`
 	}
 `;
 
+const StyledImage = styled.img`
+	max-width: 150px;
+	max-height: 150px;
+`;
+
 const StyledImageContainer = styled.div`
 	width: 100%;
 	height: 170px;
@@ -95,7 +100,7 @@ const MostViewedPosts: React.FunctionComponent = () => {
 			return (
 				<StyledThumbnailCard hoverable key={post.id} onClick={(): void => handleMostViewedImageClick(post)}>
 					<StyledImageContainer>
-						<img src={getThumbnailUrl(post.directory, post.hash)} alt='most-viewed-thumbnail' />
+						<StyledImage src={getThumbnailUrl(post.directory, post.hash)} alt='most-viewed-thumbnail' />
 					</StyledImageContainer>
 					<StyledMeta
 						description={

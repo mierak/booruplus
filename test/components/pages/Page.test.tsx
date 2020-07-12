@@ -195,4 +195,26 @@ describe('pages/Dashboard', () => {
 		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.tasks.rehydrateFromDb.pending.type }));
 		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchTreeData.pending.type }));
 	});
+	it('Renders loading mask with correct message', () => {
+		// given
+		const message = 'test message';
+		const store = mockStore(
+			mState({
+				loadingStates: {
+					isFullscreenLoadingMaskVisible: true,
+					fullscreenLoadingMaskMessage: message,
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<Page />
+			</Provider>
+		);
+
+		// then
+		expect(screen.findAllByText(message)).not.toBeNull();
+	});
 });

@@ -88,6 +88,9 @@ class Database extends Dexie {
 		this.version(18).stores({
 			postsTags: null,
 		});
+		this.version(19).stores({
+			posts: 'id, rating, *tags, downloaded, viewCount, blacklisted',
+		});
 		this.tagSearchHistory = this.table('tagSearchHistory');
 		this.settings = this.table('settings');
 		this.posts = this.table('posts');
@@ -105,7 +108,7 @@ db.on('populate', () => {
 		name: 'default',
 		values: {
 			imagesFolderPath: 'C:\\temp', // TODO change to userfolder
-			theme: 'light',
+			theme: 'dark',
 			apiKey: undefined,
 			dashboard: {
 				mostViewedCount: 28,
