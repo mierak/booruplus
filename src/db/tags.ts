@@ -5,13 +5,11 @@ export const save = async (tag: Tag): Promise<number | void> => {
 	return db.tags.put(tag);
 };
 
-export const saveBulk = async (tags: Tag[]): Promise<number> => {
+export const bulkPut = async (tags: Tag[]): Promise<number> => {
 	return db.tags.bulkPut(tags);
 };
-
-export const getAll = async (): Promise<Tag[] | void> => {
-	const tags = await db.tags.toArray();
-	return tags;
+export const getAll = async (): Promise<Tag[]> => {
+	return db.tags.toArray();
 };
 
 interface Options {

@@ -103,7 +103,7 @@ describe('thunks/posts', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(mockedDb.tags.saveBulk).toBeCalledWith(tagsFromApi);
+			expect(mockedDb.tags.bulkPut).toBeCalledWith(tagsFromApi);
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.downloadTags.pending.type, payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({ type: thunks.downloadTags.fulfilled.type, payload: tagsFromApi });
 		});

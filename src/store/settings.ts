@@ -2,6 +2,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Settings } from './types';
 import * as thunks from './thunks';
+import { openNotificationWithIcon } from '../types/components';
+
+const log = window.log;
 
 export const initialState: Settings = {
 	imagesFolderPath: '',
@@ -63,6 +66,24 @@ const settingsSlice = createSlice({
 		});
 		builder.addCase(thunks.settings.saveSettings.rejected, (state, action) => {
 			console.error(action.error.message);
+		});
+
+		builder.addCase(thunks.settings.exportDatabase.rejected, () => {
+			openNotificationWithIcon('error', 'Could not export database', 'Error occured while trying to create a database backup.', 5);
+		});
+		builder.addCase(thunks.settings.importDatabase.rejected, (_, action) => {
+			log.error('Database import failed.', action.error.message, action.error.stack);
+			openNotificationWithIcon('error', 'Could not import database', 'Error occured while trying to restore backup.', 5);
+		});
+		builder.addCase(thunks.settings.importDatabase.fulfilled, (_, action) => {
+			if (action.payload) {
+				openNotificationWithIcon('success', 'Import finished', 'Database was succesfully restored!');
+			}
+		});
+		builder.addCase(thunks.settings.exportDatabase.fulfilled, (_, action) => {
+			if (action.payload) {
+				openNotificationWithIcon('success', 'Export finished', 'Database was succesfully exported!');
+			}
 		});
 	},
 });

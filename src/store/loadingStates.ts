@@ -1,11 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import * as thunks from './thunks';
+import { setFullscreenLoadingMaskMessage } from './commonActions';
 
 export interface LoadingStates {
 	isMostFavoritedTagsLoading: boolean;
 	isMostSearchedTagsLoading: boolean;
 	isRatingDistributionChartLoading: boolean;
 	isFullImageLoading: boolean;
+	isFullscreenLoadingMaskVisible: boolean;
+	fullscreenLoadingMaskMessage?: string;
 }
 
 export const initialState: LoadingStates = {
@@ -13,6 +16,7 @@ export const initialState: LoadingStates = {
 	isMostSearchedTagsLoading: false,
 	isRatingDistributionChartLoading: false,
 	isFullImageLoading: false,
+	isFullscreenLoadingMaskVisible: false,
 };
 
 const loadingState = createSlice({
@@ -50,6 +54,36 @@ const loadingState = createSlice({
 		});
 		builder.addCase(thunks.dashboard.fetchMostFavoritedTags.rejected, (state, _) => {
 			state.isMostFavoritedTagsLoading = false;
+		});
+		// Import database
+		builder.addCase(thunks.settings.importDatabase.pending, (state) => {
+			state.fullscreenLoadingMaskMessage = 'Importing data...';
+			state.isFullscreenLoadingMaskVisible = true;
+		});
+		builder.addCase(thunks.settings.importDatabase.fulfilled, (state) => {
+			state.isFullscreenLoadingMaskVisible = false;
+			state.fullscreenLoadingMaskMessage = undefined;
+		});
+		builder.addCase(thunks.settings.importDatabase.rejected, (state) => {
+			state.isFullscreenLoadingMaskVisible = false;
+			state.fullscreenLoadingMaskMessage = undefined;
+		});
+		// Export database
+		builder.addCase(thunks.settings.exportDatabase.pending, (state) => {
+			state.fullscreenLoadingMaskMessage = 'Exporting data...';
+			state.isFullscreenLoadingMaskVisible = true;
+		});
+		builder.addCase(thunks.settings.exportDatabase.fulfilled, (state) => {
+			state.isFullscreenLoadingMaskVisible = false;
+			state.fullscreenLoadingMaskMessage = undefined;
+		});
+		builder.addCase(thunks.settings.exportDatabase.rejected, (state) => {
+			state.isFullscreenLoadingMaskVisible = false;
+			state.fullscreenLoadingMaskMessage = undefined;
+		});
+
+		builder.addCase(setFullscreenLoadingMaskMessage, (state, action) => {
+			state.fullscreenLoadingMaskMessage = action.payload;
 		});
 	},
 });

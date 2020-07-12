@@ -51,9 +51,10 @@
 
 ## LOW PRIORITY
 
+- Change thumbnails to 175x175px max size to take advantage of gelbooru changes
 - Make forms responsive
 - Investigate slow API key input box
-- Extract all inlined urls
 - Limit download tasks, maybe add a way to view older tasks. Add task retention setting.
 - Change cancelling of settings modal to not reload from DB
+- ~~Extract all inlined urls~~
 - ~~Add toggles for loading stats on app start~~

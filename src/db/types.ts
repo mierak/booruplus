@@ -1,5 +1,5 @@
-import { Settings, Sort, SortOrder } from '../store/types';
-import { Tag, Rating } from '../types/gelbooruTypes';
+import { Settings, Sort, SortOrder, Task } from '../store/types';
+import { Tag, Rating, Post } from '../types/gelbooruTypes';
 
 export interface Entity {
 	id: number;
@@ -22,6 +22,18 @@ export interface SavedSearch {
 	rating: Rating;
 	lastSearched?: string;
 	previews: SavedSearchPreview[];
+}
+
+export interface SavedSearchWithB64Previews {
+	id?: number;
+	tags: Tag[];
+	excludedTags: Tag[];
+	rating: Rating;
+	lastSearched?: string;
+	previews: {
+		id: number;
+		data: string;
+	}[];
 }
 
 export interface FilterOptions {
@@ -48,4 +60,30 @@ export interface FavoritesTreeNode {
 
 export interface Counts {
 	[key: string]: number;
+}
+
+export interface ExportedRawData {
+	posts: Post[];
+	favorites: FavoritesTreeNode[];
+	settings: SettingsPair[];
+	tags: Tag[];
+	tagSearchHistory: {
+		tag: Tag;
+		date: string;
+	}[];
+	tasks: Task[];
+	savedSearches: SavedSearch[];
+}
+
+export interface ExportedData {
+	posts: Post[];
+	favorites: FavoritesTreeNode[];
+	settings: SettingsPair[];
+	tags: Tag[];
+	tagSearchHistory: {
+		tag: Tag;
+		date: string;
+	}[];
+	tasks: Task[];
+	savedSearches: SavedSearchWithB64Previews[];
 }

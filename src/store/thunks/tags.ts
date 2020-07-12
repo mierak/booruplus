@@ -9,8 +9,7 @@ import * as downloadedSearchFormThunk from './downloadedSearchForm';
 export const loadAllTagsFromDb = createAsyncThunk<Tag[], void, ThunkApi>(
 	'tags/loadAllTagsFromDb',
 	async (): Promise<Tag[]> => {
-		const tags = await db.tags.getAll();
-		return tags ? tags : [];
+		return await db.tags.getAll();
 	}
 );
 

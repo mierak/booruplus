@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { FolderOpenOutlined, FolderOutlined } from '@ant-design/icons';
+import { FolderOpenOutlined, FolderOutlined, ImportOutlined, ExportOutlined } from '@ant-design/icons';
 import { Form, Input, Button, Select } from 'antd';
 
 import { AppDispatch, RootState } from '../../store/types';
@@ -13,11 +13,19 @@ interface SelectFolderDialogResponse {
 	filePaths: string[];
 }
 
+interface ButtonProps {
+	$isOffset?: boolean;
+}
+
 const { Item } = Form;
 
-const StyledButton = styled(Button)`
-	width: 100%;
+const StyledButton = styled(Button)<ButtonProps>`
+	width: 100px;
+	margin-left: ${(props: ButtonProps): string => (props.$isOffset ? '8px' : '0')};
 `;
+
+const labelCol = { span: 4 };
+const wrapperCol = { span: 16 };
 
 const General: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
@@ -42,20 +50,29 @@ const General: React.FunctionComponent = () => {
 			}
 		});
 	};
+
+	const handleImport = (): void => {
+		dispatch(thunks.settings.importDatabase());
+	};
+
+	const handleExport = (): void => {
+		dispatch(thunks.settings.exportDatabase());
+	};
+
 	return (
 		<Form>
-			<Item label='Path to images' labelCol={{ span: 4 }} wrapperCol={{ span: 16 }}>
+			<Item label='Path to images' labelCol={labelCol} wrapperCol={wrapperCol}>
 				<Input value={imagesFolderPath} />
 			</Item>
-			<Item wrapperCol={{ span: 16, offset: 4 }}>
-				<StyledButton onClick={handleSelectDirectory} style={{ width: '100px' }}>
+			<Item wrapperCol={{ ...wrapperCol, offset: 4 }}>
+				<StyledButton onClick={handleSelectDirectory}>
 					<FolderOutlined /> Select
 				</StyledButton>
-				<StyledButton onClick={handleOpenDirectory} style={{ width: '100px', marginLeft: '8px' }}>
+				<StyledButton $isOffset onClick={handleOpenDirectory}>
 					<FolderOpenOutlined /> Open
 				</StyledButton>
 			</Item>
-			<Item label='Theme' labelCol={{ span: 4 }} wrapperCol={{ span: 16 }}>
+			<Item label='Theme' labelCol={labelCol} wrapperCol={wrapperCol}>
 				<Select defaultValue={theme} style={{ width: '150px' }} onChange={handleThemeChange}>
 					<Select.Option key='dark' value='dark'>
 						Dark
@@ -64,6 +81,14 @@ const General: React.FunctionComponent = () => {
 						Light
 					</Select.Option>
 				</Select>
+			</Item>
+			<Item label='Import/Export' labelCol={labelCol} wrapperCol={wrapperCol}>
+				<StyledButton onClick={handleImport}>
+					<ImportOutlined /> Import
+				</StyledButton>
+				<StyledButton $isOffset onClick={handleExport}>
+					<ExportOutlined /> Export
+				</StyledButton>
 			</Item>
 		</Form>
 	);

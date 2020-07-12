@@ -5,7 +5,7 @@ import db from '../../src/db/database';
 import { mTag, mPost } from '../helpers/test.helper';
 import {
 	save,
-	saveBulk,
+	bulkPut,
 	getAll,
 	checkIfExists,
 	getTag,
@@ -42,7 +42,7 @@ describe('tags/db', () => {
 			const putSpy = jest.spyOn(db.tags, 'bulkPut');
 
 			// when
-			await saveBulk(tags);
+			await bulkPut(tags);
 
 			// then
 			expect(putSpy).toBeCalledWith(tags);
@@ -182,7 +182,7 @@ describe('tags/db', () => {
 				mTag({ id: 7, tag: 'cat' }),
 				mTag({ id: 8, tag: 'asdf' }),
 			];
-			await saveBulk(tags);
+			await bulkPut(tags);
 
 			// when
 			const result1 = await getByPattern('test');
@@ -208,7 +208,7 @@ describe('tags/db', () => {
 				mTag({ id: 7, tag: 'cat' }),
 				mTag({ id: 8, tag: 'asdf' }),
 			];
-			await saveBulk(tags);
+			await bulkPut(tags);
 
 			// when
 			const result = await getCount();
@@ -228,7 +228,7 @@ describe('tags/db', () => {
 				mTag({ id: 7, type: 'character', tag: 'cat' }),
 				mTag({ id: 8, type: 'character', tag: 'asdf' }),
 			];
-			await saveBulk(tags);
+			await bulkPut(tags);
 
 			// when
 			const result1 = await getCount({ types: ['artist', 'character'] });
@@ -252,7 +252,7 @@ describe('tags/db', () => {
 				mTag({ id: 7, type: 'character', tag: 'cat' }),
 				mTag({ id: 8, type: 'character', tag: 'asdf' }),
 			];
-			await saveBulk(tags);
+			await bulkPut(tags);
 
 			// when
 			const result1 = await getAllWithLimitAndOffset({

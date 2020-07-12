@@ -2,9 +2,7 @@
 import { IpcChannels, SavePostDto } from '../src/types/processDto';
 import { contextBridge, ipcRenderer } from 'electron';
 import { Post } from '../src/types/gelbooruTypes';
-
-// eslint-disable-next-line no-undef
-// const { contextBridge, ipcRenderer } = require('electron');
+import log from 'electron-log';
 
 contextBridge.exposeInMainWorld('api', {
 	send: <T>(channel: IpcChannels, data: T) => {
@@ -18,3 +16,4 @@ contextBridge.exposeInMainWorld('api', {
 		}
 	},
 });
+contextBridge.exposeInMainWorld('log', log.functions);

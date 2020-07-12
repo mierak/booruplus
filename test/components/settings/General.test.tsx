@@ -69,6 +69,38 @@ describe('settings/General', () => {
 		);
 		expect(ipcSendSpy).toBeCalledWith('theme-changed');
 	});
+	it('Dispatches importDatabase() when Import button is pressed', async () => {
+		// given
+		const store = mockStore(mState());
+
+		// when
+		render(
+			<Provider store={store}>
+				<General />
+			</Provider>
+		);
+		fireEvent.click(screen.getByText('Import'));
+
+		// then
+		const dispatchedActions = store.getActions();
+		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.settings.importDatabase.pending.type }));
+	});
+	it('Dispatches exportDatabase() when Export button is pressed', async () => {
+		// given
+		const store = mockStore(mState());
+
+		// when
+		render(
+			<Provider store={store}>
+				<General />
+			</Provider>
+		);
+		fireEvent.click(screen.getByText('Export'));
+
+		// then
+		const dispatchedActions = store.getActions();
+		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.settings.exportDatabase.pending.type }));
+	});
 	it('Sends open select folder dialog message to IPC and then dispatches updateImagePath()', async () => {
 		// given
 		const newPath = 'new/path/-to/images';

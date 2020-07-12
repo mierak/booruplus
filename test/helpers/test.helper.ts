@@ -4,16 +4,16 @@ import { FavoritesTreeNode } from '../../src/db/types';
 import { getImageExtensionFromFilename } from '../../src/util/utils';
 import { AnyAction } from 'redux';
 
-export const mTag = (tag: Partial<Tag>): Tag => {
+export const mTag = (tag?: Partial<Tag>): Tag => {
 	return {
-		id: tag.id ?? 123,
-		count: tag.count ?? 123,
-		ambiguous: tag.ambiguous ?? 0,
-		tag: tag.tag ?? 'test-tag',
-		type: tag.type ?? 'artist',
-		blacklistedCount: tag.blacklistedCount ?? 0,
-		downloadedCount: tag.downloadedCount ?? 0,
-		favoriteCount: tag.favoriteCount ?? 0,
+		id: tag?.id ?? 123,
+		count: tag?.count ?? 123,
+		ambiguous: tag?.ambiguous ?? 0,
+		tag: tag?.tag ?? 'test-tag',
+		type: tag?.type ?? 'artist',
+		blacklistedCount: tag?.blacklistedCount ?? 0,
+		downloadedCount: tag?.downloadedCount ?? 0,
+		favoriteCount: tag?.favoriteCount ?? 0,
 	};
 };
 
@@ -45,15 +45,15 @@ export const mPost = (post?: Partial<Post>): Post => {
 	};
 };
 
-export const mTask = (task: Partial<Task>): Task => {
+export const mTask = (task?: Partial<Task>): Task => {
 	return {
-		id: task.id ?? 123,
-		items: task.items ?? 100,
-		itemsDone: task.itemsDone ?? 50,
-		postIds: task.postIds ?? [1, 2, 3],
-		state: task.state ?? 'downloading',
-		timestampStarted: task.timestampStarted ?? 1000,
-		timestampDone: task.timestampDone ?? 1500,
+		id: task?.id ?? 123,
+		items: task?.items ?? 100,
+		itemsDone: task?.itemsDone ?? 50,
+		postIds: task?.postIds ?? [1, 2, 3],
+		state: task?.state ?? 'downloading',
+		timestampStarted: task?.timestampStarted ?? 1000,
+		timestampDone: task?.timestampDone ?? 1500,
 	};
 };
 

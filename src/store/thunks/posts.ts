@@ -45,7 +45,7 @@ export const downloadTags = createAsyncThunk<Tag[], string[], ThunkApi>(
 	async (tags, thunkApi): Promise<Tag[]> => {
 		const filteredTags = await deduplicateAndCheckTagsAgainstDb(tags);
 		const tagsFromApi = await api.getTagsByNames(filteredTags, thunkApi.getState().settings.apiKey);
-		db.tags.saveBulk(tagsFromApi);
+		db.tags.bulkPut(tagsFromApi);
 		return tagsFromApi;
 	}
 );

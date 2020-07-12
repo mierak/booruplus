@@ -1,9 +1,12 @@
 import { app, dialog, BrowserWindow, ipcMain, IpcMainInvokeEvent, IpcMainEvent, MessageBoxOptions, shell } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 import fs from 'fs';
+import zlib from 'zlib';
+import moment from 'moment';
+import log from 'electron-log';
 
 import { Settings } from '../src/store/types';
-import { SavePostDto, IpcChannels } from '../src/types/processDto';
+import { SavePostDto, IpcChannels, ExportDataDto } from '../src/types/processDto';
 import { Post } from '../src/types/gelbooruTypes';
 
 import path from 'path';
@@ -11,6 +14,9 @@ import path from 'path';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 const isProd = app.isPackaged;
+
+log.transports.console.useStyles = true;
+log.transports.console.format = '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{processType}] [{level}] {text}';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 
@@ -49,8 +55,9 @@ const createWindow = (): BrowserWindow => {
 	if (!isProd) {
 		mainWindow.webContents.openDevTools();
 	} else {
-		mainWindow.removeMenu();
+		// mainWindow.removeMenu();
 	}
+	mainWindow.webContents.openDevTools();
 	mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 	window = mainWindow;
 	return window;
@@ -70,12 +77,6 @@ const createSplashScreen = (): BrowserWindow => {
 	return splashScreen;
 };
 
-// This method will be called when Electron has finished
-
-// initialization and is ready to create browser windows.
-
-// Some APIs can only be used after this event occurs.
-
 app.on('ready', () => {
 	const splashScreen = createSplashScreen();
 	splashScreen.webContents.once('did-finish-load', () => {
@@ -87,44 +88,11 @@ app.on('ready', () => {
 	});
 });
 
-// Quit when all windows are closed.
-
 app.on('window-all-closed', () => {
-	// On OS X it is common for applications and their menu bar
-
-	// to stay active until the user quits explicitly with Cmd + Q
-
 	if (process.platform !== 'darwin') {
 		app.quit();
 	}
 });
-
-// app.on('activate', () => {
-// 	// On OS X it's common to re-create a window in the app when the
-
-// 	// dock icon is clicked and there are no other windows open.
-
-// 	if (BrowserWindow.getAllWindows().length === 0) {
-// 		createWindow();
-// 	}
-// });
-
-// In this file you can include the rest of your app's specific main process
-
-// code. You can also put them in separate files and import them here.
-
-// ipcMain.on('createWindow', (_, _) => {
-// 	new BrowserWindow({
-// 		height: 600,
-
-// 		width: 800,
-// 		webPreferences: {
-// 			webSecurity: false,
-// 			contextIsolation: true,
-// 			preload: __dirname + '/preload.js'
-// 		}
-// 	});
-// });
 
 let settings: Settings;
 
@@ -203,4 +171,79 @@ ipcMain.handle(IpcChannels.OPEN_SELECT_FOLDER_DIALOG, async () => {
 		settings.imagesFolderPath = result.filePaths[0];
 	}
 	return result;
+});
+
+ipcMain.handle(IpcChannels.OPEN_SELECT_EXPORTED_DATA_FILE_DIALOG, async () => {
+	log.debug('Opening select exported data file dialog.');
+	const dialogResult = await dialog.showSaveDialog(window, {
+		properties: ['createDirectory', 'showOverwriteConfirmation', 'dontAddToRecent'],
+		filters: [{ name: 'Lolinizer backup', extensions: ['lbak'] }],
+		defaultPath: `lolinizer_export_${moment().format('YYYYMMDDHHmmss')}`,
+	});
+	const filePath = dialogResult.filePath;
+	if (!dialogResult.canceled && filePath) {
+		log.debug(`Selected file: ${filePath}`);
+		return filePath;
+	} else {
+		log.debug('Select exported data file dialog canceled.');
+		return '';
+	}
+});
+
+ipcMain.on(IpcChannels.SAVE_EXPORTED_DATA, async (_, data: ExportDataDto) => {
+	log.debug('Compressing exported data.');
+	zlib.brotliCompress(
+		data.data,
+		{
+			params: {
+				[zlib.constants.BROTLI_PARAM_MODE]: zlib.constants.BROTLI_MODE_TEXT,
+				[zlib.constants.BROTLI_PARAM_QUALITY]: 4,
+			},
+		},
+		(err, result) => {
+			if (err) {
+				log.error('Could not compress exported data.', err.name, err.message, err.stack);
+				dialog.showErrorBox('Could not compress exported data.', err.message);
+			} else {
+				log.debug(`Data compressed. Writing file ${data.filePath}`);
+				fs.writeFile(data.filePath, result, (err) => {
+					if (err) {
+						log.error('Could not write file.', err.name, err.message, err.stack);
+						dialog.showErrorBox('Could not save exported data.', err.message);
+					} else {
+						log.info(`Exported data succesfully saved to ${data.filePath}.`);
+					}
+				});
+			}
+		}
+	);
+});
+
+ipcMain.handle(IpcChannels.OPEN_IMPORT_DATA_DIALOG, async () => {
+	log.debug('Opening import data dialog.');
+	const dialogResult = await dialog.showOpenDialog(window, {
+		filters: [{ name: 'Lolinizer backup', extensions: ['lbak'] }],
+		properties: ['dontAddToRecent', 'openFile'],
+	});
+
+	if (!dialogResult.canceled && dialogResult.filePaths.length > 0) {
+		log.debug(`Reading file: ${dialogResult.filePaths[0]}`);
+		const compressed = await fs.promises.readFile(dialogResult.filePaths[0]);
+		return new Promise((resolve, reject) => {
+			log.debug('Decompressing data to be imported.');
+			zlib.brotliDecompress(compressed, (err, result) => {
+				if (err) {
+					log.error('Could not decompress exported data.', err.name, err.message, err.stack);
+					dialog.showErrorBox('Could not decompress exported data', err.message);
+					reject(err.message);
+				} else {
+					log.info('Data sucessfuly decompressed');
+					resolve(result.toString());
+				}
+			});
+		});
+	} else {
+		log.debug('Import data dialog canceled.');
+		return '';
+	}
 });

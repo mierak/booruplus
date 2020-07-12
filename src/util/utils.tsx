@@ -184,3 +184,22 @@ export const postParser = (): ((params: PostDto) => Post) => {
 
 	return parsePost;
 };
+
+export const blobToBase64 = (blob: Blob): Promise<string | undefined> => {
+	const reader = new FileReader();
+	return new Promise((resolve, reject) => {
+		reader.onerror = (): void => {
+			reader.abort();
+			reject(new Error('Error while converting blob to base64'));
+		};
+		reader.onload = (): void => {
+			const result = reader.result;
+			if (typeof result === 'string') {
+				resolve(result);
+			} else {
+				resolve(undefined);
+			}
+		};
+		reader.readAsDataURL(blob);
+	});
+};

@@ -45,20 +45,6 @@ describe('thunks/tags', () => {
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.loadAllTagsFromDb.pending.type, payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({ type: thunks.loadAllTagsFromDb.fulfilled.type, payload: tags });
 		});
-		it('Returns empty array when db returns undefined', async () => {
-			// given
-			const store = mockStore(initialState);
-			mockedDb.tags.getAll.mockResolvedValue(undefined);
-
-			// when
-			await store.dispatch(thunks.loadAllTagsFromDb());
-
-			// then
-			const dispatchedActions = store.getActions();
-			expect(mockedDb.tags.getAll).toBeCalledTimes(1);
-			expect(dispatchedActions[0]).toMatchObject({ type: thunks.loadAllTagsFromDb.pending.type, payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({ type: thunks.loadAllTagsFromDb.fulfilled.type, payload: [] });
-		});
 	});
 	describe('getCount()', () => {
 		it('Calls db correctly and returns count', async () => {

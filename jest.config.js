@@ -13,7 +13,7 @@ module.exports = {
 			displayName: 'Components',
 			testMatch: ['<rootDir>/test/components/**/*.(test).{js,jsx,ts,tsx}', '<rootDir>/test/components/**/?(*.)(spec|test).{js,jsx,ts,tsx}'],
 			testPathIgnorePatterns: ['<rootDir>/test.helpers'],
-			setupFilesAfterEnv: ['./test/components/jest.setup.ts'],
+			setupFilesAfterEnv: ['./test/components/jest.setup.ts', './test/jest.setup.ts'],
 			transform: {
 				'^.+\\.(ts|tsx)$': 'ts-jest',
 			},
