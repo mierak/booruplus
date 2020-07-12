@@ -1,6 +1,8 @@
 # Changelog
-## 0.1.4 - TITLE - DATE
+## 0.1.4 - Database Import/Export - DATE
+- Added ability to create a backup of the whole database and later restore that backup
 - Thumbnails Page now scrolls to active post
+- Now sets first fetched post as active when Load More button finishes fetching posts
 - BUG FIX: Tasks completely failing when no tasks were present in DB
 - BUG FIX: Tasks cancellation was not saved to database
 - BUG FIX: Blacklisted posts not removing from currently displayed posts

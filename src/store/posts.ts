@@ -48,6 +48,16 @@ const postsSlice = createSlice({
 			state.posts = [];
 			state.activePostIndex = undefined;
 		});
+		builder.addCase(thunks.onlineSearchForm.fetchMorePosts.fulfilled, (state, action) => {
+			const index = state.posts.length - action.payload.length;
+			if (index < state.posts.length && index >= 0) {
+				state.activePostIndex = index;
+			} else if (index < 0) {
+				state.activePostIndex = 0;
+			} else if (index >= state.posts.length) {
+				state.activePostIndex = state.posts.length - 1;
+			}
+		});
 		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state) => {
 			state.posts = [];
 			state.activePostIndex = undefined;
@@ -77,6 +87,14 @@ const postsSlice = createSlice({
 		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.fulfilled, (state, action) => {
 			for (const post of action.payload) {
 				state.posts.push(post);
+			}
+			const index = state.posts.length - action.payload.length;
+			if (index < state.posts.length && index >= 0) {
+				state.activePostIndex = index;
+			} else if (index < 0) {
+				state.activePostIndex = 0;
+			} else if (index >= state.posts.length) {
+				state.activePostIndex = state.posts.length - 1;
 			}
 		});
 		builder.addCase(thunks.posts.blacklistPosts.fulfilled, (state, action) => {

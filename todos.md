@@ -4,7 +4,7 @@
 - Thumbnails downlaoding
 - Add option to move selected/all favorites between directories
 - Expand active posts to not use only one state
-- Import/Export database
+- ~~Import/Export database~~
 - ~~Typesafe IPC~~
 - ~~Tests~~
 - ~~Add sorting of searches~~
