@@ -55,9 +55,8 @@ const createWindow = (): BrowserWindow => {
 	if (!isProd) {
 		mainWindow.webContents.openDevTools();
 	} else {
-		// mainWindow.removeMenu();
+		mainWindow.removeMenu();
 	}
-	mainWindow.webContents.openDevTools();
 	mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 	window = mainWindow;
 	return window;

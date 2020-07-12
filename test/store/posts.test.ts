@@ -3,6 +3,7 @@ doDatabaseMock();
 import reducer, { actions, initialState, PostsState } from '../../src/store/posts';
 import { thunks } from '../../src/store/';
 import { createAction, mPost, createPendingAction } from '../helpers/test.helper';
+import { Post } from '../../src/types/gelbooruTypes';
 
 describe('store/posts', () => {
 	it('Sets activePostIndex', () => {
@@ -230,21 +231,128 @@ describe('store/posts', () => {
 		// then
 		expect(result.posts).toHaveLength(posts.length);
 	});
-	it('Adds posts when offline fetchMorePosts is fulfilled', () => {
-		// given
-		const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-		const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts);
-		const state: PostsState = {
-			...initialState,
-			posts: [],
-			activePostIndex: 123,
-		};
+	describe('downloadedSearchForm.fetchMorePosts()', () => {
+		it('Adds posts when offline fetchMorePosts is fulfilled', () => {
+			// given
+			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
+			const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts);
+			const state: PostsState = {
+				...initialState,
+				posts: [],
+				activePostIndex: 123,
+			};
 
-		// when
-		const result = reducer(state, action);
+			// when
+			const result = reducer(state, action);
 
-		// then
-		expect(result.posts).toHaveLength(posts.length);
+			// then
+			expect(result.posts).toHaveLength(posts.length);
+		});
+		it('Sets activePostIndex to first new post', () => {
+			// given
+			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
+			const currentPosts = [mPost({ id: 4 }), mPost({ id: 5 }), mPost({ id: 6 })];
+			const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts);
+			const state: PostsState = {
+				...initialState,
+				posts: currentPosts,
+				activePostIndex: undefined,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.activePostIndex).toBe(3);
+		});
+		it('Sets activePostIndex to last post if no posts were fetched', () => {
+			// given
+			const posts: Post[] = [];
+			const currentPosts = [mPost({ id: 4 }), mPost({ id: 5 }), mPost({ id: 6 })];
+			const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts);
+			const state: PostsState = {
+				...initialState,
+				posts: currentPosts,
+				activePostIndex: undefined,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.activePostIndex).toBe(2);
+		});
+		it('Sets activePostIndex to 0 ifposts were fetched, but no posts were currently in state', () => {
+			// given
+			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
+			const currentPosts: Post[] = [];
+			const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts);
+			const state: PostsState = {
+				...initialState,
+				posts: currentPosts,
+				activePostIndex: undefined,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.activePostIndex).toBe(0);
+		});
+	});
+	describe('onlineSearchForm.fetchMorePosts()', () => {
+		it('Sets activePostIndex to first new post', () => {
+			// given
+			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
+			const currentPosts = [mPost({ id: 4 }), mPost({ id: 5 }), mPost({ id: 6 })];
+			const checkAction = createAction(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled.type, posts);
+			const action = createAction(thunks.onlineSearchForm.fetchMorePosts.fulfilled.type, posts);
+			const state: PostsState = {
+				...initialState,
+				posts: currentPosts,
+				activePostIndex: undefined,
+			};
+
+			// when
+			const result = reducer(reducer(state, checkAction), action);
+
+			// then
+			expect(result.activePostIndex).toBe(3);
+		});
+		it('Sets activePostIndex to last post if no posts were fetched', () => {
+			// given
+			const posts: Post[] = [];
+			const currentPosts = [mPost({ id: 4 }), mPost({ id: 5 }), mPost({ id: 6 })];
+			const action = createAction(thunks.onlineSearchForm.fetchMorePosts.fulfilled.type, posts);
+			const state: PostsState = {
+				...initialState,
+				posts: currentPosts,
+				activePostIndex: undefined,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.activePostIndex).toBe(2);
+		});
+		it('Sets activePostIndex to 0 ifposts were fetched, but no posts were currently in state', () => {
+			// given
+			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
+			const currentPosts: Post[] = [];
+			const action = createAction(thunks.onlineSearchForm.fetchMorePosts.fulfilled.type, posts);
+			const state: PostsState = {
+				...initialState,
+				posts: currentPosts,
+				activePostIndex: undefined,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.activePostIndex).toBe(0);
+		});
 	});
 	it('Adds posts when favorites fetchPostsInDirectory is fulfilled', () => {
 		// given
