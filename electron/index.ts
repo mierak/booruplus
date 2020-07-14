@@ -122,18 +122,18 @@ ipcMain.on(IpcChannels.OPEN_PATH, (event: IpcMainEvent, value: string) => {
 ipcMain.handle(IpcChannels.SAVE_IMAGE, async (event: IpcMainInvokeEvent, dto: SavePostDto) => {
 	if (dto.data) {
 		await fs.promises.mkdir(`${settings.imagesFolderPath}/${dto.post.directory}`, { recursive: true }).catch((err) => {
-			console.error(err);
+			log.error(err);
 			//TODO handle gracefully
 			throw err;
 		});
 		await fs.promises
 			.writeFile(`${settings.imagesFolderPath}/${dto.post.directory}/${dto.post.image}`, Buffer.from(dto.data), 'binary')
 			.catch((err) => {
-				console.error(err);
+				log.error(err);
 				//TODO handle gracefuly
 				throw err;
 			});
-		console.log(`ipcMain: image-saved | id: ${dto.post.id}`);
+		log.debug(`ipcMain: image-saved | id: ${dto.post.id}`);
 		return dto.post;
 	} else {
 		throw 'No data to save supplied';
@@ -143,7 +143,7 @@ ipcMain.handle(IpcChannels.SAVE_IMAGE, async (event: IpcMainInvokeEvent, dto: Sa
 ipcMain.handle(IpcChannels.LOAD_IMAGE, async (event: IpcMainInvokeEvent, post: Post) => {
 	try {
 		const data = fs.readFileSync(`${settings.imagesFolderPath}/${post.directory}/${post.image}`);
-		console.log(`ipcMain: image-loaded | id: ${post.id}`);
+		log.debug(`ipcMain: image-loaded | id: ${post.id}`);
 		return { data: data, post };
 	} catch (err) {
 		return { data: undefined, post };
@@ -158,7 +158,7 @@ ipcMain.handle(IpcChannels.DELETE_IMAGE, async (event: IpcMainInvokeEvent, post:
 		fs.rmdirSync(`${settings.imagesFolderPath}/${dirs[0]}`);
 		return true;
 	} catch (err) {
-		console.error('could not delete post image or directories', post.id);
+		log.error('could not delete post image or directories', `post id: ${post.id}`, err);
 		return false;
 	}
 });

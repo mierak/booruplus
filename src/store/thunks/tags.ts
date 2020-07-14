@@ -6,6 +6,8 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import * as onlineSearchFormThunk from './onlineSearchForm';
 import * as downloadedSearchFormThunk from './downloadedSearchForm';
 
+const log = window.log;
+
 export const loadAllTagsFromDb = createAsyncThunk<Tag[], void, ThunkApi>(
 	'tags/loadAllTagsFromDb',
 	async (): Promise<Tag[]> => {
@@ -79,7 +81,7 @@ export const fetchTags = (tags: string[]): AppThunk<Tag[]> => async (_, getState
 		const tagsFromApi = await api.getTagsByNames(notFoundTags, getState().settings.apiKey);
 		return [...tagsFromDb, ...tagsFromApi];
 	} catch (err) {
-		console.error('Error while loading multiple tags from DB', err);
+		log.error('Error while loading multiple tags from DB', err);
 		return Promise.reject(err);
 	}
 };

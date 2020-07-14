@@ -2,6 +2,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { AppThunk } from '../../store/types';
 
+const log = window.log;
+
 export interface AddToFavoritesModalState {
 	postIdsToFavorite: number[];
 }
@@ -32,7 +34,7 @@ const setPostIdsToFavorite = (type: 'selected' | 'all'): AppThunk => async (disp
 				break;
 		}
 	} catch (err) {
-		console.error('Error while setting posts to favorite', err);
+		log.error('Error while setting posts to favorite', err);
 	}
 };
 

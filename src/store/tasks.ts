@@ -3,6 +3,8 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import * as thunks from './thunks';
 import { Task, TaskState } from './types';
 
+const log = window.log;
+
 export interface TasksState {
 	tasks: {
 		[id: number]: Task;
@@ -42,7 +44,7 @@ const tasksSlice = createSlice({
 			state.tasks[action.payload.id] = action.payload;
 		});
 		builder.addCase(thunks.tasks.cancel.rejected, (_, action) => {
-			console.error(action.error.message);
+			log.error('Error occured while trying to cancel a task', action.error.message);
 		});
 		builder.addCase(thunks.posts.downloadPosts.pending, (state, action) => {
 			const newId = state.lastId + 1;

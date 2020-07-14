@@ -12,7 +12,7 @@ contextBridge.exposeInMainWorld('api', {
 		try {
 			return ipcRenderer.invoke(channel, data);
 		} catch (err) {
-			console.error('invoke error');
+			log.error('invoke error', err);
 		}
 	},
 });
