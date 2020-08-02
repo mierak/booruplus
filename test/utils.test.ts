@@ -11,6 +11,8 @@ import {
 	toAscii,
 	validateApiKey,
 	isFilenameVideo,
+	getIndexFromRowCol,
+	getRowColFromIndex,
 } from '../src/util/utils';
 import { mTag } from './helpers/test.helper';
 import { Rating } from '../src/types/gelbooruTypes';
@@ -349,6 +351,33 @@ describe('utils/utils', () => {
 			expect(result4).toBe(false);
 			expect(result5).toBe(false);
 			expect(result6).toBe(false);
+		});
+	});
+	describe('getIndexFromRowCol()', () => {
+		it('Returns correct index', () => {
+			// given
+			const rowIndex = 15;
+			const columnIndex = 4;
+			const columns = 5;
+
+			// when
+			const result = getIndexFromRowCol({ rowIndex, columnIndex, columns });
+
+			// then
+			expect(result).toBe(79);
+		});
+	});
+	describe('getRowColFromIndex()', () => {
+		it('Returns correct row and column', () => {
+			// given
+			const index = 79;
+			const columns = 5;
+
+			// when
+			const result = getRowColFromIndex({ columns, index });
+
+			// then
+			expect(result).toEqual({ rowIndex: 15, columnIndex: 4 });
 		});
 	});
 });

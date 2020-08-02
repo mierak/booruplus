@@ -2,13 +2,12 @@ import Dexie from 'dexie';
 Dexie.dependencies.indexedDB = require('fake-indexeddb');
 Dexie.dependencies.IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
 import db from '../../src/db/database';
-import { mTreeNode, mFavoritesTreeNode, mPost, mTag, mSavedSearch, mSettings, mTask, mTagHistory } from '../helpers/test.helper';
+import { mFavoritesTreeNode, mPost, mTag, mSettings, mTask, mTagHistory } from '../helpers/test.helper';
 import * as common from '../../src/db/common';
 import { SavedSearchWithB64Previews, SavedSearch, ExportedRawData, ExportedData } from '../../src/db/types';
 import 'jest-fetch-mock';
 import { enableFetchMocks } from 'jest-fetch-mock';
 import { blobToBase64 } from '../../src/util/utils';
-import { mockedDb } from '../helpers/database.mock';
 
 jest.mock('../../src/util/utils');
 

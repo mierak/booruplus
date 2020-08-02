@@ -64,8 +64,8 @@ const settingsSlice = createSlice({
 		builder.addCase(thunks.settings.updateTheme.fulfilled, (state, action) => {
 			state.theme = action.payload;
 		});
-		builder.addCase(thunks.settings.saveSettings.rejected, (state, action) => {
-			console.error(action.error.message);
+		builder.addCase(thunks.settings.saveSettings.rejected, (_, action) => {
+			log.error('Error while saving settings to database', action.error.message);
 		});
 
 		// Export database
@@ -74,8 +74,9 @@ const settingsSlice = createSlice({
 				openNotificationWithIcon('success', 'Export finished', 'Database was succesfully exported!');
 			}
 		});
-		builder.addCase(thunks.settings.exportDatabase.rejected, () => {
+		builder.addCase(thunks.settings.exportDatabase.rejected, (_, action) => {
 			openNotificationWithIcon('error', 'Could not export database', 'Error occured while trying to create a database backup.', 5);
+			log.error('Error occured while trying to create a database backup.', action?.error?.message);
 		});
 		// Import database
 		builder.addCase(thunks.settings.importDatabase.fulfilled, (_, action) => {

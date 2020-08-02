@@ -4,6 +4,8 @@ import { TagHistory, RatingCounts } from './types';
 import { Tag, Post } from '../types/gelbooruTypes';
 import * as thunks from './thunks';
 
+const log = window.log;
+
 export interface DashboardState {
 	totalDownloadedPosts: number;
 	totalFavoritesPosts: number;
@@ -80,13 +82,13 @@ const dashboardSlice = createSlice({
 			state.mostSearchedTags = action.payload;
 		});
 		builder.addCase(thunks.dashboard.fetchMostSearchedTags.rejected, (_, action) => {
-			console.error(action.error.message);
+			log.error('Error occured while fetching most searched tags', action.error.message);
 		});
 		builder.addCase(thunks.dashboard.fetchMostFavoritedTags.pending, (state, _) => {
 			state.mostFavoritedTags = [];
 		});
 		builder.addCase(thunks.dashboard.fetchMostFavoritedTags.rejected, (_, action) => {
-			console.error(action.error.message);
+			log.error('Error occured while fetching most favorited tags', action.error.message);
 		});
 		builder.addCase(thunks.dashboard.fetchMostFavoritedTags.fulfilled, (state, action) => {
 			state.mostFavoritedTags = action.payload;

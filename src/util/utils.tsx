@@ -203,3 +203,23 @@ export const blobToBase64 = (blob: Blob): Promise<string | undefined> => {
 		reader.readAsDataURL(blob);
 	});
 };
+
+interface IndexFromRowColParams {
+	rowIndex: number;
+	columnIndex: number;
+	columns: number;
+}
+export const getIndexFromRowCol = ({ rowIndex, columnIndex, columns }: IndexFromRowColParams): number => {
+	return rowIndex * columns + columnIndex;
+};
+
+interface RowColFromIndexParams {
+	index: number;
+	columns: number;
+}
+export const getRowColFromIndex = ({ index, columns }: RowColFromIndexParams): { rowIndex: number; columnIndex: number } => {
+	return {
+		rowIndex: Math.floor(index / columns),
+		columnIndex: index % columns,
+	};
+};

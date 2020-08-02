@@ -92,6 +92,7 @@ const mLoadingStates = (ls?: Partial<LoadingStates>): LoadingStates => {
 		isRatingDistributionChartLoading: ls?.isRatingDistributionChartLoading ?? initialState.loadingStates.isRatingDistributionChartLoading,
 		isFullscreenLoadingMaskVisible: ls?.isFullscreenLoadingMaskVisible ?? initialState.loadingStates.isFullscreenLoadingMaskVisible,
 		fullscreenLoadingMaskMessage: ls?.fullscreenLoadingMaskMessage,
+		isScrolling: ls?.isScrolling ?? false,
 	};
 };
 

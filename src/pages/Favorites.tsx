@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Layout } from 'antd';
 
 import { actions, thunks } from '../store';
-import ThumbnailsList from '../components/ThumbnailsList';
+import ThumbnailsList from '../components/thumbnails/ThumbnailsList';
 
 import SiderContent from '../components/favorites/SiderContent';
 import { Post } from '../types/gelbooruTypes';

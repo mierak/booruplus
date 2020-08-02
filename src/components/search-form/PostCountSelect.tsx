@@ -16,9 +16,17 @@ const PostCountSelect: React.FunctionComponent<Props> = ({ mode }: Props) => {
 		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.postLimit) || state.onlineSearchForm.limit
 	);
 
-	const handlePostCountChange = (value: number | undefined): void => {
+	const handlePostCountChange = (value: number | string | undefined): void => {
+		let val: number;
+		if (typeof value === 'string') {
+			val = parseInt(value);
+		} else if (typeof value === 'number') {
+			val = value;
+		} else {
+			return;
+		}
 		const setPostLimit = (mode === 'offline' && actions.downloadedSearchForm.setPostLimit) || actions.onlineSearchForm.setLimit;
-		value && dispatch(setPostLimit(value));
+		dispatch(setPostLimit(val));
 	};
 
 	return (

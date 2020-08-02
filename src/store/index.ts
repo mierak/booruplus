@@ -1,17 +1,6 @@
 import { combineReducers } from 'redux';
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
-
-// import { dashboardThunk } from './thunks/dashboard';
-// import { postsThunk } from './thunks/posts';
-// import { savedSearchesThunk } from './thunks/savedSearches';
-// import { settingsThunk } from './thunks/settings';
-// import { tagsThunk } from './thunks/tags';
-// import { tasksThunk } from './thunks/tasks';
-// import { favoritesThunk } from './thunks/favorites';
-// import { downloadedSearchFormThunk } from './thunks/downloadedSearchForm';
-// import { onlineSearchFormThunk } from './thunks/onlineSearchForm';
-
-// import { thunks as thunksObj } from './thunks';
+import { configureStore } from '@reduxjs/toolkit';
+import thunk, { ThunkMiddleware } from 'redux-thunk';
 
 import onlineSearchFormReducer from './onlineSearchForm';
 import postsReducer from './posts';
@@ -60,7 +49,7 @@ export const mainReducer = combineReducers({
 
 export const store = configureStore({
 	reducer: mainReducer,
-	middleware: [...getDefaultMiddleware<RootState>()],
+	middleware: [thunk as ThunkMiddleware<RootState>],
 });
 
 export const initialState = {

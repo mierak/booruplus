@@ -94,11 +94,17 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 	};
 
 	return (
-		<StyledListCard title={title} size="small" className={className} extra={<ReloadOutlined onClick={handleReload} title="Reload" />}>
-			<Table dataSource={dataSource} size="small" pagination={false} rowKey="tag" loading={isLoading}>
-				<Table.Column title="Tag" dataIndex="tag" render={renderTag} />
-				<Table.Column title="Count" dataIndex="count" />
-				<Table.Column title="Search" dataIndex="" render={renderActions} width={120} />
+		<StyledListCard title={title} size='small' className={className} extra={<ReloadOutlined onClick={handleReload} title='Reload' />}>
+			<Table
+				dataSource={dataSource}
+				size='small'
+				pagination={false}
+				rowKey={(el): string => el.tag?.id.toString() ?? ''}
+				loading={isLoading}
+			>
+				<Table.Column title='Tag' dataIndex='tag' render={renderTag} />
+				<Table.Column title='Count' dataIndex='count' />
+				<Table.Column title='Search' dataIndex='' render={renderActions} width={120} />
 			</Table>
 		</StyledListCard>
 	);

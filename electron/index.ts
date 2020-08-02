@@ -18,28 +18,20 @@ const isProd = app.isPackaged;
 log.transports.console.useStyles = true;
 log.transports.console.format = '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{processType}] [{level}] {text}';
 
+log.debug(`Starting app. Production mode is: ${isProd}`);
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 
 if (require('electron-squirrel-startup')) {
-	// eslint-disable-line global-require
-
 	app.quit();
 }
 let window: BrowserWindow;
 
-if (!isProd) {
-	installExtension(REACT_DEVELOPER_TOOLS)
-		.then((name) => console.log(`Added Extension:  ${name}`))
-		.catch((err) => console.log('An error occurred: ', err));
-
-	installExtension(REDUX_DEVTOOLS)
-		.then((name) => console.log(`Added Extension:  ${name}`))
-		.catch((err) => console.log('An error occurred: ', err));
-}
+app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 
 const createWindow = (): BrowserWindow => {
 	// Create the browser window.
-
+	log.debug('Creating main window');
 	const mainWindow = new BrowserWindow({
 		width: 1600,
 		height: 900,
@@ -52,11 +44,8 @@ const createWindow = (): BrowserWindow => {
 	});
 	// and load the index.html of the app.
 
-	if (!isProd) {
-		mainWindow.webContents.openDevTools();
-	} else {
-		mainWindow.removeMenu();
-	}
+	mainWindow.setMenuBarVisibility(false);
+	log.debug('Loading page...');
 	mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 	window = mainWindow;
 	return window;
@@ -83,6 +72,7 @@ app.on('ready', () => {
 		win.once('ready-to-show', () => {
 			splashScreen.destroy();
 			window.show();
+			log.debug('Showing main window');
 		});
 	});
 });
@@ -90,6 +80,15 @@ app.on('ready', () => {
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
 		app.quit();
+	}
+});
+
+app.whenReady().then(() => {
+	if (!isProd) {
+		log.debug('Installing dev extensions');
+		installExtension([REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS])
+			.then((name) => log.debug(`Added Extension:  ${name}`))
+			.catch((err) => log.error('An error occurred: ', err));
 	}
 });
 
@@ -117,24 +116,24 @@ ipcMain.on(IpcChannels.OPEN_IN_BROWSER, (event: IpcMainEvent, value: string) => 
 });
 
 ipcMain.on(IpcChannels.OPEN_PATH, (event: IpcMainEvent, value: string) => {
-	shell.openItem(value);
+	shell.openPath(value);
 });
 
 ipcMain.handle(IpcChannels.SAVE_IMAGE, async (event: IpcMainInvokeEvent, dto: SavePostDto) => {
 	if (dto.data) {
 		await fs.promises.mkdir(`${settings.imagesFolderPath}/${dto.post.directory}`, { recursive: true }).catch((err) => {
-			console.error(err);
+			log.error(err);
 			//TODO handle gracefully
 			throw err;
 		});
 		await fs.promises
 			.writeFile(`${settings.imagesFolderPath}/${dto.post.directory}/${dto.post.image}`, Buffer.from(dto.data), 'binary')
 			.catch((err) => {
-				console.error(err);
+				log.error(err);
 				//TODO handle gracefuly
 				throw err;
 			});
-		console.log(`ipcMain: image-saved | id: ${dto.post.id}`);
+		log.debug(`ipcMain: image-saved | id: ${dto.post.id}`);
 		return dto.post;
 	} else {
 		throw 'No data to save supplied';
@@ -144,7 +143,7 @@ ipcMain.handle(IpcChannels.SAVE_IMAGE, async (event: IpcMainInvokeEvent, dto: Sa
 ipcMain.handle(IpcChannels.LOAD_IMAGE, async (event: IpcMainInvokeEvent, post: Post) => {
 	try {
 		const data = fs.readFileSync(`${settings.imagesFolderPath}/${post.directory}/${post.image}`);
-		console.log(`ipcMain: image-loaded | id: ${post.id}`);
+		log.debug(`ipcMain: image-loaded | id: ${post.id}`);
 		return { data: data, post };
 	} catch (err) {
 		return { data: undefined, post };
@@ -159,7 +158,7 @@ ipcMain.handle(IpcChannels.DELETE_IMAGE, async (event: IpcMainInvokeEvent, post:
 		fs.rmdirSync(`${settings.imagesFolderPath}/${dirs[0]}`);
 		return true;
 	} catch (err) {
-		console.error('could not delete post image or directories', post.id);
+		log.error('could not delete post image or directories', `post id: ${post.id}`, err);
 		return false;
 	}
 });
