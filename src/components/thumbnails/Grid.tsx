@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { FixedSizeGrid } from 'react-window';
 
 import { ContextMenu, CardAction } from 'types/components';
-import CellRenderer from './cellRenderer';
+import CellRenderer from './CellRenderer';
 import { getRowColFromIndex } from '../../util/utils';
 
 interface Props {
