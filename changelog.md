@@ -1,5 +1,6 @@
 # Changelog
 ## 0.1.4 - Database Import/Export - DATE
+- Changed Thumbnails Grid to use windowing
 - Allow devtools even in packaged app through standard shortcut
 - Added ability to create a backup of the whole database and later restore that backup
 - Thumbnails Page now scrolls to active post
