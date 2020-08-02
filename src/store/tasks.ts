@@ -5,10 +5,12 @@ import { Task, TaskState } from './types';
 
 const log = window.log;
 
+export interface Tasks {
+	[id: number]: Task;
+}
+
 export interface TasksState {
-	tasks: {
-		[id: number]: Task;
-	};
+	tasks: Tasks;
 	lastId: number;
 }
 

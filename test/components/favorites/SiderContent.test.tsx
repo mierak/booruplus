@@ -33,7 +33,7 @@ describe('favorites/SiderContent', () => {
 		],
 	});
 	const expandedKeys = ['0', '11', '111', '12'];
-	it('Renders data correctly', () => {
+	fit('Renders data correctly', () => {
 		// given
 		const store = mockStore(
 			mState({
@@ -57,7 +57,7 @@ describe('favorites/SiderContent', () => {
 		expect(screen.getByText('node111')).not.toBeNull();
 		expect(screen.getByText('node12')).not.toBeNull();
 	});
-	it('Loads data on mount', () => {
+	fit('Loads data on mount', () => {
 		// given
 		const store = mockStore(mState());
 

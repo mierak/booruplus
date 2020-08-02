@@ -34,30 +34,29 @@ const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 			dispatch(thunks.dashboard.fetchFavoritePostCount());
 			dispatch(thunks.dashboard.fetchTagCount());
 		}
-		// dispatch(thunks.favorites.fetchTreeData());
-	}, []);
+	}, [dispatch, shouldLoadStatistics]);
 
 	return (
 		<Container className={props.className}>
 			<Row gutter={[10, 10]}>
 				<Col xs={6}>
 					<Card>
-						<Statistic title="Downloaded Posts" value={downloadedPostCount}></Statistic>
+						<Statistic title='Downloaded Posts' value={downloadedPostCount}></Statistic>
 					</Card>
 				</Col>
 				<Col xs={6}>
 					<Card>
-						<Statistic title="Blacklisted Posts" value={blacklistedPostCount}></Statistic>
+						<Statistic title='Blacklisted Posts' value={blacklistedPostCount}></Statistic>
 					</Card>
 				</Col>
 				<Col xs={6}>
 					<Card>
-						<Statistic title="Favorite Posts" value={favoritePostCount}></Statistic>
+						<Statistic title='Favorite Posts' value={favoritePostCount}></Statistic>
 					</Card>
 				</Col>
 				<Col xs={6}>
 					<Card>
-						<Statistic title="Tags in Database" value={tagCount}></Statistic>
+						<Statistic title='Tags in Database' value={tagCount}></Statistic>
 					</Card>
 				</Col>
 			</Row>
@@ -66,10 +65,10 @@ const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 					<RatingDistributionsChart />
 				</Col>
 				<Col xs={8}>
-					<TagStatistic title="Most Searched Tags" type="most-searched" />
+					<TagStatistic title='Most Searched Tags' type='most-searched' />
 				</Col>
 				<Col xs={8}>
-					<TagStatistic title="Most Favorited Tags" type="most-favorited" />
+					<TagStatistic title='Most Favorited Tags' type='most-favorited' />
 				</Col>
 			</Row>
 			<Row gutter={[10, 10]}>

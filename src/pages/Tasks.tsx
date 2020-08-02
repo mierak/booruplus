@@ -6,6 +6,8 @@ import { RootState } from '../store/types';
 
 import TaskProgress from '../components/TaskProgress';
 import { List } from 'antd';
+import { createSelector } from '@reduxjs/toolkit';
+import { Tasks } from '../store/tasks';
 
 interface Props {
 	className?: string;
@@ -15,13 +17,19 @@ const Container = styled.div`
 	overflow-x: hidden;
 `;
 
+const taskIdsSelector = createSelector<RootState, Tasks, string[]>(
+	(state) => state.tasks.tasks,
+	(tasks) => Object.keys(tasks)
+);
+
 const Tasks: React.FunctionComponent<Props> = (props: Props) => {
-	const taskIds = useSelector((state: RootState) => Object.keys(state.tasks.tasks));
 	const [tasksArray, setTasksArray] = useState<string[]>([]);
+	const taskIds = useSelector(taskIdsSelector);
 
 	useEffect(() => {
 		setTasksArray(taskIds.sort().reverse());
-	}, [taskIds.length]);
+		window.log.debug(taskIds);
+	}, [taskIds, taskIds.length]);
 
 	const renderItem = (id: string): React.ReactNode => {
 		return (
@@ -33,7 +41,7 @@ const Tasks: React.FunctionComponent<Props> = (props: Props) => {
 
 	return (
 		<Container className={props.className}>
-			<List size="small" renderItem={renderItem} dataSource={tasksArray}></List>
+			<List size='small' renderItem={renderItem} dataSource={tasksArray} />
 		</Container>
 	);
 };

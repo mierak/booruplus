@@ -58,7 +58,7 @@ const SiderContent: React.FunctionComponent = () => {
 			dispatch(thunks.favorites.fetchAllKeys());
 			dispatch(thunks.favorites.fetchTreeData());
 		})();
-	}, []);
+	}, [dispatch]);
 
 	// TODO reread and refactor this whole section
 	const renderMenu = (): JSX.Element => {

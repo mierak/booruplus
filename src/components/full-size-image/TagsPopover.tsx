@@ -37,7 +37,7 @@ const TagsPopover: React.FunctionComponent<Props> = ({ tags }: Props) => {
 			};
 			fetchTags();
 		}
-	}, [tags, visible]);
+	}, [dispatch, tags, visible]);
 
 	const renderTag = (_text: unknown, tag: Tag): React.ReactNode => {
 		return <AntTag color={getTagColor(tag.type)}>{tag.tag}</AntTag>;
@@ -62,23 +62,23 @@ const TagsPopover: React.FunctionComponent<Props> = ({ tags }: Props) => {
 
 		return [
 			<Button
-				type="link"
-				key="btn-online-add-tag"
+				type='link'
+				key='btn-online-add-tag'
 				icon={<PlusOutlined style={{ fontSize: '12px' }} />}
 				onClick={handleAddOnline}
-				title="Add tag to online search"
+				title='Add tag to online search'
 			/>,
-			<Button key="btn-search-online" type="link" onClick={handleOnlineSearch}>
+			<Button key='btn-search-online' type='link' onClick={handleOnlineSearch}>
 				Online
 			</Button>,
 			<Button
-				type="link"
-				key="btn-offline-add-tag"
+				type='link'
+				key='btn-offline-add-tag'
 				icon={<PlusOutlined style={{ fontSize: '12px' }} />}
 				onClick={handleAddOffline}
-				title="Add tag to offline search"
+				title='Add tag to offline search'
 			/>,
-			<Button key="btn-search-offline" type="link" onClick={handleOfflineSearch}>
+			<Button key='btn-search-offline' type='link' onClick={handleOfflineSearch}>
 				Offline
 			</Button>,
 		];
@@ -86,9 +86,9 @@ const TagsPopover: React.FunctionComponent<Props> = ({ tags }: Props) => {
 
 	return (
 		<Container ref={containerRef}>
-			<Table dataSource={fetchedTags} rowKey="id" size="small" pagination={false} bordered loading={loading}>
-				<Table.Column title="Tag" dataIndex="tag" render={renderTag} />
-				<Table.Column title="Search" dataIndex="" render={renderActions} />
+			<Table dataSource={fetchedTags} rowKey='id' size='small' pagination={false} bordered loading={loading}>
+				<Table.Column title='Tag' dataIndex='tag' render={renderTag} />
+				<Table.Column title='Search' dataIndex='' render={renderActions} />
 			</Table>
 		</Container>
 	);

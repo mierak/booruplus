@@ -43,7 +43,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 			.then(unwrapResult)
 			.then((result) => setTagsCount(result));
 		dispatch(thunks.tags.loadAllWithLimitAndOffset({ limit: tagsPerPage, offset: 0 }));
-	}, []);
+	}, [dispatch, tagsPerPage]);
 
 	useEffect(() => {
 		setPage(1);
@@ -51,7 +51,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 			.then(unwrapResult)
 			.then((result) => setTagsCount(result));
 		dispatch(thunks.tags.loadAllWithLimitAndOffset({ limit: tagsPerPage, offset: 0, pattern, types: selectedTypes }));
-	}, [pattern, selectedTypes]);
+	}, [dispatch, pattern, selectedTypes, tagsPerPage]);
 
 	const handleChangePage = (p: number): void => {
 		setPage(p);

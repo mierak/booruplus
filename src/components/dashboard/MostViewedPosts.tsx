@@ -82,7 +82,7 @@ const MostViewedPosts: React.FunctionComponent = () => {
 		if (mostViewedPosts.length === 0) {
 			shouldLoad && dispatch(thunks.dashboard.fetchMostViewedPosts(mostViewedCount));
 		}
-	}, []);
+	}, [dispatch, mostViewedCount, mostViewedPosts.length, shouldLoad]);
 
 	const handleMostViewedImageClick = (post: Post): void => {
 		dispatch(actions.system.setSearchMode('most-viewed'));

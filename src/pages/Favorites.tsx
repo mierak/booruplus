@@ -28,7 +28,7 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 		};
 		renderThumbnailList();
 		dispatch(actions.system.setSearchMode('favorites'));
-	}, []);
+	}, [dispatch]);
 
 	const handleBlacklist = (post: Post): void => {
 		dispatch(thunks.posts.blacklistPosts([post]));

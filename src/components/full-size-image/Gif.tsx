@@ -10,7 +10,7 @@ import { Post } from '../../types/gelbooruTypes';
 import TagsPopover from './TagsPopover';
 import { ImageControl } from '../../types/components';
 import ImageControls from './ImageControls';
-import { useLoadImage } from '../../hooks/useImageBus';
+import { loadImage } from '../../util/imageIpcUtils';
 import { getPostUrl } from '../../service/webService';
 
 interface Props {
@@ -33,7 +33,6 @@ const StyledImg = styled.img`
 
 const Gif: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
-	const loadImage = useLoadImage();
 	const imgRef = useRef<HTMLImageElement>(null);
 
 	const [url, setUrl] = useState('');
@@ -69,7 +68,7 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 		return (): void => {
 			URL.revokeObjectURL(objectUrl);
 		};
-	}, [props.post]);
+	}, [dispatch, props.post]);
 
 	const imageControls: ImageControl[] = [
 		{
