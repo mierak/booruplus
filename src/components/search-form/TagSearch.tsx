@@ -44,8 +44,8 @@ const TagSearch: React.FunctionComponent<Props> = ({ mode, open }: Props) => {
 
 	useEffect(() => {
 		debounced.length >= 2 && dispatch(load(debounced));
-		debounced.length && debounced.length < 2 && dispatch(clear());
-	}, [debounced]);
+		debounced.length < 2 && dispatch(clear());
+	}, [clear, debounced, dispatch, load]);
 
 	const handleSelect = (e: SelectValue): void => {
 		const tag = options.find((t: Tag) => t.tag === e.toString());

@@ -36,10 +36,10 @@ doDatabaseMock();
 
 import { deleteImageMock, saveImageMock, loadImageMock } from '../helpers/imageBus.mock';
 
-jest.mock('../../src/hooks/useImageBus', () => ({
-	useDeleteImage: jest.fn().mockReturnValue(deleteImageMock),
-	useSaveImage: jest.fn().mockReturnValue(saveImageMock),
-	useLoadImage: jest.fn().mockReturnValue(loadImageMock),
+jest.mock('../../src/util/imageIpcUtils', () => ({
+	loadImage: loadImageMock,
+	saveImage: saveImageMock,
+	deleteImage: deleteImageMock,
 }));
 
 (global as any).ResizeObserver = class {

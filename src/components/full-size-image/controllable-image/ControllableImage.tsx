@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { useLoadImage } from '../../../hooks/useImageBus';
+import { loadImage } from '../../../util/imageIpcUtils';
 import { Renderer } from './renderer';
 
 import { AppDispatch, RootState } from '../../../store/types';
@@ -30,7 +30,6 @@ const Container = styled.div`
 
 const ControllableImage: React.FunctionComponent<Props> = ({ url, className, post, showControls }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
-	const loadImage = useLoadImage();
 
 	const isLoading = useSelector((state: RootState) => state.loadingStates.isFullImageLoading);
 
@@ -38,18 +37,21 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 	const viewportRef = useRef<HTMLCanvasElement>(null);
 	const renderer = useState<Renderer>(new Renderer())[0];
 
-	const initViewport = (viewport: HTMLCanvasElement, container: HTMLDivElement): void => {
-		if (renderer) {
-			viewport.width = container.clientWidth;
-			viewport.height = container.clientHeight;
-			renderer.setViewportSettings({
-				width: container.clientWidth,
-				height: container.clientHeight,
-				offsetX: viewport.getBoundingClientRect().left,
-				offsetY: viewport.getBoundingClientRect().top,
-			});
-		}
-	};
+	const initViewport = useCallback(
+		(viewport: HTMLCanvasElement, container: HTMLDivElement): void => {
+			if (renderer) {
+				viewport.width = container.clientWidth;
+				viewport.height = container.clientHeight;
+				renderer.setViewportSettings({
+					width: container.clientWidth,
+					height: container.clientHeight,
+					offsetX: viewport.getBoundingClientRect().left,
+					offsetY: viewport.getBoundingClientRect().top,
+				});
+			}
+		},
+		[renderer]
+	);
 
 	const handleZoomIn = (): void => {
 		renderer && renderer.zoomIn();
@@ -134,7 +136,7 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 				ro.disconnect();
 			};
 		}
-	}, []);
+	}, [initViewport, renderer]);
 
 	useEffect(() => {
 		const viewport = viewportRef.current;
@@ -165,7 +167,7 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 		return (): void => {
 			URL.revokeObjectURL(objectUrl);
 		};
-	}, [url]);
+	}, [dispatch, initViewport, post, renderer, url]);
 
 	return (
 		<Container ref={containerRef} className={className} data-testid='controllable-image-container'>

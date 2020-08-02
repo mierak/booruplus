@@ -1,11 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { thunks, actions } from '../../../src/store';
 import { RootState, AppDispatch } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mState } from '../../helpers/store.helper';
+import '@testing-library/jest-dom';
 
 import SettingsModal from '../../../src/components/settings/SettingsModal';
 import * as utils from '../../../src/util/utils';
@@ -34,7 +35,7 @@ describe('settings/SettingsModal', () => {
 		expect(screen.getByText('Dashboard')).not.toBeNull();
 		expect(screen.getByText('Gelbooru')).not.toBeNull();
 	});
-	it('Switches to Dashboard tab', () => {
+	it('Switches to Dashboard tab', async () => {
 		// given
 		const store = mockStore(mState());
 
@@ -44,12 +45,17 @@ describe('settings/SettingsModal', () => {
 				<SettingsModal />
 			</Provider>
 		);
-		fireEvent.click(screen.getByText('Dashboard'));
+		act(() => {
+			fireEvent.click(screen.getByText('Dashboard'));
+		});
 
 		// then
 		expect(screen.getByText('Load on app start')).not.toBeNull();
+		await waitFor(() => expect(screen.getByRole('tab', { name: 'Dashboard' })).toHaveAttribute('aria-selected', 'true'));
+		await waitFor(() => expect(screen.getByRole('tab', { name: 'General' })).toHaveAttribute('aria-selected', 'false'));
+		await waitFor(() => expect(screen.getByRole('tab', { name: 'Gelbooru' })).toHaveAttribute('aria-selected', 'false'));
 	});
-	it('Switches to Gelbooru tab', () => {
+	it('Switches to Gelbooru tab', async () => {
 		// given
 		const store = mockStore(mState());
 
@@ -63,8 +69,11 @@ describe('settings/SettingsModal', () => {
 
 		// then
 		expect(screen.getByText('API key')).not.toBeNull();
+		await waitFor(() => expect(screen.getByRole('tab', { name: 'Dashboard' })).toHaveAttribute('aria-selected', 'false'));
+		await waitFor(() => expect(screen.getByRole('tab', { name: 'General' })).toHaveAttribute('aria-selected', 'false'));
+		await waitFor(() => expect(screen.getByRole('tab', { name: 'Gelbooru' })).toHaveAttribute('aria-selected', 'true'));
 	});
-	it('Switches back to General tab', () => {
+	it('Switches back to General tab', async () => {
 		// given
 		const store = mockStore(mState());
 
@@ -79,8 +88,11 @@ describe('settings/SettingsModal', () => {
 
 		// then
 		expect(screen.getByText('Load on app start')).not.toBeNull();
+		await waitFor(() => expect(screen.getByRole('tab', { name: 'Dashboard' })).toHaveAttribute('aria-selected', 'false'));
+		await waitFor(() => expect(screen.getByRole('tab', { name: 'General' })).toHaveAttribute('aria-selected', 'true'));
+		await waitFor(() => expect(screen.getByRole('tab', { name: 'Gelbooru' })).toHaveAttribute('aria-selected', 'false'));
 	});
-	it('Reloads settings from DB when Cancel is pressed', () => {
+	it('Reloads settings from DB when Cancel is pressed', async () => {
 		// given
 		const store = mockStore(mState());
 
@@ -96,6 +108,7 @@ describe('settings/SettingsModal', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.setVisible.type, payload: false });
 		expect(dispatchedActions).toContainMatchingAction({ type: thunks.settings.loadSettings.pending.type, meta: { arg: 'user' } });
+		await waitFor(() => expect(screen.getByRole('tab', { name: 'General' })).toHaveAttribute('aria-selected', 'true'));
 	});
 	it('Validates API key on save and dispatches saveSettings() when it is valid', async () => {
 		// given
@@ -124,6 +137,7 @@ describe('settings/SettingsModal', () => {
 		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.settings.saveSettings.pending.type }));
 		expect(validateSpy).toBeCalledTimes(1);
 		expect(notificationSpy).toBeCalledWith('success', 'Settings saved', expect.anything(), expect.anything());
+		await waitFor(() => expect(screen.getByRole('tab', { name: 'General' })).toHaveAttribute('aria-selected', 'true'));
 	});
 	it('Shows error notification with invalid api key', async () => {
 		// given
@@ -154,5 +168,6 @@ describe('settings/SettingsModal', () => {
 		expect(setVisibleSpy).toBeCalledTimes(0);
 		expect(saveSpy).toBeCalledTimes(0);
 		expect(validateSpy).toBeCalledTimes(1);
+		await waitFor(() => expect(screen.getByRole('tab', { name: 'General' })).toHaveAttribute('aria-selected', 'true'));
 	});
 });

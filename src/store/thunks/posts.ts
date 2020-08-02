@@ -3,17 +3,13 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { db } from '../../db';
 import * as api from '../../service/apiService';
 
-import { useSaveImage, useDeleteImage } from '../../hooks/useImageBus';
+import { deleteImage, saveImage } from '../../util/imageIpcUtils';
 
-// import { actions } from '../tasks';
 import { ThunkApi } from '../../store/types';
 
 import { Post, PostSearchOptions, Tag } from '../../types/gelbooruTypes';
 import { delay } from '../../util/utils';
 import moment from 'moment';
-
-const saveImage = useSaveImage();
-const deleteImage = useDeleteImage();
 
 export const deduplicateAndCheckTagsAgainstDb = async (tags: string[]): Promise<string[]> => {
 	const deduplicated = Array.from(new Set(tags));

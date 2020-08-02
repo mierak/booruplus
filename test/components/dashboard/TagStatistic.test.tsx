@@ -18,11 +18,11 @@ describe('TagStatistic', () => {
 			mState({
 				dashboard: {
 					mostFavoritedTags: [
-						{ tag: mTag({ tag: 'tag1' }), count: 1 },
-						{ tag: mTag({ tag: 'tag2' }), count: 2 },
-						{ tag: mTag({ tag: 'tag3' }), count: 3 },
-						{ tag: mTag({ tag: 'tag4' }), count: 4 },
-						{ tag: mTag({ tag: 'tag5' }), count: 5 },
+						{ tag: mTag({ id: 1, tag: 'tag1' }), count: 1 },
+						{ tag: mTag({ id: 2, tag: 'tag2' }), count: 2 },
+						{ tag: mTag({ id: 3, tag: 'tag3' }), count: 3 },
+						{ tag: mTag({ id: 4, tag: 'tag4' }), count: 4 },
+						{ tag: mTag({ id: 5, tag: 'tag5' }), count: 5 },
 					],
 				},
 			})
@@ -31,7 +31,7 @@ describe('TagStatistic', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<TagStatistic title="Most Favorited" type="most-favorited" />
+				<TagStatistic title='Most Favorited' type='most-favorited' />
 			</Provider>
 		);
 
@@ -49,11 +49,11 @@ describe('TagStatistic', () => {
 			mState({
 				dashboard: {
 					mostSearchedTags: [
-						{ tag: mTag({ tag: 'tag1' }), count: 1, date: '' },
-						{ tag: mTag({ tag: 'tag2' }), count: 2, date: '' },
-						{ tag: mTag({ tag: 'tag3' }), count: 3, date: '' },
-						{ tag: mTag({ tag: 'tag4' }), count: 4, date: '' },
-						{ tag: mTag({ tag: 'tag5' }), count: 5, date: '' },
+						{ tag: mTag({ id: 1, tag: 'tag1' }), count: 1, date: '' },
+						{ tag: mTag({ id: 2, tag: 'tag2' }), count: 2, date: '' },
+						{ tag: mTag({ id: 3, tag: 'tag3' }), count: 3, date: '' },
+						{ tag: mTag({ id: 4, tag: 'tag4' }), count: 4, date: '' },
+						{ tag: mTag({ id: 5, tag: 'tag5' }), count: 5, date: '' },
 					],
 				},
 			})
@@ -62,7 +62,7 @@ describe('TagStatistic', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<TagStatistic title="Most Searched" type="most-searched" />
+				<TagStatistic title='Most Searched' type='most-searched' />
 			</Provider>
 		);
 
@@ -81,7 +81,7 @@ describe('TagStatistic', () => {
 		// when
 		render(
 			<Provider store={mStore}>
-				<TagStatistic title="Most Searched" type="most-searched" />
+				<TagStatistic title='Most Searched' type='most-searched' />
 			</Provider>
 		);
 		fireEvent.click(
@@ -101,7 +101,7 @@ describe('TagStatistic', () => {
 		// when
 		render(
 			<Provider store={mStore}>
-				<TagStatistic title="Most Favorited" type="most-favorited" />
+				<TagStatistic title='Most Favorited' type='most-favorited' />
 			</Provider>
 		);
 		fireEvent.click(
@@ -129,7 +129,7 @@ describe('TagStatistic', () => {
 		// when
 		render(
 			<Provider store={mStore}>
-				<TagStatistic title="Most Favorited" type="most-favorited" />
+				<TagStatistic title='Most Favorited' type='most-favorited' />
 			</Provider>
 		);
 
@@ -152,7 +152,7 @@ describe('TagStatistic', () => {
 		// when
 		render(
 			<Provider store={mStore}>
-				<TagStatistic title="Most Searched" type="most-searched" />
+				<TagStatistic title='Most Searched' type='most-searched' />
 			</Provider>
 		);
 
@@ -173,7 +173,7 @@ describe('TagStatistic', () => {
 		// when
 		render(
 			<Provider store={mStore}>
-				<TagStatistic title="Most Searched" type="most-searched" />
+				<TagStatistic title='Most Searched' type='most-searched' />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('Online'));
@@ -202,7 +202,7 @@ describe('TagStatistic', () => {
 		// when
 		render(
 			<Provider store={mStore}>
-				<TagStatistic title="Most Searched" type="most-searched" />
+				<TagStatistic title='Most Searched' type='most-searched' />
 			</Provider>
 		);
 
@@ -222,7 +222,7 @@ describe('TagStatistic', () => {
 		// when
 		render(
 			<Provider store={mStore}>
-				<TagStatistic title="Most Searched" type="most-searched" />
+				<TagStatistic title='Most Searched' type='most-searched' />
 			</Provider>
 		);
 

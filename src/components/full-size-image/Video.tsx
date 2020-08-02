@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
-import { useLoadImage } from '../../hooks/useImageBus';
+import { loadImage } from '../../util/imageIpcUtils';
 import { AppDispatch } from '../../store/types';
 
 import { Post } from '../../types/gelbooruTypes';
@@ -30,7 +30,6 @@ const StyledVideo = styled.video`
 
 const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
-	const loadImage = useLoadImage();
 	const videoRef = useRef<HTMLVideoElement>(null);
 
 	const playVideo = (sourceElement: HTMLSourceElement): void => {
@@ -69,7 +68,7 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 				URL.revokeObjectURL(objectUrl);
 			};
 		}
-	}, [post]);
+	}, [dispatch, post]);
 
 	const handleOpenWeb = (): void => {
 		window.api.send(IpcChannels.OPEN_IN_BROWSER, getPostUrl(post.id));

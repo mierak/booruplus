@@ -34,7 +34,7 @@ const Page: React.FunctionComponent = () => {
 			await dispatch(thunks.favorites.fetchAllKeys());
 			setLoaded(true);
 		})();
-	}, []);
+	}, [dispatch]);
 
 	useEffect(() => {
 		if (loaded) {
@@ -46,7 +46,7 @@ const Page: React.FunctionComponent = () => {
 				require('antd/dist/antd.css');
 			}
 		}
-	}, [loaded]);
+	}, [loaded, settings.theme]);
 
 	useEffect(() => {
 		window.api.send(IpcChannels.SETTINGS_LOADED, settings);

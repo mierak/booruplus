@@ -65,7 +65,7 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 
 	useEffect(() => {
 		dispatch(thunks.savedSearches.loadSavedSearchesFromDb()); //TODO loading state
-	}, []);
+	}, [dispatch]);
 
 	const handleOnlineSearch = (savedSearch: SavedSearch): void => {
 		dispatch(thunks.savedSearches.searchOnline(savedSearch));

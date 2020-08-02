@@ -24,16 +24,16 @@ jest.mock('../../../src/service/apiService', () => {
 	};
 });
 import { getTagsByNames, getPostsForTags } from '../../../src/service/apiService';
-jest.mock('../../../src/hooks/useImageBus', () => {
+jest.mock('../../../src/util/imageIpcUtils', () => {
 	const deleteImage = jest.fn();
 	const saveImage = jest.fn();
 	return {
 		__esModule: true,
-		useDeleteImage: jest.fn(() => deleteImage),
-		useSaveImage: jest.fn(() => saveImage),
+		deleteImage: jest.fn(() => deleteImage),
+		saveImage: jest.fn(() => saveImage),
 	};
 });
-import { useDeleteImage } from '../../../src/hooks/useImageBus';
+import { deleteImage } from '../../../src/util/imageIpcUtils';
 jest.mock('../../../src/util/utils', () => {
 	const originalModule = jest.requireActual('../../../src/util/utils');
 	return {
@@ -112,7 +112,6 @@ describe('thunks/posts', () => {
 		it('It changes all posts to not downloaded and calls deleteImage for each post', async () => {
 			// given
 			const store = mockStore(initialState);
-			const deleteImage = useDeleteImage();
 			const posts = [
 				mPost({ downloaded: 1, id: 1 }),
 				mPost({ downloaded: 1, id: 2 }),
@@ -360,7 +359,6 @@ describe('thunks/posts', () => {
 			const store = mockStore(initialState);
 			const posts = [mPost({ id: 0, blacklisted: 0 }), mPost({ id: 1, blacklisted: 0 }), mPost({ id: 2, blacklisted: 0 })];
 			const deletedPosts = posts.map((post) => thunks.copyAndBlacklistPost(post));
-			const deleteImage = useDeleteImage();
 
 			// when
 			await store.dispatch(thunks.blacklistPosts(posts));

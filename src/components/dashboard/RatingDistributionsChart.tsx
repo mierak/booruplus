@@ -60,7 +60,7 @@ const RatingDistributionsChart: React.FunctionComponent = () => {
 		if (!ratingCounts) {
 			shouldLoad && dispatch(thunks.dashboard.fetchRatingCounts());
 		}
-	}, []);
+	}, [dispatch, ratingCounts, shouldLoad]);
 
 	const ratingCountsData =
 		ratingCounts &&

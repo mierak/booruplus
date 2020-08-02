@@ -59,7 +59,7 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 				settings.loadMostSearchedTags && dispatch(thunks.dashboard.fetchMostSearchedTags());
 			}
 		}
-	}, []);
+	}, [dataSource.length, dispatch, settings.loadMostFavoritedTags, settings.loadMostSearchedTags, type]);
 
 	const renderActions = (_: unknown, record: TagHistory): React.ReactNode => {
 		return (
