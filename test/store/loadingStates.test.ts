@@ -16,6 +16,16 @@ describe('store/loadingStates', () => {
 		// then
 		expect(result.isFullImageLoading).toEqual(true);
 	});
+	it('Sets isScrolling', () => {
+		// given
+		const action = createAction(actions.setScrolling.type, true);
+
+		// when
+		const result = reducer(undefined, action);
+
+		// then
+		expect(result.isScrolling).toEqual(true);
+	});
 	it('Sets isRatingDistributionChartLoading to true on fetchRatingCounts pending', () => {
 		// given
 		const action = createAction(thunks.dashboard.fetchRatingCounts.pending.type, true);

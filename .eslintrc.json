@@ -50,6 +50,7 @@
 		"@typescript-eslint/type-annotation-spacing": "error",
 		"@typescript-eslint/unbound-method": "error",
 		"no-unused-vars": "off",
+		"react/prop-types": "off",
 		"@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "[_]" }],
 		"react/no-unescaped-entities": 1,
 		"no-console": "warn"

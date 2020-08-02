@@ -1,21 +1,21 @@
-/* eslint-disable react/prop-types */
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { CheckCircleTwoTone, LoadingOutlined } from '@ant-design/icons';
-import { Card, Popconfirm, Spin, Menu, Dropdown } from 'antd';
+import { CheckCircleTwoTone } from '@ant-design/icons';
+import { Card, Popconfirm, Menu, Dropdown } from 'antd';
 
-import { actions } from '../store';
-import { RootState, AppDispatch } from '../store/types';
+import { actions } from '../../store';
+import { RootState, AppDispatch } from '../../store/types';
 
-import { CardAction, ContextMenu, openNotificationWithIcon } from '../types/components';
-import { renderPostCardAction, getThumbnailBorder } from '../util/componentUtils';
-import { getThumbnailUrl } from '../service/webService';
+import { CardAction, ContextMenu, openNotificationWithIcon } from '../../types/components';
+import { renderPostCardAction, getThumbnailBorder } from '../../util/componentUtils';
+import { getThumbnailUrl } from '../../service/webService';
 
 interface Props {
 	index: number;
 	contextMenu?: ContextMenu[];
 	actions?: CardAction[];
+	isScrolling?: boolean;
 }
 
 interface CardProps {
@@ -36,7 +36,7 @@ const StyledCard = styled(Card)<CardProps>`
 	&& {
 		border: ${(props): false | 0 | 'dashed 1px black' | 'dashed 1px white' | undefined =>
 			getThumbnailBorder(props.$isActive, props.$theme)};
-		width: 170px;
+		width: 195px;
 		height: ${(props): string => props.$height};
 	}
 	&& > .ant-card-actions > li {
@@ -56,8 +56,8 @@ const StyledImageContainer = styled.div`
 `;
 
 const StyledThumbnailImage = styled.img`
-	max-width: 150px;
-	max-height: 150px;
+	max-width: 175px;
+	max-height: 175px;
 `;
 
 const Thumbnail = (props: Props): React.ReactElement => {
@@ -69,8 +69,6 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	);
 	const isActive = useSelector((state: RootState) => props.index === state.posts.activePostIndex);
 	const theme = useSelector((state: RootState) => state.settings.theme);
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const [loaded, setLoaded] = useState(true);
 
 	const handleThumbnailClick = (event: React.MouseEvent): void => {
 		if (event.ctrlKey) {
@@ -139,29 +137,22 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	const renderThumbNail = (): React.ReactNode => {
 		return (
 			<StyledCard
-				bodyStyle={{ height: '170px', width: '170px', padding: '0' }}
+				bodyStyle={{ height: '195px', width: '195px', padding: '0' }}
 				$isActive={isActive.toString()}
 				$theme={theme}
-				actions={renderActions()}
+				actions={
+					!props.isScrolling
+						? renderActions()
+						: [<div key='dummy' style={{ backgroundColor: 'rgb(29,29,29)', width: '100%', height: '22px' }}></div>]
+				}
 				hoverable
-				$height={props.actions !== undefined ? '200px' : '172px'}
+				$height={props.actions !== undefined ? '225px' : '197px'}
 			>
 				<StyledImageContainer onClick={(event: React.MouseEvent): void => handleThumbnailClick(event)}>
-					{post && post.selected ? (
-						<CheckCircleTwoTone style={{ fontSize: '20px', position: 'absolute', top: '5px', right: '5px' }} />
-					) : (
-						<></>
-					)}
+					{post && post.selected && <CheckCircleTwoTone style={{ fontSize: '20px', position: 'absolute', top: '5px', right: '5px' }} />}
 					{post && (
-						<StyledThumbnailImage
-							data-testid='thumbnail-image'
-							src={getThumbnailUrl(post.directory, post.hash)}
-							style={{ display: loaded ? 'block' : 'none' }}
-							onLoad={(): void => setLoaded(true)}
-							onLoadStart={(): void => setLoaded(false)}
-						></StyledThumbnailImage>
+						<StyledThumbnailImage data-testid='thumbnail-image' src={getThumbnailUrl(post.directory, post.hash)}></StyledThumbnailImage>
 					)}
-					{!loaded && <Spin indicator={<LoadingOutlined style={{ fontSize: '32px' }} />} />}
 				</StyledImageContainer>
 			</StyledCard>
 		);
@@ -190,4 +181,4 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	return <>{props.contextMenu !== undefined ? renderWithContextMenu() : renderThumbNail()}</>;
 };
 
-export default React.memo(Thumbnail);
+export default Thumbnail;

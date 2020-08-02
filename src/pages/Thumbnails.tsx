@@ -7,7 +7,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { actions, thunks } from '../store';
 import { RootState, AppDispatch } from '../store/types';
 
-import ThumbnailsList from '../components/ThumbnailsList';
+import ThumbnailsList from '../components/thumbnails/ThumbnailsList';
 import { CardAction, openNotificationWithIcon } from '../types/components';
 import { Post } from '../types/gelbooruTypes';
 import { getThumbnailUrl } from '../service/webService';

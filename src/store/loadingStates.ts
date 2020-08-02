@@ -9,6 +9,7 @@ export interface LoadingStates {
 	isFullImageLoading: boolean;
 	isFullscreenLoadingMaskVisible: boolean;
 	fullscreenLoadingMaskMessage?: string;
+	isScrolling: boolean;
 }
 
 export const initialState: LoadingStates = {
@@ -17,6 +18,7 @@ export const initialState: LoadingStates = {
 	isRatingDistributionChartLoading: false,
 	isFullImageLoading: false,
 	isFullscreenLoadingMaskVisible: false,
+	isScrolling: false,
 };
 
 const loadingState = createSlice({
@@ -25,6 +27,9 @@ const loadingState = createSlice({
 	reducers: {
 		setFullImageLoading: (state, action: PayloadAction<boolean>): void => {
 			state.isFullImageLoading = action.payload;
+		},
+		setScrolling: (state, action: PayloadAction<boolean>): void => {
+			state.isScrolling = action.payload;
 		},
 	},
 	extraReducers: (builder) => {

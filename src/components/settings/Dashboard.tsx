@@ -13,8 +13,16 @@ const Dashboard: React.FunctionComponent = () => {
 
 	const settings = useSelector((state: RootState) => state.settings.dashboard);
 
-	const handleMostViewedCountChange = (value: number | undefined): void => {
-		value && dispatch(actions.settings.setMostViewedCount(value));
+	const handleMostViewedCountChange = (value: number | string | undefined): void => {
+		let val: number;
+		if (typeof value === 'string') {
+			val = parseInt(value);
+		} else if (typeof value === 'number') {
+			val = value;
+		} else {
+			return;
+		}
+		dispatch(actions.settings.setMostViewedCount(val));
 	};
 
 	const handleCheckboxMostSearched = (event: CheckboxChangeEvent): void => {
@@ -45,25 +53,25 @@ const Dashboard: React.FunctionComponent = () => {
 		<Form>
 			<Row>
 				<Col span={24}>
-					<Item label="Load on app start" labelCol={{ span: 5 }} wrapperCol={{ span: 15 }}>
-						<Checkbox name="chb-most-searched" checked={settings.loadMostSearchedTags} onChange={handleCheckboxMostSearched}>
+					<Item label='Load on app start' labelCol={{ span: 5 }} wrapperCol={{ span: 15 }}>
+						<Checkbox name='chb-most-searched' checked={settings.loadMostSearchedTags} onChange={handleCheckboxMostSearched}>
 							Most Searched Tags
 						</Checkbox>
-						<Checkbox name="chb-most-favorited" checked={settings.loadMostFavoritedTags} onChange={handleCheckboxMostFavorited}>
+						<Checkbox name='chb-most-favorited' checked={settings.loadMostFavoritedTags} onChange={handleCheckboxMostFavorited}>
 							Most Favorited Tags
 						</Checkbox>
 					</Item>
 					<Item wrapperCol={{ span: 16, offset: 5 }}>
-						<Checkbox name="chb-most-viewed" checked={settings.loadMostViewedPosts} onChange={handleCheckboxMostViewed}>
+						<Checkbox name='chb-most-viewed' checked={settings.loadMostViewedPosts} onChange={handleCheckboxMostViewed}>
 							Most Viewed Posts
 						</Checkbox>
-						<Checkbox name="chb-tag-statistic" checked={settings.loadTagStatistics} onChange={handleCheckboxTagStatistic}>
+						<Checkbox name='chb-tag-statistic' checked={settings.loadTagStatistics} onChange={handleCheckboxTagStatistic}>
 							Tag Statistics
 						</Checkbox>
 					</Item>
 					<Item wrapperCol={{ span: 16, offset: 5 }}>
 						<Checkbox
-							name="chb-rating-distribution"
+							name='chb-rating-distribution'
 							checked={settings.loadRatingDistributionChart}
 							onChange={handleCheckboxRatingDistribution}
 						>
@@ -71,7 +79,7 @@ const Dashboard: React.FunctionComponent = () => {
 						</Checkbox>
 					</Item>
 					<Item wrapperCol={{ span: 16, offset: 5 }}>
-						<Checkbox name="chb-save-not-found-tags" checked={settings.saveTagsNotFoundInDb} onChange={handleCheckboxSaveNotFoundTags}>
+						<Checkbox name='chb-save-not-found-tags' checked={settings.saveTagsNotFoundInDb} onChange={handleCheckboxSaveNotFoundTags}>
 							Download Tags Not Found in DB
 						</Checkbox>
 					</Item>
@@ -79,7 +87,7 @@ const Dashboard: React.FunctionComponent = () => {
 			</Row>
 			<Row>
 				<Col span={24}>
-					<Item label="Most Viewed Count" labelCol={{ span: 5 }} wrapperCol={{ span: 15 }}>
+					<Item label='Most Viewed Count' labelCol={{ span: 5 }} wrapperCol={{ span: 15 }}>
 						<InputNumber value={settings.mostViewedCount} min={1} max={100} onChange={handleMostViewedCountChange} />
 					</Item>
 				</Col>

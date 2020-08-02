@@ -76,7 +76,7 @@ const settingsSlice = createSlice({
 		});
 		builder.addCase(thunks.settings.exportDatabase.rejected, (_, action) => {
 			openNotificationWithIcon('error', 'Could not export database', 'Error occured while trying to create a database backup.', 5);
-			log.error('Error occured while trying to create a database backup.', action.error.message);
+			log.error('Error occured while trying to create a database backup.', action?.error?.message);
 		});
 		// Import database
 		builder.addCase(thunks.settings.importDatabase.fulfilled, (_, action) => {

@@ -25,8 +25,6 @@ describe('pages/ImageView', () => {
 			mPost({ id: 1, directory: 'dir1', hash: 'hash1' }),
 			mPost({ id: 2, directory: 'dir2', hash: 'hash2' }),
 			mPost({ id: 3, directory: 'dir3', hash: 'hash3' }),
-			mPost({ id: 4, directory: 'dir4', hash: 'hash4', downloaded: 1 }),
-			mPost({ id: 5, directory: 'dir5', hash: 'hash5', downloaded: 1 }),
 		];
 		const store = mockStore(
 			mState({
@@ -48,8 +46,6 @@ describe('pages/ImageView', () => {
 		expect(thumbnails[0]).toHaveAttribute('src', getThumbnailUrl(posts[0].directory, posts[0].hash));
 		expect(thumbnails[1]).toHaveAttribute('src', getThumbnailUrl(posts[1].directory, posts[1].hash));
 		expect(thumbnails[2]).toHaveAttribute('src', getThumbnailUrl(posts[2].directory, posts[2].hash));
-		expect(thumbnails[3]).toHaveAttribute('src', getThumbnailUrl(posts[3].directory, posts[3].hash));
-		expect(thumbnails[4]).toHaveAttribute('src', getThumbnailUrl(posts[4].directory, posts[4].hash));
 	});
 	it('Renders FullSizeImage', () => {
 		// given

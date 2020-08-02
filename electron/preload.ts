@@ -8,7 +8,7 @@ contextBridge.exposeInMainWorld('api', {
 	send: <T>(channel: IpcChannels, data: T) => {
 		ipcRenderer.send(channel, data);
 	},
-	invoke: <T>(channel: IpcChannels, data: Post | SavePostDto) => {
+	invoke: (channel: IpcChannels, data: Post | SavePostDto) => {
 		try {
 			return ipcRenderer.invoke(channel, data);
 		} catch (err) {

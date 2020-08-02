@@ -14,9 +14,17 @@ const PageSelect: React.FunctionComponent<Props> = ({ mode }: Props) => {
 
 	const page = useSelector((state: RootState) => (mode === 'offline' && state.downloadedSearchForm.page) || state.onlineSearchForm.page);
 
-	const handlePageChange = (value: number | undefined): void => {
+	const handlePageChange = (value: number | string | undefined): void => {
+		let val: number;
+		if (typeof value === 'string') {
+			val = parseInt(value);
+		} else if (typeof value === 'number') {
+			val = value;
+		} else {
+			return;
+		}
 		const setPage = (mode === 'offline' && actions.downloadedSearchForm.setPage) || actions.onlineSearchForm.setPage;
-		value !== undefined && dispatch(setPage(value));
+		dispatch(setPage(val));
 	};
 
 	return (

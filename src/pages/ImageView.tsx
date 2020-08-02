@@ -6,7 +6,7 @@ import { Layout } from 'antd';
 import { actions } from '../store';
 import { RootState } from '../store/types';
 
-import ThumbnailsList from '../components/ThumbnailsList';
+import ThumbnailsList from '../components/thumbnails/ThumbnailsList';
 import FullSizeImage from '../components/FullSizeImage';
 
 interface Props {
@@ -20,7 +20,7 @@ const Container = styled(Layout)`
 `;
 
 const StyledThumbnailsList = styled(ThumbnailsList)`
-	max-width: 220px;
+	max-width: 245px;
 	margin: 0 0 0 7px;
 	height: 100vh;
 `;
@@ -52,6 +52,8 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 				onCollapse={(): void => {
 					dispatch(actions.system.setImageViewThumbnailsCollapsed(!thumbnailsListvisible));
 				}}
+				width={225}
+				style={{ height: '100vh' }}
 			>
 				<StyledThumbnailsList sidebar />
 			</Layout.Sider>
