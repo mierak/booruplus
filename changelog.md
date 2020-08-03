@@ -1,5 +1,5 @@
 # Changelog
-## 0.1.4 - Database Import/Export - DATE
+## 0.1.4 - Database Import/Export - 3.8.2020
 - Changed Thumbnails Grid to use windowing
 - Allow devtools even in packaged app through standard shortcut
 - Added ability to create a backup of the whole database and later restore that backup
