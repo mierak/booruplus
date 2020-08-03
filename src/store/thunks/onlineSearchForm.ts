@@ -5,6 +5,9 @@ import { db } from '../../db';
 
 import { ThunkApi, RootState } from '../types';
 import { Post, Tag, PostSearchOptions } from '../../types/gelbooruTypes';
+import { thunkLoggerFactory } from '../../util/logger';
+
+const thunkLogger = thunkLoggerFactory('dashboard');
 
 export const getPostApiOptions = (state: RootState, incrementPage?: boolean): PostSearchOptions => {
 	return {
@@ -20,6 +23,8 @@ export const getPostApiOptions = (state: RootState, incrementPage?: boolean): Po
 export const checkPostsAgainstDb = createAsyncThunk<Post[], Post[], ThunkApi>(
 	'onlineSearchForm/checkPostsAgainstDb',
 	async (posts, _): Promise<Post[]> => {
+		const logger = thunkLogger.getActionLogger(checkPostsAgainstDb);
+		logger.debug(`Checking ${posts.length} posts against DB to save or update`);
 		const result = db.posts.bulkSaveOrUpdateFromApi(posts);
 		return result;
 	}
@@ -28,6 +33,7 @@ export const checkPostsAgainstDb = createAsyncThunk<Post[], Post[], ThunkApi>(
 export const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
 	'onlineSearchForm/fetchPosts',
 	async (_, thunkApi): Promise<Post[]> => {
+		const logger = thunkLogger.getActionLogger(fetchPosts);
 		const { dispatch } = thunkApi;
 		const getState = thunkApi.getState;
 
@@ -35,8 +41,16 @@ export const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
 		const excludedTagString = getState().onlineSearchForm.excludedTags.map((tag) => tag.tag);
 		const tagsString = getState().onlineSearchForm.selectedTags.map((tag) => tag.tag);
 
+		logger.debug(
+			`Fetching posts from api. Selected Tags: [${tagsString}]. Excluded Tags: [${excludedTagString}]. API Options:`,
+			JSON.stringify({
+				...options,
+				apiKey: 'redacted',
+			})
+		);
 		const posts = await api.getPostsForTags(tagsString, options, excludedTagString);
 
+		logger.debug(`Saving search to history for tags [${tagsString}]`);
 		db.tagSearchHistory.saveSearch(getState().onlineSearchForm.selectedTags);
 		await dispatch(checkPostsAgainstDb(posts));
 
@@ -47,6 +61,8 @@ export const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
 export const getTagsByPatternFromApi = createAsyncThunk<Tag[], string, ThunkApi>(
 	'onlineSearchForm/getTagsByPatternFromApi',
 	async (value: string, thunkApi): Promise<Tag[]> => {
+		const logger = thunkLogger.getActionLogger(getTagsByPatternFromApi);
+		logger.debug(`Gettings tags from API. Pattern: ${value}`);
 		return api.getTagsByPattern(value, thunkApi.getState().settings.apiKey);
 	}
 );
@@ -54,12 +70,20 @@ export const getTagsByPatternFromApi = createAsyncThunk<Tag[], string, ThunkApi>
 export const fetchMorePosts = createAsyncThunk<Post[], void, ThunkApi>(
 	'onlineSearchForm/fetchMorePosts',
 	async (_, thunkApi): Promise<Post[]> => {
+		const logger = thunkLogger.getActionLogger(fetchMorePosts);
 		const getState = thunkApi.getState;
 
 		const options = getPostApiOptions(getState(), true);
 		const excludedTagString = getState().onlineSearchForm.excludedTags.map((tag) => tag.tag);
 		const tagsString = getState().onlineSearchForm.selectedTags.map((tag) => tag.tag);
 
+		logger.debug(
+			`Fetching posts from api. Selected Tags: [${tagsString}]. Excluded Tags: [${excludedTagString}]. API Options:`,
+			JSON.stringify({
+				...options,
+				apiKey: 'redacted',
+			})
+		);
 		const posts = await api.getPostsForTags(tagsString, options, excludedTagString);
 		await thunkApi.dispatch(checkPostsAgainstDb(posts));
 

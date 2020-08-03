@@ -28,7 +28,6 @@ const Tasks: React.FunctionComponent<Props> = (props: Props) => {
 
 	useEffect(() => {
 		setTasksArray(taskIds.sort().reverse());
-		window.log.debug(taskIds);
 	}, [taskIds, taskIds.length]);
 
 	const renderItem = (id: string): React.ReactNode => {

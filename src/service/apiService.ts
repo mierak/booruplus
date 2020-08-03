@@ -1,6 +1,7 @@
 import { Post, PostDto, Tag, PostSearchOptions } from '../types/gelbooruTypes';
 import { delay, escapeTag, postParser } from '../util/utils';
 import { GELBOORU_URL } from './webService';
+import { getApiLogger } from '../util/logger';
 
 export const BASE_URL = `${GELBOORU_URL}/index.php?page=dapi&q=index&json=1`;
 export const BASE_TAG_URL = `${BASE_URL}&s=tag`;
@@ -22,6 +23,7 @@ export const getSortOptionString = (options: PostSearchOptions): string => {
 };
 
 export const getPostsForTags = async (tags: string[], options: PostSearchOptions = {}, excludedTags?: string[]): Promise<Post[]> => {
+	const logger = getApiLogger('getPostsForTags');
 	//handle Optional params
 	if (!options.limit) options.limit = 100;
 	if (options.rating && options.rating !== 'any') tags.push(`rating:${options.rating}`);
@@ -37,8 +39,13 @@ export const getPostsForTags = async (tags: string[], options: PostSearchOptions
 
 	if (options.sort && options.sortOrder) url = url.concat(' ' + getSortOptionString(options));
 
+	logger.debug('Calling API url', options.apiKey ? url.replace(options.apiKey, '&api_key=REDACTED') : url);
 	const response = await fetch(url);
-	if (!response.ok) throw new Error(response.statusText);
+	if (!response.ok) {
+		logger.error(response.statusText);
+		throw new Error(response.statusText);
+	}
+	logger.debug('Response', response.status, response.statusText);
 
 	const responsePosts: PostDto[] = await response.json();
 	const posts = responsePosts.map((postDto) => parsePost(postDto));
@@ -46,12 +53,18 @@ export const getPostsForTags = async (tags: string[], options: PostSearchOptions
 };
 
 export const getPostById = async (id: number, apiKey?: string): Promise<Post> => {
+	const logger = getApiLogger('getPostById');
 	let url = BASE_POST_URL;
 	apiKey && (url = url.concat(apiKey));
 	url = url.concat(`&id=${id}`);
 
+	logger.debug('Calling API url', apiKey ? url.replace(apiKey, '&api_key=REDACTED') : url);
 	const response = await fetch(url);
-	if (!response.ok) throw new Error(response.statusText);
+	if (!response.ok) {
+		logger.error(response.statusText);
+		throw new Error(response.statusText);
+	}
+	logger.debug('Response', response.status, response.statusText);
 
 	const posts: Post[] = await response.json();
 	if (posts.length < 1) throw new Error('No post found');
@@ -60,6 +73,7 @@ export const getPostById = async (id: number, apiKey?: string): Promise<Post> =>
 };
 
 export const getTagsByNames = async (names: string[], apiKey?: string): Promise<Tag[]> => {
+	const logger = getApiLogger('getTagsByNames');
 	const deduplicatedNames = Array.from(new Set(names));
 	const batches: string[][] = [];
 	while (deduplicatedNames.length > 0) {
@@ -72,10 +86,13 @@ export const getTagsByNames = async (names: string[], apiKey?: string): Promise<
 		apiKey && (url = url.concat(apiKey));
 		url = url.concat(`&names=${escapeTag(batch.join(' '))}`);
 
+		logger.debug('Calling API url', apiKey ? url.replace(apiKey, '&api_key=REDACTED') : url);
 		const response = await fetch(url);
 		if (!response.ok) {
-			throw Error(`Error while fetching tags by names: ${response.statusText}`);
+			logger.error(response.statusText);
+			throw new Error(response.statusText);
 		}
+		logger.debug('Response', response.status, response.statusText);
 		const tags: Tag[] = await response.json();
 		tagsFromApi.push(tags);
 		await delay(2000);
@@ -85,12 +102,18 @@ export const getTagsByNames = async (names: string[], apiKey?: string): Promise<
 };
 
 export const getTagsByPattern = async (pattern: string, apiKey?: string): Promise<Tag[]> => {
+	const logger = getApiLogger('getTagsByPattern');
 	let url = BASE_TAG_URL;
 	apiKey && (url = url.concat(apiKey));
 	url = url.concat(`&limit=30&name_pattern=%${escapeTag(pattern)}%`);
 
+	logger.debug('Calling API url', apiKey ? url.replace(apiKey, '&api_key=REDACTED') : url);
 	const response = await fetch(url);
-	if (!response.ok) throw new Error(response.statusText);
+	if (!response.ok) {
+		logger.error(response.statusText);
+		throw new Error(response.statusText);
+	}
+	logger.debug('Response', response.status, response.statusText);
 
 	const tags: Tag[] = await response.json();
 	return tags;

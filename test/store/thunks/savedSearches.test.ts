@@ -112,12 +112,8 @@ describe('thunks/savedSearches', () => {
 			// then
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.savedSearches.save.mock.calls[0][0]).toMatchObject(savedSearch);
-			expect(dispatchedActions[0]).toMatchObject({ type: thunks.searchOnline.pending.type, payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({ type: onlineSearchFormThunk.fetchPosts.pending.type });
-			expect(dispatchedActions[2]).toMatchObject({ type: onlineSearchFormThunk.checkPostsAgainstDb.pending.type });
-			expect(dispatchedActions[3]).toMatchObject({ type: onlineSearchFormThunk.checkPostsAgainstDb.fulfilled.type });
-			expect(dispatchedActions[4]).toMatchObject({ type: onlineSearchFormThunk.fetchPosts.fulfilled.type });
-			expect(dispatchedActions[5]).toMatchObject({ type: thunks.searchOnline.fulfilled.type, payload: savedSearch });
+			expect(dispatchedActions).toContainMatchingAction({ type: thunks.searchOnline.pending.type, payload: undefined });
+			expect(dispatchedActions).toContainMatchingAction({ type: onlineSearchFormThunk.fetchPosts.pending.type });
 		});
 	});
 	describe('searchOffline()', () => {

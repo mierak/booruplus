@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { FilterDropdownProps, TablePaginationConfig } from 'antd/lib/table/interface';
@@ -28,6 +28,7 @@ const Container = styled.div`
 
 const Tags: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
+	const containerRef = useRef<HTMLDivElement>(null);
 
 	const tags = useSelector((state: RootState) => state.tags.tags);
 	const tagsLoading = useSelector((state: RootState) => state.system.isTagTableLoading);
@@ -36,7 +37,21 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 	const [pattern, setPattern] = useState('');
 	const [selectedTypes, setSelectedTypes] = useState<TagType[]>(['artist', 'character', 'copyright', 'metadata', 'tag']);
 	const [page, setPage] = useState<number>(1);
-	const tagsPerPage = props.tagsPerPage ?? 16;
+	const [tagsPerPage, setTagsPerPage] = useState(props.tagsPerPage ?? 15);
+
+	useEffect(() => {
+		const container = containerRef.current;
+		let ro: ResizeObserver;
+		if (container) {
+			ro = new ResizeObserver(() => {
+				setTagsPerPage(Math.floor(container.clientHeight / 50) - 2);
+			});
+			ro.observe(container);
+		}
+		return (): void => {
+			ro && container && ro.unobserve(container);
+		};
+	}, []);
 
 	useEffect(() => {
 		dispatch(thunks.tags.getCount())
@@ -118,7 +133,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	return (
-		<Container className={props.className}>
+		<Container className={props.className} ref={containerRef}>
 			<Table
 				size='small'
 				dataSource={tags}

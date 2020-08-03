@@ -96,7 +96,7 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 	return (
 		<StyledListCard title={title} size='small' className={className} extra={<ReloadOutlined onClick={handleReload} title='Reload' />}>
 			<Table
-				dataSource={dataSource}
+				dataSource={!isLoading ? dataSource : undefined}
 				size='small'
 				pagination={false}
 				rowKey={(el): string => el.tag?.id.toString() ?? ''}

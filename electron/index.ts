@@ -16,7 +16,7 @@ declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 const isProd = app.isPackaged;
 
 log.transports.console.useStyles = true;
-log.transports.console.format = '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{processType}] [{level}] {text}';
+log.transports.console.format = '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{processType}] [{level}] - {text}';
 
 log.debug(`Starting app. Production mode is: ${isProd}`);
 

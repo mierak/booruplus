@@ -173,9 +173,9 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 				bordered
 				sortDirections={['ascend', 'descend']}
 				size='small'
-				rowClassName={(record, index): string => (index % 2 === 0 ? 'table-row-light' : 'table-row-dark')}
+				rowClassName={(_, index): string => (index % 2 === 0 ? 'table-row-light' : 'table-row-dark')}
 				expandable={{
-					rowExpandable: (record: SavedSearch): boolean => record.lastSearched !== undefined,
+					rowExpandable: (record: SavedSearch): boolean => record.previews.length > 0,
 				}}
 				expandedRowRender={renderPreviews}
 				style={{ overflowX: 'hidden' }}

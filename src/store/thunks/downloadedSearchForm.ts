@@ -7,6 +7,9 @@ import { ThunkApi } from '../../store/types';
 import { DownloadedSearchFormState } from '../../store/downloadedSearchForm';
 
 import { Tag, Post } from '../../types/gelbooruTypes';
+import { thunkLoggerFactory } from '../../util/logger';
+
+const thunkLogger = thunkLoggerFactory('dashboard');
 
 export const getFilterOptions = (state: DownloadedSearchFormState): FilterOptions => {
 	return {
@@ -27,6 +30,8 @@ export const getFilterOptions = (state: DownloadedSearchFormState): FilterOption
 export const loadTagsByPattern = createAsyncThunk<Tag[], string, ThunkApi>(
 	'downloadedSearchForm/loadTagsByPattern',
 	async (pattern): Promise<Tag[]> => {
+		const logger = thunkLogger.getActionLogger(loadTagsByPattern);
+		logger.debug('Getting tags with Pattern:', pattern);
 		return db.tags.getByPattern(pattern);
 	}
 );
@@ -34,6 +39,7 @@ export const loadTagsByPattern = createAsyncThunk<Tag[], string, ThunkApi>(
 export const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
 	'downloadedSearchForm/fetchPosts',
 	async (_, thunkApi): Promise<Post[]> => {
+		const logger = thunkLogger.getActionLogger(fetchPosts);
 		const state = thunkApi.getState();
 
 		const filterOptions = getFilterOptions(state.downloadedSearchForm);
@@ -41,10 +47,19 @@ export const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
 		const tags = state.downloadedSearchForm.selectedTags.map((tag) => tag.tag);
 		const excludedTags = state.downloadedSearchForm.excludedTags.map((tag) => tag.tag);
 
-		const posts =
-			tags.length === 0 && excludedTags.length === 0
-				? await db.posts.getAllWithOptions(filterOptions)
-				: await db.posts.getForTagsWithOptions(filterOptions, tags, excludedTags);
+		let posts: Post[];
+		if (tags.length === 0 && excludedTags.length === 0) {
+			logger.debug('Gettings posts from DB with options', JSON.stringify(filterOptions));
+			posts = await db.posts.getAllWithOptions(filterOptions);
+		} else {
+			logger.debug(
+				`Gettings posts from DB for Tags [${tags.join(' ')}], Excluded Tags: [${excludedTags.join(' ')}] and options`,
+				JSON.stringify(filterOptions)
+			);
+			posts = await db.posts.getForTagsWithOptions(filterOptions, tags, excludedTags);
+		}
+
+		logger.debug(`Saving search history for Tags [${tags.join(' ')}]`);
 		db.tagSearchHistory.saveSearch(state.downloadedSearchForm.selectedTags);
 		return posts;
 	}
@@ -54,6 +69,7 @@ export const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
 export const fetchMorePosts = createAsyncThunk<Post[], void, ThunkApi>(
 	'downloadedSearchForm/fetchMorePosts',
 	async (_, thunkApi): Promise<Post[]> => {
+		const logger = thunkLogger.getActionLogger(fetchMorePosts);
 		const state = thunkApi.getState();
 
 		const filterOptions = getFilterOptions(state.downloadedSearchForm);
@@ -61,10 +77,18 @@ export const fetchMorePosts = createAsyncThunk<Post[], void, ThunkApi>(
 		const tags = state.downloadedSearchForm.selectedTags.map((tag) => tag.tag);
 		const excludedTags = state.downloadedSearchForm.excludedTags.map((tag) => tag.tag);
 
-		const posts =
-			tags.length === 0 && excludedTags.length === 0
-				? await db.posts.getAllWithOptions(filterOptions)
-				: await db.posts.getForTagsWithOptions(filterOptions, tags, excludedTags);
+		let posts: Post[];
+		if (tags.length === 0 && excludedTags.length === 0) {
+			logger.debug('Gettings posts from DB with options', JSON.stringify(filterOptions));
+			posts = await db.posts.getAllWithOptions(filterOptions);
+		} else {
+			logger.debug(
+				`Gettings posts from DB for Tags [${tags.join(' ')}], Excluded Tags: [${excludedTags.join(' ')}] and options`,
+				JSON.stringify(filterOptions)
+			);
+			posts = await db.posts.getForTagsWithOptions(filterOptions, tags, excludedTags);
+		}
+
 		return posts;
 	}
 );
