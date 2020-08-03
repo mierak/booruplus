@@ -23,29 +23,18 @@
 	"config": {
 		"forge": {
 			"packagerConfig": {
-				"asar": true
+				"asar": true,
+				"icon": "./icon.ico"
 			},
 			"makers": [
 				{
 					"name": "@electron-forge/maker-squirrel",
 					"config": {
 						"name": "Lolinizer",
-						"loadingGif": "./chika_dance.gif"
+						"loadingGif": "./chika_dance.gif",
+						"iconUrl": "https://puu.sh/Ge5QV/be0a6fb81a.ico",
+						"setupIcon": "./icon.ico"
 					}
-				},
-				{
-					"name": "@electron-forge/maker-zip",
-					"platforms": [
-						"darwin"
-					]
-				},
-				{
-					"name": "@electron-forge/maker-deb",
-					"config": {}
-				},
-				{
-					"name": "@electron-forge/maker-rpm",
-					"config": {}
 				}
 			],
 			"plugins": [
