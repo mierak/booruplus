@@ -4,6 +4,9 @@
 - Allow devtools even in packaged app through standard shortcut
 - Added ability to create a backup of the whole database and later restore that backup
 - Thumbnails Page now scrolls to active post
+- Increased size of thumbnails to 175x175 since gelbooru now provides this size
+- Saved Searches page now shows expand button only when saved search has 1 or more previews
+- Table on Tags page now resizes according to window height
 - Now sets first fetched post as active when Load More button finishes fetching posts
 - BUG FIX: Tasks completely failing when no tasks were present in DB
 - BUG FIX: Tasks cancellation was not saved to database

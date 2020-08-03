@@ -33,7 +33,7 @@ describe('favorites/SiderContent', () => {
 		],
 	});
 	const expandedKeys = ['0', '11', '111', '12'];
-	fit('Renders data correctly', () => {
+	it('Renders data correctly', () => {
 		// given
 		const store = mockStore(
 			mState({
@@ -57,7 +57,7 @@ describe('favorites/SiderContent', () => {
 		expect(screen.getByText('node111')).not.toBeNull();
 		expect(screen.getByText('node12')).not.toBeNull();
 	});
-	fit('Loads data on mount', () => {
+	it('Loads data on mount', () => {
 		// given
 		const store = mockStore(mState());
 
@@ -97,38 +97,4 @@ describe('favorites/SiderContent', () => {
 		expect(dispatchedActions[2]).toMatchObject({ type: thunks.favorites.fetchPostsInDirectory.pending.type, meta: { arg: 11 } });
 		expect(dispatchedActions[3]).toMatchObject({ type: actions.favorites.setActiveNodeKey.type, payload: 11 });
 	});
-	// it('Renders context menu on empty space click and dispatches thunk on Add click', async () => {
-	// 	// given
-	// 	const store = mockStore(
-	// 		mState({
-	// 			favorites: {
-	// 				rootNode,
-	// 				expandedKeys,
-	// 			},
-	// 		})
-	// 	);
-
-	// 	// when
-	// 	render(
-	// 		<Provider store={store}>
-	// 			<SiderContent />
-	// 		</Provider>
-	// 	);
-	// 	// fireEvent.click(screen.getByTestId('sider-content-empty-space'), {
-	// 	// 	button: 2,
-	// 	// });
-	// 	const adsf = screen.getByTestId('sider-content-empty-space');
-	// 	adsf.click();
-	// 	console.log(screen.debug());
-	// 	// await waitFor(() => screen.getByText('Add Sub-Folder'), {
-	// 	// 	container: document.body,
-	// 	// });
-	// 	// const addCtxMenu = await screen.findByText('Add Sub-Folder');
-	// 	// fireEvent.click(addCtxMenu);
-
-	// 	// then
-	// 	// const dispatchedActions = store.getActions();
-	// 	// expect(dispatchedActions[0]).toMatchObject({ type: actions.modals.showModal.type, payload: 'add-favorites-directory' });
-	// 	// expect(await screen.findByText('Add Sub-Folder')).not.toBeNull();
-	// });
 });

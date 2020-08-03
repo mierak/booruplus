@@ -12,8 +12,8 @@ import { getThumbnailUrl } from '../../service/webService';
 
 const StyledMostViewedGrid = styled.div`
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-	grid-template-rows: repeat(auto-fit, 200px);
+	grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+	grid-template-rows: repeat(auto-fit, 225px);
 	grid-gap: 10px;
 	padding: 10px 10px 10px 10px;
 `;
@@ -40,8 +40,8 @@ const StyledEmpty = styled(Empty)`
 `;
 
 const StyledThumbnailCard = styled(Card)`
-	width: 170px;
-	height: 200px;
+	width: 195px;
+	height: 215px;
 	&& > .ant-card-body {
 		height: 200px;
 		padding: 0;
@@ -52,13 +52,13 @@ const StyledThumbnailCard = styled(Card)`
 `;
 
 const StyledImage = styled.img`
-	max-width: 150px;
-	max-height: 150px;
+	max-width: 175px;
+	max-height: 175px;
 `;
 
 const StyledImageContainer = styled.div`
 	width: 100%;
-	height: 170px;
+	height: 195px;
 	display: flex;
 	justify-content: center;
 	align-items: center;

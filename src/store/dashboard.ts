@@ -75,17 +75,11 @@ const dashboardSlice = createSlice({
 		builder.addCase(thunks.dashboard.fetchRatingCounts.fulfilled, (state, action) => {
 			state.ratingCounts = action.payload;
 		});
-		builder.addCase(thunks.dashboard.fetchMostSearchedTags.pending, (state, _) => {
-			state.mostSearchedTags = [];
-		});
 		builder.addCase(thunks.dashboard.fetchMostSearchedTags.fulfilled, (state, action) => {
 			state.mostSearchedTags = action.payload;
 		});
 		builder.addCase(thunks.dashboard.fetchMostSearchedTags.rejected, (_, action) => {
 			log.error('Error occured while fetching most searched tags', action.error.message);
-		});
-		builder.addCase(thunks.dashboard.fetchMostFavoritedTags.pending, (state, _) => {
-			state.mostFavoritedTags = [];
 		});
 		builder.addCase(thunks.dashboard.fetchMostFavoritedTags.rejected, (_, action) => {
 			log.error('Error occured while fetching most favorited tags', action.error.message);

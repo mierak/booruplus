@@ -236,7 +236,7 @@ describe('thunks/dashboard', () => {
 				type: 'dashboard/fetchMostFavoritedTags/rejected',
 				payload: undefined,
 				error: {
-					message: `Could not download tags not found in DB, because they were not returned from db. Tags in question: ${[tagNotInDb].join(
+					message: `Could not download tags not found in DB, because they were not returned from API. Tags in question: ${[tagNotInDb].join(
 						' '
 					)}`,
 				},

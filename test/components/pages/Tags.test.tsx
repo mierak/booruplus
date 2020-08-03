@@ -58,7 +58,7 @@ describe('pages/Tags', () => {
 		expect(screen.getByRole('row', { name: '4 tag4 Metadata 4 4 4 4 Online Search Offline Search' }));
 		await waitFor(() => expect(screen.getByRole('listitem', { name: '1' })));
 		await waitFor(() => expect(screen.getByRole('listitem', { name: '2' })));
-		await waitFor(() => expect(screen.getByRole('listitem', { name: '10' })));
+		await waitFor(() => expect(screen.getByRole('listitem', { name: '11' })));
 		await waitFor(() => expect(screen.getByText('tag3')).not.toBeNull());
 	});
 	it('Dispatches Online and Offline Search correctly', async () => {

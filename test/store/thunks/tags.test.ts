@@ -94,10 +94,6 @@ describe('thunks/tags', () => {
 			const dispatchedActions = store.getActions();
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.searchTagOnline.pending.type, payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({ type: onlineSearchFormThunk.fetchPosts.pending.type, payload: undefined });
-			expect(dispatchedActions[2]).toMatchObject({ type: onlineSearchFormThunk.checkPostsAgainstDb.pending.type, payload: undefined });
-			expect(dispatchedActions[3]).toMatchObject({ type: onlineSearchFormThunk.checkPostsAgainstDb.fulfilled.type, payload: undefined });
-			expect(dispatchedActions[4]).toMatchObject({ type: onlineSearchFormThunk.fetchPosts.fulfilled.type });
-			expect(dispatchedActions[5]).toMatchObject({ type: thunks.searchTagOnline.fulfilled.type, payload: tag });
 		});
 	});
 	describe('searchTagOffline()', () => {

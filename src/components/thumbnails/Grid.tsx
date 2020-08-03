@@ -1,4 +1,4 @@
-import React, { forwardRef, CSSProperties, useState, useEffect, useRef } from 'react';
+import React, { forwardRef, CSSProperties, useState, useEffect, useLayoutEffect } from 'react';
 import debounce from 'lodash.debounce';
 import styled from 'styled-components';
 import { FixedSizeGrid } from 'react-window';
@@ -45,8 +45,19 @@ innerElementType.displayName = 'innerElementType';
 
 const Grid: React.FunctionComponent<Props> = (props) => {
 	const [size, setSize] = useState({ width: 600, height: 600 });
-	const listRef = useRef<HTMLDivElement>(null);
+	const listRef = React.useRef<HTMLDivElement>(null);
 	const gridRef = React.useRef<FixedSizeGrid>(null);
+
+	useLayoutEffect(() => {
+		const ref = listRef.current;
+		if (ref) {
+			let width = ref.clientWidth;
+			let height = ref.clientHeight;
+			ref.clientWidth === 0 && (width = 600);
+			ref.clientHeight === 0 && (height = 600);
+			setSize({ width, height });
+		}
+	}, []);
 
 	useEffect(() => {
 		const ref = listRef.current;

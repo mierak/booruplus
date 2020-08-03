@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { actions } from '../../store';
-import { AppDispatch } from '../../store/types';
+import { AppDispatch, RootState } from '../../store/types';
 
 import { IpcChannels } from '../../types/processDto';
 import { Post } from '../../types/gelbooruTypes';
@@ -12,6 +12,7 @@ import { ImageControl } from '../../types/components';
 import ImageControls from './ImageControls';
 import { loadImage } from '../../util/imageIpcUtils';
 import { getPostUrl } from '../../service/webService';
+import LoadingMask from '../LoadingMask';
 
 interface Props {
 	className?: string;
@@ -33,6 +34,7 @@ const StyledImg = styled.img`
 
 const Gif: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
+	const isLoading = useSelector((state: RootState) => state.loadingStates.isFullImageLoading);
 	const imgRef = useRef<HTMLImageElement>(null);
 
 	const [url, setUrl] = useState('');
@@ -93,6 +95,7 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 		<Container className={props.className}>
 			<StyledImg src={url} ref={imgRef} data-testid='full-image-gif' />
 			<ImageControls actions={imageControls} />
+			<LoadingMask visible={isLoading} />
 		</Container>
 	);
 };
