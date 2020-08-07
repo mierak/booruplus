@@ -6,7 +6,7 @@ import { ThunkApi, Task } from '../../store/types';
 
 import { thunkLoggerFactory } from '../../util/logger';
 
-const thunkLogger = thunkLoggerFactory('tasks');
+const thunkLogger = thunkLoggerFactory();
 
 export const rehydrateFromDb = createAsyncThunk<Task[], void, ThunkApi>(
 	'tasks/rehydrateFromDb',

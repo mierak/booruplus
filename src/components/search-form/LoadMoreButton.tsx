@@ -13,7 +13,7 @@ interface Props {
 
 const LoadMoreButton: React.FunctionComponent<Props> = ({ className }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
-	const isSearchDisabled = useSelector((state: RootState) => state.system.isSearchDisabled);
+	const isSearchDisabled = useSelector((state: RootState) => state.loadingStates.isSearchDisabled);
 	const searchMode = useSelector((state: RootState) => state.system.searchMode);
 
 	const getLoadMore = (): (() => AsyncThunkAction<Post[], void, ThunkApi>) | undefined => {
@@ -36,7 +36,7 @@ const LoadMoreButton: React.FunctionComponent<Props> = ({ className }: Props) =>
 	};
 
 	return (
-		<Button className={className} key="thumbnails-list-load-more-button" disabled={isSearchDisabled} onClick={handleLoadMore}>
+		<Button className={className} key='thumbnails-list-load-more-button' disabled={isSearchDisabled} onClick={handleLoadMore}>
 			Load More
 		</Button>
 	);

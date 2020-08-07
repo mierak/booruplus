@@ -12,7 +12,7 @@ import { delay } from '../../util/utils';
 import moment from 'moment';
 import { thunkLoggerFactory } from '../../util/logger';
 
-const thunkLogger = thunkLoggerFactory('dashboard');
+const thunkLogger = thunkLoggerFactory();
 
 export const deduplicateAndCheckTagsAgainstDb = async (tags: string[]): Promise<string[]> => {
 	const deduplicated = Array.from(new Set(tags));

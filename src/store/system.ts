@@ -10,10 +10,8 @@ export interface SystemState {
 	isTasksDrawerVisible: boolean;
 	isTagsPopoverVisible: boolean;
 	isImageViewThumbnailsCollapsed: boolean;
-	isFetchingPosts: boolean;
 	isTagOptionsLoading: boolean;
 	isTagTableLoading: boolean;
-	isSearchDisabled: boolean;
 }
 
 export const initialState: SystemState = {
@@ -24,10 +22,8 @@ export const initialState: SystemState = {
 	isTasksDrawerVisible: false,
 	isTagsPopoverVisible: false,
 	isImageViewThumbnailsCollapsed: true,
-	isFetchingPosts: false,
 	isTagOptionsLoading: false,
 	isTagTableLoading: false,
-	isSearchDisabled: false,
 };
 
 const systemSlice = createSlice({
@@ -57,37 +53,11 @@ const systemSlice = createSlice({
 		},
 	},
 	extraReducers: (builder) => {
+		// Online Search Form
 		builder.addCase(thunks.onlineSearchForm.fetchPosts.pending, (state) => {
 			state.activeView = 'thumbnails';
 			state.isSearchFormDrawerVsibile = false;
 			state.isDownloadedSearchFormDrawerVisible = false;
-			state.isSearchDisabled = true;
-			state.isFetchingPosts = true;
-		});
-		builder.addCase(thunks.onlineSearchForm.fetchMorePosts.pending, (state) => {
-			state.isSearchDisabled = true;
-		});
-		builder.addCase(thunks.downloadedSearchForm.fetchPosts.pending, (state) => {
-			state.activeView = 'thumbnails';
-			state.isSearchFormDrawerVsibile = false;
-			state.isDownloadedSearchFormDrawerVisible = false;
-			state.isSearchDisabled = true;
-			state.isFetchingPosts = true;
-		});
-		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.pending, (state) => {
-			state.isSearchDisabled = true;
-		});
-		builder.addCase(thunks.downloadedSearchForm.fetchPosts.fulfilled, (state) => {
-			state.isSearchDisabled = false;
-			state.isFetchingPosts = false;
-		});
-		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.fulfilled, (state) => {
-			state.isSearchDisabled = false;
-			state.isFetchingPosts = false;
-		});
-		builder.addCase(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled, (state) => {
-			state.isSearchDisabled = false;
-			state.isFetchingPosts = false;
 		});
 		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.pending, (state) => {
 			state.isTagOptionsLoading = true;
@@ -95,6 +65,16 @@ const systemSlice = createSlice({
 		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.fulfilled, (state) => {
 			state.isTagOptionsLoading = false;
 		});
+		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.rejected, (state) => {
+			state.isTagOptionsLoading = false;
+		});
+		// Downloaded Search Form
+		builder.addCase(thunks.downloadedSearchForm.fetchPosts.pending, (state) => {
+			state.activeView = 'thumbnails';
+			state.isSearchFormDrawerVsibile = false;
+			state.isDownloadedSearchFormDrawerVisible = false;
+		});
+		// Tags
 		builder.addCase(thunks.tags.loadAllWithLimitAndOffset.pending, (state) => {
 			state.isTagTableLoading = true;
 		});
@@ -109,6 +89,7 @@ const systemSlice = createSlice({
 			state.searchMode = 'online';
 			state.activeView = 'thumbnails';
 		});
+		// Saved Searches
 		builder.addCase(thunks.savedSearches.searchOnline.pending, (state) => {
 			state.searchMode = 'saved-search-online';
 			state.activeView = 'thumbnails';
@@ -117,19 +98,14 @@ const systemSlice = createSlice({
 			state.searchMode = 'saved-search-offline';
 			state.activeView = 'thumbnails';
 		});
+		// Posts
 		builder.addCase(thunks.posts.downloadPosts.pending, (state) => {
 			state.isTasksDrawerVisible = true;
 		});
 		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state) => {
 			state.isTasksDrawerVisible = false;
-			state.isSearchDisabled = true;
-			state.isFetchingPosts = true;
 			state.activeView = 'thumbnails';
 			state.searchMode = 'open-download';
-		});
-		builder.addCase(thunks.posts.fetchPostsByIds.fulfilled, (state) => {
-			state.isSearchDisabled = false;
-			state.isFetchingPosts = false;
 		});
 	},
 });

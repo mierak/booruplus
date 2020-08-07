@@ -10,7 +10,7 @@ import * as Comlink from 'comlink';
 
 import { thunkLoggerFactory } from '../../util/logger';
 
-const thunkLogger = thunkLoggerFactory('settings');
+const thunkLogger = thunkLoggerFactory();
 
 export const loadSettings = createAsyncThunk<Settings, string | undefined, ThunkApi>(
 	'settings/load',

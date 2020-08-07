@@ -24,10 +24,10 @@ export const getApiLogger = (functionName: string): Logger => {
 	};
 };
 
-export const thunkLoggerFactory = (thunkName: string): ThunkLogger => {
+export const thunkLoggerFactory = (): ThunkLogger => {
 	return {
 		getActionLogger: (action: ActionParam, options = { logPending: true, initialMessage: '' }): Logger => {
-			const logPrefix = `[thunk/${thunkName}/${action.typePrefix}]`;
+			const logPrefix = `[thunk/${action.typePrefix}]`;
 			if (options.logPending || options.initialMessage) {
 				window.log.info(logPrefix, '- pending', options.initialMessage);
 			}

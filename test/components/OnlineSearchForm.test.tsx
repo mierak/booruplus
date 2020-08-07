@@ -22,7 +22,6 @@ describe('OnlineSearchForm', () => {
 					page: 12,
 					sort: 'rating',
 					rating: 'questionable',
-					loading: false,
 					sortOrder: 'asc',
 					selectedTags: [mTag({ id: 1, tag: 'tag1' })],
 					excludedTags: [mTag({ id: 2, tag: 'tag2' })],

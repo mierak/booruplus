@@ -1,6 +1,6 @@
 import { doDatabaseMock } from '../helpers/database.mock';
 doDatabaseMock();
-import reducer, { actions, initialState } from '../../src/store/loadingStates';
+import reducer, { actions, initialState, LoadingStates } from '../../src/store/loadingStates';
 import { thunks } from '../../src/store/';
 import { setFullscreenLoadingMaskMessage } from '../../src/store/commonActions';
 import { createAction } from '../helpers/test.helper';
@@ -222,5 +222,131 @@ describe('store/loadingStates', () => {
 
 		// then
 		expect(result.fullscreenLoadingMaskMessage).toEqual(message);
+	});
+	it('Correctly changes state when online fetchPosts is initiated', () => {
+		// given
+		const action = createAction(thunks.onlineSearchForm.fetchPosts.pending.type);
+		const state: LoadingStates = {
+			...initialState,
+			isSearchDisabled: false,
+			isFetchingPosts: false,
+		};
+
+		// when
+		const result = reducer(state, action);
+
+		// then
+		expect(result.isSearchDisabled).toBe(true);
+		expect(result.isFetchingPosts).toBe(true);
+	});
+	it('Correctly changes state when online fetchMorePosts is initiated', () => {
+		// given
+		const action = createAction(thunks.onlineSearchForm.fetchMorePosts.pending.type);
+		const state: LoadingStates = {
+			...initialState,
+			isSearchDisabled: false,
+		};
+
+		// when
+		const result = reducer(state, action);
+
+		// then
+		expect(result.isSearchDisabled).toBe(true);
+	});
+	it('Correctly changes state when offline fetchPosts is initiated', () => {
+		// given
+		const action = createAction(thunks.downloadedSearchForm.fetchPosts.pending.type);
+		const state: LoadingStates = {
+			...initialState,
+			isSearchDisabled: false,
+			isFetchingPosts: false,
+		};
+
+		// when
+		const result = reducer(state, action);
+
+		// then
+		expect(result.isSearchDisabled).toBe(true);
+		expect(result.isFetchingPosts).toBe(true);
+	});
+	it('Correctly changes state when offline fetchMorePosts is initiated', () => {
+		// given
+		const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.pending.type);
+
+		// when
+		const result = reducer({ ...initialState, isSearchDisabled: true }, action);
+
+		// then
+		expect(result.isSearchDisabled).toBe(true);
+	});
+	it('Correctly changes state when offline fetchPosts is fulfilled', () => {
+		// given
+		const action = createAction(thunks.downloadedSearchForm.fetchPosts.fulfilled.type);
+
+		// when
+		const result = reducer({ ...initialState, isSearchDisabled: true, isFetchingPosts: true }, action);
+
+		// then
+		expect(result.isSearchDisabled).toBe(false);
+		expect(result.isFetchingPosts).toBe(false);
+	});
+	it('Correctly changes state when offline fetchMorePosts is fulfilled', () => {
+		// given
+		const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type);
+
+		// when
+		const result = reducer({ ...initialState, isSearchDisabled: true, isFetchingPosts: true }, action);
+
+		// then
+		expect(result.isSearchDisabled).toBe(false);
+		expect(result.isFetchingPosts).toBe(false);
+	});
+	it('Correctly changes when checkPostsAgainstDb is fulfilled', () => {
+		// given
+		const action = createAction(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled.type);
+		const state: LoadingStates = {
+			...initialState,
+			isSearchDisabled: true,
+			isFetchingPosts: true,
+		};
+
+		// when
+		const result = reducer(state, action);
+
+		// then
+		expect(result.isSearchDisabled).toBe(false);
+		expect(result.isFetchingPosts).toBe(false);
+	});
+	it('Correctly changes state when posts.fetchPostsByIds is initiated', () => {
+		// given
+		const action = createAction(thunks.posts.fetchPostsByIds.pending.type);
+		const state: LoadingStates = {
+			...initialState,
+			isSearchDisabled: false,
+			isFetchingPosts: false,
+		};
+
+		// when
+		const result = reducer(state, action);
+
+		// then
+		expect(result.isSearchDisabled).toBe(true);
+		expect(result.isFetchingPosts).toBe(true);
+	});
+	it('Correctly changes state when posts.fetchPostsByIds is fulfilled', () => {
+		// given
+		const action = createAction(thunks.posts.fetchPostsByIds.fulfilled.type);
+		const state: LoadingStates = {
+			...initialState,
+			isSearchDisabled: true,
+			isFetchingPosts: true,
+		};
+
+		// when
+		const result = reducer(state, action);
+
+		// then
+		expect(result.isSearchDisabled).toBe(false);
+		expect(result.isFetchingPosts).toBe(false);
 	});
 });

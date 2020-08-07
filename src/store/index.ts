@@ -14,6 +14,7 @@ import tasksReducer from './tasks';
 import loadingStatesReducer from './loadingStates';
 import favoritesReducer from './favorites';
 import modalsReducer from './modals/index';
+import errorsReducer from './errors';
 import { RootState } from './types';
 
 import { actions as posts, initialState as postsInitialState } from './posts';
@@ -45,6 +46,7 @@ export const mainReducer = combineReducers({
 	loadingStates: loadingStatesReducer,
 	favorites: favoritesReducer,
 	modals: modalsReducer,
+	errors: errorsReducer,
 });
 
 export const store = configureStore({
@@ -64,6 +66,7 @@ export const initialState = {
 	tasks: tasksInitialState,
 	loadingStates: loadingStatesInitialState,
 	favorites: favoritesInitialState,
+	errors: {},
 	modals: { common: modalsInitialState, addToFavoritesModal: addToFavoritesModalInitialState },
 };
 

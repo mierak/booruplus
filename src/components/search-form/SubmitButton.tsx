@@ -16,7 +16,7 @@ const SubmitButton: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	const fetchPosts = mode === 'online' ? thunks.onlineSearchForm.fetchPosts : thunks.downloadedSearchForm.fetchPosts;
 	const setPage = mode === 'online' ? actions.onlineSearchForm.setPage : actions.downloadedSearchForm.setPage;
 	const isDisabled = state.page === 0;
-	const isSearchButtonDisabled = useSelector((state: RootState) => state.system.isSearchDisabled);
+	const isSearchButtonDisabled = useSelector((state: RootState) => state.loadingStates.isSearchDisabled);
 
 	const handleSubmit = async (): Promise<void> => {
 		dispatch(actions.system.setSearchMode(mode));
@@ -38,7 +38,7 @@ const SubmitButton: React.FunctionComponent<Props> = ({ mode }: Props) => {
 
 	const renderButton = (): JSX.Element => {
 		return (
-			<Button type="primary" onClick={submit} disabled={isSearchButtonDisabled}>
+			<Button type='primary' onClick={submit} disabled={isSearchButtonDisabled}>
 				Search
 			</Button>
 		);
@@ -49,10 +49,10 @@ const SubmitButton: React.FunctionComponent<Props> = ({ mode }: Props) => {
 			<Popconfirm
 				title={`Are you sure you want to start search from page ${state.page}?`}
 				cancelText={`Start from page ${state.page}`}
-				okText="Start from first page"
+				okText='Start from first page'
 				onCancel={handleConfim}
 				onConfirm={handleCancel}
-				okType="default"
+				okType='default'
 				cancelButtonProps={{
 					type: 'primary',
 				}}

@@ -12,7 +12,7 @@ import * as downloadedSearchFormThunk from './downloadedSearchForm';
 
 import { thunkLoggerFactory } from '../../util/logger';
 
-const thunkLogger = thunkLoggerFactory('dashboard');
+const thunkLogger = thunkLoggerFactory();
 
 export const searchOnline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi>(
 	'savedSearches/searchOnline',

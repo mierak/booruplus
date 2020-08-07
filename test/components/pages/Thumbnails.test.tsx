@@ -334,7 +334,7 @@ describe('pages/Thumbnails', () => {
 		// given
 		const store = mockStore(
 			mState({
-				system: {
+				loadingStates: {
 					isFetchingPosts: true,
 				},
 			})

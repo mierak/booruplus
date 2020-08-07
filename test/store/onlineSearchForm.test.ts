@@ -93,16 +93,6 @@ describe('store/onlineSearchForm', () => {
 		// then
 		expect(result.limit).toEqual(limit);
 	});
-	it('Sets loading', () => {
-		//given
-		const action = createAction(actions.setLoading.type, true);
-
-		// when
-		const result = reducer(undefined, action);
-
-		// then
-		expect(result.loading).toEqual(true);
-	});
 	it('Sets page', () => {
 		//given
 		const page = 123;
@@ -148,7 +138,6 @@ describe('store/onlineSearchForm', () => {
 			sort: 'resolution',
 			sortOrder: 'asc',
 			tagOptions: [],
-			loading: false,
 		};
 
 		// when

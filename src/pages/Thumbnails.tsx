@@ -38,7 +38,7 @@ const StyledSpin = styled(Spin)`
 const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const isFetchingPosts = useSelector((state: RootState) => state.system.isFetchingPosts);
+	const isFetchingPosts = useSelector((state: RootState) => state.loadingStates.isFetchingPosts);
 	const mode = useSelector((state: RootState) => state.system.searchMode);
 
 	const selectedTags = useSelector(

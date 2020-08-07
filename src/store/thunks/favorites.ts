@@ -4,7 +4,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Post } from '../../types/gelbooruTypes';
 import { thunkLoggerFactory } from '../../util/logger';
 
-const thunkLogger = thunkLoggerFactory('favorites');
+const thunkLogger = thunkLoggerFactory();
 
 export const fetchTreeData = createAsyncThunk<TreeNode, void, ThunkApi>(
 	'favorites/fetchTreeData',

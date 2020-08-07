@@ -7,7 +7,7 @@ import { ThunkApi, RatingCounts, TagHistory, FoundTags, NotFoundTags } from '../
 import { Tag, Post } from '../../types/gelbooruTypes';
 import { thunkLoggerFactory } from '../../util/logger';
 
-const thunkLogger = thunkLoggerFactory('dashboard');
+const thunkLogger = thunkLoggerFactory();
 
 export const fetchDownloadedPostCount = createAsyncThunk<number, void, ThunkApi>(
 	'dashboard/fetchDownloadedPostCount',

@@ -70,7 +70,6 @@ const mOnlineSearchFormState = (os?: Partial<SearchFormState>): SearchFormState 
 		sort: os?.sort ?? initialState.onlineSearchForm.sort,
 		sortOrder: os?.sortOrder ?? initialState.onlineSearchForm.sortOrder,
 		tagOptions: os?.tagOptions ?? initialState.onlineSearchForm.tagOptions,
-		loading: os?.loading ?? initialState.onlineSearchForm.loading,
 	};
 };
 
@@ -93,6 +92,8 @@ const mLoadingStates = (ls?: Partial<LoadingStates>): LoadingStates => {
 		isFullscreenLoadingMaskVisible: ls?.isFullscreenLoadingMaskVisible ?? initialState.loadingStates.isFullscreenLoadingMaskVisible,
 		fullscreenLoadingMaskMessage: ls?.fullscreenLoadingMaskMessage,
 		isScrolling: ls?.isScrolling ?? false,
+		isFetchingPosts: ls?.isFetchingPosts ?? initialState.loadingStates.isFetchingPosts,
+		isSearchDisabled: ls?.isSearchDisabled ?? initialState.loadingStates.isSearchDisabled,
 	};
 };
 
@@ -107,9 +108,7 @@ const mSystemState = (ss?: Partial<SystemState>): SystemState => {
 	return {
 		activeView: ss?.activeView ?? initialState.system.activeView,
 		isDownloadedSearchFormDrawerVisible: ss?.isDownloadedSearchFormDrawerVisible ?? initialState.system.isDownloadedSearchFormDrawerVisible,
-		isFetchingPosts: ss?.isFetchingPosts ?? initialState.system.isFetchingPosts,
 		isImageViewThumbnailsCollapsed: ss?.isImageViewThumbnailsCollapsed ?? initialState.system.isImageViewThumbnailsCollapsed,
-		isSearchDisabled: ss?.isSearchDisabled ?? initialState.system.isSearchDisabled,
 		isSearchFormDrawerVsibile: ss?.isSearchFormDrawerVsibile ?? initialState.system.isSearchFormDrawerVsibile,
 		isTagOptionsLoading: ss?.isTagOptionsLoading ?? initialState.system.isTagOptionsLoading,
 		isTagTableLoading: ss?.isTagTableLoading ?? initialState.system.isTagTableLoading,
@@ -197,6 +196,7 @@ export const mState = (state?: PartialRootState): RootState => {
 		system: mSystemState(state?.system),
 		savedSearches: mSavedSearchesState(state?.savedSearches),
 		tags: mTagsState(state?.tags),
+		errors: {},
 		modals: mModalsState(state?.modals),
 	};
 };

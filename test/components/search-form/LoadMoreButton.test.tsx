@@ -39,6 +39,8 @@ describe('search-form/LoadMoreButton', () => {
 			mState({
 				system: {
 					searchMode: 'online',
+				},
+				loadingStates: {
 					isSearchDisabled: true,
 				},
 			})
