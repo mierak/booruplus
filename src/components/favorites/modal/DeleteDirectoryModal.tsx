@@ -1,12 +1,13 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Modal, Button } from 'antd';
+import { Modal } from 'antd';
 
 import { actions } from '../../../store';
 import { AppDispatch, RootState } from '../../../store/types';
 
 import { openNotificationWithIcon } from '../../../types/components';
 import { thunks } from '../../../store';
+import ModalFooter from './common/ModalFooter';
 
 const DeleteDirectoryModal: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
@@ -34,19 +35,15 @@ const DeleteDirectoryModal: React.FunctionComponent = () => {
 		dispatch(actions.modals.setVisible(false));
 	};
 
-	const renderModalFooter = (): React.ReactNode => {
-		return [
-			<Button type='primary' key='delete' onClick={handleDelete}>
-				Delete
-			</Button>,
-			<Button key='cancel' onClick={handleClose}>
-				Cancel
-			</Button>,
-		];
-	};
-
 	return (
-		<Modal destroyOnClose centered visible={true} title='Delete Directory' footer={renderModalFooter()} onCancel={handleClose}>
+		<Modal
+			destroyOnClose
+			centered
+			visible={true}
+			title='Delete Directory'
+			onCancel={handleClose}
+			footer={<ModalFooter onConfirm={handleDelete} onCancel={handleClose} okText='Delete' cancelText='Close' />}
+		>
 			Are you sure you want to delete directory and its subdirectories? This action is irreversible.
 		</Modal>
 	);

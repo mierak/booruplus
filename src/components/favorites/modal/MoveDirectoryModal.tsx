@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { Modal, Tree, Button } from 'antd';
+import { Modal, Tree } from 'antd';
 import { EventDataNode, DataNode } from 'rc-tree/lib/interface';
 
 import { actions, thunks } from '../../../store';
 import { RootState, AppDispatch, TreeNode } from '../../../store/types';
 
 import { openNotificationWithIcon } from '../../../types/components';
+import ModalFooter from './common/ModalFooter';
 
 interface Info {
 	event: string;
@@ -58,23 +59,12 @@ const MoveDirectoryModal: React.FunctionComponent = () => {
 		dispatch(actions.modals.setVisible(false));
 	};
 
-	const renderModalFooter = (): React.ReactNode => {
-		return [
-			<Button type='primary' key='add' onClick={handleConfirm}>
-				Move
-			</Button>,
-			<Button key='cancel' onClick={handleClose}>
-				Cancel
-			</Button>,
-		];
-	};
-
 	return (
 		<Modal
 			destroyOnClose
 			centered
 			title='Select directory to move post to.'
-			footer={renderModalFooter()}
+			footer={<ModalFooter onConfirm={handleConfirm} onCancel={handleClose} cancelText='Cancel' okText='Move' />}
 			visible={true}
 			onCancel={handleClose}
 		>

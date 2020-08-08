@@ -57,9 +57,9 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 		);
 
 		// then
-		const closeButton = screen.getByRole('button', { name: 'Close' });
+		const closeButton = screen.getAllByRole('button', { name: 'Close' })[0];
 		const addButton = screen.getByRole('button', { name: 'Add' });
-		const cancelButton = screen.getByRole('button', { name: 'Cancel' });
+		const cancelButton = screen.getAllByRole('button', { name: 'Close' })[1];
 		expect(screen.getByText('Select directory to save favorite post to.')).not.toBeNull();
 		expect(closeButton).not.toBeNull();
 		expect(addButton).not.toBeNull();
@@ -67,7 +67,7 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 		expect(screen.queryByText('node1')).toBeNull();
 		expect(screen.getByText('node11')).not.toBeNull();
 	});
-	it('Closes modal when Cancel button is pressed', () => {
+	it('Closes modal when Close button is pressed', () => {
 		// given
 		const store = mockStore(
 			mState({
@@ -83,7 +83,7 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 				<AddToFavoritesModal />
 			</Provider>
 		);
-		fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+		fireEvent.click(screen.getAllByRole('button', { name: 'Close' })[1]);
 
 		// then
 		const dispatchedActions = store.getActions();

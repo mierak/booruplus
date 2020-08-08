@@ -239,6 +239,22 @@ describe('store/loadingStates', () => {
 		expect(result.isSearchDisabled).toBe(true);
 		expect(result.isFetchingPosts).toBe(true);
 	});
+	it('Correctly changes state when online fetchPosts is rejected', () => {
+		// given
+		const action = createAction(thunks.onlineSearchForm.fetchPosts.rejected.type);
+		const state: LoadingStates = {
+			...initialState,
+			isSearchDisabled: true,
+			isFetchingPosts: true,
+		};
+
+		// when
+		const result = reducer(state, action);
+
+		// then
+		expect(result.isSearchDisabled).toBe(false);
+		expect(result.isFetchingPosts).toBe(false);
+	});
 	it('Correctly changes state when online fetchMorePosts is initiated', () => {
 		// given
 		const action = createAction(thunks.onlineSearchForm.fetchMorePosts.pending.type);
@@ -252,6 +268,20 @@ describe('store/loadingStates', () => {
 
 		// then
 		expect(result.isSearchDisabled).toBe(true);
+	});
+	it('Correctly changes state when online fetchMorePosts is rejected', () => {
+		// given
+		const action = createAction(thunks.onlineSearchForm.fetchMorePosts.rejected.type);
+		const state: LoadingStates = {
+			...initialState,
+			isSearchDisabled: true,
+		};
+
+		// when
+		const result = reducer(state, action);
+
+		// then
+		expect(result.isSearchDisabled).toBe(false);
 	});
 	it('Correctly changes state when offline fetchPosts is initiated', () => {
 		// given
@@ -304,6 +334,22 @@ describe('store/loadingStates', () => {
 	it('Correctly changes when checkPostsAgainstDb is fulfilled', () => {
 		// given
 		const action = createAction(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled.type);
+		const state: LoadingStates = {
+			...initialState,
+			isSearchDisabled: true,
+			isFetchingPosts: true,
+		};
+
+		// when
+		const result = reducer(state, action);
+
+		// then
+		expect(result.isSearchDisabled).toBe(false);
+		expect(result.isFetchingPosts).toBe(false);
+	});
+	it('Correctly changes when checkPostsAgainstDb is rejected', () => {
+		// given
+		const action = createAction(thunks.onlineSearchForm.checkPostsAgainstDb.rejected.type);
 		const state: LoadingStates = {
 			...initialState,
 			isSearchDisabled: true,

@@ -30,9 +30,9 @@ describe('favorites/modal/DeleteDirectoryModal', () => {
 		expect(title).not.toBeNull();
 		expect(buttons).toHaveLength(3);
 		expect(buttons[1].textContent).toBe('Delete');
-		expect(buttons[2].textContent).toBe('Cancel');
+		expect(buttons[2].textContent).toBe('Close');
 	});
-	it('Closes modal when Cancel button is pressed', () => {
+	it('Closes modal when Close button is pressed', () => {
 		// given
 		const store = mockStore(mState());
 
@@ -42,7 +42,7 @@ describe('favorites/modal/DeleteDirectoryModal', () => {
 				<DeleteDirectoryModal />
 			</Provider>
 		);
-		fireEvent.click(screen.getByText('Cancel'));
+		fireEvent.click(screen.getByText('Close'));
 
 		// then
 		const dispatchedActions = store.getActions();
@@ -99,5 +99,35 @@ describe('favorites/modal/DeleteDirectoryModal', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions[0]).toMatchObject({ type: actions.modals.setVisible.type, payload: false });
 		waitFor(() => expect(notificationSpy).toHaveBeenCalledWith('error', expect.anything(), expect.anything()));
+	});
+	it('Shows error notification when trying to delete default directory', () => {
+		// given
+		const store = mockStore(
+			mState({
+				favorites: {
+					selectedNodeKey: 1,
+				},
+			})
+		);
+		const notificationSpy = jest.spyOn(componentTypes, 'openNotificationWithIcon').mockImplementation();
+
+		// when
+		render(
+			<Provider store={store}>
+				<DeleteDirectoryModal />
+			</Provider>
+		);
+		fireEvent.click(screen.getByText('Delete'));
+
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions[0]).toMatchObject({ type: actions.modals.setVisible.type, payload: false });
+		waitFor(() =>
+			expect(notificationSpy).toHaveBeenCalledWith(
+				'error',
+				'Failed to delete folder',
+				'The default folder cannot be deleted! You can rename it if you want.'
+			)
+		);
 	});
 });

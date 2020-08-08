@@ -82,6 +82,17 @@ describe('store/system', () => {
 		// then
 		expect(result.isImageViewThumbnailsCollapsed).toBe(collapsed);
 	});
+	it('Toggles image view thumbnails sider collapsed', () => {
+		// given
+		const collapsed = true;
+		const action = createAction(actions.toggleFavoritesDirectoryTreeCollapsed.type);
+
+		// when
+		const result = reducer(initialState, action);
+
+		// then
+		expect(result.isImageViewThumbnailsCollapsed).toBe(collapsed);
+	});
 	it('Correctly changes state when online fetchPosts is initiated', () => {
 		// given
 		const action = createAction(thunks.onlineSearchForm.fetchPosts.pending.type);
@@ -135,6 +146,20 @@ describe('store/system', () => {
 	it('Correctly changes when getTagsByPattern is fulfilled', () => {
 		// given
 		const action = createAction(thunks.onlineSearchForm.getTagsByPatternFromApi.fulfilled.type);
+		const state: SystemState = {
+			...initialState,
+			isTagOptionsLoading: true,
+		};
+
+		// when
+		const result = reducer(state, action);
+
+		// then
+		expect(result.isTagOptionsLoading).toBe(false);
+	});
+	it('Correctly changes when getTagsByPattern is rejected', () => {
+		// given
+		const action = createAction(thunks.onlineSearchForm.getTagsByPatternFromApi.rejected.type);
 		const state: SystemState = {
 			...initialState,
 			isTagOptionsLoading: true,

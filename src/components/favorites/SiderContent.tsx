@@ -12,7 +12,7 @@ interface PProps {
 	y: number;
 }
 
-type Actions = 'add' | 'delete' | 'rename' | 'mark-as-default';
+type Actions = 'add' | 'delete' | 'rename' | 'mark-as-default' | 'move-selected';
 
 const DummyContextMenuPositionerDiv = styled.div<PProps>`
 	position: absolute;
@@ -46,6 +46,7 @@ const SiderContent: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const rootNode = useSelector((state: RootState) => state.favorites.rootNode);
 	const isCollapsed = useSelector((state: RootState) => state.system.isFavoritesDirectoryTreeCollapsed);
+	const selectedPostIds = useSelector((state: RootState) => state.posts.posts.filter((post) => post.selected).map((post) => post.id));
 
 	const [align, setAlign] = useState<[number, number]>([0, 0]);
 	const [visible, setVisible] = useState(false);
@@ -95,11 +96,24 @@ const SiderContent: React.FunctionComponent = () => {
 				Rename
 			</Menu.Item>
 		);
+		const moveSelectedAction = (
+			<Menu.Item
+				onClick={async (): Promise<void> => {
+					setVisible(false);
+					dispatch(actions.modals.addToFavoritesModal.setPostIdsToFavorite('selected'));
+					dispatch(actions.modals.showModal('move-selected-to-directory-confirmation'));
+				}}
+				key='4'
+			>
+				Move Selected Posts Here
+			</Menu.Item>
+		);
 		return (
 			<Menu>
 				{contextMenuActions.includes('add') && addAction}
 				{contextMenuActions.includes('rename') && renameAction}
 				{contextMenuActions.includes('delete') && deleteAction}
+				{contextMenuActions.includes('move-selected') && moveSelectedAction}
 			</Menu>
 		);
 	};
@@ -126,7 +140,9 @@ const SiderContent: React.FunctionComponent = () => {
 		}
 
 		if (treeContainerRef.current) {
-			setContextMenuActions(['add', 'delete', 'rename']);
+			const contextMenuActions: Actions[] = ['add', 'delete', 'rename'];
+			if (selectedPostIds.length > 0) contextMenuActions.push('move-selected');
+			setContextMenuActions(contextMenuActions);
 			setAlign([info.event.clientX - treeContainerRef.current.getBoundingClientRect().x, info.event.clientY]);
 			info.node && dispatch(actions.favorites.setSelectedNodeKey(parseInt(info.node.key.toString())));
 		}

@@ -9,6 +9,7 @@ import DeleteDirectoryModal from './favorites/modal/DeleteDirectoryModal';
 import MoveDirectoryModal from './favorites/modal/MoveDirectoryModal';
 import SettingsModal from './settings/SettingsModal';
 import RenameDirectoryModal from './favorites/modal/RenameDirectoryModal';
+import MoveSelectedToDirectoryModal from './favorites/modal/MoveSelectedToDirectoryModal';
 
 const Modals: React.FunctionComponent = () => {
 	const activeModal = useSelector((state: RootState) => state.modals.common.activeModal);
@@ -30,6 +31,8 @@ const Modals: React.FunctionComponent = () => {
 				return <SettingsModal />;
 			case 'rename-favorites-directory':
 				return <RenameDirectoryModal />;
+			case 'move-selected-to-directory-confirmation':
+				return <MoveSelectedToDirectoryModal />;
 		}
 	};
 

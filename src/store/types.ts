@@ -36,6 +36,7 @@ export type ActiveModal =
 	| 'rename-favorites-directory'
 	| 'delete-favorites-directory'
 	| 'move-to-directory'
+	| 'move-selected-to-directory-confirmation'
 	| 'settings';
 
 export interface OfflineOptions {
