@@ -52,10 +52,6 @@ const innerElementType = forwardRef<HTMLDivElement, { style: CSSProperties; rest
 	);
 });
 innerElementType.displayName = 'innerElementType';
-const outerElementType = forwardRef<HTMLDivElement, { style: CSSProperties; rest: unknown }>(({ style, ...rest }, ref) => {
-	return <div ref={ref} style={style} {...rest} />;
-});
-outerElementType.displayName = 'outerElementType';
 
 const Grid: React.FunctionComponent<Props> = (props) => {
 	const [size, setSize] = useState({ width: 600, height: 600 });
@@ -126,7 +122,6 @@ const Grid: React.FunctionComponent<Props> = (props) => {
 		overscanColumnCount: 1,
 		style: { overflowX: 'hidden', marginLeft: '10px', marginTop: '10px', marginBottom: '10px', outline: 'none' } as React.CSSProperties,
 		innerElementType: innerElementType,
-		outerElementType: outerElementType,
 		itemData: {
 			rowCount,
 			columns,
