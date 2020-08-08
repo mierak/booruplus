@@ -50,17 +50,17 @@ const AddtoFavoritesModal: React.FunctionComponent = () => {
 			dispatch(actions.modals.setVisible(false));
 			return;
 		}
-		await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToFavorite, key: selectedNode?.key ?? 0 }));
+		await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToFavorite, key: selectedNode?.key ?? 1 }));
 		openNotificationWithIcon('success', 'Success', 'Post was successfuly added to directory');
 		dispatch(actions.modals.setVisible(false));
 	};
 
 	const renderModalFooter = (): React.ReactNode => {
 		return [
-			<Button type="primary" key="add" onClick={handleConfirm}>
+			<Button type='primary' key='add' onClick={handleConfirm}>
 				Add
 			</Button>,
-			<Button key="cancel" onClick={handleClose}>
+			<Button key='cancel' onClick={handleClose}>
 				Cancel
 			</Button>,
 		];
@@ -70,7 +70,7 @@ const AddtoFavoritesModal: React.FunctionComponent = () => {
 		<Modal
 			destroyOnClose
 			centered
-			title="Select directory to save favorite post to."
+			title='Select directory to save favorite post to.'
 			footer={renderModalFooter()}
 			visible={true}
 			onCancel={handleClose}

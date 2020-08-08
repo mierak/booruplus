@@ -3,15 +3,13 @@ import { TreeNode } from './types';
 import * as thunks from './thunks';
 
 export interface FavoritesState {
-	treeData: TreeNode[];
 	rootNode: TreeNode | undefined;
-	activeNodeKey: number;
+	activeNodeKey: number; // node key that is displayed
 	expandedKeys: string[];
-	selectedNodeKey: number | undefined;
+	selectedNodeKey: number | undefined; // node key to work with (delete, create, move posts to)
 }
 
 export const initialState: FavoritesState = {
-	treeData: [],
 	rootNode: undefined,
 	activeNodeKey: 0,
 	expandedKeys: [],
@@ -22,9 +20,6 @@ const favoritesSlice = createSlice({
 	name: 'favorites',
 	initialState: initialState,
 	reducers: {
-		setTreeData: (state, action: PayloadAction<TreeNode[]>): void => {
-			state.treeData = action.payload;
-		},
 		setRootNode: (state, action: PayloadAction<TreeNode>): void => {
 			state.rootNode = action.payload;
 		},
@@ -50,7 +45,6 @@ const favoritesSlice = createSlice({
 		});
 		builder.addCase(thunks.favorites.fetchTreeData.fulfilled, (state, action) => {
 			state.rootNode = action.payload;
-			state.treeData = action.payload.children;
 		});
 		builder.addCase(thunks.favorites.fetchAllKeys.fulfilled, (state, action) => {
 			state.expandedKeys = action.payload;

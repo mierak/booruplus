@@ -10,6 +10,7 @@ export interface SystemState {
 	isTasksDrawerVisible: boolean;
 	isTagsPopoverVisible: boolean;
 	isImageViewThumbnailsCollapsed: boolean;
+	isFavoritesDirectoryTreeCollapsed: boolean;
 	isTagOptionsLoading: boolean;
 	isTagTableLoading: boolean;
 }
@@ -22,6 +23,7 @@ export const initialState: SystemState = {
 	isTasksDrawerVisible: false,
 	isTagsPopoverVisible: false,
 	isImageViewThumbnailsCollapsed: true,
+	isFavoritesDirectoryTreeCollapsed: false,
 	isTagOptionsLoading: false,
 	isTagTableLoading: false,
 };
@@ -50,6 +52,9 @@ const systemSlice = createSlice({
 		},
 		setImageViewThumbnailsCollapsed: (state, action: PayloadAction<boolean>): void => {
 			state.isImageViewThumbnailsCollapsed = action.payload;
+		},
+		toggleFavoritesDirectoryTreeCollapsed: (state): void => {
+			state.isFavoritesDirectoryTreeCollapsed = !state.isFavoritesDirectoryTreeCollapsed;
 		},
 	},
 	extraReducers: (builder) => {

@@ -50,9 +50,9 @@ const MoveDirectoryModal: React.FunctionComponent = () => {
 			dispatch(actions.modals.setVisible(false));
 			return;
 		}
-		dispatch(actions.favorites.setSelectedNodeKey(selectedNode ? parseInt(selectedNode.key.toString()) : 0));
+		dispatch(actions.favorites.setSelectedNodeKey(selectedNode ? parseInt(selectedNode.key.toString()) : 1));
 		await dispatch(thunks.favorites.removePostsFromActiveDirectory(postIdsToFavorite));
-		await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToFavorite, key: !selectedNode ? 0 : selectedNode.key }));
+		await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToFavorite, key: !selectedNode ? 1 : selectedNode.key }));
 		await dispatch(thunks.favorites.fetchPostsInDirectory());
 		openNotificationWithIcon('success', 'Success', 'Successfuly moved post to folder');
 		dispatch(actions.modals.setVisible(false));
@@ -60,10 +60,10 @@ const MoveDirectoryModal: React.FunctionComponent = () => {
 
 	const renderModalFooter = (): React.ReactNode => {
 		return [
-			<Button type="primary" key="add" onClick={handleConfirm}>
+			<Button type='primary' key='add' onClick={handleConfirm}>
 				Move
 			</Button>,
-			<Button key="cancel" onClick={handleClose}>
+			<Button key='cancel' onClick={handleClose}>
 				Cancel
 			</Button>,
 		];
@@ -73,7 +73,7 @@ const MoveDirectoryModal: React.FunctionComponent = () => {
 		<Modal
 			destroyOnClose
 			centered
-			title="Select directory to move post to."
+			title='Select directory to move post to.'
 			footer={renderModalFooter()}
 			visible={true}
 			onCancel={handleClose}

@@ -5,17 +5,6 @@ import { thunks } from '../../src/store/';
 import { createAction, createPendingAction, mTreeNode } from '../helpers/test.helper';
 
 describe('store/favorites', () => {
-	it('Sets tree data', () => {
-		// given
-		const treeData = mTreeNode({ key: '123', children: [mTreeNode({ key: '456' })] });
-		const action = createAction(actions.setTreeData.type, treeData);
-
-		// when
-		const result = reducer(undefined, action);
-
-		// then
-		expect(result.treeData).toStrictEqual(treeData);
-	});
 	it('Sets root node', () => {
 		// given
 		const treeData = mTreeNode({ key: '123', children: [mTreeNode({ key: '456' })] });
@@ -102,7 +91,6 @@ describe('store/favorites', () => {
 		const result = reducer(undefined, action);
 
 		// then
-		expect(result.treeData).toStrictEqual(treeData.children);
 		expect(result.rootNode).toStrictEqual(treeData);
 	});
 	it('Sets expanded keys when fetchAllKeys is fulfilled', () => {

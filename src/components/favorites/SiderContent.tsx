@@ -45,6 +45,7 @@ const StyledDirectoryTree = styled(Tree.DirectoryTree)`
 const SiderContent: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const rootNode = useSelector((state: RootState) => state.favorites.rootNode);
+	const isCollapsed = useSelector((state: RootState) => state.system.isFavoritesDirectoryTreeCollapsed);
 
 	const [align, setAlign] = useState<[number, number]>([0, 0]);
 	const [visible, setVisible] = useState(false);
@@ -60,7 +61,6 @@ const SiderContent: React.FunctionComponent = () => {
 		})();
 	}, [dispatch]);
 
-	// TODO reread and refactor this whole section
 	const renderMenu = (): JSX.Element => {
 		const addAction = (
 			<Menu.Item
@@ -138,25 +138,28 @@ const SiderContent: React.FunctionComponent = () => {
 
 	return (
 		<StyledSiderContentContainer ref={treeContainerRef}>
-			<StyledDirectoryTree
-				multiple
-				draggable
-				blockNode
-				treeData={rootNode?.children}
-				onRightClick={handleTreeRightClick}
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				onExpand={(_, { expanded, node }): void => {
-					node.expanded = true;
-				}}
-				onSelect={(selectedKeys, info): void => {
-					dispatch(thunks.favorites.fetchPostsInDirectory(parseInt(info.node.key.toString())));
-					dispatch(actions.favorites.setActiveNodeKey(parseInt(info.node.key.toString())));
-				}}
-				onClick={(): void => setVisible(false)}
-				defaultExpandAll
-				expandedKeys={expanedKeys}
-				switcherIcon={<></>}
-			/>
+			{!isCollapsed && (
+				<StyledDirectoryTree
+					multiple
+					draggable
+					blockNode
+					defaultExpandAll
+					defaultSelectedKeys={['1']}
+					treeData={rootNode?.children}
+					onRightClick={handleTreeRightClick}
+					onExpand={(_, node): void => {
+						node.node.expanded = true;
+					}}
+					onSelect={(_, info): void => {
+						dispatch(thunks.favorites.fetchPostsInDirectory(parseInt(info.node.key.toString())));
+						dispatch(actions.favorites.setActiveNodeKey(parseInt(info.node.key.toString())));
+					}}
+					onClick={(): void => setVisible(false)}
+					expandedKeys={expanedKeys}
+					switcherIcon={<></>}
+				/>
+			)}
+
 			<Dropdown overlay={renderMenu()} visible={visible}>
 				<DummyContextMenuPositionerDiv x={align[0]} y={align[1]} />
 			</Dropdown>

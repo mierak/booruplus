@@ -19,6 +19,11 @@ const DeleteDirectoryModal: React.FunctionComponent = () => {
 			dispatch(actions.modals.setVisible(false));
 			return;
 		}
+		if (selectedNodeKey === 1) {
+			openNotificationWithIcon('error', 'Failed to delete folder', 'The default folder cannot be deleted! You can rename it if you want.');
+			dispatch(actions.modals.setVisible(false));
+			return;
+		}
 
 		await dispatch(thunks.favorites.deleteDirectoryAndChildren(selectedNodeKey));
 		openNotificationWithIcon('success', 'Success', 'Successfuly deleted folder');
@@ -31,17 +36,17 @@ const DeleteDirectoryModal: React.FunctionComponent = () => {
 
 	const renderModalFooter = (): React.ReactNode => {
 		return [
-			<Button type="primary" key="delete" onClick={handleDelete}>
+			<Button type='primary' key='delete' onClick={handleDelete}>
 				Delete
 			</Button>,
-			<Button key="cancel" onClick={handleClose}>
+			<Button key='cancel' onClick={handleClose}>
 				Cancel
 			</Button>,
 		];
 	};
 
 	return (
-		<Modal destroyOnClose centered visible={true} title="Delete Directory" footer={renderModalFooter()} onCancel={handleClose}>
+		<Modal destroyOnClose centered visible={true} title='Delete Directory' footer={renderModalFooter()} onCancel={handleClose}>
 			Are you sure you want to delete directory and its subdirectories? This action is irreversible.
 		</Modal>
 	);

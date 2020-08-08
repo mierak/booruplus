@@ -24,7 +24,8 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 
 	useEffect(() => {
 		const renderThumbnailList = async (): Promise<void> => {
-			dispatch(thunks.favorites.fetchPostsInDirectory(0));
+			dispatch(actions.favorites.setActiveNodeKey(1));
+			dispatch(thunks.favorites.fetchPostsInDirectory(1));
 		};
 		renderThumbnailList();
 		dispatch(actions.system.setSearchMode('favorites'));
@@ -49,6 +50,10 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 	const handleMoveToDirectory = (post: Post): void => {
 		dispatch(actions.modals.showModal('move-to-directory'));
 		dispatch(actions.modals.addToFavoritesModal.setPostIds([post.id]));
+	};
+
+	const toggleCollapse = (): void => {
+		dispatch(actions.system.toggleFavoritesDirectoryTreeCollapsed());
 	};
 
 	const cardActions: CardAction[] = [
@@ -95,7 +100,7 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 				<Layout.Content>
 					<ThumbnailsList emptyDataLogoCentered={true} actions={cardActions} />
 				</Layout.Content>
-				<Layout.Sider collapsible reverseArrow collapsedWidth={25} width={250}>
+				<Layout.Sider collapsible reverseArrow collapsedWidth={25} width={250} onCollapse={toggleCollapse}>
 					<SiderContent />
 				</Layout.Sider>
 			</Layout>

@@ -161,7 +161,7 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 			)
 		);
 	});
-	it('When no node is selected it dispatches with root node key', () => {
+	it('When no node is selected it dispatches with default node key', () => {
 		const postIdsToFavorite = [1, 2, 3, 4, 5];
 		const store = mockStore(
 			mState({
@@ -189,7 +189,7 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions[0]).toMatchObject({
 			type: thunks.favorites.addPostsToDirectory.pending.type,
-			meta: { arg: { ids: postIdsToFavorite, key: 0 } },
+			meta: { arg: { ids: postIdsToFavorite, key: 1 } },
 		});
 	});
 });

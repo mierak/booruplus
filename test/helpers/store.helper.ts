@@ -79,7 +79,6 @@ const mFavoritesState = (fs?: Partial<FavoritesState>): FavoritesState => {
 		expandedKeys: fs?.expandedKeys ?? initialState.favorites.expandedKeys,
 		rootNode: fs?.rootNode ?? initialState.favorites.rootNode,
 		selectedNodeKey: fs?.selectedNodeKey ?? initialState.favorites.selectedNodeKey,
-		treeData: fs?.treeData ?? initialState.favorites.treeData,
 	};
 };
 
@@ -109,6 +108,7 @@ const mSystemState = (ss?: Partial<SystemState>): SystemState => {
 		activeView: ss?.activeView ?? initialState.system.activeView,
 		isDownloadedSearchFormDrawerVisible: ss?.isDownloadedSearchFormDrawerVisible ?? initialState.system.isDownloadedSearchFormDrawerVisible,
 		isImageViewThumbnailsCollapsed: ss?.isImageViewThumbnailsCollapsed ?? initialState.system.isImageViewThumbnailsCollapsed,
+		isFavoritesDirectoryTreeCollapsed: ss?.isFavoritesDirectoryTreeCollapsed ?? initialState.system.isFavoritesDirectoryTreeCollapsed,
 		isSearchFormDrawerVsibile: ss?.isSearchFormDrawerVsibile ?? initialState.system.isSearchFormDrawerVsibile,
 		isTagOptionsLoading: ss?.isTagOptionsLoading ?? initialState.system.isTagOptionsLoading,
 		isTagTableLoading: ss?.isTagTableLoading ?? initialState.system.isTagTableLoading,
