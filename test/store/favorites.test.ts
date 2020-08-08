@@ -104,4 +104,15 @@ describe('store/favorites', () => {
 		// then
 		expect(result.expandedKeys).toStrictEqual(keys);
 	});
+	it('Sets expanded keys when fetchAllKeys is fulfilled', () => {
+		// given
+		const activeNodeKey = 123;
+		const action = createPendingAction(thunks.favorites.deleteDirectoryAndChildren.fulfilled.type, { arg: activeNodeKey });
+
+		// when
+		const result = reducer({ ...initialState, activeNodeKey }, action);
+
+		// then
+		expect(result.activeNodeKey).toBe(1);
+	});
 });

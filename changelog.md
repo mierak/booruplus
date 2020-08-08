@@ -1,4 +1,12 @@
 # Changelog
+## 0.1.5 - Move multiple posts between directories - DATE
+- Right clicking favorites directory when multiple posts are selected now shows move all to folder option
+- Favorites now have an undeletable default directory instead of using the root node
+- Automatically switch to default directory after deleting favorites directory thats currently open
+- BUG FIX: Fix issue with favorites directory loading
+- BUG FIX: Loader now disappears when post fetching fails
+- BUG FIX: Fix grid scroll in Favorites page
+
 ## 0.1.4 - Database Import/Export - 3.8.2020
 - Changed Thumbnails Grid to use windowing
 - Allow devtools even in packaged app through standard shortcut

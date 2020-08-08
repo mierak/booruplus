@@ -17,6 +17,10 @@ interface Props {
 
 const Container = styled.div``;
 
+const StyledContent = styled(Layout.Content)`
+	height: 100vh;
+`;
+
 const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
@@ -97,9 +101,9 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 	return (
 		<Container className={props.className}>
 			<Layout>
-				<Layout.Content>
-					<ThumbnailsList emptyDataLogoCentered={true} actions={cardActions} />
-				</Layout.Content>
+				<StyledContent>
+					<ThumbnailsList emptyDataLogoCentered={true} actions={cardActions} hasHeader={false} />
+				</StyledContent>
 				<Layout.Sider collapsible reverseArrow collapsedWidth={25} width={250} onCollapse={toggleCollapse}>
 					<SiderContent />
 				</Layout.Sider>

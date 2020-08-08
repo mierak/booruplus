@@ -45,6 +45,7 @@ const StyledDirectoryTree = styled(Tree.DirectoryTree)`
 const SiderContent: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const rootNode = useSelector((state: RootState) => state.favorites.rootNode);
+	const activeNodeKey = useSelector((state: RootState) => state.favorites.activeNodeKey);
 	const isCollapsed = useSelector((state: RootState) => state.system.isFavoritesDirectoryTreeCollapsed);
 	const selectedPostIds = useSelector((state: RootState) => state.posts.posts.filter((post) => post.selected).map((post) => post.id));
 
@@ -160,7 +161,7 @@ const SiderContent: React.FunctionComponent = () => {
 					draggable
 					blockNode
 					defaultExpandAll
-					defaultSelectedKeys={['1']}
+					selectedKeys={[activeNodeKey.toString()]}
 					treeData={rootNode?.children}
 					onRightClick={handleTreeRightClick}
 					onExpand={(_, node): void => {

@@ -43,6 +43,12 @@ const favoritesSlice = createSlice({
 				state.activeNodeKey = key;
 			}
 		});
+		builder.addCase(thunks.favorites.deleteDirectoryAndChildren.fulfilled, (state, action) => {
+			const key = action.meta.arg;
+			if (key === state.activeNodeKey) {
+				state.activeNodeKey = 1;
+			}
+		});
 		builder.addCase(thunks.favorites.fetchTreeData.fulfilled, (state, action) => {
 			state.rootNode = action.payload;
 		});

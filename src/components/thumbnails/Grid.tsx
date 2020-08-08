@@ -9,8 +9,8 @@ import { getRowColFromIndex } from '../../util/utils';
 
 interface Props {
 	itemCount: number;
+	isSingleColumn?: boolean;
 	activeIndex?: number;
-	sidebar?: boolean;
 	contextMenu?: ContextMenu[];
 	actions?: CardAction[];
 	renderLoadMore?: boolean;
@@ -79,7 +79,7 @@ const Grid: React.FunctionComponent<Props> = (props) => {
 	useEffect(() => {
 		const grid = gridRef.current;
 		if (props.activeIndex && grid) {
-			const columns = props.sidebar ? 1 : Math.floor(size.width / 210);
+			const columns = props.isSingleColumn ? 1 : Math.floor(size.width / 210);
 			const { rowIndex, columnIndex } = getRowColFromIndex({
 				index: props.activeIndex,
 				columns,
@@ -90,12 +90,12 @@ const Grid: React.FunctionComponent<Props> = (props) => {
 				align: 'center',
 			});
 		}
-	}, [props.activeIndex, props.sidebar, size.width]);
+	}, [props.activeIndex, props.isSingleColumn, size.width]);
 
 	const height = size.height;
 	const width = size.width;
 
-	const columns = props.sidebar ? 1 : Math.floor(width / 210);
+	const columns = props.isSingleColumn ? 1 : Math.floor(width / 210);
 	const columnWidth = (width - 10) / columns;
 	const rowCount = Math.ceil(props.itemCount / columns);
 

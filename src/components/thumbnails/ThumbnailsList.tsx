@@ -15,7 +15,8 @@ interface Props {
 	emptyDataLogoCentered?: boolean;
 	contextMenu?: ContextMenu[];
 	actions?: CardAction[];
-	sidebar?: boolean;
+	hasHeader?: boolean;
+	singleColumn?: boolean;
 }
 
 interface StyledEmptyThumbnailsProps {
@@ -60,9 +61,9 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 			itemCount={postCount}
 			activeIndex={activePostIndex}
 			actions={props.actions}
-			sidebar={props.sidebar}
+			isSingleColumn={props.singleColumn}
 			renderLoadMore={postCount > 0 && searchMode !== 'favorites' && searchMode !== 'open-download'}
-			headerHeight={!props.sidebar ? 72 : 0}
+			headerHeight={props.hasHeader ? 72 : 0}
 		/>
 	);
 };
