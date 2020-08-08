@@ -73,6 +73,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	const theme = useSelector((state: RootState) => state.settings.theme);
 
 	const handleThumbnailClick = (event: React.MouseEvent): void => {
+		event.stopPropagation();
 		if (event.ctrlKey) {
 			if (post) {
 				dispatch(actions.posts.setPostSelected({ post: post, selected: !post.selected }));

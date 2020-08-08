@@ -6,6 +6,9 @@ import { FixedSizeGrid } from 'react-window';
 import { ContextMenu, CardAction } from 'types/components';
 import CellRenderer from './CellRenderer';
 import { getRowColFromIndex } from '../../util/utils';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../store/types';
+import { actions } from '../../store/';
 
 interface Props {
 	itemCount: number;
@@ -29,6 +32,12 @@ const Container = styled.div<ContainerProps>`
 `;
 
 const innerElementType = forwardRef<HTMLDivElement, { style: CSSProperties; rest: unknown }>(({ style, ...rest }, ref) => {
+	const dispatch = useDispatch<AppDispatch>();
+	const onClick = (event: React.MouseEvent): void => {
+		if (!event.ctrlKey && !event.shiftKey) {
+			dispatch(actions.posts.unselectAllPosts());
+		}
+	};
 	return (
 		<div
 			ref={ref}
@@ -38,10 +47,15 @@ const innerElementType = forwardRef<HTMLDivElement, { style: CSSProperties; rest
 				width: isNaN(parseInt(style.height?.toString() ?? '0')) ? '0px' : style.height,
 			}}
 			{...rest}
+			onClick={onClick}
 		/>
 	);
 });
 innerElementType.displayName = 'innerElementType';
+const outerElementType = forwardRef<HTMLDivElement, { style: CSSProperties; rest: unknown }>(({ style, ...rest }, ref) => {
+	return <div ref={ref} style={style} {...rest} />;
+});
+outerElementType.displayName = 'outerElementType';
 
 const Grid: React.FunctionComponent<Props> = (props) => {
 	const [size, setSize] = useState({ width: 600, height: 600 });
@@ -112,6 +126,7 @@ const Grid: React.FunctionComponent<Props> = (props) => {
 		overscanColumnCount: 1,
 		style: { overflowX: 'hidden', marginLeft: '10px', marginTop: '10px', marginBottom: '10px', outline: 'none' } as React.CSSProperties,
 		innerElementType: innerElementType,
+		outerElementType: outerElementType,
 		itemData: {
 			rowCount,
 			columns,

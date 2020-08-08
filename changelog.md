@@ -6,6 +6,7 @@
 - BUG FIX: Fix issue with favorites directory loading
 - BUG FIX: Loader now disappears when post fetching fails
 - BUG FIX: Fix grid scroll in Favorites page
+- BUG FIX: Post selected state should no longer be persisted
 
 ## 0.1.4 - Database Import/Export - 3.8.2020
 - Changed Thumbnails Grid to use windowing
