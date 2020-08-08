@@ -55,8 +55,13 @@ export const renderPostCardAction = (
 	);
 };
 
-export const getThumbnailBorder = (active: string, theme: 'dark' | 'light'): undefined | 'dashed 1px black' | 'dashed 1px white' => {
-	if (active === 'false') return undefined;
-	if (theme === 'dark') return 'dashed 1px white';
-	else return 'dashed 1px black';
+export const getThumbnailBorder = (active: string, theme: 'dark' | 'light', selected: boolean): string | undefined => {
+	if (selected) {
+		if (active === 'false') return 'solid 1px #177ddc';
+		return 'dashed 1px #177ddc';
+	} else {
+		if (active === 'false') return undefined;
+		if (theme === 'dark') return 'dashed 1px white';
+	}
+	return 'dashed 1px black';
 };

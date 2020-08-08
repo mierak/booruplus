@@ -115,6 +115,210 @@ describe('store/posts', () => {
 		// then
 		expect(result.activePostIndex).toBe(2);
 	});
+	it('Unselects all posts on unselectAllPosts', () => {
+		// given
+		const posts = [mPost({ id: 1, selected: true }), mPost({ id: 2, selected: true }), mPost({ id: 3, selected: true })];
+		const action = createAction(actions.unselectAllPosts.type);
+		const state: PostsState = {
+			...initialState,
+			posts,
+		};
+
+		// when
+		const result = reducer(state, action);
+
+		// then
+		result.posts.forEach((post) => {
+			expect(post.selected).toBe(false);
+		});
+	});
+	describe('selectMultiplePosts()', () => {
+		it('Selects a single post when no posts are selected', () => {
+			// given
+			const index = 1;
+			const posts = [mPost({ id: 1, selected: false }), mPost({ id: 2, selected: false }), mPost({ id: 3, selected: false })];
+			const action = createAction(actions.selectMultiplePosts.type, index);
+			const state: PostsState = {
+				...initialState,
+				posts,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.posts[index].selected).toBe(true);
+		});
+		it('Does not do anything when index is higher or equal than posts length', () => {
+			// given
+			const index = 5;
+			const posts = [mPost({ id: 1, selected: false }), mPost({ id: 2, selected: false }), mPost({ id: 3, selected: false })];
+			const action = createAction(actions.selectMultiplePosts.type, index);
+			const state: PostsState = {
+				...initialState,
+				posts,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			result.posts.forEach((post, index) => {
+				expect(post).toMatchObject(posts[index]);
+			});
+		});
+		it('Does not do anything when index is lower than 0', () => {
+			// given
+			const index = -1;
+			const posts = [mPost({ id: 1, selected: false }), mPost({ id: 2, selected: false }), mPost({ id: 3, selected: false })];
+			const action = createAction(actions.selectMultiplePosts.type, index);
+			const state: PostsState = {
+				...initialState,
+				posts,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			result.posts.forEach((post, index) => {
+				expect(post).toMatchObject(posts[index]);
+			});
+		});
+		it('Selects all posts from maxSelectedIndex to supplied index', () => {
+			// given
+			const index = 10;
+			const posts = [
+				mPost({ id: 0, selected: false }),
+				mPost({ id: 1, selected: false }),
+				mPost({ id: 2, selected: true }),
+				mPost({ id: 3, selected: true }),
+				mPost({ id: 4, selected: true }),
+				mPost({ id: 5, selected: true }),
+				mPost({ id: 6, selected: false }),
+				mPost({ id: 7, selected: false }),
+				mPost({ id: 8, selected: false }),
+				mPost({ id: 9, selected: false }),
+				mPost({ id: 10, selected: false }),
+			];
+			const action = createAction(actions.selectMultiplePosts.type, index);
+			const state: PostsState = {
+				...initialState,
+				posts,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.posts[0].selected).toBe(false);
+			expect(result.posts[1].selected).toBe(false);
+			result.posts.slice(2).forEach((post) => {
+				expect(post.selected).toBe(true);
+			});
+		});
+		it('Selects all posts from minSelectedIndex to supplied index', () => {
+			// given
+			const index = 1;
+			const posts = [
+				mPost({ id: 0, selected: false }),
+				mPost({ id: 1, selected: false }),
+				mPost({ id: 2, selected: false }),
+				mPost({ id: 3, selected: false }),
+				mPost({ id: 4, selected: false }),
+				mPost({ id: 5, selected: true }),
+				mPost({ id: 6, selected: false }),
+				mPost({ id: 7, selected: false }),
+				mPost({ id: 8, selected: false }),
+				mPost({ id: 9, selected: false }),
+				mPost({ id: 10, selected: false }),
+			];
+			const action = createAction(actions.selectMultiplePosts.type, index);
+			const state: PostsState = {
+				...initialState,
+				posts,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.posts[0].selected).toBe(false);
+			result.posts.slice(1, 5).forEach((post) => {
+				expect(post.selected).toBe(true);
+			});
+			result.posts.slice(6).forEach((post) => {
+				expect(post.selected).toBe(false);
+			});
+		});
+		it('Selects posts from minIndex to index, if index is between min and max selected post and minIndex is closer', () => {
+			// given
+			const index = 3;
+			const posts = [
+				mPost({ id: 0, selected: true }),
+				mPost({ id: 1, selected: false }),
+				mPost({ id: 2, selected: false }),
+				mPost({ id: 3, selected: false }),
+				mPost({ id: 4, selected: false }),
+				mPost({ id: 5, selected: false }),
+				mPost({ id: 6, selected: false }),
+				mPost({ id: 7, selected: false }),
+				mPost({ id: 8, selected: false }),
+				mPost({ id: 9, selected: false }),
+				mPost({ id: 10, selected: true }),
+			];
+			const action = createAction(actions.selectMultiplePosts.type, index);
+			const state: PostsState = {
+				...initialState,
+				posts,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			result.posts.slice(0, 4).forEach((post) => {
+				expect(post.selected).toBe(true);
+			});
+			result.posts.slice(5).forEach((post) => {
+				expect(post.selected).toBe(false);
+			});
+		});
+		it('Selects posts from maxIndex to index, if index is between min and max selected post and maxIndex is closer', () => {
+			// given
+			const index = 7;
+			const posts = [
+				mPost({ id: 0, selected: true }),
+				mPost({ id: 1, selected: false }),
+				mPost({ id: 2, selected: false }),
+				mPost({ id: 3, selected: false }),
+				mPost({ id: 4, selected: false }),
+				mPost({ id: 5, selected: false }),
+				mPost({ id: 6, selected: false }),
+				mPost({ id: 7, selected: false }),
+				mPost({ id: 8, selected: false }),
+				mPost({ id: 9, selected: false }),
+				mPost({ id: 10, selected: true }),
+			];
+			const action = createAction(actions.selectMultiplePosts.type, index);
+			const state: PostsState = {
+				...initialState,
+				posts,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.posts[0].selected).toBe(true);
+			result.posts.slice(1, 6).forEach((post) => {
+				expect(post.selected).toBe(false);
+			});
+			result.posts.slice(7).forEach((post) => {
+				expect(post.selected).toBe(false);
+			});
+		});
+	});
 	it('Resets state when online fetchPosts is pending', () => {
 		// given
 		const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];

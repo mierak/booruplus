@@ -95,6 +95,32 @@ describe('Thumbnail', () => {
 			payload: { post: posts[index], selected: !posts[index].selected },
 		});
 	});
+	it('Dispatches selectMultiplePosts() when thumbnail is shift clicked', () => {
+		// given
+		const index = 2;
+		const store = mockStore(
+			mState({
+				posts: {
+					posts,
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<Thumbnail index={index} />
+			</Provider>
+		);
+		userEvent.click(screen.getByTestId('thumbnail-image'), { shiftKey: true });
+
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.posts.selectMultiplePosts.type,
+			payload: index,
+		});
+	});
 	it('Renders action without popconfirm', () => {
 		// given
 		const index = 2;

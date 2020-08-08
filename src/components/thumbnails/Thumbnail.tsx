@@ -22,6 +22,7 @@ interface CardProps {
 	$isActive: string;
 	$theme: 'dark' | 'light';
 	$height: string;
+	$selected: boolean;
 }
 
 interface PopConfirmProps {
@@ -33,9 +34,10 @@ interface PopConfirmProps {
 }
 
 const StyledCard = styled(Card)<CardProps>`
+	cursor: pointer;
+
 	&& {
-		border: ${(props): false | 0 | 'dashed 1px black' | 'dashed 1px white' | undefined =>
-			getThumbnailBorder(props.$isActive, props.$theme)};
+		border: ${(props): string | undefined => getThumbnailBorder(props.$isActive, props.$theme, props.$selected)};
 		width: 195px;
 		height: ${(props): string => props.$height};
 	}
@@ -75,6 +77,9 @@ const Thumbnail = (props: Props): React.ReactElement => {
 			if (post) {
 				dispatch(actions.posts.setPostSelected({ post: post, selected: !post.selected }));
 			}
+		} else if (event.shiftKey) {
+			//
+			dispatch(actions.posts.selectMultiplePosts(props.index));
 		} else {
 			dispatch(actions.posts.setActivePostIndex(props.index));
 			activeView !== 'image' && dispatch(actions.system.setActiveView('image'));
@@ -140,12 +145,12 @@ const Thumbnail = (props: Props): React.ReactElement => {
 				bodyStyle={{ height: '195px', width: '195px', padding: '0' }}
 				$isActive={isActive.toString()}
 				$theme={theme}
+				$selected={post?.selected ?? false}
 				actions={
 					!props.isScrolling
 						? renderActions()
 						: [<div key='dummy' style={{ backgroundColor: 'rgb(29,29,29)', width: '100%', height: '22px' }}></div>]
 				}
-				hoverable
 				$height={props.actions !== undefined ? '225px' : '197px'}
 			>
 				<StyledImageContainer onClick={(event: React.MouseEvent): void => handleThumbnailClick(event)}>
