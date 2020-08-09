@@ -12,7 +12,7 @@ interface PProps {
 	y: number;
 }
 
-type Actions = 'add' | 'delete' | 'rename' | 'mark-as-default' | 'move-selected';
+type Actions = 'add' | 'delete' | 'rename' | 'mark-as-default' | 'move-selected' | 'move-all';
 
 const DummyContextMenuPositionerDiv = styled.div<PProps>`
 	position: absolute;
@@ -116,12 +116,25 @@ const SiderContent: React.FunctionComponent = () => {
 				Move Selected Posts Here
 			</Menu.Item>
 		);
+		const moveAllAction = (
+			<Menu.Item
+				onClick={async (): Promise<void> => {
+					setVisible(false);
+					dispatch(actions.modals.addToFavoritesModal.setPostIdsToFavorite('all'));
+					dispatch(actions.modals.showModal('move-selected-to-directory-confirmation'));
+				}}
+				key='5'
+			>
+				Move All Posts Here
+			</Menu.Item>
+		);
 		return (
 			<Menu>
 				{contextMenuActions.includes('add') && addAction}
 				{contextMenuActions.includes('rename') && renameAction}
 				{contextMenuActions.includes('delete') && deleteAction}
 				{contextMenuActions.includes('move-selected') && moveSelectedAction}
+				{contextMenuActions.includes('move-all') && moveAllAction}
 			</Menu>
 		);
 	};
@@ -148,7 +161,7 @@ const SiderContent: React.FunctionComponent = () => {
 		}
 
 		if (treeContainerRef.current) {
-			const contextMenuActions: Actions[] = ['add', 'delete', 'rename'];
+			const contextMenuActions: Actions[] = ['add', 'delete', 'rename', 'move-all'];
 			if (selectedPostIds.length > 0) contextMenuActions.push('move-selected');
 			setContextMenuActions(contextMenuActions);
 			setAlign([info.event.clientX - treeContainerRef.current.getBoundingClientRect().x, info.event.clientY]);

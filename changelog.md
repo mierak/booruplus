@@ -1,8 +1,11 @@
 # Changelog
 ## 0.1.5 - Move multiple posts between directories - DATE
 - Right clicking favorites directory when multiple posts are selected now shows move all to folder option
+- Shift clickign on thumbnails list now allos you to select multiple posts. Just like you would do with files in your system.
 - Favorites now have an undeletable default directory instead of using the root node
 - Automatically switch to default directory after deleting favorites directory thats currently open
+- Favorites directories can now be closed and opened. By default they are all opened
+- Favorites directories sider can now be resized by dragging
 - BUG FIX: Fix issue with favorites directory loading
 - BUG FIX: Loader now disappears when post fetching fails
 - BUG FIX: Fix grid scroll in Favorites page
