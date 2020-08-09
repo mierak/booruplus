@@ -325,7 +325,7 @@ describe('pages/Thumbnails', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
 			type: thunks.savedSearches.addPreviewToActiveSavedSearch.pending.type,
-			meta: { arg: getThumbnailUrl(posts[3].directory, posts[3].hash) },
+			meta: { arg: posts[3] },
 		});
 		expect(notificationMock).toBeCalledWith('success', 'Preview added', 'Preview was successfuly added to saved search');
 		notificationMock.mockClear();

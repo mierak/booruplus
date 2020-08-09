@@ -15,6 +15,7 @@ export const base64PreviewsToBlobs = async (savedSearches: SavedSearchWithB64Pre
 						return {
 							id: preview.id,
 							blob: await result.blob(),
+							post: preview.post,
 						};
 					})
 				),
@@ -34,6 +35,7 @@ export const blobPreviewsToBase64 = async (savedSearches: SavedSearch[]): Promis
 						return {
 							id: preview.id,
 							data: b64 as string,
+							post: preview.post,
 						};
 					})
 				),

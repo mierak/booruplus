@@ -150,12 +150,27 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 		];
 	};
 
+	const onPreviewClick = (record: SavedSearch, postId: number): void => {
+		const posts = record.previews.map((preview) => preview.post);
+		const index = posts.findIndex((post) => post.id === postId);
+		if (index >= 0) {
+			dispatch(actions.posts.setPosts(posts));
+			dispatch(actions.posts.setActivePostIndex(index));
+			dispatch(actions.system.setActiveView('image'));
+		}
+	};
+
 	const renderPreviews = (record: SavedSearch): JSX.Element => {
 		return (
 			<StyledPreviewsContainer>
 				{record.previews.map((preview) => {
 					return (
-						<StyledCard key={preview.id} actions={renderPreviewActions(record, preview.id)}>
+						<StyledCard
+							key={preview.id}
+							actions={renderPreviewActions(record, preview.id)}
+							onClick={(): void => onPreviewClick(record, preview.post.id)}
+							data-testid='savedsearch-preview-image'
+						>
 							<StyledPreviewImage src={preview.objectUrl} data-testid='preview-image' />
 						</StyledCard>
 					);

@@ -59,12 +59,11 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 
 	useEffect(() => {
 		const renderThumbnailList = async (): Promise<void> => {
-			dispatch(actions.favorites.setActiveNodeKey(1));
-			dispatch(thunks.favorites.fetchPostsInDirectory(1));
+			dispatch(thunks.favorites.fetchPostsInDirectory(activeDirectory));
 		};
 		renderThumbnailList();
 		dispatch(actions.system.setSearchMode('favorites'));
-	}, [dispatch]);
+	}, [activeDirectory, dispatch]);
 
 	useEffect(() => {
 		return (): void => {

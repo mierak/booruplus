@@ -67,7 +67,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleAddPreview = (post: Post): void => {
-		dispatch(thunks.savedSearches.addPreviewToActiveSavedSearch(getThumbnailUrl(post.directory, post.hash)));
+		dispatch(thunks.savedSearches.addPreviewToActiveSavedSearch(post));
 		openNotificationWithIcon('success', 'Preview added', 'Preview was successfuly added to saved search');
 	};
 
@@ -101,7 +101,6 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			tooltip: 'Add preview',
 			icon: 'plus-outlined',
 			onClick: handleAddPreview,
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			condition: (_: Post): boolean => mode === 'saved-search-online' || mode === 'saved-search-offline',
 			popConfirm: {
 				okText: 'Add',

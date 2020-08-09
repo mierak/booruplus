@@ -11,7 +11,7 @@ export interface FavoritesState {
 
 export const initialState: FavoritesState = {
 	rootNode: undefined,
-	activeNodeKey: 0,
+	activeNodeKey: 1,
 	expandedKeys: [],
 	selectedNodeKey: undefined,
 };

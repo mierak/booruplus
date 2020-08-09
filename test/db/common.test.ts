@@ -41,6 +41,7 @@ describe('db/common', () => {
 	describe('base64PreviewsToBlobs()', () => {
 		it('Returns correct result', async () => {
 			// given
+			const post = mPost();
 			const ss: SavedSearchWithB64Previews[] = [
 				{
 					id: 1,
@@ -52,6 +53,7 @@ describe('db/common', () => {
 						{
 							id: 1,
 							data: mcIcon,
+							post,
 						},
 					],
 				},
@@ -65,6 +67,7 @@ describe('db/common', () => {
 						{
 							id: 1,
 							data: mcIcon,
+							post,
 						},
 					],
 				},
@@ -83,6 +86,7 @@ describe('db/common', () => {
 	describe('blobPreviewsToBase64()', () => {
 		it('Returns correct result', async () => {
 			const blob = new Blob(['asdf']);
+			const post = mPost();
 			const ss: SavedSearch[] = [
 				{
 					id: 1,
@@ -91,8 +95,8 @@ describe('db/common', () => {
 					tags: [mTag({ tag: 'tag1' })],
 					excludedTags: [],
 					previews: [
-						{ id: 1, blob },
-						{ id: 2, blob },
+						{ id: 1, blob, post },
+						{ id: 2, blob, post },
 					],
 				},
 				{
@@ -102,8 +106,8 @@ describe('db/common', () => {
 					tags: [mTag({ tag: 'tag2' })],
 					excludedTags: [],
 					previews: [
-						{ id: 1, blob },
-						{ id: 2, blob },
+						{ id: 1, blob, post },
+						{ id: 2, blob, post },
 					],
 				},
 			];

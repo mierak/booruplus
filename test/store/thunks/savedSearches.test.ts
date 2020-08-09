@@ -10,7 +10,7 @@ import thunk from 'redux-thunk';
 import * as thunks from '../../../src/store/thunks/savedSearches';
 import * as onlineSearchFormThunk from '../../../src/store/thunks/onlineSearchForm';
 import * as downloadedSearchFormThunk from '../../../src/store/thunks/downloadedSearchForm';
-import { mSavedSearch, mTag } from '../../helpers/test.helper';
+import { mSavedSearch, mTag, mPost } from '../../helpers/test.helper';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 jest.mock('../../../src/service/apiService', () => {
@@ -31,6 +31,7 @@ jest.mock('antd', () => {
 	};
 });
 import { notification } from 'antd';
+import { getThumbnailUrl } from '../../../src/service/webService';
 
 describe('thunks/savedSearches', () => {
 	beforeEach(() => {
@@ -57,17 +58,18 @@ describe('thunks/savedSearches', () => {
 		it('Fetches preview and calls db correctly', async () => {
 			// given
 			fetchMock.mockResponse('');
+			const post = mPost({ id: 123456, hash: 'posthash', directory: 'postdirectory' });
+			const url = getThumbnailUrl(post.hash, post.directory);
 			const savedSearch = mSavedSearch({ id: 123 });
 			const store = mockStore({ ...initialState, savedSearches: { ...initialState.savedSearches, activeSavedSearch: savedSearch } });
-			const url = 'preview_url';
 			const blob = await (await fetch(url)).blob();
 
 			// when
-			await store.dispatch(thunks.addPreviewToActiveSavedSearch(url));
+			await store.dispatch(thunks.addPreviewToActiveSavedSearch(post));
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(mockedDb.savedSearches.addPreview).toBeCalledWith(savedSearch.id, blob);
+			expect(mockedDb.savedSearches.addPreview).toBeCalledWith(savedSearch.id, blob, post);
 			expect(fetchMock.mock.calls.length).toBe(2);
 			expect(fetchMock.mock.calls[0][0]).toEqual(url);
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.addPreviewToActiveSavedSearch.pending.type, payload: undefined });
@@ -76,11 +78,11 @@ describe('thunks/savedSearches', () => {
 		it('Dispatches rejected actions when no saved search is set as active', async () => {
 			// given
 			jest.clearAllMocks();
+			const post = mPost({ id: 123456, hash: 'posthash', directory: 'postdirectory' });
 			const store = mockStore({ ...initialState, savedSearches: { ...initialState.savedSearches, activeSavedSearch: undefined } });
-			const url = 'preview_url';
 
 			// when
-			await store.dispatch(thunks.addPreviewToActiveSavedSearch(url));
+			await store.dispatch(thunks.addPreviewToActiveSavedSearch(post));
 
 			// then
 			const dispatchedActions = store.getActions();

@@ -4,11 +4,12 @@ import { db } from '../../db';
 
 import { ThunkApi } from '../../store/types';
 
-import { Rating, SavedSearch, Tag } from '../../types/gelbooruTypes';
+import { Rating, SavedSearch, Tag, Post } from '../../types/gelbooruTypes';
 
 import { notification } from 'antd';
 import * as onlineSearchFormThunk from './onlineSearchForm';
 import * as downloadedSearchFormThunk from './downloadedSearchForm';
+import { getThumbnailUrl } from '../../service/webService';
 
 import { thunkLoggerFactory } from '../../util/logger';
 
@@ -79,9 +80,10 @@ export const loadSavedSearchesFromDb = createAsyncThunk<SavedSearch[], void, Thu
 	}
 );
 
-export const addPreviewToActiveSavedSearch = createAsyncThunk<SavedSearch, string, ThunkApi>(
+export const addPreviewToActiveSavedSearch = createAsyncThunk<SavedSearch, Post, ThunkApi>(
 	'savedSearches/addPreviewToActive',
-	async (previewUrl, thunkApi): Promise<SavedSearch> => {
+	async (post, thunkApi): Promise<SavedSearch> => {
+		const previewUrl = getThumbnailUrl(post.directory, post.hash);
 		const logger = thunkLogger.getActionLogger(addPreviewToActiveSavedSearch);
 		const savedSearch = thunkApi.getState().savedSearches.activeSavedSearch;
 		if (!savedSearch) {
@@ -92,7 +94,7 @@ export const addPreviewToActiveSavedSearch = createAsyncThunk<SavedSearch, strin
 		logger.debug('Creating blob from URL', previewUrl);
 		const blob = await (await fetch(previewUrl)).blob();
 		logger.debug(`Adding preview to saved search id ${savedSearch.id}`);
-		savedSearch.id && db.savedSearches.addPreview(savedSearch.id, blob);
+		savedSearch.id && db.savedSearches.addPreview(savedSearch.id, blob, post);
 		return savedSearch;
 	}
 );

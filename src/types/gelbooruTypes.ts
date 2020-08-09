@@ -69,6 +69,7 @@ export type SavedSearchType = 'online' | 'offline';
 export interface SavedSearchPreview {
 	id: number;
 	objectUrl: string;
+	post: Post;
 }
 
 export interface SavedSearch {

@@ -9,7 +9,7 @@ import { mState } from '../../helpers/store.helper';
 
 import SavedSearches from '../../../src/pages/SavedSearches';
 import '@testing-library/jest-dom';
-import { mTag, mSavedSearch, mSavedSearchPreview } from '../../helpers/test.helper';
+import { mTag, mSavedSearch, mSavedSearchPreview, mPost } from '../../helpers/test.helper';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -215,6 +215,48 @@ describe('pages/SavedSearches', () => {
 			type: thunks.savedSearches.removePreview.pending.type,
 			meta: { arg: { savedSearch: savedSearches[0], previewId: 2 } },
 		});
+		unmount();
+	});
+	it('Dispatches removePreview() when delete button on preview is clicked', async () => {
+		// given
+		const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
+		const savedSearches = [
+			mSavedSearch({
+				id: 1,
+				tags: [mTag({ id: 1, tag: 'tag1' })],
+				rating: 'any',
+				lastSearched: 'somedate',
+				previews: [
+					mSavedSearchPreview({ id: 1, objectUrl: 'url1', post: posts[0] }),
+					mSavedSearchPreview({ id: 2, objectUrl: 'url2', post: posts[1] }),
+					mSavedSearchPreview({ id: 3, objectUrl: 'url3', post: posts[2] }),
+				],
+			}),
+			mSavedSearch({ id: 2, excludedTags: [mTag({ id: 2, tag: 'tag2' })] }),
+			mSavedSearch({ id: 3, tags: [mTag({ id: 3, tag: 'tag3' })], rating: 'questionable' }),
+		];
+		const store = mockStore(
+			mState({
+				savedSearches: {
+					savedSearches,
+				},
+			})
+		);
+
+		// when
+		const { unmount } = render(
+			<Provider store={store}>
+				<SavedSearches />
+			</Provider>
+		);
+		fireEvent.click(screen.getAllByRole('button', { name: 'Expand row' })[0]);
+		fireEvent.click(screen.getAllByTestId('savedsearch-preview-image')[1]);
+
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({ type: actions.posts.setPosts.type, payload: posts });
+		expect(dispatchedActions).toContainMatchingAction({ type: actions.posts.setActivePostIndex.type, payload: 1 });
+		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setActiveView.type, payload: 'image' });
 		unmount();
 	});
 });

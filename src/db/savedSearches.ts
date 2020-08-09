@@ -1,5 +1,5 @@
 import db from './database';
-import { SavedSearch, Rating, Tag } from '../types/gelbooruTypes';
+import { SavedSearch, Rating, Tag, Post } from '../types/gelbooruTypes';
 import { SavedSearch as DbSavedSearch } from './types';
 import { compareTagArrays } from '../util/utils';
 
@@ -50,6 +50,7 @@ export const getAll = async (): Promise<SavedSearch[]> => {
 			return {
 				id: preview.id,
 				objectUrl: URL.createObjectURL(preview.blob),
+				post: preview.post,
 			};
 		});
 		return {
@@ -68,11 +69,11 @@ export const remove = async (savedSearch: SavedSearch): Promise<void> => {
 	db.savedSearches.delete(savedSearch.id);
 };
 
-export const addPreview = async (id: number, blob: Blob): Promise<void> => {
+export const addPreview = async (id: number, blob: Blob, post: Post): Promise<void> => {
 	const searchFromDb = await db.savedSearches.get(id);
 	if (searchFromDb) {
 		const id = searchFromDb.previews.length > 0 ? searchFromDb.previews[searchFromDb.previews.length - 1].id + 1 : 0;
-		searchFromDb.previews.push({ id, blob: blob });
+		searchFromDb.previews.push({ id, blob: blob, post });
 		db.savedSearches.put(searchFromDb);
 	} else {
 		throw new Error(`SavedSearch with id ${id} was not found in database`);
