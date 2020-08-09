@@ -73,6 +73,10 @@ export const mSettings = (settings?: Partial<Settings>): Settings => {
 			mostViewedCount: dashboard?.mostViewedCount ?? 25,
 			saveTagsNotFoundInDb: dashboard?.saveTagsNotFoundInDb ?? true,
 		},
+		favorites: settings?.favorites ?? {
+			siderWidth: settings?.favorites?.siderWidth ?? 250,
+			expandedKeys: settings?.favorites?.expandedKeys ?? [],
+		},
 	};
 };
 

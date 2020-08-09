@@ -20,25 +20,32 @@ const DummyContextMenuPositionerDiv = styled.div<PProps>`
 	top: ${(props): number => props.y}px;
 `;
 
+const StyledScrollContainer = styled.div`
+	overflow: auto;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+`;
+
 const StyledSiderContentContainer = styled.div`
 	height: 100%;
-	overflow-x: hidden;
-	padding-top: 10px;
-	padding-bottom: 10px;
+	overflow: hidden;
 `;
 
 const StyledTreeEmptySpace = styled.div`
+	flex: 1 1 auto;
 	width: 100%;
-	height: 100vh;
+	min-height: 30px;
 `;
 
 const StyledDirectoryTree = styled(Tree.DirectoryTree)`
-	overflow-y: auto;
-	overflow-x: hidden;
-	max-height: 100vh;
-
-	&& .ant-tree-switcher {
-		width: 5px;
+	overflow: hidden;
+	&& {
+		flex: 0 0 auto;
+		margin-top: 10px;
+		min-width: 100%;
+		width: max-content;
 	}
 `;
 
@@ -52,7 +59,7 @@ const SiderContent: React.FunctionComponent = () => {
 	const [align, setAlign] = useState<[number, number]>([0, 0]);
 	const [visible, setVisible] = useState(false);
 	const [contextMenuActions, setContextMenuActions] = useState<Actions[]>([]);
-	const expanedKeys = useSelector((state: RootState) => state.favorites.expandedKeys);
+	const expanedKeys = useSelector((state: RootState) => state.settings.favorites.expandedKeys);
 
 	const treeContainerRef = useRef<HTMLDivElement>(null);
 
@@ -155,32 +162,35 @@ const SiderContent: React.FunctionComponent = () => {
 
 	return (
 		<StyledSiderContentContainer ref={treeContainerRef}>
-			{!isCollapsed && (
-				<StyledDirectoryTree
-					multiple
-					draggable
-					blockNode
-					defaultExpandAll
-					selectedKeys={[activeNodeKey.toString()]}
-					treeData={rootNode?.children}
-					onRightClick={handleTreeRightClick}
-					onExpand={(_, node): void => {
-						node.node.expanded = true;
-					}}
-					onSelect={(_, info): void => {
-						dispatch(thunks.favorites.fetchPostsInDirectory(parseInt(info.node.key.toString())));
-						dispatch(actions.favorites.setActiveNodeKey(parseInt(info.node.key.toString())));
-					}}
-					onClick={(): void => setVisible(false)}
-					expandedKeys={expanedKeys}
-					switcherIcon={<></>}
-				/>
-			)}
+			<StyledScrollContainer>
+				{!isCollapsed && (
+					<StyledDirectoryTree
+						multiple
+						draggable
+						blockNode
+						defaultExpandAll
+						selectedKeys={[activeNodeKey.toString()]}
+						treeData={rootNode?.children}
+						onRightClick={handleTreeRightClick}
+						onExpand={(expandedKeys, _): void => {
+							dispatch(actions.settings.setFavoritesExpandedKeys(expandedKeys));
+						}}
+						onSelect={(_, info): void => {
+							info.nativeEvent.stopPropagation();
+							dispatch(thunks.favorites.fetchPostsInDirectory(parseInt(info.node.key.toString())));
+							dispatch(actions.favorites.setActiveNodeKey(parseInt(info.node.key.toString())));
+						}}
+						onClick={(): void => setVisible(false)}
+						expandedKeys={expanedKeys}
+						expandAction={'doubleClick'}
+					/>
+				)}
+				<StyledTreeEmptySpace data-testid='sider-content-empty-space' onMouseDown={handleEmptySpaceClick} />
+			</StyledScrollContainer>
 
 			<Dropdown overlay={renderMenu()} visible={visible}>
 				<DummyContextMenuPositionerDiv x={align[0]} y={align[1]} />
 			</Dropdown>
-			{<StyledTreeEmptySpace data-testid='sider-content-empty-space' onMouseDown={handleEmptySpaceClick} />}
 		</StyledSiderContentContainer>
 	);
 };

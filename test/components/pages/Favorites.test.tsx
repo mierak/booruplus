@@ -148,7 +148,7 @@ describe('pages/Favorites', () => {
 		expect(screen.getAllByRole('img', { name: 'close' })).toHaveLength(5);
 		expect(screen.getAllByRole('img', { name: 'download' })).toHaveLength(3);
 		expect(screen.getAllByRole('img', { name: 'delete' })).toHaveLength(5);
-		expect(screen.getAllByRole('img', { name: 'folder' })).toHaveLength(5);
+		expect(screen.getAllByRole('img', { name: 'folder' })).toHaveLength(7);
 	});
 	it('Dispatches downloadPost() for correct post when Download button is pressed', async () => {
 		// given

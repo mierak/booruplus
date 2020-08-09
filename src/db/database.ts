@@ -134,6 +134,10 @@ db.on('populate', () => {
 				loadTagStatistics: true,
 				saveTagsNotFoundInDb: true,
 			},
+			favorites: {
+				siderWidth: 250,
+				expandedKeys: [],
+			},
 		},
 	};
 	db.settings.put(settings);

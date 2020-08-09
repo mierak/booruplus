@@ -253,7 +253,7 @@ describe('store/posts', () => {
 		});
 		it('Selects posts from minIndex to index, if index is between min and max selected post and minIndex is closer', () => {
 			// given
-			const index = 3;
+			const index = 4;
 			const posts = [
 				mPost({ id: 0, selected: true }),
 				mPost({ id: 1, selected: false }),
@@ -280,9 +280,10 @@ describe('store/posts', () => {
 			result.posts.slice(0, 4).forEach((post) => {
 				expect(post.selected).toBe(true);
 			});
-			result.posts.slice(5).forEach((post) => {
+			result.posts.slice(5, 10).forEach((post) => {
 				expect(post.selected).toBe(false);
 			});
+			expect(posts[10].selected).toBe(true);
 		});
 		it('Selects posts from maxIndex to index, if index is between min and max selected post and maxIndex is closer', () => {
 			// given
@@ -315,7 +316,7 @@ describe('store/posts', () => {
 				expect(post.selected).toBe(false);
 			});
 			result.posts.slice(7).forEach((post) => {
-				expect(post.selected).toBe(false);
+				expect(post.selected).toBe(true);
 			});
 		});
 	});

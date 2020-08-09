@@ -39,7 +39,11 @@ describe('favorites/SiderContent', () => {
 			mState({
 				favorites: {
 					rootNode,
-					expandedKeys,
+				},
+				settings: {
+					favorites: {
+						expandedKeys,
+					},
 				},
 			})
 		);

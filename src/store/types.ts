@@ -66,6 +66,10 @@ export interface Settings {
 	apiKey: string | undefined;
 	gelbooruUsername?: string;
 	dashboard: DashboardSettings;
+	favorites: {
+		siderWidth: number | undefined;
+		expandedKeys: string[];
+	};
 }
 
 export interface TagHistory {

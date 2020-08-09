@@ -137,6 +137,10 @@ const mSettingsState = (ss?: DeepPartial<Settings>): Settings => {
 		theme: ss?.theme ?? initialState.settings.theme,
 		gelbooruUsername: ss?.gelbooruUsername ?? initialState.settings.gelbooruUsername,
 		dashboard: mDashboardSettingsState(ss?.dashboard) ?? initialState.settings.dashboard,
+		favorites: {
+			siderWidth: ss?.favorites?.siderWidth ?? initialState.settings.favorites.siderWidth,
+			expandedKeys: ss?.favorites?.expandedKeys ?? initialState.settings.favorites.expandedKeys,
+		},
 	};
 };
 
