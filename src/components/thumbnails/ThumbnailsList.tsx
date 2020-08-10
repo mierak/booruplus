@@ -64,6 +64,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 			isSingleColumn={props.singleColumn}
 			renderLoadMore={postCount > 0 && searchMode !== 'favorites' && searchMode !== 'open-download'}
 			headerHeight={props.hasHeader ? 72 : 0}
+			contextMenu={props.contextMenu}
 		/>
 	);
 };

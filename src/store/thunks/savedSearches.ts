@@ -80,21 +80,58 @@ export const loadSavedSearchesFromDb = createAsyncThunk<SavedSearch[], void, Thu
 	}
 );
 
-export const addPreviewToActiveSavedSearch = createAsyncThunk<SavedSearch, Post, ThunkApi>(
-	'savedSearches/addPreviewToActive',
-	async (post, thunkApi): Promise<SavedSearch> => {
-		const previewUrl = getThumbnailUrl(post.directory, post.hash);
-		const logger = thunkLogger.getActionLogger(addPreviewToActiveSavedSearch);
+export const addPreviewsToActiveSavedSearch = createAsyncThunk<SavedSearch, Post[], ThunkApi>(
+	'savedSearches/addPreviewsToActiveSavedSearch',
+	async (posts, thunkApi): Promise<SavedSearch> => {
+		const logger = thunkLogger.getActionLogger(addPreviewsToActiveSavedSearch);
 		const savedSearch = thunkApi.getState().savedSearches.activeSavedSearch;
 		if (!savedSearch) {
-			const msg = 'Cannot add preview to Saved Search. No Saved Search is set as active.';
-			logger.error(msg);
+			const msg = 'Cannot add preview(s) to Saved Search. No Saved Search is set as active.';
 			throw new Error(msg);
 		}
-		logger.debug('Creating blob from URL', previewUrl);
-		const blob = await (await fetch(previewUrl)).blob();
-		logger.debug(`Adding preview to saved search id ${savedSearch.id}`);
-		savedSearch.id && db.savedSearches.addPreview(savedSearch.id, blob, post);
+
+		const promises = posts.map(async (post) => {
+			const previewUrl = getThumbnailUrl(post.directory, post.hash);
+			logger.debug('Creating blob from URL', previewUrl);
+			const blob = await (await fetch(previewUrl)).blob();
+			return { blob, post };
+		});
+
+		const previews = await Promise.all(promises);
+		logger.debug(`Saving ${previews.length} previews to DB`);
+		db.savedSearches.addPreviews(savedSearch.id, previews);
+		return savedSearch;
+	}
+);
+
+export const addPreviewToActiveSavedSearch = createAsyncThunk<SavedSearch | undefined, Post, ThunkApi>(
+	'savedSearches/addPreviewToActiveSavedSearch',
+	async (post, thunkApi): Promise<SavedSearch | undefined> => {
+		thunkLogger.getActionLogger(addPreviewToActiveSavedSearch);
+		const savedSearch = thunkApi.getState().savedSearches.activeSavedSearch;
+		await thunkApi.dispatch(addPreviewsToActiveSavedSearch([post]));
+		return savedSearch;
+	}
+);
+
+export const addSelectedPreviewsToActiveSavedSearch = createAsyncThunk<SavedSearch | undefined, void, ThunkApi>(
+	'savedSearches/addSelectedPreviewsToActiveSavedSearch',
+	async (_, thunkApi): Promise<SavedSearch | undefined> => {
+		thunkLogger.getActionLogger(addSelectedPreviewsToActiveSavedSearch);
+		const savedSearch = thunkApi.getState().savedSearches.activeSavedSearch;
+		const posts = thunkApi.getState().posts.posts.filter((post) => post.selected);
+		await thunkApi.dispatch(addPreviewsToActiveSavedSearch(posts));
+		return savedSearch;
+	}
+);
+
+export const addAllPreviewsToActiveSavedSearch = createAsyncThunk<SavedSearch | undefined, void, ThunkApi>(
+	'savedSearches/addAllPreviewsToActiveSavedSearch',
+	async (_, thunkApi): Promise<SavedSearch | undefined> => {
+		thunkLogger.getActionLogger(addAllPreviewsToActiveSavedSearch);
+		const savedSearch = thunkApi.getState().savedSearches.activeSavedSearch;
+		const posts = thunkApi.getState().posts.posts;
+		await thunkApi.dispatch(addPreviewsToActiveSavedSearch(posts));
 		return savedSearch;
 	}
 );

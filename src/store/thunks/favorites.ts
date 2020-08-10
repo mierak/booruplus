@@ -64,7 +64,6 @@ export const deleteDirectoryAndChildren = createAsyncThunk<void, number, ThunkAp
 		await db.favorites.deleteNodeAndChildren(key);
 		thunkApi.dispatch(fetchAllKeys());
 		thunkApi.dispatch(fetchTreeData());
-		// TODO check if deleted directory was selected and select the root directory instead
 	}
 );
 

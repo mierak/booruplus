@@ -3,13 +3,14 @@ Dexie.dependencies.indexedDB = require('fake-indexeddb');
 Dexie.dependencies.IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
 
 import db from '../../src/db/database';
-import { save, remove, addPreview, removePreview, getAll, createAndSave } from '../../src/db/savedSearches';
+import { save, remove, addPreviews, removePreview, getAll, createAndSave } from '../../src/db/savedSearches';
 import { mSavedSearch, mSavedSearchPreview, mTag, mPost } from '../helpers/test.helper';
 import { SavedSearch as DbSavedSearch, SavedSearchPreview as DbSavedSearchPreview } from '../../src/db/types';
 
 describe('db/savedSearches', () => {
 	beforeEach(async () => {
 		await db.savedSearches.clear();
+		jest.clearAllMocks();
 	});
 	describe('getAll()', () => {
 		it('Checks if search with given id already exists', async () => {
@@ -50,10 +51,10 @@ describe('db/savedSearches', () => {
 			expect(deleteSpy).toBeCalledWith(savedSearch.id);
 		});
 	});
-	describe('addPreview()', () => {
+	describe('addPreviews()', () => {
 		it('Checks if search is in db and throws when it is not found', async () => {
 			// given
-			const post = mPost();
+			const posts = [mPost({ id: 123 }), mPost({ id: 456 }), mPost({ id: 789 })];
 			const getSpy = jest.spyOn(db.savedSearches, 'get');
 			const blob = new Blob(['asdf']);
 			const savedSearch = mSavedSearch({ id: 12345 });
@@ -61,7 +62,10 @@ describe('db/savedSearches', () => {
 
 			// when
 			const shouldThrow = async (): Promise<void> => {
-				await addPreview(savedSearch.id, blob, post);
+				await addPreviews(
+					savedSearch.id,
+					posts.map((post) => ({ post, blob }))
+				);
 			};
 
 			// then
@@ -70,7 +74,8 @@ describe('db/savedSearches', () => {
 		});
 		it('Adds blob to previews array and calls save()', async () => {
 			// given
-			const post = mPost();
+			const post = mPost({ id: 789456 });
+			const post2 = mPost({ id: 456789 });
 			const getSpy = jest.spyOn(db.savedSearches, 'get');
 			const putSpy = jest.spyOn(db.savedSearches, 'put');
 			const blob = new Blob(['asdf']);
@@ -90,7 +95,10 @@ describe('db/savedSearches', () => {
 			putSpy.mockImplementation();
 
 			// when
-			await addPreview(savedSearch.id, blob, post);
+			await addPreviews(savedSearch.id, [
+				{ blob, post },
+				{ blob, post: post2 },
+			]);
 
 			// then
 			expect(putSpy).toBeCalledWith({
@@ -98,12 +106,13 @@ describe('db/savedSearches', () => {
 				previews: [
 					{ id: 5, blob, post },
 					{ id: 6, blob, post },
+					{ id: 7, blob, post: post2 },
 				],
 			});
 			getSpy.mockClear();
 			putSpy.mockClear();
 		});
-		it('Adds preview with id 0 if savedSearch has no previews yer', async () => {
+		it('Adds preview with id 0 if savedSearch has no previews yet', async () => {
 			// given
 			const post = mPost();
 			const getSpy = jest.spyOn(db.savedSearches, 'get');
@@ -119,7 +128,7 @@ describe('db/savedSearches', () => {
 			putSpy.mockImplementation();
 
 			// when
-			await addPreview(savedSearch.id, blob, post);
+			await addPreviews(savedSearch.id, [{ blob, post }]);
 
 			// then
 			expect(putSpy).toBeCalledWith({

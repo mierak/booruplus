@@ -20,7 +20,7 @@ interface Info {
 
 const StyledDirectoryTree = styled(Tree.DirectoryTree)`
 	overflow: auto;
-	max-height: 100vh;
+	max-height: calc(100vh - 300px);
 `;
 
 const AddtoFavoritesModal: React.FunctionComponent = () => {
@@ -64,16 +64,19 @@ const AddtoFavoritesModal: React.FunctionComponent = () => {
 			footer={<ModalFooter onConfirm={handleConfirm} onCancel={handleClose} okText='Add' cancelText='Close' />}
 			visible={true}
 			onCancel={handleClose}
+			bodyStyle={{ maxHeight: 'calc(100vh - 200px)' }}
 		>
-			<StyledDirectoryTree
-				multiple
-				draggable
-				blockNode
-				treeData={treeData}
-				defaultExpandAll
-				expandedKeys={expandedKeys}
-				onSelect={onSelect}
-			/>
+			<div>
+				<StyledDirectoryTree
+					multiple
+					draggable
+					blockNode
+					treeData={treeData}
+					defaultExpandAll
+					expandedKeys={expandedKeys}
+					onSelect={onSelect}
+				/>
+			</div>
 		</Modal>
 	);
 };

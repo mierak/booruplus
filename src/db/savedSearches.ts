@@ -69,11 +69,13 @@ export const remove = async (savedSearch: SavedSearch): Promise<void> => {
 	db.savedSearches.delete(savedSearch.id);
 };
 
-export const addPreview = async (id: number, blob: Blob, post: Post): Promise<void> => {
+export const addPreviews = async (id: number, previews: { blob: Blob; post: Post }[]): Promise<void> => {
 	const searchFromDb = await db.savedSearches.get(id);
 	if (searchFromDb) {
 		const id = searchFromDb.previews.length > 0 ? searchFromDb.previews[searchFromDb.previews.length - 1].id + 1 : 0;
-		searchFromDb.previews.push({ id, blob: blob, post });
+		previews.forEach((preview, index) => {
+			searchFromDb.previews.push({ id: id + index, blob: preview.blob, post: preview.post });
+		});
 		db.savedSearches.put(searchFromDb);
 	} else {
 		throw new Error(`SavedSearch with id ${id} was not found in database`);

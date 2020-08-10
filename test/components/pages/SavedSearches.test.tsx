@@ -217,7 +217,7 @@ describe('pages/SavedSearches', () => {
 		});
 		unmount();
 	});
-	it('Dispatches removePreview() when delete button on preview is clicked', async () => {
+	it('Sets posts and switches to image tab with correct active index', async () => {
 		// given
 		const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
 		const savedSearches = [
@@ -250,7 +250,7 @@ describe('pages/SavedSearches', () => {
 			</Provider>
 		);
 		fireEvent.click(screen.getAllByRole('button', { name: 'Expand row' })[0]);
-		fireEvent.click(screen.getAllByTestId('savedsearch-preview-image')[1]);
+		fireEvent.click(screen.getAllByTestId('preview-image')[1]);
 
 		// then
 		const dispatchedActions = store.getActions();

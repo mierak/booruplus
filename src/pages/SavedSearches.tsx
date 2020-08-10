@@ -48,6 +48,7 @@ const StyledCard = styled(Card)`
 `;
 
 const StyledPreviewImage = styled.img`
+	cursor: pointer;
 	max-width: 150px;
 	max-height: 150px;
 `;
@@ -165,13 +166,12 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 			<StyledPreviewsContainer>
 				{record.previews.map((preview) => {
 					return (
-						<StyledCard
-							key={preview.id}
-							actions={renderPreviewActions(record, preview.id)}
-							onClick={(): void => onPreviewClick(record, preview.post.id)}
-							data-testid='savedsearch-preview-image'
-						>
-							<StyledPreviewImage src={preview.objectUrl} data-testid='preview-image' />
+						<StyledCard key={preview.id} actions={renderPreviewActions(record, preview.id)}>
+							<StyledPreviewImage
+								src={preview.objectUrl}
+								data-testid='preview-image'
+								onClick={(): void => onPreviewClick(record, preview.post.id)}
+							/>
 						</StyledCard>
 					);
 				})}

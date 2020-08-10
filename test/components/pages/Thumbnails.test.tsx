@@ -30,38 +30,16 @@ describe('pages/Thumbnails', () => {
 
 		// then
 		expect(screen.getByText('No Posts To Show')).not.toBeNull();
-		expect(screen.getByRole('button', { name: 'Download Search' })).not.toBeNull();
-		expect(screen.getByRole('button', { name: 'Save Search' })).not.toBeNull();
-		expect(screen.getByRole('button', { name: 'Blacklist All' })).not.toBeNull();
-		expect(screen.getByRole('button', { name: 'Blacklist Selected' })).not.toBeNull();
-		expect(screen.getByRole('button', { name: 'Add All To Favorites' })).not.toBeNull();
-		expect(screen.getByRole('button', { name: 'Add Selected To Favorites' })).not.toBeNull();
-		expect(screen.getByRole('button', { name: 'Download All' })).not.toBeNull();
+		expect(screen.getByRole('button', { name: 'download Download' })).not.toBeNull();
+		expect(screen.getByRole('button', { name: 'heart Add to Favorites' })).not.toBeNull();
+		expect(screen.getByRole('button', { name: 'delete Blacklist' })).not.toBeNull();
 	});
-	it('Dispatches all actions when all buttons are pressed', () => {
+	it('Renders add to previews menu when search mode is set to saved-search-online', () => {
 		// given
-		const selectedTags = [mTag({ id: 1, tag: 'tag1' })];
-		const excludedTags = [mTag({ id: 2, tag: 'tag2' })];
-		const rating = 'questionable';
-		const posts = [
-			mPost({ id: 1, directory: 'dir1', hash: 'hash1' }),
-			mPost({ id: 2, directory: 'dir2', hash: 'hash2' }),
-			mPost({ id: 3, directory: 'dir3', hash: 'hash3' }),
-			mPost({ id: 4, directory: 'dir4', hash: 'hash4', downloaded: 1 }),
-			mPost({ id: 5, directory: 'dir5', hash: 'hash5', downloaded: 1 }),
-		];
 		const store = mockStore(
 			mState({
 				system: {
-					searchMode: 'offline',
-				},
-				downloadedSearchForm: {
-					selectedTags,
-					excludedTags,
-					rating,
-				},
-				posts: {
-					posts,
+					searchMode: 'saved-search-online',
 				},
 			})
 		);
@@ -72,34 +50,29 @@ describe('pages/Thumbnails', () => {
 				<Thumbnails />
 			</Provider>
 		);
-		fireEvent.click(screen.getByRole('button', { name: 'Download Search' }));
-		fireEvent.click(screen.getByRole('button', { name: 'Save Search' }));
-		fireEvent.click(screen.getByRole('button', { name: 'Blacklist All' }));
-		fireEvent.click(screen.getByRole('button', { name: 'Blacklist Selected' }));
-		fireEvent.click(screen.getByRole('button', { name: 'Add All To Favorites' }));
-		fireEvent.click(screen.getByRole('button', { name: 'Add Selected To Favorites' }));
-		fireEvent.click(screen.getByRole('button', { name: 'Download All' }));
-		fireEvent.click(screen.getByRole('button', { name: 'Download Selected' }));
 
 		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.posts.downloadWholeSearch.pending.type });
-		expect(dispatchedActions).toContainMatchingAction({
-			type: thunks.savedSearches.saveSearch.pending.type,
-			meta: { arg: { tags: selectedTags, excludedTags, rating } },
-		});
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.posts.blacklistAllPosts.pending.type });
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.posts.blacklistSelectedPosts.pending.type });
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.posts.downloadAllPosts.pending.type });
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.posts.downloadSelectedPosts.pending.type });
-		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.modals.addToFavoritesModal.setPostIds.type,
-			payload: posts.map((post) => post.id),
-		});
-		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.modals.addToFavoritesModal.setPostIds.type,
-			payload: posts.filter((post) => post.selected).map((post) => post.id),
-		});
+		expect(screen.getByRole('button', { name: 'folder-view Add to Previews' })).not.toBeNull();
+	});
+	it('Renders add to previews menu when search mode is set to saved-search-offline', () => {
+		// given
+		const store = mockStore(
+			mState({
+				system: {
+					searchMode: 'saved-search-offline',
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<Thumbnails />
+			</Provider>
+		);
+
+		// then
+		expect(screen.getByRole('button', { name: 'folder-view Add to Previews' })).not.toBeNull();
 	});
 	it('Renders posts with correct actions', async () => {
 		// given
@@ -130,9 +103,9 @@ describe('pages/Thumbnails', () => {
 		renderedPosts.forEach((post, index) => {
 			expect(post).toHaveAttribute('src', getThumbnailUrl(posts[index].directory, posts[index].hash));
 		});
-		expect(screen.getAllByRole('img', { name: 'heart' })).toHaveLength(5);
-		expect(screen.getAllByRole('img', { name: 'download' })).toHaveLength(3);
-		expect(screen.getAllByRole('img', { name: 'delete' })).toHaveLength(5);
+		expect(screen.getAllByRole('img', { name: 'heart' })).toHaveLength(6);
+		expect(screen.getAllByRole('img', { name: 'download' })).toHaveLength(4);
+		expect(screen.getAllByRole('img', { name: 'delete' })).toHaveLength(6);
 		expect(screen.queryAllByRole('img', { name: 'plus' })).toHaveLength(0);
 	});
 	it('Renders add preview button when serach mod is saved-serach-online', async () => {
@@ -218,7 +191,7 @@ describe('pages/Thumbnails', () => {
 				<Thumbnails />
 			</Provider>
 		);
-		fireEvent.click(screen.getAllByRole('img', { name: 'download' })[1]);
+		fireEvent.click(screen.getAllByRole('img', { name: 'download' })[2]);
 
 		// then
 		const dispatchedActions = store.getActions();
@@ -248,7 +221,7 @@ describe('pages/Thumbnails', () => {
 				<Thumbnails />
 			</Provider>
 		);
-		fireEvent.click(screen.getAllByRole('img', { name: 'delete' })[3]);
+		fireEvent.click(screen.getAllByRole('img', { name: 'delete' })[4]);
 		await waitFor(() => screen.getByText('Blacklist image?'));
 		fireEvent.click(screen.getByRole('button', { name: 'Blacklist' }));
 
@@ -260,7 +233,7 @@ describe('pages/Thumbnails', () => {
 		expect(notificationMock).toBeCalledWith('success', 'Post deleted', 'Image was successfuly deleted from disk.');
 		notificationMock.mockClear();
 	});
-	it('Dispatches showModal() and setPostIds() for correct post when Move button is pressed', async () => {
+	it('Dispatches showModal() and setPostIds() for correct post when Favorite button is pressed', async () => {
 		// given
 		const posts = [
 			mPost({ id: 1, directory: 'dir1', hash: 'hash1' }),
@@ -283,7 +256,7 @@ describe('pages/Thumbnails', () => {
 				<Thumbnails />
 			</Provider>
 		);
-		fireEvent.click(screen.getAllByRole('img', { name: 'heart' })[2]);
+		fireEvent.click(screen.getAllByRole('img', { name: 'heart' })[3]);
 
 		// then
 		const dispatchedActions = store.getActions();
