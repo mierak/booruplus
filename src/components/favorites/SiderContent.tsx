@@ -12,7 +12,7 @@ interface PProps {
 	y: number;
 }
 
-type Actions = 'add' | 'delete' | 'rename' | 'mark-as-default' | 'move-selected' | 'move-all';
+type Actions = 'add' | 'delete' | 'rename' | 'mark-as-default' | 'move-selected' | 'move-all' | 'export-directory';
 
 const DummyContextMenuPositionerDiv = styled.div<PProps>`
 	position: absolute;
@@ -128,6 +128,17 @@ const SiderContent: React.FunctionComponent = () => {
 				Move All Posts Here
 			</Menu.Item>
 		);
+		const exportAction = (
+			<Menu.Item
+				onClick={async (): Promise<void> => {
+					setVisible(false);
+					dispatch(thunks.favorites.exportDirectory());
+				}}
+				key='6'
+			>
+				Export to Folder
+			</Menu.Item>
+		);
 		return (
 			<Menu>
 				{contextMenuActions.includes('add') && addAction}
@@ -135,6 +146,7 @@ const SiderContent: React.FunctionComponent = () => {
 				{contextMenuActions.includes('delete') && deleteAction}
 				{contextMenuActions.includes('move-selected') && moveSelectedAction}
 				{contextMenuActions.includes('move-all') && moveAllAction}
+				{contextMenuActions.includes('export-directory') && exportAction}
 			</Menu>
 		);
 	};
@@ -161,7 +173,7 @@ const SiderContent: React.FunctionComponent = () => {
 		}
 
 		if (treeContainerRef.current) {
-			const contextMenuActions: Actions[] = ['add', 'delete', 'rename', 'move-all'];
+			const contextMenuActions: Actions[] = ['add', 'delete', 'rename', 'move-all', 'export-directory'];
 			if (selectedPostIds.length > 0) contextMenuActions.push('move-selected');
 			setContextMenuActions(contextMenuActions);
 			setAlign([info.event.clientX - treeContainerRef.current.getBoundingClientRect().x, info.event.clientY]);

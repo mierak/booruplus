@@ -12,9 +12,11 @@ import {
 	CheckSquareOutlined,
 	SearchOutlined,
 	SaveOutlined,
+	ExportOutlined,
 } from '@ant-design/icons';
 
 import { actions, thunks } from '../store';
+import { exportPostsToDirectory } from '../store/commonActions';
 import { RootState, AppDispatch } from '../store/types';
 
 import ThumbnailsList from '../components/thumbnails/ThumbnailsList';
@@ -263,6 +265,14 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 		});
 	};
 
+	const handleExportAll = (): void => {
+		dispatch(exportPostsToDirectory('all'));
+	};
+
+	const handleExportSelected = (): void => {
+		dispatch(exportPostsToDirectory('selected'));
+	};
+
 	const renderMenu = (): React.ReactNode => {
 		return (
 			<StyledMenu mode='horizontal' forceSubMenuRender>
@@ -303,6 +313,14 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 						</Menu.Item>
 					</Menu.SubMenu>
 				) : null}
+				<Menu.SubMenu title='Export to Folder' icon={<ExportOutlined />}>
+					<Menu.Item onClick={handleExportAll} icon={<EyeOutlined />}>
+						All
+					</Menu.Item>
+					<Menu.Item onClick={handleExportSelected} icon={<CheckSquareOutlined />}>
+						Selected
+					</Menu.Item>
+				</Menu.SubMenu>
 				<Menu.Item onClick={handleSaveSearch} icon={<SaveOutlined />}>
 					Save Search
 				</Menu.Item>

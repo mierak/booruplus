@@ -3,6 +3,7 @@ import { db } from '../../db';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Post } from '../../types/gelbooruTypes';
 import { thunkLoggerFactory } from '../../util/logger';
+import { exportPostsToDirectory } from '../commonActions';
 
 const thunkLogger = thunkLoggerFactory();
 
@@ -87,5 +88,24 @@ export const removePostsFromActiveDirectory = createAsyncThunk<void, number[], T
 		logger.debug(`Removing post ids ${ids.join(' ')} from directory key: ${key}`);
 		await db.favorites.removePostsFromNode(key, ids);
 		thunkApi.dispatch(fetchTreeData());
+	}
+);
+
+export const exportDirectory = createAsyncThunk<Post[], void, ThunkApi>(
+	'favorites/exportDirectory',
+	async (_, thunkApi): Promise<Post[]> => {
+		const logger = thunkLogger.getActionLogger(exportDirectory);
+		const key = thunkApi.getState().favorites.selectedNodeKey;
+		if (key === undefined) {
+			logger.error('No key was selected. Cannot export directory');
+			return [];
+		}
+
+		const directory = await db.favorites.getNodeWithoutChildren(key);
+		logger.debug(`Retrieved directory containing ${directory.postIds.length} posts`);
+		const posts = await db.posts.getBulk(directory.postIds);
+		logger.debug(`Retrieved ${posts.length} posts`);
+		thunkApi.dispatch(exportPostsToDirectory(posts));
+		return posts;
 	}
 );

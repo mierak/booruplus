@@ -7,10 +7,16 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import * as thunks from '../../../src/store/thunks/favorites';
 import { mPost, mTreeNode } from '../../helpers/test.helper';
+import { mState } from '../../helpers/store.helper';
+import { exportPostsToDirectory } from '../../../src/store/commonActions';
+import { Post } from '../../../src/types/gelbooruTypes';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('thunks/favorites', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
 	describe('fetchTreeData()', () => {
 		it('Calls db correctly', async () => {
 			// given
@@ -164,6 +170,49 @@ describe('thunks/favorites', () => {
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.removePostsFromActiveDirectory.pending.type, payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({ type: 'favorites/fetchTreeData/pending', payload: undefined });
 			expect(dispatchedActions[2]).toMatchObject({ type: 'favorites/removePostFromActiveDirectory/fulfilled', payload: undefined });
+		});
+	});
+	describe('exportDirectory()', () => {
+		it('Calls DB correctly and dispatches exportPostsToDirectory()', async () => {
+			// given
+			const selectedKey = 12345;
+			const postIds = [12, 13, 5, 6, 8, 6565];
+			const posts = [mPost({ id: 123 }), mPost({ id: 456 })];
+			const store = mockStore(
+				mState({
+					favorites: {
+						selectedNodeKey: selectedKey,
+					},
+				})
+			);
+			mockedDb.favorites.getNodeWithoutChildren.mockResolvedValue(mTreeNode({ postIds }));
+			mockedDb.posts.getBulk.mockResolvedValue(posts);
+
+			// when
+			await store.dispatch(thunks.exportDirectory());
+
+			// then
+			const dispatchedActions = store.getActions();
+			expect(mockedDb.favorites.getNodeWithoutChildren).toBeCalledWith(selectedKey);
+			expect(mockedDb.posts.getBulk).toBeCalledWith(postIds);
+			expect(dispatchedActions).toContainMatchingAction({ type: exportPostsToDirectory.pending.type, meta: { arg: posts } });
+		});
+		it('Does not call anything when selectedKey is undefined', async () => {
+			// given
+			const selectedKey = undefined;
+			const store = mockStore(
+				mState({
+					favorites: {
+						selectedNodeKey: selectedKey,
+					},
+				})
+			);
+
+			// when
+			await store.dispatch(thunks.exportDirectory());
+
+			// then
+			expect(mockedDb.favorites.getNodeWithoutChildren).toBeCalledTimes(0);
 		});
 	});
 });

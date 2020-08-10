@@ -6,6 +6,12 @@
 - Automatically switch to default directory after deleting favorites directory thats currently open
 - Favorites directories can now be closed and opened. By default they are all opened
 - Favorites directories sider can now be resized by dragging
+- Change Thumbnails List top buttons to a more compact menu
+- Add option to add selected/all current posts to Saved Search preview
+- Add option to move all posts in one favorites directory to another by right clicking a directory name
+- Previews now save the whole post and are clickable, which sets them as active posts
+- Added export menu to Thumbnails page which lets you export images of current pots to a directory
+- Added export option to context menu over favorites directory, which lets you export it to a directory
 - BUG FIX: Fix issue with favorites directory loading
 - BUG FIX: Loader now disappears when post fetching fails
 - BUG FIX: Fix grid scroll in Favorites page
