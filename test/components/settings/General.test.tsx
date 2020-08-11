@@ -9,6 +9,7 @@ import '@testing-library/jest-dom';
 import { mState } from '../../helpers/store.helper';
 
 import General from '../../../src/components/settings/General';
+import { IpcChannels } from '../../../src/types/processDto';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -131,7 +132,7 @@ describe('settings/General', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(ipcSendSpy).toBeCalledWith('open-select-directory-dialog');
+		expect(ipcSendSpy).toBeCalledWith(IpcChannels.OPEN_SELECT_IMAGES_FOLDER_DIALOG);
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({ type: thunks.settings.updateImagePath.fulfilled.type, payload: newPath })
 		);
@@ -166,7 +167,7 @@ describe('settings/General', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		await waitFor(() => expect(ipcSendSpy).toBeCalledWith('open-select-directory-dialog'));
+		await waitFor(() => expect(ipcSendSpy).toBeCalledWith(IpcChannels.OPEN_SELECT_IMAGES_FOLDER_DIALOG));
 		await waitFor(() =>
 			expect(dispatchedActions).not.toContainMatchingAction({ type: thunks.settings.updateImagePath.fulfilled.type, payload: newPath })
 		);

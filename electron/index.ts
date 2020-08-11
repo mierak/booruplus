@@ -154,9 +154,24 @@ ipcMain.handle(IpcChannels.LOAD_IMAGE, async (event: IpcMainInvokeEvent, post: P
 ipcMain.handle(IpcChannels.DELETE_IMAGE, async (event: IpcMainInvokeEvent, post: Post) => {
 	try {
 		fs.unlinkSync(`${settings.imagesFolderPath}/${post.directory}/${post.image}`);
+		log.debug(`Deleting post ${post.id} and its directory if its empty`);
 		const dirs = post.directory.split('/');
-		fs.rmdirSync(`${settings.imagesFolderPath}/${dirs[0]}/${dirs[1]}`);
-		fs.rmdirSync(`${settings.imagesFolderPath}/${dirs[0]}`);
+		const firstDir = `${settings.imagesFolderPath}/${dirs[0]}/${dirs[1]}`;
+		const secondDir = `${settings.imagesFolderPath}/${dirs[0]}`;
+
+		const firstEmpty = fs.readdirSync(firstDir).length === 0;
+		log.debug(`Directory ${firstDir} is ${firstEmpty ? 'empty' : 'not empty'}.`);
+		if (firstEmpty) {
+			log.debug('Deleting first directory.');
+			fs.rmdirSync(firstDir);
+
+			const secondEmpty = fs.readdirSync(secondDir).length === 0;
+			log.debug(`Directory ${secondDir} is ${secondEmpty ? 'empty' : 'not empty'}.`);
+			if (secondEmpty) {
+				log.debug('Deleting second directory.');
+				fs.rmdirSync(secondDir);
+			}
+		}
 		return true;
 	} catch (err) {
 		log.error('could not delete post image or directories', `post id: ${post.id}`, err);

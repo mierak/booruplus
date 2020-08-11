@@ -72,6 +72,13 @@ export interface Settings {
 	};
 }
 
+export interface DownloadTaskState {
+	taskId: number;
+	skipped: number;
+	downloaded: number;
+	canceled: boolean;
+}
+
 export interface TagHistory {
 	tag: Tag;
 	date: string;

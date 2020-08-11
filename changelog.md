@@ -12,6 +12,9 @@
 - Previews now save the whole post and are clickable, which sets them as active posts
 - Added export menu to Thumbnails page which lets you export images of current pots to a directory
 - Added export option to context menu over favorites directory, which lets you export it to a directory
+- Download tasks can now be removed from the list by clicking the X icon. This is permanent and unreversible.
+- BUG FIX: Download tasks are now properly sorted in descending order
+- BUG FIX: Fix bug with download task not setting its state to completed, when one or more posts were already downloaded
 - BUG FIX: Fix issue with favorites directory loading
 - BUG FIX: Loader now disappears when post fetching fails
 - BUG FIX: Fix grid scroll in Favorites page

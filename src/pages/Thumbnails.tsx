@@ -181,7 +181,9 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			message: 'This will search for all posts with current parameters and then download them. This could take a while. Are you sure?',
 			cancelText: 'Cancel',
 			okText: 'Download',
-			onOk: () => dispatch(thunks.posts.downloadWholeSearch()),
+			onOk: () => {
+				dispatch(thunks.posts.downloadWholeSearch());
+			},
 		});
 	};
 
@@ -191,7 +193,9 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			message: 'All current posts will be blacklisted to. You will not see them anymore. Continue?',
 			cancelText: 'Cancel',
 			okText: 'Blacklist',
-			onOk: () => dispatch(thunks.posts.blacklistAllPosts()),
+			onOk: () => {
+				dispatch(thunks.posts.blacklistAllPosts());
+			},
 		});
 	};
 
@@ -201,7 +205,9 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			message: 'Selected posts will be blacklisted to. You will not see them anymore. Continue?',
 			cancelText: 'Cancel',
 			okText: 'Blacklist',
-			onOk: () => dispatch(thunks.posts.blacklistSelectedPosts()),
+			onOk: () => {
+				dispatch(thunks.posts.blacklistSelectedPosts());
+			},
 		});
 	};
 
@@ -221,7 +227,9 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			message: 'All current posts will be downloaded. Continue?',
 			cancelText: 'Cancel',
 			okText: 'Download',
-			onOk: () => dispatch(thunks.posts.downloadAllPosts()),
+			onOk: () => {
+				dispatch(thunks.posts.downloadAllPosts());
+			},
 		});
 	};
 
@@ -231,7 +239,9 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			message: 'Selected posts will be downloaded. Continue?',
 			cancelText: 'Cancel',
 			okText: 'Download',
-			onOk: () => dispatch(thunks.posts.downloadSelectedPosts()),
+			onOk: () => {
+				dispatch(thunks.posts.downloadSelectedPosts());
+			},
 		});
 	};
 
@@ -241,7 +251,9 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			message: 'Current search with its parameters will be saved. Continue?',
 			cancelText: 'Cancel',
 			okText: 'Save',
-			onOk: () => dispatch(thunks.savedSearches.saveSearch({ tags: selectedTags, excludedTags, rating })),
+			onOk: () => {
+				dispatch(thunks.savedSearches.saveSearch({ tags: selectedTags, excludedTags, rating }));
+			},
 		});
 	};
 
@@ -251,7 +263,9 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			message: 'Selected posts will be added to the current Saved Search preview. Continue?',
 			cancelText: 'Cancel',
 			okText: 'Add',
-			onOk: () => dispatch(thunks.savedSearches.addSelectedPreviewsToActiveSavedSearch()),
+			onOk: () => {
+				dispatch(thunks.savedSearches.addSelectedPreviewsToActiveSavedSearch());
+			},
 		});
 	};
 
@@ -261,7 +275,9 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			message: 'All current posts will be added to the current Saved Search preview. Continue?',
 			cancelText: 'Cancel',
 			okText: 'Add',
-			onOk: () => dispatch(thunks.savedSearches.addAllPreviewsToActiveSavedSearch()),
+			onOk: () => {
+				dispatch(thunks.savedSearches.addAllPreviewsToActiveSavedSearch());
+			},
 		});
 	};
 

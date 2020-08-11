@@ -9,7 +9,6 @@ import * as thunks from '../../../src/store/thunks/favorites';
 import { mPost, mTreeNode } from '../../helpers/test.helper';
 import { mState } from '../../helpers/store.helper';
 import { exportPostsToDirectory } from '../../../src/store/commonActions';
-import { Post } from '../../../src/types/gelbooruTypes';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 

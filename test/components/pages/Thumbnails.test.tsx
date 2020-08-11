@@ -9,7 +9,7 @@ import { mState } from '../../helpers/store.helper';
 
 import Thumbnails from '../../../src/pages/Thumbnails';
 import '@testing-library/jest-dom';
-import { mTag, mPost } from '../../helpers/test.helper';
+import { mPost } from '../../helpers/test.helper';
 import { deleteImageMock } from '../../helpers/imageBus.mock';
 import * as utils from '../../../src/types/components';
 import { getThumbnailUrl } from '../../../src/service/webService';

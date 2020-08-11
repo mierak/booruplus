@@ -5,7 +5,7 @@ enableFetchMocks();
 
 import { MockedStore } from '../../helpers/types.helper';
 import { initialState } from '../../../src/store';
-import { RootState, AppDispatch } from '../../../src/store/types';
+import { RootState, AppDispatch, Task, DownloadTaskState } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import * as thunks from '../../../src/store/thunks/posts';
@@ -34,6 +34,7 @@ jest.mock('../../../src/util/imageIpcUtils', () => {
 	};
 });
 import { deleteImage } from '../../../src/util/imageIpcUtils';
+import { mState } from '../../helpers/store.helper';
 jest.mock('../../../src/util/utils', () => {
 	const originalModule = jest.requireActual('../../../src/util/utils');
 	return {
@@ -44,6 +45,9 @@ jest.mock('../../../src/util/utils', () => {
 });
 
 describe('thunks/posts', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
 	describe('deduplicateAndCheckTagsAgainstDb()', () => {
 		it('Does not return duplicates and tags that exist in db', async () => {
 			// given
@@ -487,6 +491,198 @@ describe('thunks/posts', () => {
 			);
 			expect(getPostsForTags).toBeCalledTimes(4);
 			expect(dispatchedActions[1]).toMatchObject({ type: thunks.downloadPosts.pending.type, meta: { arg: { posts } } });
+		});
+	});
+	describe('persistTask()', () => {
+		it('Saves correct task when all posts were downloaded and none skipped', async () => {
+			// given
+			const taskId = 123;
+			const task: Task = {
+				id: taskId,
+				items: 100,
+				itemsDone: 50,
+				state: 'downloading',
+				postIds: [],
+				timestampStarted: 12345,
+			};
+			const taskState: DownloadTaskState = {
+				taskId,
+				canceled: false,
+				downloaded: 100,
+				skipped: 0,
+			};
+			const store = mockStore(
+				mState({
+					tasks: {
+						tasks: {
+							[taskId]: task,
+						},
+					},
+				})
+			);
+
+			// when
+			await store.dispatch(thunks.persistTask(taskState));
+
+			// then
+			expect(mockedDb.tasks.save).toBeCalledWith({ ...task, state: 'completed', itemsDone: 100, timestampDone: expect.anything() });
+		});
+		it('Saves correct task when no posts were downloaded and all skipped', async () => {
+			// given
+			const taskId = 123;
+			const task: Task = {
+				id: taskId,
+				items: 100,
+				itemsDone: 50,
+				state: 'downloading',
+				postIds: [],
+				timestampStarted: 12345,
+			};
+			const taskState: DownloadTaskState = {
+				taskId,
+				canceled: false,
+				downloaded: 0,
+				skipped: 100,
+			};
+			const store = mockStore(
+				mState({
+					tasks: {
+						tasks: {
+							[taskId]: task,
+						},
+					},
+				})
+			);
+
+			// when
+			await store.dispatch(thunks.persistTask(taskState));
+
+			// then
+			expect(mockedDb.tasks.save).toBeCalledWith({ ...task, state: 'completed', itemsDone: 100, timestampDone: expect.anything() });
+		});
+		it('Saves correct task when some posts were downloaded and some skipped and they add up to task items', async () => {
+			// given
+			const taskId = 123;
+			const task: Task = {
+				id: taskId,
+				items: 100,
+				itemsDone: 50,
+				state: 'downloading',
+				postIds: [],
+				timestampStarted: 12345,
+			};
+			const taskState: DownloadTaskState = {
+				taskId,
+				canceled: false,
+				downloaded: 60,
+				skipped: 40,
+			};
+			const store = mockStore(
+				mState({
+					tasks: {
+						tasks: {
+							[taskId]: task,
+						},
+					},
+				})
+			);
+
+			// when
+			await store.dispatch(thunks.persistTask(taskState));
+
+			// then
+			expect(mockedDb.tasks.save).toBeCalledWith({ ...task, state: 'completed', itemsDone: 100, timestampDone: expect.anything() });
+		});
+		it('Saves correct task when some posts were downloaded and some skipped and they dont add up to task items', async () => {
+			// given
+			const taskId = 123;
+			const task: Task = {
+				id: taskId,
+				items: 100,
+				itemsDone: 50,
+				state: 'downloading',
+				postIds: [],
+				timestampStarted: 12345,
+			};
+			const taskState: DownloadTaskState = {
+				taskId,
+				canceled: false,
+				downloaded: 50,
+				skipped: 40,
+			};
+			const store = mockStore(
+				mState({
+					tasks: {
+						tasks: {
+							[taskId]: task,
+						},
+					},
+				})
+			);
+
+			// when
+			await store.dispatch(thunks.persistTask(taskState));
+
+			// then
+			expect(mockedDb.tasks.save).toBeCalledWith({ ...task, state: 'failed', timestampDone: expect.anything() });
+		});
+		it('Saves correct task when task was canceled', async () => {
+			// given
+			const taskId = 123;
+			const task: Task = {
+				id: taskId,
+				items: 100,
+				itemsDone: 50,
+				state: 'downloading',
+				postIds: [],
+				timestampStarted: 12345,
+			};
+			const taskState: DownloadTaskState = {
+				taskId,
+				canceled: true,
+				downloaded: 50,
+				skipped: 40,
+			};
+			const store = mockStore(
+				mState({
+					tasks: {
+						tasks: {
+							[taskId]: task,
+						},
+					},
+				})
+			);
+
+			// when
+			await store.dispatch(thunks.persistTask(taskState));
+
+			// then
+			expect(mockedDb.tasks.save).toBeCalledWith({ ...task, state: 'canceled', timestampDone: expect.anything() });
+		});
+		it('Return undefined when no task is in state', async () => {
+			// given
+			const taskId = 123;
+			const taskState: DownloadTaskState = {
+				taskId,
+				canceled: true,
+				downloaded: 50,
+				skipped: 40,
+			};
+			const store = mockStore(
+				mState({
+					tasks: {
+						tasks: {},
+						lastId: 1,
+					},
+				})
+			);
+
+			// when
+			const result = await store.dispatch(thunks.persistTask(taskState));
+
+			// then
+			expect(result.payload).toBeUndefined();
+			expect(mockedDb.tasks.save).toBeCalledTimes(0);
 		});
 	});
 });

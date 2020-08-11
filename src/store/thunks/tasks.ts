@@ -28,3 +28,14 @@ export const cancel = createAsyncThunk<Task, number, ThunkApi>(
 		return clone;
 	}
 );
+
+export const removeTask = createAsyncThunk<number, string | number, ThunkApi>(
+	'tasks/remove',
+	async (id): Promise<number> => {
+		const logger = thunkLogger.getActionLogger(removeTask);
+		logger.debug('Removing task id', id);
+		const newId = typeof id === 'string' ? parseInt(id) : id;
+		await db.tasks.remove(newId);
+		return newId;
+	}
+);

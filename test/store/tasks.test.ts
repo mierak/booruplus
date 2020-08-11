@@ -139,24 +139,43 @@ describe('store/tasks', () => {
 		expect(result.tasks[taskId].itemsDone).toBe(51);
 		expect(result.tasks[taskId].state).toBe('downloading');
 	});
-	it('Correctly changes task when last downloadPost is fulfilled successfuly', () => {
+	it('Replaces task with the returned task', () => {
 		// given
 		const taskId = 123;
 		const task: Task = {
 			id: taskId,
 			items: 100,
-			itemsDone: 99,
+			itemsDone: 100,
 			postIds: [],
 			state: 'preparing',
 			timestampStarted: 123,
 		};
-		const action = createPendingAction(thunks.posts.downloadPost.fulfilled.type, { arg: { taskId } });
+		const action = createAction(thunks.posts.persistTask.fulfilled.type, task);
 
 		// when
-		const result = reducer({ ...initialState, tasks: { [taskId]: task } }, action);
+		const result = reducer(initialState, action);
 
 		// then
-		expect(result.tasks[taskId].itemsDone).toBe(100);
-		expect(result.tasks[taskId].state).toBe('completed');
+		expect(result.tasks[taskId]).toMatchObject(task);
+	});
+	it('Removes task with the returned task', () => {
+		// given
+		const taskId = 2;
+		const tasksState = {
+			1: mTask({ id: 1 }),
+			2: mTask({ id: 2 }),
+			3: mTask({ id: 3 }),
+			4: mTask({ id: 4 }),
+		};
+		const action = createAction(thunks.tasks.removeTask.fulfilled.type, taskId);
+
+		// when
+		const result = reducer({ ...initialState, tasks: { ...tasksState } }, action);
+
+		// then
+		expect(result.tasks[taskId]).toBeUndefined();
+		expect(result.tasks[1]).toMatchObject(tasksState[1]);
+		expect(result.tasks[3]).toMatchObject(tasksState[3]);
+		expect(result.tasks[4]).toMatchObject(tasksState[4]);
 	});
 });

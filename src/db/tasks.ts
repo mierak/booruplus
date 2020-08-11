@@ -11,3 +11,7 @@ export const getAll = (): Promise<Task[]> => {
 		.reverse()
 		.toArray();
 };
+
+export const remove = (id: number): Promise<void> => {
+	return db.tasks.delete(id);
+};

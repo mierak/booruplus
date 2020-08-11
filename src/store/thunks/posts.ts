@@ -5,7 +5,7 @@ import * as api from '../../service/apiService';
 
 import { deleteImage, saveImage } from '../../util/imageIpcUtils';
 
-import { ThunkApi } from '../../store/types';
+import { ThunkApi, Task, DownloadTaskState } from '../../store/types';
 
 import { Post, PostSearchOptions, Tag } from '../../types/gelbooruTypes';
 import { delay } from '../../util/utils';
@@ -45,7 +45,7 @@ export const downloadTags = createAsyncThunk<Tag[], string[], ThunkApi>(
 		const logger = thunkLogger.getActionLogger(downloadTags);
 		logger.debug(`Deduplicating and checking ${tags.length} tags against DB`);
 		const filteredTags = await deduplicateAndCheckTagsAgainstDb(tags);
-		logger.debug(`Getting ${filteredTags.length} from API`);
+		logger.debug(`Getting ${filteredTags.length} tags from API`);
 		const tagsFromApi = await api.getTagsByNames(filteredTags, thunkApi.getState().settings.apiKey);
 		logger.debug(`Saving ${tagsFromApi.length} tags from API`);
 		db.tags.bulkPut(tagsFromApi);
@@ -99,34 +99,93 @@ export const downloadPost = createAsyncThunk<Post, { post: Post; taskId?: number
 	}
 );
 
-export const downloadPosts = createAsyncThunk<void, { posts: Post[] }, ThunkApi>(
+export const persistTask = createAsyncThunk<Task | undefined, DownloadTaskState, ThunkApi>(
+	'posts/persistTask',
+	async (state, thunkApi): Promise<Task | undefined> => {
+		const logger = thunkLogger.getActionLogger(persistTask);
+		const taskFromState = thunkApi.getState().tasks.tasks[state.taskId];
+		if (!taskFromState) return;
+		const task = { ...taskFromState };
+
+		const downloaded = state.downloaded;
+		const skipped = state.skipped;
+		const canceled = state.canceled;
+		if (downloaded + skipped === task.items) {
+			task.itemsDone = downloaded + skipped;
+			task.state = 'completed';
+		} else if (!canceled) {
+			task.state = 'failed';
+		} else if (canceled) {
+			task.state = 'canceled';
+		}
+		task.timestampDone = Date.now();
+
+		await db.tasks.save(task);
+		logger.debug(`Task id ${state.taskId} was persisted succesfuly`, task);
+
+		return task;
+	}
+);
+
+export const downloadPosts = createAsyncThunk<
+	{ taskId: number; skipped: number; downloaded: number; canceled: boolean },
+	{ posts: Post[] },
+	ThunkApi
+>(
 	'posts/downloadPosts',
-	async (params, thunkApi): Promise<void> => {
+	async (params, thunkApi): Promise<DownloadTaskState> => {
 		const logger = thunkLogger.getActionLogger(downloadPosts);
 		const taskId = thunkApi.getState().tasks.lastId;
 		const tagsToSave: string[] = [];
+		let canceled = false;
+		let skippedPostCount = 0;
+		let downloadedPostCount = 0;
 
 		logger.debug(`Downloading ${params.posts.length} posts. Skipping already downloaded.`);
 		const downloadedPosts: Post[] = [];
 		for await (const post of params.posts) {
 			if (post.downloaded === 1) {
+				logger.debug(`Skipping post id ${post.id} because it is already downloaded.`, post.fileUrl);
+				skippedPostCount++;
 				continue;
 			}
 			thunkApi.dispatch(downloadPost({ post, taskId }));
 			downloadedPosts.push(post);
 
 			tagsToSave.push(...post.tags);
+			downloadedPostCount++;
 
 			await delay(500);
 			if (thunkApi.getState().tasks.tasks[taskId].state === 'canceled') {
-				thunkApi.dispatch(cancelPostsDownload(downloadedPosts));
+				logger.debug(`Cancelling task. Deleting ${downloadedPosts.length} posts`);
+				await thunkApi.dispatch(cancelPostsDownload(downloadedPosts));
+				canceled = true;
 				break;
 			}
 		}
-		logger.debug(`Downloaded ${downloadPosts.length} posts. Updating Task id ${taskId} to DB`);
-		db.tasks.save(thunkApi.getState().tasks.tasks[taskId]);
-		thunkApi.dispatch(downloadTags(tagsToSave));
-		return Promise.resolve();
+		if (!canceled) {
+			logger.debug(
+				`${params.posts.length} posts given to download. ${downloadedPostCount} posts downloaded, ${skippedPostCount} posts skipped. Updating Task id ${taskId} to DB`
+			);
+			db.tasks.save(thunkApi.getState().tasks.tasks[taskId]);
+			thunkApi.dispatch(downloadTags(tagsToSave));
+		}
+
+		if (downloadedPostCount + skippedPostCount === params.posts.length) {
+			logger.debug('Task finished succesfuly');
+		} else if (canceled) {
+			logger.debug('Task was canceled');
+		} else {
+			logger.debug('Unexpected error occured while downloading posts.');
+		}
+		const result = {
+			taskId,
+			canceled,
+			skipped: skippedPostCount,
+			downloaded: downloadedPostCount,
+		};
+		thunkApi.dispatch(persistTask(result));
+		return result;
 	}
 );
 

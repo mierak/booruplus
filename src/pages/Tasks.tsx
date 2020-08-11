@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { List, Button } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
 
 import { RootState } from '../store/types';
 
 import TaskProgress from '../components/TaskProgress';
-import { List } from 'antd';
-import { createSelector } from '@reduxjs/toolkit';
 import { Tasks } from '../store/tasks';
+import { thunks } from '../store';
 
 interface Props {
 	className?: string;
@@ -17,30 +18,26 @@ const Container = styled.div`
 	overflow-x: hidden;
 `;
 
-const taskIdsSelector = createSelector<RootState, Tasks, string[]>(
-	(state) => state.tasks.tasks,
-	(tasks) => Object.keys(tasks)
-);
-
 const Tasks: React.FunctionComponent<Props> = (props: Props) => {
-	const [tasksArray, setTasksArray] = useState<string[]>([]);
-	const taskIds = useSelector(taskIdsSelector);
+	const dispatch = useDispatch();
+	const taskIds = useSelector((state: RootState) => Object.keys(state.tasks.tasks));
 
-	useEffect(() => {
-		setTasksArray(taskIds.sort().reverse());
-	}, [taskIds, taskIds.length]);
+	const handleRemoveTask = (id: string): void => {
+		dispatch(thunks.tasks.removeTask(id));
+	};
 
 	const renderItem = (id: string): React.ReactNode => {
 		return (
 			<List.Item>
 				<TaskProgress key={`task${id}`} taskId={parseInt(id)} />
+				<Button type='link' icon={<CloseOutlined />} onClick={(): void => handleRemoveTask(id)} />
 			</List.Item>
 		);
 	};
 
 	return (
 		<Container className={props.className}>
-			<List size='small' renderItem={renderItem} dataSource={tasksArray} />
+			<List size='small' renderItem={renderItem} dataSource={taskIds.sort((a, b) => parseInt(b) - parseInt(a))} />
 		</Container>
 	);
 };
