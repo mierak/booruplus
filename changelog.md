@@ -1,5 +1,5 @@
 # Changelog
-## 0.1.5 - Move multiple posts between directories - DATE
+## 0.1.5 - Move multiple posts between directories - 12.8.2020
 - Right clicking favorites directory when multiple posts are selected now shows move all to folder option
 - Shift clickign on thumbnails list now allos you to select multiple posts. Just like you would do with files in your system.
 - Favorites now have an undeletable default directory instead of using the root node
