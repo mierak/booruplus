@@ -82,13 +82,22 @@ describe('store/system', () => {
 		// then
 		expect(result.isImageViewThumbnailsCollapsed).toBe(collapsed);
 	});
+	it('Toggles image view thumbnails sider collapsed', () => {
+		// given
+		const collapsed = true;
+		const action = createAction(actions.toggleFavoritesDirectoryTreeCollapsed.type);
+
+		// when
+		const result = reducer(initialState, action);
+
+		// then
+		expect(result.isImageViewThumbnailsCollapsed).toBe(collapsed);
+	});
 	it('Correctly changes state when online fetchPosts is initiated', () => {
 		// given
 		const action = createAction(thunks.onlineSearchForm.fetchPosts.pending.type);
 		const state: SystemState = {
 			...initialState,
-			isSearchDisabled: false,
-			isFetchingPosts: false,
 			activeView: 'favorites',
 			isSearchFormDrawerVsibile: true,
 			isDownloadedSearchFormDrawerVisible: true,
@@ -101,30 +110,12 @@ describe('store/system', () => {
 		expect(result.activeView).toBe('thumbnails');
 		expect(result.isSearchFormDrawerVsibile).toBe(false);
 		expect(result.isDownloadedSearchFormDrawerVisible).toBe(false);
-		expect(result.isSearchDisabled).toBe(true);
-		expect(result.isFetchingPosts).toBe(true);
-	});
-	it('Correctly changes state when online fetchMorePosts is initiated', () => {
-		// given
-		const action = createAction(thunks.onlineSearchForm.fetchMorePosts.pending.type);
-		const state: SystemState = {
-			...initialState,
-			isSearchDisabled: false,
-		};
-
-		// when
-		const result = reducer(state, action);
-
-		// then
-		expect(result.isSearchDisabled).toBe(true);
 	});
 	it('Correctly changes state when offline fetchPosts is initiated', () => {
 		// given
 		const action = createAction(thunks.downloadedSearchForm.fetchPosts.pending.type);
 		const state: SystemState = {
 			...initialState,
-			isSearchDisabled: false,
-			isFetchingPosts: false,
 			activeView: 'favorites',
 			isSearchFormDrawerVsibile: true,
 			isDownloadedSearchFormDrawerVisible: true,
@@ -137,56 +128,6 @@ describe('store/system', () => {
 		expect(result.activeView).toBe('thumbnails');
 		expect(result.isSearchFormDrawerVsibile).toBe(false);
 		expect(result.isDownloadedSearchFormDrawerVisible).toBe(false);
-		expect(result.isSearchDisabled).toBe(true);
-		expect(result.isFetchingPosts).toBe(true);
-	});
-	it('Correctly changes state when offline fetchMorePosts is initiated', () => {
-		// given
-		const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.pending.type);
-
-		// when
-		const result = reducer({ ...initialState, isSearchDisabled: true }, action);
-
-		// then
-		expect(result.isSearchDisabled).toBe(true);
-	});
-	it('Correctly changes state when offline fetchPosts is fulfilled', () => {
-		// given
-		const action = createAction(thunks.downloadedSearchForm.fetchPosts.fulfilled.type);
-
-		// when
-		const result = reducer({ ...initialState, isSearchDisabled: true, isFetchingPosts: true }, action);
-
-		// then
-		expect(result.isSearchDisabled).toBe(false);
-		expect(result.isFetchingPosts).toBe(false);
-	});
-	it('Correctly changes state when offline fetchMorePosts is fulfilled', () => {
-		// given
-		const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type);
-
-		// when
-		const result = reducer({ ...initialState, isSearchDisabled: true, isFetchingPosts: true }, action);
-
-		// then
-		expect(result.isSearchDisabled).toBe(false);
-		expect(result.isFetchingPosts).toBe(false);
-	});
-	it('Correctly changes when checkPostsAgainstDb is fulfilled', () => {
-		// given
-		const action = createAction(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled.type);
-		const state: SystemState = {
-			...initialState,
-			isSearchDisabled: true,
-			isFetchingPosts: true,
-		};
-
-		// when
-		const result = reducer(state, action);
-
-		// then
-		expect(result.isSearchDisabled).toBe(false);
-		expect(result.isFetchingPosts).toBe(false);
 	});
 	it('Correctly changes when getTagsByPattern is pending', () => {
 		// given
@@ -205,6 +146,20 @@ describe('store/system', () => {
 	it('Correctly changes when getTagsByPattern is fulfilled', () => {
 		// given
 		const action = createAction(thunks.onlineSearchForm.getTagsByPatternFromApi.fulfilled.type);
+		const state: SystemState = {
+			...initialState,
+			isTagOptionsLoading: true,
+		};
+
+		// when
+		const result = reducer(state, action);
+
+		// then
+		expect(result.isTagOptionsLoading).toBe(false);
+	});
+	it('Correctly changes when getTagsByPattern is rejected', () => {
+		// given
+		const action = createAction(thunks.onlineSearchForm.getTagsByPatternFromApi.rejected.type);
 		const state: SystemState = {
 			...initialState,
 			isTagOptionsLoading: true,
@@ -328,8 +283,6 @@ describe('store/system', () => {
 		const state: SystemState = {
 			...initialState,
 			isTasksDrawerVisible: true,
-			isSearchDisabled: false,
-			isFetchingPosts: false,
 			activeView: 'image',
 			searchMode: 'most-viewed',
 		};
@@ -339,25 +292,7 @@ describe('store/system', () => {
 
 		// then
 		expect(result.isTasksDrawerVisible).toBe(false);
-		expect(result.isSearchDisabled).toBe(true);
-		expect(result.isFetchingPosts).toBe(true);
 		expect(result.activeView).toBe('thumbnails');
 		expect(result.searchMode).toBe('open-download');
-	});
-	it('Correctly changes state when posts.fetchPostsByIds is fulfilled', () => {
-		// given
-		const action = createAction(thunks.posts.fetchPostsByIds.fulfilled.type);
-		const state: SystemState = {
-			...initialState,
-			isSearchDisabled: true,
-			isFetchingPosts: true,
-		};
-
-		// when
-		const result = reducer(state, action);
-
-		// then
-		expect(result.isSearchDisabled).toBe(false);
-		expect(result.isFetchingPosts).toBe(false);
 	});
 });

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Modal, Button, Input, Form } from 'antd';
+import { Modal, Input, Form } from 'antd';
 
 import { actions, thunks } from '../../../store';
 import { AppDispatch, RootState } from '../../../store/types';
 
 import { openNotificationWithIcon } from '../../../types/components';
+import ModalFooter from './common/ModalFooter';
 
 interface ValidationStatus {
 	validateStatus: 'error' | 'success' | '';
@@ -74,19 +75,15 @@ const RenameDirectoryModal: React.FunctionComponent = () => {
 		event.key === 'Enter' && handleConfirm();
 	};
 
-	const renderModalFooter = (): React.ReactNode => {
-		return [
-			<Button type="primary" key="add" onClick={handleConfirm}>
-				Rename
-			</Button>,
-			<Button key="cancel" onClick={handleClose}>
-				Cancel
-			</Button>,
-		];
-	};
-
 	return (
-		<Modal centered title="Input new category name" visible={true} destroyOnClose onCancel={handleClose} footer={renderModalFooter()}>
+		<Modal
+			centered
+			title='Input new category name'
+			visible={true}
+			destroyOnClose
+			onCancel={handleClose}
+			footer={<ModalFooter onConfirm={handleConfirm} onCancel={handleClose} okText='Rename' cancelText='Close' />}
+		>
 			<Form.Item hasFeedback validateStatus={validationStatus.validateStatus}>
 				<Input autoFocus onChange={handleInputChange} onKeyPress={handleKeyPress} />
 			</Form.Item>

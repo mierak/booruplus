@@ -5,17 +5,6 @@ import { thunks } from '../../src/store/';
 import { createAction, createPendingAction, mTreeNode } from '../helpers/test.helper';
 
 describe('store/favorites', () => {
-	it('Sets tree data', () => {
-		// given
-		const treeData = mTreeNode({ key: '123', children: [mTreeNode({ key: '456' })] });
-		const action = createAction(actions.setTreeData.type, treeData);
-
-		// when
-		const result = reducer(undefined, action);
-
-		// then
-		expect(result.treeData).toStrictEqual(treeData);
-	});
 	it('Sets root node', () => {
 		// given
 		const treeData = mTreeNode({ key: '123', children: [mTreeNode({ key: '456' })] });
@@ -91,7 +80,7 @@ describe('store/favorites', () => {
 		const result = reducer(undefined, action);
 
 		// then
-		expect(result.activeNodeKey).toStrictEqual(0);
+		expect(result.activeNodeKey).toStrictEqual(1);
 	});
 	it('RootNode and TreeData when fetchTreeData is fulfilled', () => {
 		// given
@@ -102,7 +91,6 @@ describe('store/favorites', () => {
 		const result = reducer(undefined, action);
 
 		// then
-		expect(result.treeData).toStrictEqual(treeData.children);
 		expect(result.rootNode).toStrictEqual(treeData);
 	});
 	it('Sets expanded keys when fetchAllKeys is fulfilled', () => {
@@ -115,5 +103,16 @@ describe('store/favorites', () => {
 
 		// then
 		expect(result.expandedKeys).toStrictEqual(keys);
+	});
+	it('Sets expanded keys when fetchAllKeys is fulfilled', () => {
+		// given
+		const activeNodeKey = 123;
+		const action = createPendingAction(thunks.favorites.deleteDirectoryAndChildren.fulfilled.type, { arg: activeNodeKey });
+
+		// when
+		const result = reducer({ ...initialState, activeNodeKey }, action);
+
+		// then
+		expect(result.activeNodeKey).toBe(1);
 	});
 });

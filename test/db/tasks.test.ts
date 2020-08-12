@@ -3,9 +3,10 @@ Dexie.dependencies.indexedDB = require('fake-indexeddb');
 Dexie.dependencies.IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
 import { Task } from 'store/types';
 import { mTask } from '../helpers/test.helper';
-import { save, getAll } from '../../src/db/tasks';
+import { save, getAll, remove } from '../../src/db/tasks';
 
 import db from '../../src/db/database';
+import { utc } from 'moment';
 
 describe('db/tasks', () => {
 	describe('save()', () => {
@@ -31,6 +32,19 @@ describe('db/tasks', () => {
 
 			// then
 			expect(orderBy).toBeCalledWith('id');
+		});
+	});
+	describe('remove()', () => {
+		it('Calls delete', async () => {
+			// given
+			const id = 123;
+			const deleteSpy = jest.spyOn(db.tasks, 'delete');
+
+			// when
+			await remove(id);
+
+			// then
+			expect(deleteSpy).toBeCalledWith(id);
 		});
 	});
 });

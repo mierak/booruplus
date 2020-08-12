@@ -12,7 +12,7 @@ interface PProps {
 	y: number;
 }
 
-type Actions = 'add' | 'delete' | 'rename' | 'mark-as-default';
+type Actions = 'add' | 'delete' | 'rename' | 'mark-as-default' | 'move-selected' | 'move-all' | 'export-directory';
 
 const DummyContextMenuPositionerDiv = styled.div<PProps>`
 	position: absolute;
@@ -20,36 +20,46 @@ const DummyContextMenuPositionerDiv = styled.div<PProps>`
 	top: ${(props): number => props.y}px;
 `;
 
+const StyledScrollContainer = styled.div`
+	overflow: auto;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+`;
+
 const StyledSiderContentContainer = styled.div`
 	height: 100%;
-	overflow-x: hidden;
-	padding-top: 10px;
-	padding-bottom: 10px;
+	overflow: hidden;
 `;
 
 const StyledTreeEmptySpace = styled.div`
+	flex: 1 1 auto;
 	width: 100%;
-	height: 100vh;
+	min-height: 30px;
 `;
 
 const StyledDirectoryTree = styled(Tree.DirectoryTree)`
-	overflow-y: auto;
-	overflow-x: hidden;
-	max-height: 100vh;
-
-	&& .ant-tree-switcher {
-		width: 5px;
+	overflow: hidden;
+	&& {
+		flex: 0 0 auto;
+		margin-top: 10px;
+		min-width: 100%;
+		width: max-content;
 	}
 `;
 
 const SiderContent: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const rootNode = useSelector((state: RootState) => state.favorites.rootNode);
+	const activeNodeKey = useSelector((state: RootState) => state.favorites.activeNodeKey);
+	const isCollapsed = useSelector((state: RootState) => state.system.isFavoritesDirectoryTreeCollapsed);
+	const selectedPostIds = useSelector((state: RootState) => state.posts.posts.filter((post) => post.selected).map((post) => post.id));
 
 	const [align, setAlign] = useState<[number, number]>([0, 0]);
 	const [visible, setVisible] = useState(false);
 	const [contextMenuActions, setContextMenuActions] = useState<Actions[]>([]);
-	const expanedKeys = useSelector((state: RootState) => state.favorites.expandedKeys);
+	const expanedKeys = useSelector((state: RootState) => state.settings.favorites.expandedKeys);
 
 	const treeContainerRef = useRef<HTMLDivElement>(null);
 
@@ -60,7 +70,6 @@ const SiderContent: React.FunctionComponent = () => {
 		})();
 	}, [dispatch]);
 
-	// TODO reread and refactor this whole section
 	const renderMenu = (): JSX.Element => {
 		const addAction = (
 			<Menu.Item
@@ -95,11 +104,49 @@ const SiderContent: React.FunctionComponent = () => {
 				Rename
 			</Menu.Item>
 		);
+		const moveSelectedAction = (
+			<Menu.Item
+				onClick={async (): Promise<void> => {
+					setVisible(false);
+					dispatch(actions.modals.addToFavoritesModal.setPostIdsToFavorite('selected'));
+					dispatch(actions.modals.showModal('move-selected-to-directory-confirmation'));
+				}}
+				key='4'
+			>
+				Move Selected Posts Here
+			</Menu.Item>
+		);
+		const moveAllAction = (
+			<Menu.Item
+				onClick={async (): Promise<void> => {
+					setVisible(false);
+					dispatch(actions.modals.addToFavoritesModal.setPostIdsToFavorite('all'));
+					dispatch(actions.modals.showModal('move-selected-to-directory-confirmation'));
+				}}
+				key='5'
+			>
+				Move All Posts Here
+			</Menu.Item>
+		);
+		const exportAction = (
+			<Menu.Item
+				onClick={async (): Promise<void> => {
+					setVisible(false);
+					dispatch(thunks.favorites.exportDirectory());
+				}}
+				key='6'
+			>
+				Export to Folder
+			</Menu.Item>
+		);
 		return (
 			<Menu>
 				{contextMenuActions.includes('add') && addAction}
 				{contextMenuActions.includes('rename') && renameAction}
 				{contextMenuActions.includes('delete') && deleteAction}
+				{contextMenuActions.includes('move-selected') && moveSelectedAction}
+				{contextMenuActions.includes('move-all') && moveAllAction}
+				{contextMenuActions.includes('export-directory') && exportAction}
 			</Menu>
 		);
 	};
@@ -126,7 +173,9 @@ const SiderContent: React.FunctionComponent = () => {
 		}
 
 		if (treeContainerRef.current) {
-			setContextMenuActions(['add', 'delete', 'rename']);
+			const contextMenuActions: Actions[] = ['add', 'delete', 'rename', 'move-all', 'export-directory'];
+			if (selectedPostIds.length > 0) contextMenuActions.push('move-selected');
+			setContextMenuActions(contextMenuActions);
 			setAlign([info.event.clientX - treeContainerRef.current.getBoundingClientRect().x, info.event.clientY]);
 			info.node && dispatch(actions.favorites.setSelectedNodeKey(parseInt(info.node.key.toString())));
 		}
@@ -138,29 +187,35 @@ const SiderContent: React.FunctionComponent = () => {
 
 	return (
 		<StyledSiderContentContainer ref={treeContainerRef}>
-			<StyledDirectoryTree
-				multiple
-				draggable
-				blockNode
-				treeData={rootNode?.children}
-				onRightClick={handleTreeRightClick}
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				onExpand={(_, { expanded, node }): void => {
-					node.expanded = true;
-				}}
-				onSelect={(selectedKeys, info): void => {
-					dispatch(thunks.favorites.fetchPostsInDirectory(parseInt(info.node.key.toString())));
-					dispatch(actions.favorites.setActiveNodeKey(parseInt(info.node.key.toString())));
-				}}
-				onClick={(): void => setVisible(false)}
-				defaultExpandAll
-				expandedKeys={expanedKeys}
-				switcherIcon={<></>}
-			/>
+			<StyledScrollContainer>
+				{!isCollapsed && (
+					<StyledDirectoryTree
+						multiple
+						draggable
+						blockNode
+						defaultExpandAll
+						selectedKeys={[activeNodeKey.toString()]}
+						treeData={rootNode?.children}
+						onRightClick={handleTreeRightClick}
+						onExpand={(expandedKeys, _): void => {
+							dispatch(actions.settings.setFavoritesExpandedKeys(expandedKeys));
+						}}
+						onSelect={(_, info): void => {
+							info.nativeEvent.stopPropagation();
+							dispatch(thunks.favorites.fetchPostsInDirectory(parseInt(info.node.key.toString())));
+							dispatch(actions.favorites.setActiveNodeKey(parseInt(info.node.key.toString())));
+						}}
+						onClick={(): void => setVisible(false)}
+						expandedKeys={expanedKeys}
+						expandAction={'doubleClick'}
+					/>
+				)}
+				<StyledTreeEmptySpace data-testid='sider-content-empty-space' onMouseDown={handleEmptySpaceClick} />
+			</StyledScrollContainer>
+
 			<Dropdown overlay={renderMenu()} visible={visible}>
 				<DummyContextMenuPositionerDiv x={align[0]} y={align[1]} />
 			</Dropdown>
-			{<StyledTreeEmptySpace data-testid='sider-content-empty-space' onMouseDown={handleEmptySpaceClick} />}
 		</StyledSiderContentContainer>
 	);
 };

@@ -6,11 +6,14 @@ import { FixedSizeGrid } from 'react-window';
 import { ContextMenu, CardAction } from 'types/components';
 import CellRenderer from './CellRenderer';
 import { getRowColFromIndex } from '../../util/utils';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../store/types';
+import { actions } from '../../store/';
 
 interface Props {
 	itemCount: number;
+	isSingleColumn?: boolean;
 	activeIndex?: number;
-	sidebar?: boolean;
 	contextMenu?: ContextMenu[];
 	actions?: CardAction[];
 	renderLoadMore?: boolean;
@@ -29,6 +32,12 @@ const Container = styled.div<ContainerProps>`
 `;
 
 const innerElementType = forwardRef<HTMLDivElement, { style: CSSProperties; rest: unknown }>(({ style, ...rest }, ref) => {
+	const dispatch = useDispatch<AppDispatch>();
+	const onClick = (event: React.MouseEvent): void => {
+		if (!event.ctrlKey && !event.shiftKey) {
+			dispatch(actions.posts.unselectAllPosts());
+		}
+	};
 	return (
 		<div
 			ref={ref}
@@ -38,6 +47,7 @@ const innerElementType = forwardRef<HTMLDivElement, { style: CSSProperties; rest
 				width: isNaN(parseInt(style.height?.toString() ?? '0')) ? '0px' : style.height,
 			}}
 			{...rest}
+			onClick={onClick}
 		/>
 	);
 });
@@ -79,7 +89,7 @@ const Grid: React.FunctionComponent<Props> = (props) => {
 	useEffect(() => {
 		const grid = gridRef.current;
 		if (props.activeIndex && grid) {
-			const columns = props.sidebar ? 1 : Math.floor(size.width / 210);
+			const columns = props.isSingleColumn ? 1 : Math.floor(size.width / 210);
 			const { rowIndex, columnIndex } = getRowColFromIndex({
 				index: props.activeIndex,
 				columns,
@@ -90,12 +100,12 @@ const Grid: React.FunctionComponent<Props> = (props) => {
 				align: 'center',
 			});
 		}
-	}, [props.activeIndex, props.sidebar, size.width]);
+	}, [props.activeIndex, props.isSingleColumn, size.width]);
 
 	const height = size.height;
 	const width = size.width;
 
-	const columns = props.sidebar ? 1 : Math.floor(width / 210);
+	const columns = props.isSingleColumn ? 1 : Math.floor(width / 210);
 	const columnWidth = (width - 10) / columns;
 	const rowCount = Math.ceil(props.itemCount / columns);
 

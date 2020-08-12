@@ -167,7 +167,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 			)
 		);
 	});
-	it('When no node is selected it dispatches with root node key', async () => {
+	it('When no node is selected it dispatches with default node key', async () => {
 		const postIdsToFavorite = [1, 2, 3, 4, 5];
 		const store = mockStore(
 			mState({
@@ -197,7 +197,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({
 				type: thunks.favorites.addPostsToDirectory.pending.type,
-				meta: { arg: { ids: postIdsToFavorite, key: 0 } },
+				meta: { arg: { ids: postIdsToFavorite, key: 1 } },
 			})
 		);
 	});

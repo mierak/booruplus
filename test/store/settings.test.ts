@@ -97,6 +97,27 @@ describe('store/settings', () => {
 		// then
 		expect(result.dashboard.saveTagsNotFoundInDb).toStrictEqual(false);
 	});
+	it('Sets setFavoritesSiderWidth', () => {
+		// given
+		const action = createAction(actions.setFavoritesSiderWidth.type, 333);
+
+		// when
+		const result = reducer(undefined, action);
+
+		// then
+		expect(result.favorites.siderWidth).toBe(333);
+	});
+	it('Sets setFavoritesExpandedKeys', () => {
+		// given
+		const keys = ['1', '2', '123'];
+		const action = createAction(actions.setFavoritesExpandedKeys.type, keys);
+
+		// when
+		const result = reducer(undefined, action);
+
+		// then
+		expect(result.favorites.expandedKeys).toEqual(keys);
+	});
 	it('Updates imagesPath when updateImagePath is fulfilled', () => {
 		// given
 		const path = 'img_path';
@@ -148,6 +169,7 @@ describe('store/settings', () => {
 				theme: 'light',
 			}),
 			dashboard: undefined,
+			favorites: undefined,
 		};
 		const action = createAction(thunks.settings.loadSettings.fulfilled.type, settings);
 
@@ -155,7 +177,7 @@ describe('store/settings', () => {
 		const result = reducer(undefined, action);
 
 		// then
-		expect(result).toStrictEqual({ ...settings, dashboard: initialState.dashboard });
+		expect(result).toStrictEqual({ ...settings, dashboard: initialState.dashboard, favorites: initialState.favorites });
 	});
 	it('Opens notification when importDatabase is fulfilled', () => {
 		// given

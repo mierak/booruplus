@@ -11,6 +11,7 @@ export const saveOrUpdateFromApi = async (post: Post): Promise<Post> => {
 		clone.blacklisted = savedPost.blacklisted;
 		clone.downloaded = savedPost.downloaded;
 		clone.viewCount = savedPost.viewCount;
+		clone.selected = false;
 	}
 	db.posts.put(clone);
 	return clone;
@@ -29,6 +30,7 @@ export const bulkSaveOrUpdateFromApi = async (posts: Post[]): Promise<Post[]> =>
 			clone.downloaded = post.downloaded;
 			clone.viewCount = post.viewCount;
 			clone.downloadedAt = post.downloadedAt;
+			clone.selected = false;
 			db.posts.put(clone);
 			result.push(clone);
 		}
@@ -45,7 +47,7 @@ export const update = async (post: Post): Promise<number> => {
 };
 
 export const bulkSave = async (posts: Post[]): Promise<number | void> => {
-	return db.posts.bulkPut(posts);
+	return db.posts.bulkPut(posts.map((post) => ({ ...post, selected: false })));
 };
 
 export const getAll = async (): Promise<Post[]> => {

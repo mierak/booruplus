@@ -103,6 +103,21 @@ class Database extends Dexie {
 
 const db = new Database('booru_plus');
 
+const favoritesRootNode: FavoritesTreeNode = {
+	key: 0,
+	title: 'root',
+	childrenKeys: [1],
+	postIds: [],
+	parentKey: 0,
+};
+const favoritesDefaultNode: FavoritesTreeNode = {
+	key: 1,
+	title: 'default',
+	childrenKeys: [],
+	postIds: [],
+	parentKey: 0,
+};
+
 db.on('populate', () => {
 	const settings: SettingsPair = {
 		name: 'default',
@@ -119,18 +134,15 @@ db.on('populate', () => {
 				loadTagStatistics: true,
 				saveTagsNotFoundInDb: true,
 			},
+			favorites: {
+				siderWidth: 250,
+				expandedKeys: [],
+			},
 		},
 	};
 	db.settings.put(settings);
-
-	const favoritesRootNode: FavoritesTreeNode = {
-		key: 0,
-		title: 'root',
-		childrenKeys: [],
-		postIds: [],
-		parentKey: 0,
-	};
 	db.favorites.put(favoritesRootNode);
+	db.favorites.put(favoritesDefaultNode);
 });
 
 db.open().catch((err) => {
@@ -140,14 +152,15 @@ db.open().catch((err) => {
 const checkAndAddFavoritesRootNode = async (): Promise<void> => {
 	const root = await db.favorites.get(0);
 	if (!root) {
-		const favoritesRootNode: FavoritesTreeNode = {
-			key: 0,
-			title: 'root',
-			childrenKeys: [],
-			postIds: [],
-			parentKey: 0,
-		};
 		db.favorites.put(favoritesRootNode);
+	} else if (!root.childrenKeys.includes(1)) {
+		const newRoot = { ...root, childrenKeys: [1, ...root.childrenKeys] };
+		db.favorites.put(newRoot);
+	}
+
+	const defaultNode = await db.favorites.get(1);
+	if (!defaultNode) {
+		db.favorites.put(favoritesDefaultNode);
 	}
 };
 checkAndAddFavoritesRootNode();

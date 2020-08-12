@@ -60,6 +60,13 @@ describe('components', () => {
 
 			expect(wrapper.find('RenameDirectoryModal')).toHaveLength(1);
 		});
+		it('Renders MoveSelectedToDirectoryModal', () => {
+			store.dispatch(actions.showModal('move-selected-to-directory-confirmation'));
+			store.dispatch(actions.setVisible(true));
+			const wrapper = setup();
+
+			expect(wrapper.find('MoveSelectedToDirectoryModal')).toHaveLength(1);
+		});
 
 		it('Renders nothing when activeModal is none', () => {
 			store.dispatch(actions.showModal('none'));

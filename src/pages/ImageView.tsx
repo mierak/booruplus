@@ -55,7 +55,7 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 				width={225}
 				style={{ height: '100vh' }}
 			>
-				<StyledThumbnailsList sidebar />
+				<StyledThumbnailsList hasHeader={false} singleColumn />
 			</Layout.Sider>
 		</Container>
 	);

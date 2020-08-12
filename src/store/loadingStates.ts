@@ -10,6 +10,8 @@ export interface LoadingStates {
 	isFullscreenLoadingMaskVisible: boolean;
 	fullscreenLoadingMaskMessage?: string;
 	isScrolling: boolean;
+	isFetchingPosts: boolean;
+	isSearchDisabled: boolean;
 }
 
 export const initialState: LoadingStates = {
@@ -19,6 +21,8 @@ export const initialState: LoadingStates = {
 	isFullImageLoading: false,
 	isFullscreenLoadingMaskVisible: false,
 	isScrolling: false,
+	isSearchDisabled: false,
+	isFetchingPosts: false,
 };
 
 const loadingState = createSlice({
@@ -33,6 +37,7 @@ const loadingState = createSlice({
 		},
 	},
 	extraReducers: (builder) => {
+		// Dashboard
 		builder.addCase(thunks.dashboard.fetchRatingCounts.pending, (state, _) => {
 			state.isRatingDistributionChartLoading = true;
 		});
@@ -59,6 +64,54 @@ const loadingState = createSlice({
 		});
 		builder.addCase(thunks.dashboard.fetchMostFavoritedTags.rejected, (state, _) => {
 			state.isMostFavoritedTagsLoading = false;
+		});
+		// Online Search Form
+		builder.addCase(thunks.onlineSearchForm.fetchPosts.pending, (state) => {
+			state.isSearchDisabled = true;
+			state.isFetchingPosts = true;
+		});
+		builder.addCase(thunks.onlineSearchForm.fetchMorePosts.pending, (state) => {
+			state.isSearchDisabled = true;
+		});
+		builder.addCase(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled, (state) => {
+			state.isSearchDisabled = false;
+			state.isFetchingPosts = false;
+		});
+		builder.addCase(thunks.onlineSearchForm.checkPostsAgainstDb.rejected, (state) => {
+			state.isSearchDisabled = false;
+			state.isFetchingPosts = false;
+		});
+		builder.addCase(thunks.onlineSearchForm.fetchPosts.rejected, (state) => {
+			state.isSearchDisabled = false;
+			state.isFetchingPosts = false;
+		});
+		builder.addCase(thunks.onlineSearchForm.fetchMorePosts.rejected, (state) => {
+			state.isSearchDisabled = false;
+		});
+		// Downloaded Search Form
+		builder.addCase(thunks.downloadedSearchForm.fetchPosts.pending, (state) => {
+			state.isSearchDisabled = true;
+			state.isFetchingPosts = true;
+		});
+		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.pending, (state) => {
+			state.isSearchDisabled = true;
+		});
+		builder.addCase(thunks.downloadedSearchForm.fetchPosts.fulfilled, (state) => {
+			state.isSearchDisabled = false;
+			state.isFetchingPosts = false;
+		});
+		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.fulfilled, (state) => {
+			state.isSearchDisabled = false;
+			state.isFetchingPosts = false;
+		});
+		// Posts
+		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state) => {
+			state.isSearchDisabled = true;
+			state.isFetchingPosts = true;
+		});
+		builder.addCase(thunks.posts.fetchPostsByIds.fulfilled, (state) => {
+			state.isSearchDisabled = false;
+			state.isFetchingPosts = false;
 		});
 		// Import database
 		builder.addCase(thunks.settings.importDatabase.pending, (state) => {

@@ -36,6 +36,7 @@ export type ActiveModal =
 	| 'rename-favorites-directory'
 	| 'delete-favorites-directory'
 	| 'move-to-directory'
+	| 'move-selected-to-directory-confirmation'
 	| 'settings';
 
 export interface OfflineOptions {
@@ -65,6 +66,17 @@ export interface Settings {
 	apiKey: string | undefined;
 	gelbooruUsername?: string;
 	dashboard: DashboardSettings;
+	favorites: {
+		siderWidth: number | undefined;
+		expandedKeys: string[];
+	};
+}
+
+export interface DownloadTaskState {
+	taskId: number;
+	skipped: number;
+	downloaded: number;
+	canceled: boolean;
 }
 
 export interface TagHistory {

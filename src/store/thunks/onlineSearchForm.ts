@@ -7,7 +7,7 @@ import { ThunkApi, RootState } from '../types';
 import { Post, Tag, PostSearchOptions } from '../../types/gelbooruTypes';
 import { thunkLoggerFactory } from '../../util/logger';
 
-const thunkLogger = thunkLoggerFactory('dashboard');
+const thunkLogger = thunkLoggerFactory();
 
 export const getPostApiOptions = (state: RootState, incrementPage?: boolean): PostSearchOptions => {
 	return {

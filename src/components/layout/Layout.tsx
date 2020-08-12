@@ -51,46 +51,45 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 			<Layout style={{ minHeight: '100vh' }} className={props.className}>
 				<Affix offsetTop={0}>
 					<Sider collapsible style={{ height: '100vh' }}>
-						<div className="logo" />
-						<Menu theme="dark" defaultSelectedKeys={['thumbnails']} mode="inline" selectedKeys={[activeView]}>
-							<Menu.Item key="dashboard" onClick={(): void => handleMenuClick('dashboard')}>
+						<Menu theme='dark' defaultSelectedKeys={['thumbnails']} mode='inline' selectedKeys={[activeView]}>
+							<Menu.Item key='dashboard' onClick={(): void => handleMenuClick('dashboard')}>
 								<DashboardOutlined />
 								<span>Dashboard</span>
 							</Menu.Item>
-							<Menu.Item key="thumbnails" onClick={(): void => handleMenuClick('thumbnails')}>
+							<Menu.Item key='thumbnails' onClick={(): void => handleMenuClick('thumbnails')}>
 								<UnorderedListOutlined />
 								<span>Thumbnails</span>
 							</Menu.Item>
-							<Menu.Item key="image" onClick={(): void => handleMenuClick('image')}>
+							<Menu.Item key='image' onClick={(): void => handleMenuClick('image')}>
 								<FileImageOutlined />
 								<span>Image View</span>
 							</Menu.Item>
-							<Menu.Item key="saved-searches" onClick={(): void => handleMenuClick('saved-searches')}>
+							<Menu.Item key='saved-searches' onClick={(): void => handleMenuClick('saved-searches')}>
 								<SaveOutlined />
 								<span>Saved Searches</span>
 							</Menu.Item>
-							<Menu.Item key="favorites" onClick={(): void => handleMenuClick('favorites')}>
+							<Menu.Item key='favorites' onClick={(): void => handleMenuClick('favorites')}>
 								<HeartOutlined />
 								<span>Favorites</span>
 							</Menu.Item>
-							<Menu.Item key="tag-list" onClick={(): void => handleMenuClick('tag-list')}>
+							<Menu.Item key='tag-list' onClick={(): void => handleMenuClick('tag-list')}>
 								<TagsOutlined />
 								<span>Tag List</span>
 							</Menu.Item>
-							<Menu.Item key="online-search-drawer" onClick={handleSearchFormDrawerOpen}>
+							<Menu.Item key='online-search-drawer' onClick={handleSearchFormDrawerOpen}>
 								<FormOutlined />
 								<span>Online Search</span>
 							</Menu.Item>
-							<Menu.Item key="offline-search-drawer" onClick={handleDownloadedSearchFormDrawerOpen}>
+							<Menu.Item key='offline-search-drawer' onClick={handleDownloadedSearchFormDrawerOpen}>
 								<FormOutlined />
 								<span>Offline Search</span>
 							</Menu.Item>
-							<Menu.Item key="tasks" onClick={handleTasksDrawerOpen}>
+							<Menu.Item key='tasks' onClick={handleTasksDrawerOpen}>
 								<DownloadOutlined />
 								<span>Downloads</span>
 							</Menu.Item>
 							<Menu.Item
-								key="settings"
+								key='settings'
 								onClick={(): void => {
 									dispatch(actions.modals.showModal('settings'));
 								}}

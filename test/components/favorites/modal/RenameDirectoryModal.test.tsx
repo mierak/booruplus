@@ -32,7 +32,7 @@ describe('favorites/modal/RenameDirectoryModal', () => {
 		// then
 		expect(screen.getByText('Input new category name')).not.toBeNull();
 	});
-	it('Closes modal when Cancel button is pressed', () => {
+	it('Closes modal when Close button is pressed', () => {
 		// given
 		const store = mockStore(
 			mState({
@@ -48,7 +48,7 @@ describe('favorites/modal/RenameDirectoryModal', () => {
 				<RenameDirectoryModal />
 			</Provider>
 		);
-		fireEvent.click(screen.getByText('Cancel'));
+		fireEvent.click(screen.getByText('Close'));
 
 		// then
 		const dispatchedActions = store.getActions();

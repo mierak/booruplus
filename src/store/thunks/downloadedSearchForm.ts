@@ -9,7 +9,7 @@ import { DownloadedSearchFormState } from '../../store/downloadedSearchForm';
 import { Tag, Post } from '../../types/gelbooruTypes';
 import { thunkLoggerFactory } from '../../util/logger';
 
-const thunkLogger = thunkLoggerFactory('dashboard');
+const thunkLogger = thunkLoggerFactory();
 
 export const getFilterOptions = (state: DownloadedSearchFormState): FilterOptions => {
 	return {

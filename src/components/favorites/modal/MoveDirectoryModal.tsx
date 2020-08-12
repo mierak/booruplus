@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { Modal, Tree, Button } from 'antd';
+import { Modal, Tree } from 'antd';
 import { EventDataNode, DataNode } from 'rc-tree/lib/interface';
 
 import { actions, thunks } from '../../../store';
 import { RootState, AppDispatch, TreeNode } from '../../../store/types';
 
 import { openNotificationWithIcon } from '../../../types/components';
+import ModalFooter from './common/ModalFooter';
 
 interface Info {
 	event: string;
@@ -50,31 +51,20 @@ const MoveDirectoryModal: React.FunctionComponent = () => {
 			dispatch(actions.modals.setVisible(false));
 			return;
 		}
-		dispatch(actions.favorites.setSelectedNodeKey(selectedNode ? parseInt(selectedNode.key.toString()) : 0));
+		dispatch(actions.favorites.setSelectedNodeKey(selectedNode ? parseInt(selectedNode.key.toString()) : 1));
 		await dispatch(thunks.favorites.removePostsFromActiveDirectory(postIdsToFavorite));
-		await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToFavorite, key: !selectedNode ? 0 : selectedNode.key }));
+		await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToFavorite, key: !selectedNode ? 1 : selectedNode.key }));
 		await dispatch(thunks.favorites.fetchPostsInDirectory());
 		openNotificationWithIcon('success', 'Success', 'Successfuly moved post to folder');
 		dispatch(actions.modals.setVisible(false));
-	};
-
-	const renderModalFooter = (): React.ReactNode => {
-		return [
-			<Button type="primary" key="add" onClick={handleConfirm}>
-				Move
-			</Button>,
-			<Button key="cancel" onClick={handleClose}>
-				Cancel
-			</Button>,
-		];
 	};
 
 	return (
 		<Modal
 			destroyOnClose
 			centered
-			title="Select directory to move post to."
-			footer={renderModalFooter()}
+			title='Select directory to move post to.'
+			footer={<ModalFooter onConfirm={handleConfirm} onCancel={handleClose} cancelText='Cancel' okText='Move' />}
 			visible={true}
 			onCancel={handleClose}
 		>

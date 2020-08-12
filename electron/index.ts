@@ -4,6 +4,7 @@ import fs from 'fs';
 import zlib from 'zlib';
 import moment from 'moment';
 import log from 'electron-log';
+import fetch from 'node-fetch';
 
 import { Settings } from '../src/store/types';
 import { SavePostDto, IpcChannels, ExportDataDto } from '../src/types/processDto';
@@ -153,9 +154,24 @@ ipcMain.handle(IpcChannels.LOAD_IMAGE, async (event: IpcMainInvokeEvent, post: P
 ipcMain.handle(IpcChannels.DELETE_IMAGE, async (event: IpcMainInvokeEvent, post: Post) => {
 	try {
 		fs.unlinkSync(`${settings.imagesFolderPath}/${post.directory}/${post.image}`);
+		log.debug(`Deleting post ${post.id} and its directory if its empty`);
 		const dirs = post.directory.split('/');
-		fs.rmdirSync(`${settings.imagesFolderPath}/${dirs[0]}/${dirs[1]}`);
-		fs.rmdirSync(`${settings.imagesFolderPath}/${dirs[0]}`);
+		const firstDir = `${settings.imagesFolderPath}/${dirs[0]}/${dirs[1]}`;
+		const secondDir = `${settings.imagesFolderPath}/${dirs[0]}`;
+
+		const firstEmpty = fs.readdirSync(firstDir).length === 0;
+		log.debug(`Directory ${firstDir} is ${firstEmpty ? 'empty' : 'not empty'}.`);
+		if (firstEmpty) {
+			log.debug('Deleting first directory.');
+			fs.rmdirSync(firstDir);
+
+			const secondEmpty = fs.readdirSync(secondDir).length === 0;
+			log.debug(`Directory ${secondDir} is ${secondEmpty ? 'empty' : 'not empty'}.`);
+			if (secondEmpty) {
+				log.debug('Deleting second directory.');
+				fs.rmdirSync(secondDir);
+			}
+		}
 		return true;
 	} catch (err) {
 		log.error('could not delete post image or directories', `post id: ${post.id}`, err);
@@ -163,12 +179,20 @@ ipcMain.handle(IpcChannels.DELETE_IMAGE, async (event: IpcMainInvokeEvent, post:
 	}
 });
 
-ipcMain.handle(IpcChannels.OPEN_SELECT_FOLDER_DIALOG, async () => {
+ipcMain.handle(IpcChannels.OPEN_SELECT_IMAGES_FOLDER_DIALOG, async () => {
 	const result = await dialog.showOpenDialog(window, { properties: ['openDirectory', 'createDirectory'] });
 	if (!result.canceled) {
 		settings.imagesFolderPath = result.filePaths[0];
 	}
 	return result;
+});
+
+ipcMain.handle(IpcChannels.OPEN_SELECT_FOLDER_DIALOG, async () => {
+	const result = await dialog.showOpenDialog(window, { properties: ['openDirectory', 'createDirectory'] });
+	if (!result.canceled) {
+		return result.filePaths[0];
+	}
+	return '';
 });
 
 ipcMain.handle(IpcChannels.OPEN_SELECT_EXPORTED_DATA_FILE_DIALOG, async () => {
@@ -243,5 +267,37 @@ ipcMain.handle(IpcChannels.OPEN_IMPORT_DATA_DIALOG, async () => {
 	} else {
 		log.debug('Import data dialog canceled.');
 		return '';
+	}
+});
+
+ipcMain.on(IpcChannels.EXPORT_POSTS, async (_, params: { posts: Post[]; path: string }) => {
+	log.debug(`Peparing to export ${params.posts.length} posts`);
+	let foundPosts = 0;
+	let notFoundPosts = 0;
+	try {
+		params.posts.forEach((post) => {
+			const imagePath = `${settings.imagesFolderPath}/${post.directory}/${post.image}`;
+			fs.exists(imagePath, async (exists) => {
+				if (exists) {
+					foundPosts++;
+					fs.copyFile(imagePath, `${params.path}\\${post.image}`, (err) => {
+						err && log.error(`Could not copy file from ${imagePath} to ${params.path}`, err);
+					});
+				} else {
+					notFoundPosts++;
+					const response = await fetch(post.fileUrl);
+					if (response.ok) {
+						const arrayBuffer = await response.arrayBuffer();
+						fs.promises.writeFile(`${params.path}\\${post.image}`, Buffer.from(arrayBuffer), 'binary');
+					} else {
+						log.error(`Could not download post with url ${post.fileUrl}`, response.statusText);
+					}
+				}
+			});
+		});
+		log.debug(`Copied ${foundPosts} already downloaded posts and downloaded additional ${notFoundPosts} posts`);
+	} catch (err) {
+		log.error('Unexpected error occured while exporting images to disk', err);
+		dialog.showErrorBox('Unexpected error occured while exporting images to disk', err.message);
 	}
 });

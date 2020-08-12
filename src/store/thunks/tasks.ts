@@ -6,7 +6,7 @@ import { ThunkApi, Task } from '../../store/types';
 
 import { thunkLoggerFactory } from '../../util/logger';
 
-const thunkLogger = thunkLoggerFactory('tasks');
+const thunkLogger = thunkLoggerFactory();
 
 export const rehydrateFromDb = createAsyncThunk<Task[], void, ThunkApi>(
 	'tasks/rehydrateFromDb',
@@ -26,5 +26,16 @@ export const cancel = createAsyncThunk<Task, number, ThunkApi>(
 		logger.debug('State of Task id', clone.id, 'set to cancelled. Saving.');
 		await db.tasks.save(clone);
 		return clone;
+	}
+);
+
+export const removeTask = createAsyncThunk<number, string | number, ThunkApi>(
+	'tasks/remove',
+	async (id): Promise<number> => {
+		const logger = thunkLogger.getActionLogger(removeTask);
+		logger.debug('Removing task id', id);
+		const newId = typeof id === 'string' ? parseInt(id) : id;
+		await db.tasks.remove(newId);
+		return newId;
 	}
 );

@@ -7,7 +7,7 @@ import * as onlineSearchFormThunk from './onlineSearchForm';
 import * as downloadedSearchFormThunk from './downloadedSearchForm';
 import { thunkLoggerFactory } from '../../util/logger';
 
-const thunkLogger = thunkLoggerFactory('dashboard');
+const thunkLogger = thunkLoggerFactory();
 
 export const loadAllTagsFromDb = createAsyncThunk<Tag[], void, ThunkApi>(
 	'tags/loadAllTagsFromDb',

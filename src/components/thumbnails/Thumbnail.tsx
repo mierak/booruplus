@@ -22,6 +22,7 @@ interface CardProps {
 	$isActive: string;
 	$theme: 'dark' | 'light';
 	$height: string;
+	$selected: boolean;
 }
 
 interface PopConfirmProps {
@@ -32,10 +33,17 @@ interface PopConfirmProps {
 	action: () => void;
 }
 
+const StyledDummyActions = styled.div`
+	width: 100%;
+	height: 22px;
+	background-color: ${(props): string => (props.theme === 'dark' ? 'rgb(29,29,29)' : 'rgb(250,250,250)')};
+`;
+
 const StyledCard = styled(Card)<CardProps>`
+	cursor: pointer;
+
 	&& {
-		border: ${(props): false | 0 | 'dashed 1px black' | 'dashed 1px white' | undefined =>
-			getThumbnailBorder(props.$isActive, props.$theme)};
+		border: ${(props): string | undefined => getThumbnailBorder(props.$isActive, props.$theme, props.$selected)};
 		width: 195px;
 		height: ${(props): string => props.$height};
 	}
@@ -71,10 +79,13 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	const theme = useSelector((state: RootState) => state.settings.theme);
 
 	const handleThumbnailClick = (event: React.MouseEvent): void => {
+		event.stopPropagation();
 		if (event.ctrlKey) {
 			if (post) {
 				dispatch(actions.posts.setPostSelected({ post: post, selected: !post.selected }));
 			}
+		} else if (event.shiftKey) {
+			dispatch(actions.posts.selectMultiplePosts(props.index));
 		} else {
 			dispatch(actions.posts.setActivePostIndex(props.index));
 			activeView !== 'image' && dispatch(actions.system.setActiveView('image'));
@@ -134,18 +145,21 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		return actions;
 	};
 
+	const renderDummyActions = (): React.ReactNode[] => {
+		if (!props.actions) {
+			return [];
+		}
+		return [<StyledDummyActions key='dummy' theme={theme} />];
+	};
+
 	const renderThumbNail = (): React.ReactNode => {
 		return (
 			<StyledCard
 				bodyStyle={{ height: '195px', width: '195px', padding: '0' }}
 				$isActive={isActive.toString()}
 				$theme={theme}
-				actions={
-					!props.isScrolling
-						? renderActions()
-						: [<div key='dummy' style={{ backgroundColor: 'rgb(29,29,29)', width: '100%', height: '22px' }}></div>]
-				}
-				hoverable
+				$selected={post?.selected ?? false}
+				actions={!props.isScrolling ? renderActions() : renderDummyActions()}
 				$height={props.actions !== undefined ? '225px' : '197px'}
 			>
 				<StyledImageContainer onClick={(event: React.MouseEvent): void => handleThumbnailClick(event)}>

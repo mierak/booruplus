@@ -11,7 +11,6 @@ export interface SearchFormState {
 	limit: number;
 	rating: Rating;
 	page: number;
-	loading: boolean;
 	tagOptions: Tag[];
 	sort: Sort;
 	sortOrder: SortOrder;
@@ -23,7 +22,6 @@ export const initialState: SearchFormState = {
 	limit: 100,
 	rating: 'any',
 	page: 0,
-	loading: false,
 	tagOptions: [],
 	sort: 'date-uploaded',
 	sortOrder: 'desc',
@@ -55,9 +53,6 @@ const searchFormSlice = createSlice({
 		},
 		setPage: (state, action: PayloadAction<number>): void => {
 			state.page = action.payload;
-		},
-		setLoading: (state, action: PayloadAction<boolean>): void => {
-			state.loading = action.payload;
 		},
 		setSelectedTags: (state, action: PayloadAction<Tag[]>): void => {
 			state.selectedTags = action.payload;

@@ -20,7 +20,7 @@ describe('search-from/SubmitButton', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SubmitButton mode="online" />
+				<SubmitButton mode='online' />
 			</Provider>
 		);
 
@@ -32,7 +32,7 @@ describe('search-from/SubmitButton', () => {
 		// given
 		const store = mockStore(
 			mState({
-				system: {
+				loadingStates: {
 					isSearchDisabled: true,
 				},
 			})
@@ -41,7 +41,7 @@ describe('search-from/SubmitButton', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SubmitButton mode="online" />
+				<SubmitButton mode='online' />
 			</Provider>
 		);
 
@@ -52,7 +52,7 @@ describe('search-from/SubmitButton', () => {
 		// given
 		const store = mockStore(
 			mState({
-				system: {
+				loadingStates: {
 					isSearchDisabled: false,
 				},
 			})
@@ -61,7 +61,7 @@ describe('search-from/SubmitButton', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SubmitButton mode="online" />
+				<SubmitButton mode='online' />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button'));
@@ -74,7 +74,7 @@ describe('search-from/SubmitButton', () => {
 		// given
 		const store = mockStore(
 			mState({
-				system: {
+				loadingStates: {
 					isSearchDisabled: false,
 				},
 			})
@@ -83,7 +83,7 @@ describe('search-from/SubmitButton', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SubmitButton mode="offline" />
+				<SubmitButton mode='offline' />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button'));
@@ -106,7 +106,7 @@ describe('search-from/SubmitButton', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SubmitButton mode="online" />
+				<SubmitButton mode='online' />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button'));
@@ -128,7 +128,7 @@ describe('search-from/SubmitButton', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SubmitButton mode="offline" />
+				<SubmitButton mode='offline' />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button'));
@@ -150,7 +150,7 @@ describe('search-from/SubmitButton', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SubmitButton mode="offline" />
+				<SubmitButton mode='offline' />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button'));
@@ -175,7 +175,7 @@ describe('search-from/SubmitButton', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SubmitButton mode="offline" />
+				<SubmitButton mode='offline' />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button'));

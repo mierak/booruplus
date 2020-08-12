@@ -66,7 +66,7 @@ describe('pages/Favorites', () => {
 		expect(screen.getByText('node11')).not.toBeNull();
 		expect(screen.getByText('No Posts To Show')).not.toBeNull();
 	});
-	it('Fetches posts in root directory and sets search mode to favorites on mount', () => {
+	it('Fetches posts in default directory and sets search mode to favorites on mount', () => {
 		// given
 		const store = mockStore(
 			mState({
@@ -86,7 +86,7 @@ describe('pages/Favorites', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchPostsInDirectory.pending.type, meta: { arg: 0 } });
+		expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchPostsInDirectory.pending.type, meta: { arg: 1 } });
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setSearchMode.type, payload: 'favorites' });
 	});
 	it('Fetches posts on directory click', () => {
@@ -148,7 +148,7 @@ describe('pages/Favorites', () => {
 		expect(screen.getAllByRole('img', { name: 'close' })).toHaveLength(5);
 		expect(screen.getAllByRole('img', { name: 'download' })).toHaveLength(3);
 		expect(screen.getAllByRole('img', { name: 'delete' })).toHaveLength(5);
-		expect(screen.getAllByRole('img', { name: 'folder' })).toHaveLength(5);
+		expect(screen.getAllByRole('img', { name: 'folder' })).toHaveLength(7);
 	});
 	it('Dispatches downloadPost() for correct post when Download button is pressed', async () => {
 		// given

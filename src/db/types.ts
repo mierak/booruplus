@@ -13,6 +13,7 @@ export interface SettingsPair {
 export interface SavedSearchPreview {
 	id: number;
 	blob: Blob;
+	post: Post;
 }
 
 export interface SavedSearch {
@@ -33,6 +34,7 @@ export interface SavedSearchWithB64Previews {
 	previews: {
 		id: number;
 		data: string;
+		post: Post;
 	}[];
 }
 

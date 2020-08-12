@@ -26,6 +26,55 @@ const postsSlice = createSlice({
 			const post = state.posts.find((p) => p.id === action.payload.post.id);
 			post && (post.selected = action.payload.selected);
 		},
+		unselectAllPosts: (state): void => {
+			state.posts.forEach((post) => (post.selected = false));
+		},
+		selectMultiplePosts: (state, action: PayloadAction<number>): void => {
+			const index = action.payload;
+			if (index < 0 || index >= state.posts.length) {
+				return;
+			}
+
+			const isSelected = state.posts[index].selected;
+			const selectedIndexes = state.posts.reduce<number[]>((acc, post, index): number[] => {
+				if (post.selected) {
+					return [...acc, index];
+				} else {
+					return acc;
+				}
+			}, []);
+
+			if (selectedIndexes.length === 0) {
+				state.posts[index].selected = !isSelected;
+				return;
+			}
+
+			const minIndex = Math.min(...selectedIndexes);
+			const maxIndex = Math.max(...selectedIndexes);
+
+			if (index > maxIndex) {
+				for (let i = maxIndex; i <= index; i++) {
+					state.posts[i].selected = !isSelected;
+				}
+			} else if (index < minIndex) {
+				for (let i = index; i <= minIndex; i++) {
+					state.posts[i].selected = !isSelected;
+				}
+			} else {
+				const distanceFromMin = index - minIndex;
+				const distanceFromMax = maxIndex - index;
+
+				if (distanceFromMin < distanceFromMax) {
+					for (let i = minIndex; i <= index; i++) {
+						state.posts[i].selected = !isSelected;
+					}
+				} else {
+					for (let i = index; i <= maxIndex; i++) {
+						state.posts[i].selected = !isSelected;
+					}
+				}
+			}
+		},
 		nextPost: (state): void => {
 			if (state.activePostIndex !== undefined) {
 				const index = state.activePostIndex === state.posts.length - 1 ? 0 : state.activePostIndex + 1;

@@ -19,6 +19,10 @@ export const initialState: Settings = {
 		loadRatingDistributionChart: true,
 		saveTagsNotFoundInDb: true,
 	},
+	favorites: {
+		siderWidth: 250,
+		expandedKeys: [],
+	},
 };
 
 const settingsSlice = createSlice({
@@ -49,12 +53,21 @@ const settingsSlice = createSlice({
 		setSaveTagsNotFoundInDb: (state, action: PayloadAction<boolean>): void => {
 			state.dashboard.saveTagsNotFoundInDb = action.payload;
 		},
+		setFavoritesSiderWidth: (state, action: PayloadAction<number>): void => {
+			state.favorites.siderWidth = action.payload;
+		},
+		setFavoritesExpandedKeys: (state, action: PayloadAction<(string | number)[]>): void => {
+			state.favorites.expandedKeys = action.payload.map((key) => key.toString());
+		},
 	},
 	extraReducers: (builder) => {
 		builder.addCase(thunks.settings.loadSettings.fulfilled, (state, action) => {
 			const settings = { ...action.payload };
 			if (action.payload.dashboard === undefined) {
 				settings.dashboard = initialState.dashboard;
+			}
+			if (action.payload.favorites === undefined) {
+				settings.favorites = initialState.favorites;
 			}
 			return settings;
 		});

@@ -10,7 +10,7 @@ import thunk from 'redux-thunk';
 import * as thunks from '../../../src/store/thunks/savedSearches';
 import * as onlineSearchFormThunk from '../../../src/store/thunks/onlineSearchForm';
 import * as downloadedSearchFormThunk from '../../../src/store/thunks/downloadedSearchForm';
-import { mSavedSearch, mTag } from '../../helpers/test.helper';
+import { mSavedSearch, mTag, mPost } from '../../helpers/test.helper';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 jest.mock('../../../src/service/apiService', () => {
@@ -31,6 +31,7 @@ jest.mock('antd', () => {
 	};
 });
 import { notification } from 'antd';
+import { getThumbnailUrl } from '../../../src/service/webService';
 
 describe('thunks/savedSearches', () => {
 	beforeEach(() => {
@@ -53,43 +54,130 @@ describe('thunks/savedSearches', () => {
 			expect(dispatchedActions[1]).toMatchObject({ type: thunks.loadSavedSearchesFromDb.fulfilled.type, payload: savedSearches });
 		});
 	});
-	describe('addPreviewToActiveSavedSearch()', () => {
+	describe('addPreviewsToActiveSavedSearch()', () => {
 		it('Fetches preview and calls db correctly', async () => {
 			// given
 			fetchMock.mockResponse('');
+			const post = mPost({ id: 123456, hash: 'posthash', directory: 'postdirectory' });
+			const post2 = mPost({ id: 456789, hash: 'posthash2', directory: 'postdirectory2' });
+			const url = getThumbnailUrl(post.directory, post.hash);
+			const url2 = getThumbnailUrl(post2.directory, post2.hash);
 			const savedSearch = mSavedSearch({ id: 123 });
 			const store = mockStore({ ...initialState, savedSearches: { ...initialState.savedSearches, activeSavedSearch: savedSearch } });
-			const url = 'preview_url';
 			const blob = await (await fetch(url)).blob();
 
 			// when
-			await store.dispatch(thunks.addPreviewToActiveSavedSearch(url));
+			await store.dispatch(thunks.addPreviewsToActiveSavedSearch([post, post2]));
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(mockedDb.savedSearches.addPreview).toBeCalledWith(savedSearch.id, blob);
-			expect(fetchMock.mock.calls.length).toBe(2);
-			expect(fetchMock.mock.calls[0][0]).toEqual(url);
-			expect(dispatchedActions[0]).toMatchObject({ type: thunks.addPreviewToActiveSavedSearch.pending.type, payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({ type: thunks.addPreviewToActiveSavedSearch.fulfilled.type, payload: savedSearch });
+			expect(mockedDb.savedSearches.addPreviews).toBeCalledWith(savedSearch.id, [
+				{ post, blob },
+				{ post: post2, blob },
+			]);
+			expect(fetchMock.mock.calls.length).toBe(3);
+			expect(fetchMock.mock.calls[1][0]).toEqual(url);
+			expect(fetchMock.mock.calls[2][0]).toEqual(url2);
+			expect(dispatchedActions[0]).toMatchObject({ type: thunks.addPreviewsToActiveSavedSearch.pending.type, payload: undefined });
+			expect(dispatchedActions[1]).toMatchObject({ type: thunks.addPreviewsToActiveSavedSearch.fulfilled.type, payload: savedSearch });
 		});
 		it('Dispatches rejected actions when no saved search is set as active', async () => {
 			// given
 			jest.clearAllMocks();
+			const post = mPost({ id: 123456, hash: 'posthash', directory: 'postdirectory' });
 			const store = mockStore({ ...initialState, savedSearches: { ...initialState.savedSearches, activeSavedSearch: undefined } });
-			const url = 'preview_url';
 
 			// when
-			await store.dispatch(thunks.addPreviewToActiveSavedSearch(url));
+			await store.dispatch(thunks.addPreviewsToActiveSavedSearch([post]));
 
 			// then
 			const dispatchedActions = store.getActions();
 			expect(fetchMock.mock.calls.length).toBe(0);
-			expect(mockedDb.savedSearches.addPreview).toBeCalledTimes(0);
-			expect(dispatchedActions[0]).toMatchObject({ type: thunks.addPreviewToActiveSavedSearch.pending.type, payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({
-				type: thunks.addPreviewToActiveSavedSearch.rejected.type,
-				error: { message: 'Cannot add preview to Saved Search. No Saved Search is set as active.' },
+			expect(mockedDb.savedSearches.addPreviews).toBeCalledTimes(0);
+			expect(dispatchedActions).toContainMatchingAction({ type: thunks.addPreviewsToActiveSavedSearch.pending.type, payload: undefined });
+			expect(dispatchedActions).toContainMatchingAction({ type: thunks.addPreviewsToActiveSavedSearch.rejected.type });
+		});
+	});
+	describe('addPreviewToActiveSavedSearch()', () => {
+		it('Dispatches addPreviewsToActiveSavedSearch', async () => {
+			// given
+			const post = mPost({ id: 123456, hash: 'posthash', directory: 'postdirectory' });
+			const savedSearch = mSavedSearch({ id: 123 });
+			const store = mockStore({
+				...initialState,
+				savedSearches: {
+					...initialState.savedSearches,
+					activeSavedSearch: savedSearch,
+				},
+			});
+
+			// when
+			await store.dispatch(thunks.addPreviewToActiveSavedSearch(post));
+
+			// then
+			const dispatchedActions = store.getActions();
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.addPreviewsToActiveSavedSearch.pending.type,
+				meta: { arg: [post] },
+			});
+		});
+	});
+	describe('addSelectedPreviewsToActiveSavedSearch()', () => {
+		it('Dispatches addPreviewsToActiveSavedSearch', async () => {
+			// given
+			const post = mPost({ id: 123456, hash: 'posthash', directory: 'postdirectory', selected: true });
+			const posts = [post, mPost()];
+			const savedSearch = mSavedSearch({ id: 123 });
+			const store = mockStore({
+				...initialState,
+				savedSearches: {
+					...initialState.savedSearches,
+					activeSavedSearch: savedSearch,
+				},
+				posts: {
+					posts,
+					activePostIndex: 0,
+				},
+			});
+
+			// when
+			await store.dispatch(thunks.addSelectedPreviewsToActiveSavedSearch());
+
+			// then
+			const dispatchedActions = store.getActions();
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.addPreviewsToActiveSavedSearch.pending.type,
+				meta: { arg: [post] },
+			});
+		});
+	});
+
+	describe('addAllPreviewsToActiveSavedSearch()', () => {
+		it('Dispatches addPreviewsToActiveSavedSearch', async () => {
+			// given
+			const post = mPost({ id: 123456, hash: 'posthash', directory: 'postdirectory', selected: true });
+			const posts = [post, mPost()];
+			const savedSearch = mSavedSearch({ id: 123 });
+			const store = mockStore({
+				...initialState,
+				savedSearches: {
+					...initialState.savedSearches,
+					activeSavedSearch: savedSearch,
+				},
+				posts: {
+					posts,
+					activePostIndex: 0,
+				},
+			});
+
+			// when
+			await store.dispatch(thunks.addAllPreviewsToActiveSavedSearch());
+
+			// then
+			const dispatchedActions = store.getActions();
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.addPreviewsToActiveSavedSearch.pending.type,
+				meta: { arg: posts },
 			});
 		});
 	});

@@ -1,4 +1,25 @@
 # Changelog
+## 0.1.5 - Move multiple posts between directories - 12.8.2020
+- Right clicking favorites directory when multiple posts are selected now shows move all to folder option
+- Shift clickign on thumbnails list now allos you to select multiple posts. Just like you would do with files in your system.
+- Favorites now have an undeletable default directory instead of using the root node
+- Automatically switch to default directory after deleting favorites directory thats currently open
+- Favorites directories can now be closed and opened. By default they are all opened
+- Favorites directories sider can now be resized by dragging
+- Change Thumbnails List top buttons to a more compact menu
+- Add option to add selected/all current posts to Saved Search preview
+- Add option to move all posts in one favorites directory to another by right clicking a directory name
+- Previews now save the whole post and are clickable, which sets them as active posts
+- Added export menu to Thumbnails page which lets you export images of current pots to a directory
+- Added export option to context menu over favorites directory, which lets you export it to a directory
+- Download tasks can now be removed from the list by clicking the X icon. This is permanent and unreversible.
+- BUG FIX: Download tasks are now properly sorted in descending order
+- BUG FIX: Fix bug with download task not setting its state to completed, when one or more posts were already downloaded
+- BUG FIX: Fix issue with favorites directory loading
+- BUG FIX: Loader now disappears when post fetching fails
+- BUG FIX: Fix grid scroll in Favorites page
+- BUG FIX: Post selected state should no longer be persisted
+
 ## 0.1.4 - Database Import/Export - 3.8.2020
 - Changed Thumbnails Grid to use windowing
 - Allow devtools even in packaged app through standard shortcut

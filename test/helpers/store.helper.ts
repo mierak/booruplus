@@ -70,7 +70,6 @@ const mOnlineSearchFormState = (os?: Partial<SearchFormState>): SearchFormState 
 		sort: os?.sort ?? initialState.onlineSearchForm.sort,
 		sortOrder: os?.sortOrder ?? initialState.onlineSearchForm.sortOrder,
 		tagOptions: os?.tagOptions ?? initialState.onlineSearchForm.tagOptions,
-		loading: os?.loading ?? initialState.onlineSearchForm.loading,
 	};
 };
 
@@ -80,7 +79,6 @@ const mFavoritesState = (fs?: Partial<FavoritesState>): FavoritesState => {
 		expandedKeys: fs?.expandedKeys ?? initialState.favorites.expandedKeys,
 		rootNode: fs?.rootNode ?? initialState.favorites.rootNode,
 		selectedNodeKey: fs?.selectedNodeKey ?? initialState.favorites.selectedNodeKey,
-		treeData: fs?.treeData ?? initialState.favorites.treeData,
 	};
 };
 
@@ -93,6 +91,8 @@ const mLoadingStates = (ls?: Partial<LoadingStates>): LoadingStates => {
 		isFullscreenLoadingMaskVisible: ls?.isFullscreenLoadingMaskVisible ?? initialState.loadingStates.isFullscreenLoadingMaskVisible,
 		fullscreenLoadingMaskMessage: ls?.fullscreenLoadingMaskMessage,
 		isScrolling: ls?.isScrolling ?? false,
+		isFetchingPosts: ls?.isFetchingPosts ?? initialState.loadingStates.isFetchingPosts,
+		isSearchDisabled: ls?.isSearchDisabled ?? initialState.loadingStates.isSearchDisabled,
 	};
 };
 
@@ -107,9 +107,8 @@ const mSystemState = (ss?: Partial<SystemState>): SystemState => {
 	return {
 		activeView: ss?.activeView ?? initialState.system.activeView,
 		isDownloadedSearchFormDrawerVisible: ss?.isDownloadedSearchFormDrawerVisible ?? initialState.system.isDownloadedSearchFormDrawerVisible,
-		isFetchingPosts: ss?.isFetchingPosts ?? initialState.system.isFetchingPosts,
 		isImageViewThumbnailsCollapsed: ss?.isImageViewThumbnailsCollapsed ?? initialState.system.isImageViewThumbnailsCollapsed,
-		isSearchDisabled: ss?.isSearchDisabled ?? initialState.system.isSearchDisabled,
+		isFavoritesDirectoryTreeCollapsed: ss?.isFavoritesDirectoryTreeCollapsed ?? initialState.system.isFavoritesDirectoryTreeCollapsed,
 		isSearchFormDrawerVsibile: ss?.isSearchFormDrawerVsibile ?? initialState.system.isSearchFormDrawerVsibile,
 		isTagOptionsLoading: ss?.isTagOptionsLoading ?? initialState.system.isTagOptionsLoading,
 		isTagTableLoading: ss?.isTagTableLoading ?? initialState.system.isTagTableLoading,
@@ -138,6 +137,10 @@ const mSettingsState = (ss?: DeepPartial<Settings>): Settings => {
 		theme: ss?.theme ?? initialState.settings.theme,
 		gelbooruUsername: ss?.gelbooruUsername ?? initialState.settings.gelbooruUsername,
 		dashboard: mDashboardSettingsState(ss?.dashboard) ?? initialState.settings.dashboard,
+		favorites: {
+			siderWidth: ss?.favorites?.siderWidth ?? initialState.settings.favorites.siderWidth,
+			expandedKeys: ss?.favorites?.expandedKeys ?? initialState.settings.favorites.expandedKeys,
+		},
 	};
 };
 
@@ -197,6 +200,7 @@ export const mState = (state?: PartialRootState): RootState => {
 		system: mSystemState(state?.system),
 		savedSearches: mSavedSearchesState(state?.savedSearches),
 		tags: mTagsState(state?.tags),
+		errors: {},
 		modals: mModalsState(state?.modals),
 	};
 };
