@@ -65,6 +65,7 @@ export interface Settings {
 	theme: 'dark' | 'light';
 	apiKey: string | undefined;
 	gelbooruUsername?: string;
+	downloadMissingImages: boolean;
 	dashboard: DashboardSettings;
 	favorites: {
 		siderWidth: number | undefined;

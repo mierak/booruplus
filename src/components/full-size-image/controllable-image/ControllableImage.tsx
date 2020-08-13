@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { loadImage } from '../../../util/imageIpcUtils';
 import { Renderer } from './renderer';
 
 import { AppDispatch, RootState } from '../../../store/types';
@@ -16,6 +15,7 @@ import TagsPopover from '../TagsPopover';
 import ImageControls from '../ImageControls';
 import LoadingMask from '../../../components/LoadingMask';
 import { getPostUrl } from '../../../service/webService';
+import { imageLoader } from '../../../util/componentUtils';
 
 interface Props {
 	url: string;
@@ -32,6 +32,7 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 	const dispatch = useDispatch<AppDispatch>();
 
 	const isLoading = useSelector((state: RootState) => state.loadingStates.isFullImageLoading);
+	const downloadMissingImage = useSelector((state: RootState) => state.settings.downloadMissingImages);
 
 	const containerRef = useRef<HTMLDivElement>(null);
 	const viewportRef = useRef<HTMLCanvasElement>(null);
@@ -141,7 +142,6 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 	useEffect(() => {
 		const viewport = viewportRef.current;
 		const container = containerRef.current;
-		let objectUrl = '';
 		dispatch(actions.loadingStates.setFullImageLoading(true));
 		if (renderer && viewport && container) {
 			const img = new Image();
@@ -150,24 +150,15 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 				initViewport(viewport, container);
 				renderer.renderImage(img);
 			};
-			loadImage(
-				post,
-				async (response) => {
-					const buffer = new Blob([response.data]);
-
-					objectUrl = URL.createObjectURL(buffer);
-					!url.includes('webm') && (img.src = objectUrl);
-				},
-				(response) => {
-					!url.includes('webm') && (img.src = response.fileUrl);
-				}
-			);
+			const loader = imageLoader(post, downloadMissingImage);
+			loader.url.then((url) => {
+				img.src = url;
+			});
+			return (): void => {
+				loader.cleanup();
+			};
 		}
-
-		return (): void => {
-			URL.revokeObjectURL(objectUrl);
-		};
-	}, [dispatch, initViewport, post, renderer, url]);
+	}, [dispatch, downloadMissingImage, initViewport, post, renderer]);
 
 	return (
 		<Container ref={containerRef} className={className} data-testid='controllable-image-container'>

@@ -14,6 +14,7 @@ import {
 import { Icon } from '../types/components';
 import { Post } from '../types/gelbooruTypes';
 import { Tooltip } from 'antd';
+import { loadImage, saveImage } from './imageIpcUtils';
 
 export const getIcon = (icon: Icon, onClick?: (() => void) | undefined): React.ReactElement => {
 	switch (icon) {
@@ -64,4 +65,47 @@ export const getThumbnailBorder = (active: string, theme: 'dark' | 'light', sele
 		if (theme === 'dark') return 'dashed 1px white';
 	}
 	return 'dashed 1px black';
+};
+
+export const imageLoader = (post: Post, downloadMissingImage = true): { url: Promise<string>; cleanup: () => Promise<void> } => {
+	const log = window.log;
+	let objectUrlExists = false;
+	let objectUrl = '';
+
+	const promise = new Promise<string>((resolve) => {
+		if (post.downloaded) {
+			loadImage(post)
+				.then((result) => {
+					objectUrl = URL.createObjectURL(new Blob([result.data]));
+					log.debug('Post was found and loaded successfuly, ObjectURL:', objectUrl);
+					objectUrlExists = true;
+					resolve(objectUrl);
+				})
+				.catch((err) => {
+					log.debug('Downloaded post not found on disk. Reading from URL');
+					resolve(err.fileUrl);
+					if (downloadMissingImage) {
+						log.debug('Saving missing image. Id: ', post.id);
+						saveImage(post);
+					}
+				});
+		} else {
+			log.debug('Post is not downloaded. Reading from URL', post.fileUrl);
+			resolve(post.fileUrl);
+		}
+	});
+
+	const cleanup = async (): Promise<void> => {
+		await promise;
+		if (objectUrlExists) {
+			if (objectUrl) {
+				log.debug('Cleaning up objectUrl', objectUrl);
+				URL.revokeObjectURL(objectUrl);
+			} else {
+				log.error('Could not clean up object URL create for post id', post.id, '. This might cause a memory leak!');
+			}
+		}
+	};
+
+	return { cleanup, url: promise };
 };

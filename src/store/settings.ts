@@ -10,6 +10,7 @@ export const initialState: Settings = {
 	imagesFolderPath: '',
 	theme: 'dark',
 	apiKey: undefined,
+	downloadMissingImages: true,
 	dashboard: {
 		mostViewedCount: 28,
 		loadMostSearchedTags: true,
@@ -58,6 +59,9 @@ const settingsSlice = createSlice({
 		},
 		setFavoritesExpandedKeys: (state, action: PayloadAction<(string | number)[]>): void => {
 			state.favorites.expandedKeys = action.payload.map((key) => key.toString());
+		},
+		toggleDownloadMissingImages: (state): void => {
+			state.downloadMissingImages = !state.downloadMissingImages;
 		},
 	},
 	extraReducers: (builder) => {

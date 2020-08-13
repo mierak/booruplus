@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -10,9 +10,9 @@ import { Post } from '../../types/gelbooruTypes';
 import TagsPopover from './TagsPopover';
 import { ImageControl } from '../../types/components';
 import ImageControls from './ImageControls';
-import { loadImage } from '../../util/imageIpcUtils';
 import { getPostUrl } from '../../service/webService';
 import LoadingMask from '../LoadingMask';
+import { imageLoader } from '../../util/componentUtils';
 
 interface Props {
 	className?: string;
@@ -35,9 +35,8 @@ const StyledImg = styled.img`
 const Gif: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const isLoading = useSelector((state: RootState) => state.loadingStates.isFullImageLoading);
+	const downloadMissingImage = useSelector((state: RootState) => state.settings.downloadMissingImages);
 	const imgRef = useRef<HTMLImageElement>(null);
-
-	const [url, setUrl] = useState('');
 
 	const handleOpenWeb = (): void => {
 		window.api.send(IpcChannels.OPEN_IN_BROWSER, getPostUrl(props.post.id));
@@ -48,29 +47,22 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	useEffect(() => {
-		let objectUrl = '';
 		dispatch(actions.loadingStates.setFullImageLoading(true));
-		if (imgRef.current) {
-			imgRef.current.onload = (): void => {
+		const ref = imgRef.current;
+		if (ref) {
+			ref.onload = (): void => {
 				dispatch(actions.loadingStates.setFullImageLoading(false));
 			};
-		}
-		loadImage(
-			props.post,
-			(response) => {
-				const buffer = new Blob([response.data]);
-				objectUrl = URL.createObjectURL(buffer);
-				setUrl(objectUrl);
-			},
-			(response) => {
-				setUrl(response.fileUrl);
-			}
-		);
+			const loader = imageLoader(props.post, downloadMissingImage);
+			loader.url.then((url) => {
+				ref.src = url;
+			});
 
-		return (): void => {
-			URL.revokeObjectURL(objectUrl);
-		};
-	}, [dispatch, props.post]);
+			return (): void => {
+				loader.cleanup();
+			};
+		}
+	}, [dispatch, downloadMissingImage, props.post]);
 
 	const imageControls: ImageControl[] = [
 		{
@@ -93,7 +85,7 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 	];
 	return (
 		<Container className={props.className}>
-			<StyledImg src={url} ref={imgRef} data-testid='full-image-gif' />
+			<StyledImg ref={imgRef} data-testid='full-image-gif' />
 			<ImageControls actions={imageControls} />
 			<LoadingMask visible={isLoading} />
 		</Container>

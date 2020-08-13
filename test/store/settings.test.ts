@@ -118,6 +118,16 @@ describe('store/settings', () => {
 		// then
 		expect(result.favorites.expandedKeys).toEqual(keys);
 	});
+	it('Toggles downloadMissingImages', () => {
+		// given
+		const action = createAction(actions.toggleDownloadMissingImages.type);
+
+		// when
+		const result = reducer({ ...initialState, downloadMissingImages: false }, action);
+
+		// then
+		expect(result.downloadMissingImages).toEqual(true);
+	});
 	it('Updates imagesPath when updateImagePath is fulfilled', () => {
 		// given
 		const path = 'img_path';

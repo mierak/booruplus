@@ -1,3 +1,11 @@
+const loadImageMock = jest.fn();
+jest.mock('../../../../src/util/componentUtils.tsx', () => {
+	const originalModule = jest.requireActual('../../../../src/util/componentUtils.tsx');
+	return {
+		...originalModule,
+		imageLoader: loadImageMock,
+	};
+});
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -11,10 +19,6 @@ import { renderImage, setViewportSettings, zoomIn, zoomOut, drawViewport } from 
 import ControllableImage from '../../../../src/components/full-size-image/controllable-image/ControllableImage';
 import '@testing-library/jest-dom';
 import { mPost } from '../../../helpers/test.helper';
-import { Post } from '../../../../src/types/gelbooruTypes';
-import { loadImageMock } from '../../../helpers/imageBus.mock';
-import { createObjectURL, revokeObjectURL } from '../../../helpers/window.mock';
-import { SuccessfulLoadPostResponse } from '../../../../src/types/processDto';
 import { defineClientSize, defineClientBoundingRect } from '../../../helpers/utilities.helper';
 import { getPostUrl } from '../../../../src/service/webService';
 
@@ -29,20 +33,23 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 	});
 	it('Renders correctly', async () => {
 		// given
+		const url = 'objUrl123';
 		const post = mPost({ fileUrl: 'url.jpg' });
-		const store = mockStore(mState());
-		loadImageMock.mockImplementationOnce(
-			(post: Post, onFullfiled: (response: SuccessfulLoadPostResponse) => void, _: (post: Post) => void) => {
-				onFullfiled({
-					data: new Blob(['asdfasdf'], { type: 'image/jpg' }),
-					post,
-				});
-			}
+		const store = mockStore(
+			mState({
+				settings: {
+					downloadMissingImages: false,
+				},
+			})
 		);
-		createObjectURL.mockReturnValueOnce('object_url_123');
+		const cleanup = jest.fn();
+		loadImageMock.mockReturnValue({
+			url: Promise.resolve(url),
+			cleanup,
+		});
 
 		// when
-		render(
+		const { unmount } = render(
 			<Provider store={store}>
 				<ControllableImage post={post} url={post.fileUrl} />
 			</Provider>
@@ -61,6 +68,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		});
 
 		// then
+		expect(loadImageMock).toHaveBeenCalledWith(post, false);
 		expect(screen.getByLabelText('canvas')).not.toBeNull();
 		await waitFor(() =>
 			expect(setViewportSettings).toBeCalledWith({
@@ -70,83 +78,8 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 				offsetY: 111,
 			})
 		);
-	});
-	it('Calls loadImage on mount and calls renderImage with correct url when image is found on disk', async () => {
-		// given
-		const post = mPost({ fileUrl: 'test_url.jpg' });
-		const data = new Blob(['asdfasdf'], { type: 'image/jpg' });
-		const objectUrl = 'object_url_123';
-		const store = mockStore(mState());
-		loadImageMock.mockImplementationOnce(
-			(post: Post, onFullfiled: (response: SuccessfulLoadPostResponse) => void, _: (post: Post) => void) => {
-				onFullfiled({
-					data,
-					post,
-				});
-			}
-		);
-		createObjectURL.mockReturnValueOnce(objectUrl);
-
-		// when
-		render(
-			<Provider store={store}>
-				<ControllableImage post={post} url={post.fileUrl} />
-			</Provider>
-		);
-
-		// then
-		expect(loadImageMock).toHaveBeenCalledTimes(1);
-		await waitFor(() => expect(renderImage).toHaveBeenCalledTimes(1));
-		expect(createObjectURL).toBeCalledTimes(1);
-	});
-	it('Does not call createObjectUrl when image is NOT found on disk', async () => {
-		// given
-		const post = mPost({ fileUrl: 'test_url.jpg' });
-		const store = mockStore(mState());
-		loadImageMock.mockImplementationOnce(
-			(post: Post, _: (response: SuccessfulLoadPostResponse) => void, onRejected: (post: Post) => void) => {
-				onRejected(post);
-			}
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<ControllableImage post={post} url={post.fileUrl} />
-			</Provider>
-		);
-
-		// then
-		expect(loadImageMock).toHaveBeenCalledTimes(1);
-		await waitFor(() => expect(renderImage).toHaveBeenCalledTimes(1));
-		expect(createObjectURL).toBeCalledTimes(0);
-	});
-	it('Calls revokeObjectUrl() on unmount', async () => {
-		// given
-		const post = mPost({ fileUrl: 'url.jpg' });
-		const objectUrl = 'object_url_123';
-		const store = mockStore(mState());
-		loadImageMock.mockImplementationOnce(
-			(post: Post, onFullfiled: (response: SuccessfulLoadPostResponse) => void, _: (post: Post) => void) => {
-				onFullfiled({
-					data: new Blob(['asdfasdf'], { type: 'image/jpg' }),
-					post,
-				});
-			}
-		);
-		createObjectURL.mockReturnValueOnce(objectUrl);
-
-		// when
-		const { unmount } = render(
-			<Provider store={store}>
-				<ControllableImage post={post} url={post.fileUrl} />
-			</Provider>
-		);
-
-		// then
-		await waitFor(() => expect(renderImage).toHaveBeenCalledTimes(1));
 		unmount();
-		expect(revokeObjectURL).toHaveBeenCalledWith(objectUrl);
+		expect(cleanup).toHaveBeenCalledTimes(1);
 	});
 	it('Renders controls when shotControls prop is true', () => {
 		// given
