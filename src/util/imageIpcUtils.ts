@@ -15,16 +15,14 @@ export const saveImage = async (post: Post): Promise<void> => {
 	return window.api.invoke(IpcChannels.SAVE_IMAGE, dto);
 };
 
-export const loadImage = (
-	post: Post,
-	onFullfiled: (response: SuccessfulLoadPostResponse) => void,
-	onRejected: (post: Post) => void
-): void => {
-	window.api.invoke<LoadPostResponse>(IpcChannels.LOAD_IMAGE, post).then((response) => {
-		if (response.data) {
-			onFullfiled({ data: response.data, post: response.post });
-		} else {
-			onRejected(post);
-		}
+export const loadImage = (post: Post): Promise<SuccessfulLoadPostResponse> => {
+	return new Promise((resolve, reject) => {
+		window.api.invoke<LoadPostResponse>(IpcChannels.LOAD_IMAGE, post).then((response) => {
+			if (response.data) {
+				resolve({ data: response.data, post: response.post });
+			} else {
+				reject(post);
+			}
+		});
 	});
 };

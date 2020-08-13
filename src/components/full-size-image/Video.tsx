@@ -1,9 +1,8 @@
 import React, { useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { loadImage } from '../../util/imageIpcUtils';
-import { AppDispatch } from '../../store/types';
+import { AppDispatch, RootState } from '../../store/types';
 
 import { Post } from '../../types/gelbooruTypes';
 import { IpcChannels } from '../../types/processDto';
@@ -14,6 +13,7 @@ import ImageControls from './ImageControls';
 import TagsPopover from './TagsPopover';
 import { ImageControl } from '../../types/components';
 import { getPostUrl } from '../../service/webService';
+import { imageLoader } from '../../util/componentUtils';
 
 interface Props {
 	className?: string;
@@ -31,6 +31,7 @@ const StyledVideo = styled.video`
 const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const videoRef = useRef<HTMLVideoElement>(null);
+	const downloadMissingImage = useSelector((state: RootState) => state.settings.downloadMissingImages);
 
 	const playVideo = (sourceElement: HTMLSourceElement): void => {
 		if (videoRef.current) {
@@ -43,32 +44,23 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 
 	useEffect(() => {
 		if (videoRef.current && isFilenameVideo(post.image)) {
-			let objectUrl = '';
 			const source = document.createElement('source');
 			source.setAttribute('data-testid', 'video-source');
 			dispatch(actions.loadingStates.setFullImageLoading(true));
 			source.onload = (): void => {
 				dispatch(actions.loadingStates.setFullImageLoading(false));
 			};
-			loadImage(
-				post,
-				(response) => {
-					const buffer = new Blob([response.data]);
-					objectUrl = URL.createObjectURL(buffer);
-					source.setAttribute('src', objectUrl);
-					playVideo(source);
-				},
-				(response) => {
-					source.setAttribute('src', response.fileUrl);
-					playVideo(source);
-				}
-			);
+			const loader = imageLoader(post, downloadMissingImage);
+			loader.url.then((result) => {
+				source.setAttribute('src', result);
+				playVideo(source);
+			});
 
 			return (): void => {
-				URL.revokeObjectURL(objectUrl);
+				loader.cleanup();
 			};
 		}
-	}, [dispatch, post]);
+	}, [dispatch, downloadMissingImage, post]);
 
 	const handleOpenWeb = (): void => {
 		window.api.send(IpcChannels.OPEN_IN_BROWSER, getPostUrl(post.id));

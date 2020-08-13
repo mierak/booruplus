@@ -1,3 +1,11 @@
+const loadImageMock = jest.fn();
+jest.mock('../../../src/util/componentUtils.tsx', () => {
+	const originalModule = jest.requireActual('../../../src/util/componentUtils.tsx');
+	return {
+		...originalModule,
+		imageLoader: loadImageMock,
+	};
+});
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -11,8 +19,6 @@ import Gif from '../../../src/components/full-size-image/Gif';
 import '@testing-library/jest-dom';
 import { mPost } from '../../helpers/test.helper';
 import { Post } from '../../../src/types/gelbooruTypes';
-import { loadImageMock } from '../../helpers/imageBus.mock';
-import { createObjectURL, revokeObjectURL } from '../../helpers/window.mock';
 import { SuccessfulLoadPostResponse } from '../../../src/types/processDto';
 import { getPostUrl } from '../../../src/service/webService';
 
@@ -22,21 +28,22 @@ describe('Gif', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
-	it('Renders correctly when image is found on disk', () => {
+	it('Calls loadImage and renders returned url, calls cleanup', async () => {
 		// given
-		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'] });
-		const store = mockStore(mState());
-		const data = new Blob(['asdfasdf'], { type: 'image/gif' });
-		loadImageMock.mockImplementationOnce(
-			(post: Post, onFullfiled: (response: SuccessfulLoadPostResponse) => void, _: (post: Post) => void) => {
-				onFullfiled({
-					data,
-					post,
-				});
-			}
+		const url = 'objUrl123';
+		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'], downloaded: 1 });
+		const store = mockStore(
+			mState({
+				settings: {
+					downloadMissingImages: false,
+				},
+			})
 		);
-		const objectUrl = 'object_url';
-		createObjectURL.mockReturnValueOnce(objectUrl);
+		const cleanup = jest.fn();
+		loadImageMock.mockReturnValue({
+			url: Promise.resolve(url),
+			cleanup,
+		});
 
 		// when
 		const { unmount } = render(
@@ -46,29 +53,10 @@ describe('Gif', () => {
 		);
 
 		// then
-		waitFor(() => expect(screen.getByTestId('full-image-gif')).toHaveAttribute('src', objectUrl));
+		expect(loadImageMock).toHaveBeenCalledWith(post, false);
+		expect(await screen.findByTestId('full-image-gif')).toHaveAttribute('src', url);
 		unmount();
-		expect(revokeObjectURL).toBeCalledWith(objectUrl);
-	});
-	it('Renders correctly when image is NOT found on disk', async () => {
-		// given
-		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'], fileUrl: 'test_file_url.gif' });
-		const store = mockStore(mState());
-		loadImageMock.mockImplementationOnce(
-			(post: Post, _: (response: SuccessfulLoadPostResponse) => void, onRejected: (post: Post) => void) => {
-				onRejected(post);
-			}
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<Gif post={post} />
-			</Provider>
-		);
-
-		// then
-		expect(await screen.findByTestId('full-image-gif')).toHaveAttribute('src', post.fileUrl);
+		expect(cleanup).toHaveBeenCalledTimes(1);
 	});
 	it('Creates action with open-in-browser IPC message', () => {
 		// given

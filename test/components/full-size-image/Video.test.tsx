@@ -1,3 +1,11 @@
+const loadImageMock = jest.fn();
+jest.mock('../../../src/util/componentUtils.tsx', () => {
+	const originalModule = jest.requireActual('../../../src/util/componentUtils.tsx');
+	return {
+		...originalModule,
+		imageLoader: loadImageMock,
+	};
+});
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -10,10 +18,6 @@ jest.mock('../../../src/components/full-size-image/TagsPopover', () => (): JSX.E
 import Video from '../../../src/components/full-size-image/Video';
 import '@testing-library/jest-dom';
 import { mPost } from '../../helpers/test.helper';
-import { loadImageMock } from '../../helpers/imageBus.mock';
-import { createObjectURL, revokeObjectURL } from '../../helpers/window.mock';
-import { SuccessfulLoadPostResponse } from '../../../src/types/processDto';
-import { Post } from '../../../src/types/gelbooruTypes';
 import { getPostUrl } from '../../../src/service/webService';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
@@ -31,21 +35,22 @@ describe('Video', () => {
 		window.HTMLMediaElement.prototype.play = play;
 		window.HTMLMediaElement.prototype.pause = pause;
 	});
-	it('Renders correctly when video is found on disk', async () => {
+	it('Calls imageLoader, uses returned value and calls cleanup on unmount', async () => {
 		// given
+		const url = 'objUrl123';
 		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'], image: 'filename.webm', fileUrl: 'filename.webm' });
-		const store = mockStore(mState());
-		const data = new Blob(['asdfasdf'], { type: 'image/webm' });
-		loadImageMock.mockImplementationOnce(
-			(post: Post, onFullfiled: (response: SuccessfulLoadPostResponse) => void, _: (post: Post) => void) => {
-				onFullfiled({
-					data,
-					post,
-				});
-			}
+		const store = mockStore(
+			mState({
+				settings: {
+					downloadMissingImages: false,
+				},
+			})
 		);
-		const objectUrl = 'object_url';
-		createObjectURL.mockReturnValueOnce(objectUrl);
+		const cleanup = jest.fn();
+		loadImageMock.mockReturnValue({
+			url: Promise.resolve(url),
+			cleanup,
+		});
 
 		// when
 		const { unmount } = render(
@@ -55,30 +60,11 @@ describe('Video', () => {
 		);
 
 		// then
-		expect(await screen.findByTestId('video-source')).toHaveAttribute('src', objectUrl);
+		expect(loadImageMock).toHaveBeenCalledWith(post, false);
+		expect(await screen.findByTestId('video-source')).toHaveAttribute('src', url);
 		expect(play).toHaveBeenCalledTimes(1);
 		unmount();
-		expect(revokeObjectURL).toBeCalledWith(objectUrl);
-	});
-	it('Renders correctly when video is NOT found on disk', async () => {
-		// given
-		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'], fileUrl: 'test_file_url.webm', image: 'filename.webm' });
-		const store = mockStore(mState());
-		loadImageMock.mockImplementationOnce(
-			(post: Post, _: (response: SuccessfulLoadPostResponse) => void, onRejected: (post: Post) => void) => {
-				onRejected(post);
-			}
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<Video post={post} />
-			</Provider>
-		);
-
-		// then
-		expect(await screen.findByTestId('video-source')).toHaveAttribute('src', post.fileUrl);
+		expect(cleanup).toHaveBeenCalledTimes(1);
 	});
 	it('Creates action with open-in-browser IPC message', () => {
 		// given

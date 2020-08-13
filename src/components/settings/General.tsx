@@ -2,11 +2,11 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FolderOpenOutlined, FolderOutlined, ImportOutlined, ExportOutlined } from '@ant-design/icons';
-import { Form, Input, Button, Select } from 'antd';
+import { Form, Input, Button, Select, Checkbox } from 'antd';
 
 import { AppDispatch, RootState } from '../../store/types';
 import { IpcChannels } from '../../types/processDto';
-import { thunks } from '../../store';
+import { thunks, actions } from '../../store';
 
 interface SelectFolderDialogResponse {
 	canceled: boolean;
@@ -32,6 +32,7 @@ const General: React.FunctionComponent = () => {
 
 	const imagesFolderPath = useSelector((state: RootState) => state.settings.imagesFolderPath);
 	const theme = useSelector((state: RootState) => state.settings.theme);
+	const downloadMissingImages = useSelector((state: RootState) => state.settings.downloadMissingImages);
 
 	const handleThemeChange = (value: 'dark' | 'light'): void => {
 		dispatch(thunks.settings.updateTheme(value)).then(() => {
@@ -49,6 +50,10 @@ const General: React.FunctionComponent = () => {
 				dispatch(thunks.settings.updateImagePath(response.filePaths[0]));
 			}
 		});
+	};
+
+	const handleToggleDownloadMissingIMages = (): void => {
+		dispatch(actions.settings.toggleDownloadMissingImages());
 	};
 
 	const handleImport = (): void => {
@@ -89,6 +94,11 @@ const General: React.FunctionComponent = () => {
 				<StyledButton $isOffset onClick={handleExport}>
 					<ExportOutlined /> Export
 				</StyledButton>
+			</Item>
+			<Item wrapperCol={{ offset: 4 }}>
+				<Checkbox checked={downloadMissingImages} onClick={handleToggleDownloadMissingIMages}>
+					Download missing images
+				</Checkbox>
 			</Item>
 		</Form>
 	);

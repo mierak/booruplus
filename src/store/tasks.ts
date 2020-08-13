@@ -67,7 +67,6 @@ const tasksSlice = createSlice({
 		});
 		builder.addCase(thunks.posts.downloadPost.fulfilled, (state, action) => {
 			const id = action.meta.arg.taskId;
-			log.debug('UPDATING TASK');
 			if (id) {
 				const task = state.tasks[id];
 				task.itemsDone = task.itemsDone + 1;

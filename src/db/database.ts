@@ -125,6 +125,7 @@ db.on('populate', () => {
 			imagesFolderPath: 'C:\\temp', // TODO change to userfolder
 			theme: 'dark',
 			apiKey: undefined,
+			downloadMissingImages: true,
 			dashboard: {
 				mostViewedCount: 28,
 				loadMostFavoritedTags: true,
