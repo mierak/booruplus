@@ -14,7 +14,9 @@ import {
 import { Icon } from '../types/components';
 import { Post } from '../types/gelbooruTypes';
 import { Tooltip } from 'antd';
-import { loadImage, saveImage } from './imageIpcUtils';
+import { loadImage, saveImage, loadThumbnail, saveThumbnail } from './imageIpcUtils';
+import { getThumbnailUrl } from '../service/webService';
+import { thumbnailCache, imageCache } from './objectUrlCache';
 
 export const getIcon = (icon: Icon, onClick?: (() => void) | undefined): React.ReactElement => {
 	switch (icon) {
@@ -67,45 +69,65 @@ export const getThumbnailBorder = (active: string, theme: 'dark' | 'light', sele
 	return 'dashed 1px black';
 };
 
-export const imageLoader = (post: Post, downloadMissingImage = true): { url: Promise<string>; cleanup: () => Promise<void> } => {
+export const imageLoader = (post: Post, downloadMissingImage = true): Promise<string> => {
 	const log = window.log;
-	let objectUrlExists = false;
 	let objectUrl = '';
 
-	const promise = new Promise<string>((resolve) => {
+	return new Promise<string>((resolve) => {
 		if (post.downloaded) {
-			loadImage(post)
-				.then((result) => {
-					objectUrl = URL.createObjectURL(new Blob([result.data]));
-					log.debug('Post was found and loaded successfuly, ObjectURL:', objectUrl);
-					objectUrlExists = true;
-					resolve(objectUrl);
-				})
-				.catch((err) => {
-					log.debug('Downloaded post not found on disk. Reading from URL');
-					resolve(err.fileUrl);
-					if (downloadMissingImage) {
-						log.debug('Saving missing image. Id: ', post.id);
-						saveImage(post);
-					}
-				});
+			const cachedUrl = imageCache.returnIfExists(post.id);
+			if (cachedUrl) {
+				resolve(cachedUrl);
+			} else {
+				loadImage(post)
+					.then((result) => {
+						objectUrl = URL.createObjectURL(new Blob([result.data]));
+						log.debug('Post was found and loaded successfuly, ObjectURL:', objectUrl);
+						imageCache.add(objectUrl, post.id);
+						resolve(objectUrl);
+					})
+					.catch((err) => {
+						resolve(err.fileUrl);
+						log.debug('Downloaded post not found on disk. Reading from URL', err.fileUrl);
+						if (downloadMissingImage) {
+							log.debug('Saving missing image. Id: ', post.id);
+							saveImage(post);
+						}
+					});
+			}
 		} else {
 			log.debug('Post is not downloaded. Reading from URL', post.fileUrl);
 			resolve(post.fileUrl);
 		}
 	});
+};
 
-	const cleanup = async (): Promise<void> => {
-		await promise;
-		if (objectUrlExists) {
-			if (objectUrl) {
-				log.debug('Cleaning up objectUrl', objectUrl);
-				URL.revokeObjectURL(objectUrl);
+export const thumbnailLoader = (post: Post, downloadMissingThumbnail = true): Promise<string> => {
+	const log = window.log;
+	let objectUrl = '';
+
+	return new Promise<string>((resolve) => {
+		if (post.downloaded) {
+			const cacheUrl = thumbnailCache.returnIfExists(post.id);
+			if (cacheUrl) {
+				resolve(cacheUrl);
 			} else {
-				log.error('Could not clean up object URL create for post id', post.id, '. This might cause a memory leak!');
+				loadThumbnail(post)
+					.then((result) => {
+						objectUrl = URL.createObjectURL(new Blob([result.data]));
+						thumbnailCache.add(objectUrl, post.id);
+						resolve(objectUrl);
+					})
+					.catch((_) => {
+						if (downloadMissingThumbnail) {
+							log.debug('Saving missing thumbnail. Id: ', post.id);
+							saveThumbnail(post);
+						}
+						resolve(getThumbnailUrl(post.directory, post.hash));
+					});
 			}
+		} else {
+			resolve(getThumbnailUrl(post.directory, post.hash));
 		}
-	};
-
-	return { cleanup, url: promise };
+	});
 };

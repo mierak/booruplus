@@ -44,6 +44,7 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 
 	useEffect(() => {
 		if (videoRef.current && isFilenameVideo(post.image)) {
+			let canceled = false;
 			const source = document.createElement('source');
 			source.setAttribute('data-testid', 'video-source');
 			dispatch(actions.loadingStates.setFullImageLoading(true));
@@ -51,13 +52,15 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 				dispatch(actions.loadingStates.setFullImageLoading(false));
 			};
 			const loader = imageLoader(post, downloadMissingImage);
-			loader.url.then((result) => {
-				source.setAttribute('src', result);
-				playVideo(source);
+			loader.then((result) => {
+				if (!canceled) {
+					source.setAttribute('src', result);
+					playVideo(source);
+				}
 			});
 
 			return (): void => {
-				loader.cleanup();
+				canceled = true;
 			};
 		}
 	}, [dispatch, downloadMissingImage, post]);

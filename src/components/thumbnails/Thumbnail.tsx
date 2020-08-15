@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { CheckCircleTwoTone } from '@ant-design/icons';
@@ -8,8 +8,7 @@ import { actions } from '../../store';
 import { RootState, AppDispatch } from '../../store/types';
 
 import { CardAction, ContextMenu, openNotificationWithIcon } from '../../types/components';
-import { renderPostCardAction, getThumbnailBorder } from '../../util/componentUtils';
-import { getThumbnailUrl } from '../../service/webService';
+import { renderPostCardAction, getThumbnailBorder, thumbnailLoader } from '../../util/componentUtils';
 
 interface Props {
 	index: number;
@@ -70,6 +69,7 @@ const StyledThumbnailImage = styled.img`
 
 const Thumbnail = (props: Props): React.ReactElement => {
 	const dispatch = useDispatch<AppDispatch>();
+	const imageRef = React.useRef<HTMLImageElement>(null);
 
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 	const post = useSelector((state: RootState) =>
@@ -77,6 +77,27 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	);
 	const isActive = useSelector((state: RootState) => props.index === state.posts.activePostIndex);
 	const theme = useSelector((state: RootState) => state.settings.theme);
+	const downloadMissingImage = useSelector((state: RootState) => state.settings.downloadMissingImages);
+
+	useEffect(() => {
+		const ref = imageRef.current;
+		if (ref && post) {
+			let canceled = false;
+			ref.onload = (): void => {
+				// dispatch(actions.loadingStates.setFullImageLoading(false));
+			};
+			const loader = thumbnailLoader(post, true);
+			loader.then((url) => {
+				if (!canceled) {
+					ref.src = url;
+				}
+			});
+
+			return (): void => {
+				canceled = true;
+			};
+		}
+	}, [dispatch, downloadMissingImage, post]);
 
 	const handleThumbnailClick = (event: React.MouseEvent): void => {
 		event.stopPropagation();
@@ -164,9 +185,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 			>
 				<StyledImageContainer onClick={(event: React.MouseEvent): void => handleThumbnailClick(event)}>
 					{post && post.selected && <CheckCircleTwoTone style={{ fontSize: '20px', position: 'absolute', top: '5px', right: '5px' }} />}
-					{post && (
-						<StyledThumbnailImage data-testid='thumbnail-image' src={getThumbnailUrl(post.directory, post.hash)}></StyledThumbnailImage>
-					)}
+					{post && <StyledThumbnailImage ref={imageRef} data-testid='thumbnail-image'></StyledThumbnailImage>}
 				</StyledImageContainer>
 			</StyledCard>
 		);

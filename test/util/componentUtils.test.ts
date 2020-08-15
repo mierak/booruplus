@@ -45,7 +45,7 @@ describe('componentUtils', () => {
 				loadImageMock.mockRejectedValueOnce(post);
 
 				// when
-				const result = await imageLoader(post).url;
+				const result = await imageLoader(post);
 
 				// then
 				expect(result).toEqual(fileUrl);
@@ -60,7 +60,7 @@ describe('componentUtils', () => {
 				createObjectURL.mockReturnValue(objectUrl);
 
 				// when
-				const result = await imageLoader(post).url;
+				const result = await imageLoader(post);
 
 				// then
 				expect(result).toEqual(objectUrl);
@@ -72,7 +72,7 @@ describe('componentUtils', () => {
 				loadImageMock.mockRejectedValueOnce(post);
 
 				// when
-				const result = await imageLoader(post, true).url;
+				const result = await imageLoader(post, true);
 
 				// then
 				expect(saveImageMock).toBeCalledWith(post);
@@ -85,31 +85,11 @@ describe('componentUtils', () => {
 				loadImageMock.mockRejectedValueOnce(post);
 
 				// when
-				const result = await imageLoader(post, false).url;
+				const result = await imageLoader(post, false);
 
 				// then
 				expect(saveImageMock).toBeCalledWith(post);
 				expect(result).toEqual(fileUrl);
-			});
-			describe('cleanup()', () => {
-				it('Cleanup calls revokeObjectURL', async () => {
-					// given
-					const fileUrl = 'testfileurl.png';
-					const post = mPost({ downloaded: 1, fileUrl });
-					const data = 'testbinarydata';
-					const objectUrl = 'testObjectUrl';
-					loadImageMock.mockResolvedValueOnce({ data, post });
-					createObjectURL.mockReturnValue(objectUrl);
-
-					// when
-					const result = imageLoader(post);
-					const resultUrl = await result.url;
-					await result.cleanup();
-
-					// then
-					expect(resultUrl).toEqual(objectUrl);
-					expect(revokeObjectURL).toBeCalledWith(objectUrl);
-				});
 			});
 		});
 		describe('Post is not downloaded', () => {
@@ -119,7 +99,7 @@ describe('componentUtils', () => {
 				const post = mPost({ downloaded: 0, fileUrl });
 
 				// when
-				const result = await imageLoader(post).url;
+				const result = await imageLoader(post);
 
 				// then
 				expect(result).toEqual(fileUrl);

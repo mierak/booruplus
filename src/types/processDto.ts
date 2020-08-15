@@ -2,6 +2,12 @@ import { Post } from './gelbooruTypes';
 
 export interface SavePostDto {
 	data: ArrayBuffer;
+	thumbnailData: ArrayBuffer;
+	post: Post;
+}
+
+export interface SaveThumbnailDto {
+	data: ArrayBuffer;
 	post: Post;
 }
 
@@ -29,6 +35,8 @@ export enum IpcChannels {
 	SAVE_EXPORTED_DATA = 'save-exported-data',
 	OPEN_IMPORT_DATA_DIALOG = 'open-import-data-dialog',
 	EXPORT_POSTS = 'export-posts',
+	LOAD_THUMBNAIL = 'load-thumbnail',
+	SAVE_THUMBNAIL = 'SAVE_THUMBNAIL',
 }
 
 export interface ExportDataDto {

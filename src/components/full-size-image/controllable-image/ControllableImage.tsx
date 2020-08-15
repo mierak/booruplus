@@ -18,7 +18,6 @@ import { getPostUrl } from '../../../service/webService';
 import { imageLoader } from '../../../util/componentUtils';
 
 interface Props {
-	url: string;
 	className?: string;
 	showControls?: boolean;
 	post: Post;
@@ -28,7 +27,7 @@ const Container = styled.div`
 	position: relative;
 `;
 
-const ControllableImage: React.FunctionComponent<Props> = ({ url, className, post, showControls }: Props) => {
+const ControllableImage: React.FunctionComponent<Props> = ({ className, post, showControls }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
 	const isLoading = useSelector((state: RootState) => state.loadingStates.isFullImageLoading);
@@ -144,6 +143,7 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 		const container = containerRef.current;
 		dispatch(actions.loadingStates.setFullImageLoading(true));
 		if (renderer && viewport && container) {
+			let canceled = false;
 			const img = new Image();
 			img.onload = (): void => {
 				dispatch(actions.loadingStates.setFullImageLoading(false));
@@ -151,11 +151,13 @@ const ControllableImage: React.FunctionComponent<Props> = ({ url, className, pos
 				renderer.renderImage(img);
 			};
 			const loader = imageLoader(post, downloadMissingImage);
-			loader.url.then((url) => {
-				img.src = url;
+			loader.then((url) => {
+				if (!canceled) {
+					img.src = url;
+				}
 			});
 			return (): void => {
-				loader.cleanup();
+				canceled = true;
 			};
 		}
 	}, [dispatch, downloadMissingImage, initViewport, post, renderer]);

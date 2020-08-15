@@ -7,7 +7,8 @@ import log from 'electron-log';
 import fetch from 'node-fetch';
 
 import { Settings } from '../src/store/types';
-import { SavePostDto, IpcChannels, ExportDataDto } from '../src/types/processDto';
+import { SavePostDto, IpcChannels, ExportDataDto, SaveThumbnailDto } from '../src/types/processDto';
+import { getFileService, FileService } from './fileService';
 import { Post } from '../src/types/gelbooruTypes';
 
 import path from 'path';
@@ -18,6 +19,7 @@ const isProd = app.isPackaged;
 
 log.transports.console.useStyles = true;
 log.transports.console.format = '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{processType}] [{level}] - {text}';
+log.catchErrors({ showDialog: true });
 
 log.debug(`Starting app. Production mode is: ${isProd}`);
 
@@ -94,9 +96,11 @@ app.whenReady().then(() => {
 });
 
 let settings: Settings;
+let fileService: FileService;
 
-ipcMain.on(IpcChannels.SETTINGS_LOADED, (event: IpcMainEvent, value: Settings) => {
+ipcMain.on(IpcChannels.SETTINGS_LOADED, (_: IpcMainEvent, value: Settings) => {
 	settings = value;
+	fileService = getFileService(value);
 });
 
 ipcMain.on(IpcChannels.THEME_CHANGED, async () => {
@@ -112,71 +116,80 @@ ipcMain.on(IpcChannels.THEME_CHANGED, async () => {
 	}
 });
 
-ipcMain.on(IpcChannels.OPEN_IN_BROWSER, (event: IpcMainEvent, value: string) => {
+ipcMain.on(IpcChannels.OPEN_IN_BROWSER, (_: IpcMainEvent, value: string) => {
 	shell.openExternal(value);
 });
 
-ipcMain.on(IpcChannels.OPEN_PATH, (event: IpcMainEvent, value: string) => {
+ipcMain.on(IpcChannels.OPEN_PATH, (_: IpcMainEvent, value: string) => {
 	shell.openPath(value);
 });
 
-ipcMain.handle(IpcChannels.SAVE_IMAGE, async (event: IpcMainInvokeEvent, dto: SavePostDto) => {
-	if (dto.data) {
-		await fs.promises.mkdir(`${settings.imagesFolderPath}/${dto.post.directory}`, { recursive: true }).catch((err) => {
-			log.error(err);
-			//TODO handle gracefully
-			throw err;
-		});
-		await fs.promises
-			.writeFile(`${settings.imagesFolderPath}/${dto.post.directory}/${dto.post.image}`, Buffer.from(dto.data), 'binary')
-			.catch((err) => {
-				log.error(err);
-				//TODO handle gracefuly
-				throw err;
-			});
-		log.debug(`ipcMain: image-saved | id: ${dto.post.id}`);
-		return dto.post;
-	} else {
-		throw 'No data to save supplied';
+ipcMain.handle(IpcChannels.SAVE_IMAGE, async (_: IpcMainInvokeEvent, dto: SavePostDto) => {
+	if (!dto.data) {
+		const msg = 'No image data supplied.';
+		log.error(msg);
+		return Promise.reject(msg);
 	}
+	if (!dto.thumbnailData) {
+		const msg = 'No thumbnail data supplied.';
+		log.error(msg);
+		return Promise.reject(msg);
+	}
+
+	await fileService.createImageDirIfNotExists(dto.post);
+	const postSaved = await fileService.saveImage(dto.post, dto.data);
+
+	await fileService.createThumbnailDirIfNotExists(dto.post);
+	const thumbnailSaved = await fileService.saveThumbnail(dto.post, dto.thumbnailData);
+
+	if (!thumbnailSaved || !postSaved) {
+		return Promise.reject(`Could not save image or its thumbnail. Post id ${dto.post.id}`);
+	}
+
+	log.debug(`ipcMain: image-saved | id: ${dto.post.id} to <images-path>/${dto.post.directory}`);
+	return Promise.resolve();
 });
 
-ipcMain.handle(IpcChannels.LOAD_IMAGE, async (event: IpcMainInvokeEvent, post: Post) => {
-	try {
-		const data = fs.readFileSync(`${settings.imagesFolderPath}/${post.directory}/${post.image}`);
-		log.debug(`ipcMain: image-loaded | id: ${post.id}`);
-		return { data: data, post };
-	} catch (err) {
-		return { data: undefined, post };
+ipcMain.handle(IpcChannels.SAVE_THUMBNAIL, async (_: IpcMainInvokeEvent, dto: SaveThumbnailDto) => {
+	if (!dto.data) {
+		const msg = 'No thumbnail data supplied.';
+		log.error(msg);
+		return Promise.reject(msg);
 	}
+
+	await fileService.createThumbnailDirIfNotExists(dto.post);
+	const thumbnailSaved = await fileService.saveThumbnail(dto.post, dto.data);
+
+	if (!thumbnailSaved) {
+		return Promise.reject(`Could not save image or its thumbnail. Post id ${dto.post.id}`);
+	}
+
+	log.debug(`ipcMain: thumbnail-saved | id: ${dto.post.id} to <thumbnails-path>/${dto.post.directory}`);
+	return Promise.resolve();
 });
 
-ipcMain.handle(IpcChannels.DELETE_IMAGE, async (event: IpcMainInvokeEvent, post: Post) => {
-	try {
-		fs.unlinkSync(`${settings.imagesFolderPath}/${post.directory}/${post.image}`);
-		log.debug(`Deleting post ${post.id} and its directory if its empty`);
-		const dirs = post.directory.split('/');
-		const firstDir = `${settings.imagesFolderPath}/${dirs[0]}/${dirs[1]}`;
-		const secondDir = `${settings.imagesFolderPath}/${dirs[0]}`;
+ipcMain.handle(IpcChannels.LOAD_IMAGE, async (_: IpcMainInvokeEvent, post: Post) => {
+	return fileService.loadImage(post);
+});
 
-		const firstEmpty = fs.readdirSync(firstDir).length === 0;
-		log.debug(`Directory ${firstDir} is ${firstEmpty ? 'empty' : 'not empty'}.`);
-		if (firstEmpty) {
-			log.debug('Deleting first directory.');
-			fs.rmdirSync(firstDir);
+ipcMain.handle(IpcChannels.LOAD_THUMBNAIL, async (_: IpcMainInvokeEvent, post: Post) => {
+	return fileService.loadThumbnail(post);
+});
 
-			const secondEmpty = fs.readdirSync(secondDir).length === 0;
-			log.debug(`Directory ${secondDir} is ${secondEmpty ? 'empty' : 'not empty'}.`);
-			if (secondEmpty) {
-				log.debug('Deleting second directory.');
-				fs.rmdirSync(secondDir);
-			}
-		}
-		return true;
-	} catch (err) {
-		log.error('could not delete post image or directories', `post id: ${post.id}`, err);
-		return false;
+ipcMain.handle(IpcChannels.DELETE_IMAGE, async (_: IpcMainInvokeEvent, post: Post) => {
+	await fileService.deleteImage(post);
+	await fileService.deleteThumbnail(post);
+
+	const imageDeleted = await fileService.deletePostDirectoryIfEmpty(post);
+	const thumbnailDeleted = await fileService.deleteThumbnailDirectoryIfEmpty(post);
+
+	if (!imageDeleted || !thumbnailDeleted) {
+		return Promise.reject(
+			`Either image or thumbnail of Post id ${post.id} could not be deleted. Image deleted: ${imageDeleted}. Thumbnail deleted: ${thumbnailDeleted}.`
+		);
 	}
+
+	return Promise.resolve();
 });
 
 ipcMain.handle(IpcChannels.OPEN_SELECT_IMAGES_FOLDER_DIALOG, async () => {
