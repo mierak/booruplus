@@ -30,17 +30,49 @@ Object.defineProperty(window, 'URL', {
 		revokeObjectURL: revokeObjectURL,
 	},
 });
+Object.defineProperty((global as any).window.HTMLMediaElement.prototype, 'play', {
+	get: function() {
+		return this._play ?? jest.fn();
+	},
+	set: function(value: any): void {
+		this._play = value;
+	},
+});
+Object.defineProperty((global as any).window.HTMLMediaElement.prototype, 'load', {
+	get() {
+		return (): void => undefined;
+	},
+});
 
 import { doDatabaseMock } from '../helpers/database.mock';
 doDatabaseMock();
 
-import { deleteImageMock, saveImageMock, loadImageMock } from '../helpers/imageBus.mock';
+import {
+	deleteImageMock,
+	saveImageMock,
+	loadImageMock,
+	loadThumbnailMock,
+	saveThumbnailMock,
+	thumbnailLoaderMock,
+	imageLoaderMock,
+} from '../helpers/imageBus.mock';
 
 jest.mock('../../src/util/imageIpcUtils', () => ({
 	loadImage: loadImageMock,
 	saveImage: saveImageMock,
 	deleteImage: deleteImageMock,
+	loadThumbnail: loadThumbnailMock,
+	saveThumbnail: saveThumbnailMock,
 }));
+
+jest.mock('../../src/util/componentUtils', () => {
+	const orig = jest.requireActual('../../src/util/componentUtils');
+	return {
+		...orig,
+		thumbnailLoader: thumbnailLoaderMock,
+		imageLoader: imageLoaderMock,
+	};
+});
 
 (global as any).ResizeObserver = class {
 	observe = observe;

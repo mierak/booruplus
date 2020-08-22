@@ -32,9 +32,9 @@ export const saveThumbnail = async (post: Post): Promise<void> => {
 	return window.api.invoke(IpcChannels.SAVE_THUMBNAIL, dto);
 };
 
-export const loadImage = (post: Post): Promise<SuccessfulLoadPostResponse> => {
+const load = (post: Post, channel: IpcChannels): Promise<SuccessfulLoadPostResponse> => {
 	return new Promise((resolve, reject) => {
-		window.api.invoke<LoadPostResponse>(IpcChannels.LOAD_IMAGE, post).then((response) => {
+		window.api.invoke<LoadPostResponse>(channel, post).then((response) => {
 			if (response.data) {
 				resolve({ data: response.data, post: response.post });
 			} else {
@@ -44,14 +44,6 @@ export const loadImage = (post: Post): Promise<SuccessfulLoadPostResponse> => {
 	});
 };
 
-export const loadThumbnail = (post: Post): Promise<SuccessfulLoadPostResponse> => {
-	return new Promise((resolve, reject) => {
-		window.api.invoke<LoadPostResponse>(IpcChannels.LOAD_THUMBNAIL, post).then((response) => {
-			if (response.data) {
-				resolve({ data: response.data, post: response.post });
-			} else {
-				reject(post);
-			}
-		});
-	});
-};
+export const loadImage = (post: Post): Promise<SuccessfulLoadPostResponse> => load(post, IpcChannels.LOAD_IMAGE);
+
+export const loadThumbnail = (post: Post): Promise<SuccessfulLoadPostResponse> => load(post, IpcChannels.LOAD_THUMBNAIL);

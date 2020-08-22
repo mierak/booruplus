@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { actions } from '../../../src/store';
 import { RootState, AppDispatch } from '../../../src/store/types';
@@ -11,20 +11,22 @@ jest.mock('../../../src/components/FullSizeImage', () => (): JSX.Element => <div
 import ImageView from '../../../src/pages/ImageView';
 import '@testing-library/jest-dom';
 import { mPost } from '../../helpers/test.helper';
-import { getThumbnailUrl } from '../../../src/service/webService';
+import { thumbnailLoaderMock } from '../../helpers/imageBus.mock';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('pages/ImageView', () => {
+	const testUrl = '123testurl.jpg';
 	beforeEach(() => {
 		(global as any).document.getElementById = jest.fn();
+		thumbnailLoaderMock.mockResolvedValue(testUrl);
 	});
-	it('Renders thumbnails sidebar correctly', () => {
+	it('Renders thumbnails sidebar and FullSizeImage correctly', () => {
 		// given
 		const posts = [
-			mPost({ id: 1, directory: 'dir1', hash: 'hash1' }),
-			mPost({ id: 2, directory: 'dir2', hash: 'hash2' }),
-			mPost({ id: 3, directory: 'dir3', hash: 'hash3' }),
+			mPost({ id: 1, directory: 'dir1', hash: 'hash1', downloaded: 1 }),
+			mPost({ id: 2, directory: 'dir2', hash: 'hash2', downloaded: 1 }),
+			mPost({ id: 3, directory: 'dir3', hash: 'hash3', downloaded: 1 }),
 		];
 		const store = mockStore(
 			mState({
@@ -35,7 +37,7 @@ describe('pages/ImageView', () => {
 		);
 
 		// when
-		render(
+		const { unmount } = render(
 			<Provider store={store}>
 				<ImageView />
 			</Provider>
@@ -43,38 +45,16 @@ describe('pages/ImageView', () => {
 
 		// then
 		const thumbnails = screen.getAllByTestId('thumbnail-image');
-		expect(thumbnails[0]).toHaveAttribute('src', getThumbnailUrl(posts[0].directory, posts[0].hash));
-		expect(thumbnails[1]).toHaveAttribute('src', getThumbnailUrl(posts[1].directory, posts[1].hash));
-		expect(thumbnails[2]).toHaveAttribute('src', getThumbnailUrl(posts[2].directory, posts[2].hash));
-	});
-	it('Renders FullSizeImage', () => {
-		// given
-		const posts = [
-			mPost({ id: 1, directory: 'dir1', hash: 'hash1' }),
-			mPost({ id: 2, directory: 'dir2', hash: 'hash2' }),
-			mPost({ id: 3, directory: 'dir3', hash: 'hash3', fileUrl: 'file-url/name.gif', image: 'name.gif' }),
-			mPost({ id: 4, directory: 'dir4', hash: 'hash4', downloaded: 1 }),
-			mPost({ id: 5, directory: 'dir5', hash: 'hash5', downloaded: 1 }),
-		];
-		const activePostIndex = 2;
-		const store = mockStore(
-			mState({
-				posts: {
-					posts,
-					activePostIndex,
-				},
-			})
-		);
-		(global as any).window.HTMLDivElement.prototype.scrollTo = jest.fn();
-		// when
-		render(
-			<Provider store={store}>
-				<ImageView />
-			</Provider>
-		);
-
-		// then
+		expect(thumbnailLoaderMock.mock.calls).toEqual([
+			[posts[0], true],
+			[posts[1], true],
+			[posts[2], true],
+		]);
+		posts.forEach(async (_, index) => {
+			await waitFor(() => expect(thumbnails[index]).toHaveAttribute('src', testUrl));
+		});
 		expect(screen.getByText('mocked image')).not.toBeNull();
+		unmount();
 	});
 	it('Dispatches setImageViewThumbnailsCollapsed() when Siders collapse button is pressed', () => {
 		// given

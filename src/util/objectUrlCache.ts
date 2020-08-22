@@ -1,19 +1,19 @@
-interface ThumbnailsUrlCache {
+export interface ImageCache {
 	add: (objectUrl: string, postId: number) => void;
 	revokeAll: () => void;
-	returnIfExists: (postId: number) => string | undefined;
+	getIfPresent: (postId: number) => string | undefined;
 }
 
 interface UrlCache {
 	[key: string]: string;
 }
 
-interface ImageUrlCache {
+interface ImageCacheItem {
 	postId: number;
 	objectUrl: string;
 }
 
-const createPermanentCache = (): ThumbnailsUrlCache => {
+const createPermanentCache = (): ImageCache => {
 	const log = window.log;
 	let cache: UrlCache = {};
 
@@ -35,18 +35,18 @@ const createPermanentCache = (): ThumbnailsUrlCache => {
 		log.debug(`Revoked ${keys.length} object urls.`);
 	};
 
-	const returnIfExists = (postId: number): string | undefined => {
+	const getIfPresent = (postId: number): string | undefined => {
 		const url = cache[postId.toString()];
 		return url ? url : undefined;
 	};
 
-	return { add, revokeAll, returnIfExists };
+	return { add, revokeAll, getIfPresent };
 };
 
-const createRotatingCache = (): ThumbnailsUrlCache => {
+const createRotatingCache = (): ImageCache => {
 	const log = window.log;
 	const cacheSize = 5;
-	let cache: ImageUrlCache[] = [];
+	let cache: ImageCacheItem[] = [];
 
 	const add = (objectUrl: string, postId: number): void => {
 		if (!cache.find((c) => c.postId === postId)) {
@@ -69,11 +69,11 @@ const createRotatingCache = (): ThumbnailsUrlCache => {
 		log.debug(`Revoked ${prevCache.length} object urls.`);
 	};
 
-	const returnIfExists = (postId: number): string | undefined => {
+	const getIfPresent = (postId: number): string | undefined => {
 		return cache.find((c) => c.postId === postId)?.objectUrl;
 	};
 
-	return { add, revokeAll, returnIfExists };
+	return { add, revokeAll, getIfPresent };
 };
 
 export const imageCache = createRotatingCache();

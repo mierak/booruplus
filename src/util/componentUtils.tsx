@@ -16,7 +16,8 @@ import { Post } from '../types/gelbooruTypes';
 import { Tooltip } from 'antd';
 import { loadImage, saveImage, loadThumbnail, saveThumbnail } from './imageIpcUtils';
 import { getThumbnailUrl } from '../service/webService';
-import { thumbnailCache, imageCache } from './objectUrlCache';
+import { thumbnailCache, imageCache, ImageCache } from './objectUrlCache';
+import { SuccessfulLoadPostResponse } from 'types/processDto';
 
 export const getIcon = (icon: Icon, onClick?: (() => void) | undefined): React.ReactElement => {
 	switch (icon) {
@@ -69,65 +70,76 @@ export const getThumbnailBorder = (active: string, theme: 'dark' | 'light', sele
 	return 'dashed 1px black';
 };
 
-export const imageLoader = (post: Post, downloadMissingImage = true): Promise<string> => {
-	const log = window.log;
-	let objectUrl = '';
+interface LoaderParams {
+	post: Post;
+	downloadMissing: boolean;
+	cache: ImageCache;
+	notFoundResolveValue: string;
+	shouldLog?: boolean;
+	loadFunction: (post: Post) => Promise<SuccessfulLoadPostResponse>;
+	saveCallback: (post: Post) => void;
+}
 
+const loader = ({
+	post,
+	downloadMissing,
+	cache,
+	notFoundResolveValue,
+	shouldLog,
+	loadFunction,
+	saveCallback,
+}: LoaderParams): Promise<string> => {
+	const log = window.log;
 	return new Promise<string>((resolve) => {
-		if (post.downloaded) {
-			const cachedUrl = imageCache.returnIfExists(post.id);
-			if (cachedUrl) {
-				resolve(cachedUrl);
-			} else {
-				loadImage(post)
-					.then((result) => {
-						objectUrl = URL.createObjectURL(new Blob([result.data]));
-						log.debug('Post was found and loaded successfuly, ObjectURL:', objectUrl);
-						imageCache.add(objectUrl, post.id);
-						resolve(objectUrl);
-					})
-					.catch((err) => {
-						resolve(err.fileUrl);
-						log.debug('Downloaded post not found on disk. Reading from URL', err.fileUrl);
-						if (downloadMissingImage) {
-							log.debug('Saving missing image. Id: ', post.id);
-							saveImage(post);
-						}
-					});
-			}
-		} else {
-			log.debug('Post is not downloaded. Reading from URL', post.fileUrl);
-			resolve(post.fileUrl);
+		if (post.downloaded === 0) {
+			shouldLog && log.debug('Post is not downloaded. Reading from URL', notFoundResolveValue);
+			resolve(notFoundResolveValue);
+			return;
 		}
+
+		const cachedUrl = cache.getIfPresent(post.id);
+		if (cachedUrl) {
+			shouldLog && log.debug('Post found in cache, cached URL:', cachedUrl);
+			resolve(cachedUrl);
+			return;
+		}
+
+		loadFunction(post)
+			.then((result) => {
+				const objectUrl = URL.createObjectURL(new Blob([result.data]));
+				thumbnailCache.add(objectUrl, post.id);
+				shouldLog && log.debug('Post was found and loaded successfuly, ObjectURL:', objectUrl);
+				resolve(objectUrl);
+			})
+			.catch((_) => {
+				shouldLog && log.debug('Downloaded post not found on disk. Reading from URL', notFoundResolveValue);
+				if (downloadMissing) {
+					shouldLog && log.debug('Saving missing or thumbnail image. Id: ', post.id);
+					saveCallback(post);
+				}
+				resolve(notFoundResolveValue);
+			});
+	});
+};
+
+export const imageLoader = (post: Post, downloadMissingImage = true): Promise<string> => {
+	return loader({
+		post,
+		downloadMissing: downloadMissingImage,
+		cache: imageCache,
+		notFoundResolveValue: post.fileUrl,
+		saveCallback: saveImage,
+		loadFunction: loadImage,
 	});
 };
 
 export const thumbnailLoader = (post: Post, downloadMissingThumbnail = true): Promise<string> => {
-	const log = window.log;
-	let objectUrl = '';
-
-	return new Promise<string>((resolve) => {
-		if (post.downloaded) {
-			const cacheUrl = thumbnailCache.returnIfExists(post.id);
-			if (cacheUrl) {
-				resolve(cacheUrl);
-			} else {
-				loadThumbnail(post)
-					.then((result) => {
-						objectUrl = URL.createObjectURL(new Blob([result.data]));
-						thumbnailCache.add(objectUrl, post.id);
-						resolve(objectUrl);
-					})
-					.catch((_) => {
-						if (downloadMissingThumbnail) {
-							log.debug('Saving missing thumbnail. Id: ', post.id);
-							saveThumbnail(post);
-						}
-						resolve(getThumbnailUrl(post.directory, post.hash));
-					});
-			}
-		} else {
-			resolve(getThumbnailUrl(post.directory, post.hash));
-		}
+	return loader({
+		post,
+		downloadMissing: downloadMissingThumbnail,
+		cache: thumbnailCache,
+		notFoundResolveValue: getThumbnailUrl(post.directory, post.hash),
+		saveCallback: saveThumbnail,
+		loadFunction: loadThumbnail,
 	});
 };

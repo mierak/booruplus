@@ -7,7 +7,7 @@ jest.mock('../../../src/util/componentUtils.tsx', () => {
 	};
 });
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { RootState, AppDispatch } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
@@ -18,19 +18,18 @@ jest.mock('../../../src/components/full-size-image/TagsPopover', () => (): JSX.E
 import Gif from '../../../src/components/full-size-image/Gif';
 import '@testing-library/jest-dom';
 import { mPost } from '../../helpers/test.helper';
-import { Post } from '../../../src/types/gelbooruTypes';
-import { SuccessfulLoadPostResponse } from '../../../src/types/processDto';
 import { getPostUrl } from '../../../src/service/webService';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('Gif', () => {
+	const url = 'objUrl123';
 	beforeEach(() => {
 		jest.clearAllMocks();
+		loadImageMock.mockResolvedValueOnce(Promise.resolve(url));
 	});
 	it('Calls loadImage and renders returned url, calls cleanup', async () => {
 		// given
-		const url = 'objUrl123';
 		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'], downloaded: 1 });
 		const store = mockStore(
 			mState({
@@ -39,11 +38,7 @@ describe('Gif', () => {
 				},
 			})
 		);
-		const cleanup = jest.fn();
-		loadImageMock.mockReturnValue({
-			url: Promise.resolve(url),
-			cleanup,
-		});
+		loadImageMock.mockResolvedValueOnce(Promise.resolve(url));
 
 		// when
 		const { unmount } = render(
@@ -56,7 +51,6 @@ describe('Gif', () => {
 		expect(loadImageMock).toHaveBeenCalledWith(post, false);
 		expect(await screen.findByTestId('full-image-gif')).toHaveAttribute('src', url);
 		unmount();
-		expect(cleanup).toHaveBeenCalledTimes(1);
 	});
 	it('Creates action with open-in-browser IPC message', () => {
 		// given
