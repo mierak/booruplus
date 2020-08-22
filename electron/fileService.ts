@@ -26,14 +26,14 @@ export const getFileService = (settings: Settings): FileService => {
 		const firstDir = (isThumbnail ? thumbnailsPath : imagesPath).concat(`/${dirs[0]}/${dirs[1]}`);
 		const secondDir = (isThumbnail ? thumbnailsPath : imagesPath).concat(`/${dirs[0]}`);
 
-		const firstEmpty = fs.readdirSync(firstDir).length === 0;
 		try {
+			const firstEmpty = (await fs.promises.readdir(firstDir)).length === 0;
 			log.debug(`Directory ${firstDir} is ${firstEmpty ? 'empty' : 'not empty'}.`);
 
 			if (firstEmpty) {
 				log.debug('Deleting inner directory.');
 				await fs.promises.rmdir(firstDir);
-				const secondEmpty = fs.readdirSync(secondDir).length === 0;
+				const secondEmpty = (await fs.promises.readdir(secondDir)).length === 0;
 
 				log.debug(`Directory ${secondDir} is ${secondEmpty ? 'empty' : 'not empty'}.`);
 
@@ -92,10 +92,10 @@ export const getFileService = (settings: Settings): FileService => {
 		const postPath = `${imagesPath}/${post.directory}/${post.image}`;
 
 		try {
-			await fs.promises.writeFile(postPath, Buffer.from(Buffer.from(data)), 'binary');
+			await fs.promises.writeFile(postPath, Buffer.from(data), 'binary');
 			return true;
 		} catch (err) {
-			log.error('Error while saving image. Post id ', post.id, '. Rolling back changes.', err);
+			log.error('Error while saving image. Post id ', post.id);
 			return false;
 		}
 	};
@@ -107,7 +107,7 @@ export const getFileService = (settings: Settings): FileService => {
 			await fs.promises.writeFile(thumbnailPath, Buffer.from(data), 'binary');
 			return true;
 		} catch (err) {
-			log.error('Error while saving thumbnail. Post id ', post.id, '. Rolling back changes.', err);
+			log.error('Error while saving thumbnail. Post id ', post.id);
 			return false;
 		}
 	};
