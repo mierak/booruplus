@@ -6,6 +6,7 @@ import * as api from '../../service/apiService';
 import { ThunkApi, RatingCounts, TagHistory, FoundTags, NotFoundTags } from '../types';
 import { Tag, Post } from '../../types/gelbooruTypes';
 import { thunkLoggerFactory } from '../../util/logger';
+import { mostViewedCache } from '../../util/objectUrlCache';
 
 const thunkLogger = thunkLoggerFactory();
 
@@ -120,6 +121,7 @@ export const fetchMostFavoritedTags = createAsyncThunk<{ tag: Tag; count: number
 export const fetchMostViewedPosts = createAsyncThunk<Post[], number | undefined, ThunkApi>(
 	'dashboard/fetchMostViewedPosts',
 	async (limit = 20): Promise<Post[]> => {
+		mostViewedCache.revokeAll();
 		const logger = thunkLogger.getActionLogger(fetchMostViewedPosts);
 		logger.debug(`Fetching ${limit} most viewed posts from DB`);
 		return db.posts.getMostViewed(limit);

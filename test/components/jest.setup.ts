@@ -55,6 +55,7 @@ import {
 	saveThumbnailMock,
 	thumbnailLoaderMock,
 	imageLoaderMock,
+	mostViewedLoaderMock,
 } from '../helpers/imageBus.mock';
 
 jest.mock('../../src/util/imageIpcUtils', () => ({
@@ -71,6 +72,7 @@ jest.mock('../../src/util/componentUtils', () => {
 		...orig,
 		thumbnailLoader: thumbnailLoaderMock,
 		imageLoader: imageLoaderMock,
+		mostViewedLoader: mostViewedLoaderMock,
 	};
 });
 

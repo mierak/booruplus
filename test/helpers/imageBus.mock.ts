@@ -6,3 +6,4 @@ export const saveThumbnailMock = jest.fn();
 
 export const thumbnailLoaderMock = jest.fn();
 export const imageLoaderMock = jest.fn();
+export const mostViewedLoaderMock = jest.fn();

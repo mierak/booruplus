@@ -79,3 +79,5 @@ const createRotatingCache = (): ImageCache => {
 export const imageCache = createRotatingCache();
 
 export const thumbnailCache = createPermanentCache();
+
+export const mostViewedCache = createPermanentCache();

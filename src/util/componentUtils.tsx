@@ -16,7 +16,7 @@ import { Post } from '../types/gelbooruTypes';
 import { Tooltip } from 'antd';
 import { loadImage, saveImage, loadThumbnail, saveThumbnail } from './imageIpcUtils';
 import { getThumbnailUrl } from '../service/webService';
-import { thumbnailCache, imageCache, ImageCache } from './objectUrlCache';
+import { thumbnailCache, imageCache, ImageCache, mostViewedCache } from './objectUrlCache';
 import { SuccessfulLoadPostResponse } from 'types/processDto';
 
 export const getIcon = (icon: Icon, onClick?: (() => void) | undefined): React.ReactElement => {
@@ -76,6 +76,7 @@ interface LoaderParams {
 	cache: ImageCache;
 	notFoundResolveValue: string;
 	shouldLog?: boolean;
+	ignoreDownloadedStatus?: boolean;
 	loadFunction: (post: Post) => Promise<SuccessfulLoadPostResponse>;
 	saveCallback: (post: Post) => void;
 }
@@ -86,12 +87,13 @@ const loader = ({
 	cache,
 	notFoundResolveValue,
 	shouldLog,
+	ignoreDownloadedStatus,
 	loadFunction,
 	saveCallback,
 }: LoaderParams): Promise<string> => {
 	const log = window.log;
 	return new Promise<string>((resolve) => {
-		if (post.downloaded === 0) {
+		if (post.downloaded === 0 && !ignoreDownloadedStatus) {
 			shouldLog && log.debug('Post is not downloaded. Reading from URL', notFoundResolveValue);
 			resolve(notFoundResolveValue);
 			return;
@@ -107,7 +109,7 @@ const loader = ({
 		loadFunction(post)
 			.then((result) => {
 				const objectUrl = URL.createObjectURL(new Blob([result.data]));
-				thumbnailCache.add(objectUrl, post.id);
+				cache.add(objectUrl, post.id);
 				shouldLog && log.debug('Post was found and loaded successfuly, ObjectURL:', objectUrl);
 				resolve(objectUrl);
 			})
@@ -128,6 +130,7 @@ export const imageLoader = (post: Post, downloadMissingImage = true): Promise<st
 		downloadMissing: downloadMissingImage,
 		cache: imageCache,
 		notFoundResolveValue: post.fileUrl,
+		shouldLog: true,
 		saveCallback: saveImage,
 		loadFunction: loadImage,
 	});
@@ -139,6 +142,18 @@ export const thumbnailLoader = (post: Post, downloadMissingThumbnail = true): Pr
 		downloadMissing: downloadMissingThumbnail,
 		cache: thumbnailCache,
 		notFoundResolveValue: getThumbnailUrl(post.directory, post.hash),
+		saveCallback: saveThumbnail,
+		loadFunction: loadThumbnail,
+	});
+};
+
+export const mostViewedLoader = (post: Post, downloadMissingThumbnail = true): Promise<string> => {
+	return loader({
+		post,
+		downloadMissing: downloadMissingThumbnail,
+		cache: mostViewedCache,
+		notFoundResolveValue: getThumbnailUrl(post.directory, post.hash),
+		ignoreDownloadedStatus: true,
 		saveCallback: saveThumbnail,
 		loadFunction: loadThumbnail,
 	});

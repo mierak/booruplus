@@ -19,9 +19,13 @@ jest.mock('../../src/util/objectUrlCache', () => ({
 		getIfPresent: getThumbnailIfPresent,
 		add: jest.fn(),
 	},
+	mostViewedCache: {
+		getIfPresent: getThumbnailIfPresent,
+		add: jest.fn(),
+	},
 }));
 import { createObjectURL, revokeObjectURL } from '../helpers/window.mock';
-import { getThumbnailBorder, imageLoader, thumbnailLoader } from '../../src/util/componentUtils';
+import { getThumbnailBorder, imageLoader, thumbnailLoader, mostViewedLoader } from '../../src/util/componentUtils';
 import { mPost } from '../helpers/test.helper';
 import { getThumbnailUrl } from '../../src/service/webService';
 
@@ -232,6 +236,23 @@ describe('componentUtils', () => {
 				// then
 				expect(result).toEqual(getThumbnailUrl(testDir, testHash));
 			});
+		});
+	});
+	describe('mostViewedLoader()', () => {
+		it('Ignores downloaded status of a post', async () => {
+			// given
+			const testDir = 'testdir123';
+			const testHash = 'testHash1536';
+			const post = mPost({ id: 987645873, downloaded: 0, directory: testDir, hash: testHash });
+			getThumbnailIfPresent.mockReturnValueOnce(undefined);
+			loadThumbnailMock.mockRejectedValueOnce(post);
+
+			// when
+			const result = await mostViewedLoader(post);
+
+			// then
+			expect(loadThumbnailMock).toHaveBeenCalledWith(post);
+			expect(result).toEqual(getThumbnailUrl(testDir, testHash));
 		});
 	});
 });
