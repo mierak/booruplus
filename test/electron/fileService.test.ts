@@ -7,6 +7,7 @@ jest.mock('electron-log', () => {
 jest.mock('fs');
 import { mocked } from 'ts-jest/utils';
 import fs, { Dirent } from 'fs';
+import path from 'path';
 import { getFileService } from '../../electron/fileService';
 import { mSettings, mPost } from '../helpers/test.helper';
 
@@ -19,7 +20,7 @@ describe('electron/fileService', () => {
 	fs.promises.mkdir = jest.fn();
 	fs.promises.rmdir = jest.fn();
 	fs.promises.readdir = jest.fn();
-	const imagesPath = '/tmp/booruplus';
+	const imagesPath = path.join('tmp', 'booruplus');
 	const settings = mSettings({
 		imagesFolderPath: imagesPath,
 	});
@@ -91,7 +92,7 @@ describe('electron/fileService', () => {
 		it('Calls writeFile() with correct arguments and returns true if succesful', async () => {
 			// given
 			const post = mPost();
-			const imagePath = `${settings.imagesFolderPath}/${post.directory}/${post.image}`;
+			const imagePath = path.join(settings.imagesFolderPath, 'images', post.directory, post.image);
 			const data = Buffer.from('sometestdata');
 
 			// when
@@ -104,7 +105,7 @@ describe('electron/fileService', () => {
 		it('Returns false if write unsuccesful', async () => {
 			// given
 			const post = mPost();
-			const imagePath = `${settings.imagesFolderPath}/${post.directory}/${post.image}`;
+			const imagePath = path.join(settings.imagesFolderPath, 'images', post.directory, post.image);
 			const data = Buffer.from('sometestdata');
 			mockedFs.promises.writeFile.mockImplementationOnce(() => {
 				throw new Error('some error');
@@ -122,7 +123,7 @@ describe('electron/fileService', () => {
 		it('Calls writeFile() with correct arguments and returns true if succesful', async () => {
 			// given
 			const post = mPost();
-			const imagePath = `${settings.imagesFolderPath}/thumbnails/${post.directory}/${post.hash}.jpg`;
+			const imagePath = path.join(settings.imagesFolderPath, 'thumbnails', post.directory, post.hash, '.jpg');
 			const data = Buffer.from('sometestdata');
 
 			// when
@@ -135,7 +136,7 @@ describe('electron/fileService', () => {
 		it('Returns false if write unsuccesful', async () => {
 			// given
 			const post = mPost();
-			const imagePath = `${settings.imagesFolderPath}/thumbnails/${post.directory}/${post.hash}.jpg`;
+			const imagePath = path.join(settings.imagesFolderPath, 'thumbnails', post.directory, post.hash, '.jpg');
 			const data = Buffer.from('sometestdata');
 			mockedFs.promises.writeFile.mockImplementationOnce(() => {
 				throw new Error('some error');
@@ -153,7 +154,7 @@ describe('electron/fileService', () => {
 		it('Calls unlink() with correct arguments', async () => {
 			// given
 			const post = mPost();
-			const imagePath = `${settings.imagesFolderPath}/${post.directory}/${post.image}`;
+			const imagePath = path.join(settings.imagesFolderPath, 'images', post.directory, post.image);
 
 			// when
 			await service.deleteImage(post);
@@ -166,7 +167,7 @@ describe('electron/fileService', () => {
 		it('Calls unlink() with correct arguments', async () => {
 			// given
 			const post = mPost();
-			const imagePath = `${settings.imagesFolderPath}/thumbnails/${post.directory}/${post.hash}.jpg`;
+			const imagePath = path.join(settings.imagesFolderPath, 'thumbnails', post.directory, post.hash, '.jpg');
 
 			// when
 			await service.deleteThumbnail(post);
@@ -179,7 +180,7 @@ describe('electron/fileService', () => {
 		it('Calls mkdir with correct params and retruns true if succesful', async () => {
 			// given
 			const post = mPost();
-			const dir = settings.imagesFolderPath.concat(`/${post.directory}`);
+			const dir = path.join(settings.imagesFolderPath, 'images', post.directory);
 			mockedFs.promises.mkdir.mockResolvedValueOnce(undefined);
 
 			// when
@@ -192,7 +193,7 @@ describe('electron/fileService', () => {
 		it('Calls mkdir with correct params and retruns false if dir already exists', async () => {
 			// given
 			const post = mPost();
-			const dir = settings.imagesFolderPath.concat(`/${post.directory}`);
+			const dir = path.join(settings.imagesFolderPath, 'images', post.directory);
 			const err = new Error();
 			(err as any).code = 'EEXIST';
 			mockedFs.promises.mkdir.mockRejectedValue(err);
@@ -207,7 +208,7 @@ describe('electron/fileService', () => {
 		it('Calls mkdir with correct params and retruns false if unexpected error is thrown', async () => {
 			// given
 			const post = mPost();
-			const dir = settings.imagesFolderPath.concat(`/${post.directory}`);
+			const dir = path.join(settings.imagesFolderPath, 'images', post.directory);
 			const err = new Error();
 			mockedFs.promises.mkdir.mockRejectedValue(err);
 
@@ -223,7 +224,7 @@ describe('electron/fileService', () => {
 		it('Calls mkdir with correct params and retruns true if succesful', async () => {
 			// given
 			const post = mPost();
-			const dir = settings.imagesFolderPath.concat('/thumbnails').concat(`/${post.directory}`);
+			const dir = path.join(settings.imagesFolderPath, 'thumbnails', post.directory);
 			mockedFs.promises.mkdir.mockResolvedValueOnce(undefined);
 
 			// when
@@ -236,7 +237,7 @@ describe('electron/fileService', () => {
 		it('Calls mkdir with correct params and retruns false if dir already exists', async () => {
 			// given
 			const post = mPost();
-			const dir = settings.imagesFolderPath.concat('/thumbnails').concat(`/${post.directory}`);
+			const dir = path.join(settings.imagesFolderPath, 'thumbnails', post.directory);
 			const err = new Error();
 			(err as any).code = 'EEXIST';
 			mockedFs.promises.mkdir.mockRejectedValue(err);
@@ -251,7 +252,7 @@ describe('electron/fileService', () => {
 		it('Calls mkdir with correct params and retruns false if unexpected error is thrown', async () => {
 			// given
 			const post = mPost();
-			const dir = settings.imagesFolderPath.concat('/thumbnails').concat(`/${post.directory}`);
+			const dir = path.join(settings.imagesFolderPath, 'thumbnails', post.directory);
 			const err = new Error();
 			mockedFs.promises.mkdir.mockRejectedValue(err);
 
@@ -268,8 +269,8 @@ describe('electron/fileService', () => {
 			// given
 			const post = mPost();
 			const dirs = post.directory.split('/');
-			const firstDir = settings.imagesFolderPath.concat(`/${dirs[0]}/${dirs[1]}`);
-			const secondDir = settings.imagesFolderPath.concat(`/${dirs[0]}`);
+			const firstDir = path.join(settings.imagesFolderPath, 'images', dirs[0], dirs[1]);
+			const secondDir = path.join(settings.imagesFolderPath, 'images', dirs[0]);
 			mockedFs.promises.readdir.mockResolvedValue([]);
 
 			// when
@@ -285,7 +286,7 @@ describe('electron/fileService', () => {
 			// given
 			const post = mPost();
 			const dirs = post.directory.split('/');
-			const firstDir = settings.imagesFolderPath.concat(`/${dirs[0]}/${dirs[1]}`);
+			const firstDir = path.join(settings.imagesFolderPath, 'images', dirs[0], dirs[1]);
 			mockedFs.promises.readdir.mockImplementation(
 				(param, _): Promise<Dirent[]> => {
 					if (param === firstDir) {
@@ -308,7 +309,7 @@ describe('electron/fileService', () => {
 			// given
 			const post = mPost();
 			const dirs = post.directory.split('/');
-			const secondDir = settings.imagesFolderPath.concat(`/${dirs[0]}`);
+			const secondDir = path.join(settings.imagesFolderPath, 'images', dirs[0]);
 			mockedFs.promises.readdir.mockImplementation(
 				(param, _): Promise<Dirent[]> => {
 					if (param === secondDir) {
@@ -346,8 +347,8 @@ describe('electron/fileService', () => {
 			// given
 			const post = mPost();
 			const dirs = post.directory.split('/');
-			const firstDir = settings.imagesFolderPath.concat('/thumbnails').concat(`/${dirs[0]}/${dirs[1]}`);
-			const secondDir = settings.imagesFolderPath.concat('/thumbnails').concat(`/${dirs[0]}`);
+			const firstDir = path.join(settings.imagesFolderPath, 'thumbnails', dirs[0], dirs[1]);
+			const secondDir = path.join(settings.imagesFolderPath, 'thumbnails', dirs[0]);
 			mockedFs.promises.readdir.mockResolvedValue([]);
 
 			// when
@@ -363,7 +364,7 @@ describe('electron/fileService', () => {
 			// given
 			const post = mPost();
 			const dirs = post.directory.split('/');
-			const firstDir = settings.imagesFolderPath.concat('/thumbnails').concat(`/${dirs[0]}/${dirs[1]}`);
+			const firstDir = path.join(settings.imagesFolderPath, 'thumbnails', dirs[0], dirs[1]);
 			mockedFs.promises.readdir.mockImplementation(
 				(param, _): Promise<Dirent[]> => {
 					if (param === firstDir) {
@@ -386,7 +387,7 @@ describe('electron/fileService', () => {
 			// given
 			const post = mPost();
 			const dirs = post.directory.split('/');
-			const secondDir = settings.imagesFolderPath.concat('thumbnails').concat(`/${dirs[0]}`);
+			const secondDir = path.join(settings.imagesFolderPath, 'thumbnails', dirs[0]);
 			mockedFs.promises.readdir.mockImplementation(
 				(param, _): Promise<Dirent[]> => {
 					if (param === secondDir) {

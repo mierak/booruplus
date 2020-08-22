@@ -3,6 +3,7 @@ import log from 'electron-log';
 
 import { Settings } from '../src/store/types';
 import { Post } from '../src/types/gelbooruTypes';
+import { getPathProvider } from '../src/service/pathProviderService';
 
 export interface FileService {
 	loadImage: (post: Post) => Promise<{ data: Buffer | undefined; post: Post }>;
@@ -18,13 +19,10 @@ export interface FileService {
 }
 
 export const getFileService = (settings: Settings): FileService => {
-	const thumbnailsPath = `${settings.imagesFolderPath}/thumbnails`;
-	const imagesPath = settings.imagesFolderPath;
+	const pathProvider = getPathProvider(settings.imagesFolderPath);
 
 	const deleteDirectoryIfEmpty = async (post: Post, isThumbnail: boolean): Promise<boolean> => {
-		const dirs = post.directory.split('/');
-		const firstDir = (isThumbnail ? thumbnailsPath : imagesPath).concat(`/${dirs[0]}/${dirs[1]}`);
-		const secondDir = (isThumbnail ? thumbnailsPath : imagesPath).concat(`/${dirs[0]}`);
+		const [firstDir, secondDir] = isThumbnail ? pathProvider.getThumbnailDirsPaths(post) : pathProvider.getImageDirsPaths(post);
 
 		try {
 			const firstEmpty = (await fs.promises.readdir(firstDir)).length === 0;
@@ -50,7 +48,7 @@ export const getFileService = (settings: Settings): FileService => {
 	};
 
 	const createDirIfNotExists = async (post: Post, isThumbnail: boolean): Promise<boolean> => {
-		const dir = (isThumbnail ? thumbnailsPath : imagesPath).concat(`/${post.directory}`);
+		const dir = isThumbnail ? pathProvider.getThumbnailDirPath(post) : pathProvider.getImageDirPath(post);
 
 		try {
 			let created = true;
@@ -71,17 +69,18 @@ export const getFileService = (settings: Settings): FileService => {
 
 	const loadImage = async (post: Post): Promise<{ data: Buffer | undefined; post: Post }> => {
 		try {
-			const data = fs.readFileSync(`${imagesPath}/${post.directory}/${post.image}`);
+			const data = fs.readFileSync(pathProvider.getImagePath(post));
 			log.debug(`ipcMain: image-loaded | id: ${post.id}`);
 			return { data: data, post };
 		} catch (err) {
+			log.error('Could not load image.', pathProvider.getImagePath(post));
 			return { data: undefined, post };
 		}
 	};
 
 	const loadThumbnail = async (post: Post): Promise<{ data: Buffer | undefined; post: Post }> => {
 		try {
-			const data = fs.readFileSync(`${thumbnailsPath}/${post.directory}/${post.hash}.jpg`);
+			const data = fs.readFileSync(pathProvider.getThumbnailPath(post));
 			return { data: data, post };
 		} catch (err) {
 			return { data: undefined, post };
@@ -89,10 +88,8 @@ export const getFileService = (settings: Settings): FileService => {
 	};
 
 	const saveImage = async (post: Post, data: ArrayBuffer): Promise<boolean> => {
-		const postPath = `${imagesPath}/${post.directory}/${post.image}`;
-
 		try {
-			await fs.promises.writeFile(postPath, Buffer.from(data), 'binary');
+			await fs.promises.writeFile(pathProvider.getImagePath(post), Buffer.from(data), 'binary');
 			return true;
 		} catch (err) {
 			log.error('Error while saving image. Post id ', post.id);
@@ -101,10 +98,8 @@ export const getFileService = (settings: Settings): FileService => {
 	};
 
 	const saveThumbnail = async (post: Post, data: ArrayBuffer): Promise<boolean> => {
-		const thumbnailPath = `${thumbnailsPath}/${post.directory}/${post.hash}.jpg`;
-
 		try {
-			await fs.promises.writeFile(thumbnailPath, Buffer.from(data), 'binary');
+			await fs.promises.writeFile(pathProvider.getThumbnailPath(post), Buffer.from(data), 'binary');
 			return true;
 		} catch (err) {
 			log.error('Error while saving thumbnail. Post id ', post.id);
@@ -113,14 +108,14 @@ export const getFileService = (settings: Settings): FileService => {
 	};
 
 	const deleteImage = async (post: Post): Promise<void> => {
-		const postPath = `${imagesPath}/${post.directory}/${post.image}`;
+		const postPath = pathProvider.getImagePath(post);
 		log.debug(`Deleting image. Post id: ${post.id}. ${postPath}`);
 
 		await fs.promises.unlink(postPath);
 	};
 
 	const deleteThumbnail = async (post: Post): Promise<void> => {
-		const thumbnailPath = `${thumbnailsPath}/${post.directory}/${post.hash}.jpg`;
+		const thumbnailPath = pathProvider.getThumbnailPath(post);
 		log.debug(`Deleting thumbnail. Post id: ${post.id}. ${thumbnailPath}`);
 
 		await fs.promises.unlink(thumbnailPath);

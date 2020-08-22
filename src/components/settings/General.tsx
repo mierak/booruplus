@@ -66,7 +66,7 @@ const General: React.FunctionComponent = () => {
 
 	return (
 		<Form>
-			<Item label='Path to images' labelCol={labelCol} wrapperCol={wrapperCol}>
+			<Item label='Path to data' labelCol={labelCol} wrapperCol={wrapperCol}>
 				<Input value={imagesFolderPath} />
 			</Item>
 			<Item wrapperCol={{ ...wrapperCol, offset: 4 }}>
