@@ -21,19 +21,21 @@ import '@testing-library/jest-dom';
 import { mPost } from '../../../helpers/test.helper';
 import { defineClientSize, defineClientBoundingRect } from '../../../helpers/utilities.helper';
 import { getPostUrl } from '../../../../src/service/webService';
+import { IpcChannels } from '../../../../src/types/processDto';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('full-size-image/controllabe-imabe/ControllableImage', () => {
+	const url = 'objUrl123';
 	beforeEach(() => {
 		jest.clearAllMocks();
+		loadImageMock.mockResolvedValueOnce(Promise.resolve(url));
 	});
 	afterEach(async () => {
 		await waitFor(() => expect(renderImage).toHaveBeenCalled());
 	});
 	it('Renders correctly', async () => {
 		// given
-		const url = 'objUrl123';
 		const post = mPost({ fileUrl: 'url.jpg' });
 		const store = mockStore(
 			mState({
@@ -42,16 +44,11 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 				},
 			})
 		);
-		const cleanup = jest.fn();
-		loadImageMock.mockReturnValue({
-			url: Promise.resolve(url),
-			cleanup,
-		});
 
 		// when
 		const { unmount } = render(
 			<Provider store={store}>
-				<ControllableImage post={post} url={post.fileUrl} />
+				<ControllableImage post={post} />
 			</Provider>
 		);
 		const container = screen.getByTestId('controllable-image-container');
@@ -79,7 +76,6 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 			})
 		);
 		unmount();
-		expect(cleanup).toHaveBeenCalledTimes(1);
 	});
 	it('Renders controls when shotControls prop is true', () => {
 		// given
@@ -89,7 +85,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ControllableImage post={post} url={post.fileUrl} showControls />
+				<ControllableImage post={post} showControls />
 			</Provider>
 		);
 
@@ -108,7 +104,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ControllableImage post={post} url={post.fileUrl} showControls />
+				<ControllableImage post={post} showControls />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Zoom in' }));
@@ -124,7 +120,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ControllableImage post={post} url={post.fileUrl} showControls />
+				<ControllableImage post={post} showControls />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Zoom out' }));
@@ -140,7 +136,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ControllableImage post={post} url={post.fileUrl} showControls />
+				<ControllableImage post={post} showControls />
 			</Provider>
 		);
 		const container = screen.getByTestId('controllable-image-container');
@@ -180,13 +176,13 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ControllableImage post={post} url={post.fileUrl} showControls />
+				<ControllableImage post={post} showControls />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Open in browser' }));
 
 		// then
-		expect(ipcSendSpy).toBeCalledWith('open-in-browser', getPostUrl(post.id));
+		expect(ipcSendSpy).toBeCalledWith(IpcChannels.OPEN_IN_BROWSER, getPostUrl(post.id));
 	});
 	it('Creates action that shows TagsPopover', () => {
 		// given
@@ -196,7 +192,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ControllableImage post={post} url={post.fileUrl} showControls />
+				<ControllableImage post={post} showControls />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Show tags' }));

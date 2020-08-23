@@ -11,6 +11,7 @@ import { Post, PostSearchOptions, Tag } from '../../types/gelbooruTypes';
 import { delay } from '../../util/utils';
 import moment from 'moment';
 import { thunkLoggerFactory } from '../../util/logger';
+import { thumbnailCache } from '../../util/objectUrlCache';
 
 const thunkLogger = thunkLoggerFactory();
 
@@ -72,6 +73,7 @@ export const cancelPostsDownload = createAsyncThunk<void, Post[], ThunkApi>(
 export const fetchPostsByIds = createAsyncThunk<Post[], number[], ThunkApi>(
 	'posts/fetchPostsByIds',
 	async (ids): Promise<Post[]> => {
+		thumbnailCache.revokeAll();
 		const logger = thunkLogger.getActionLogger(fetchPostsByIds);
 		logger.debug('Getting', ids.length, 'posts from DB');
 		return db.posts.getBulk(ids);

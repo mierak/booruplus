@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { Modal } from 'antd';
 
 import { db } from '../../db';
 
@@ -12,21 +13,6 @@ import { thunkLoggerFactory } from '../../util/logger';
 
 const thunkLogger = thunkLoggerFactory();
 
-export const loadSettings = createAsyncThunk<Settings, string | undefined, ThunkApi>(
-	'settings/load',
-	async (name): Promise<Settings> => {
-		const logger = thunkLogger.getActionLogger(loadSettings);
-		logger.debug(`Loading settings with name: ${name}`);
-		const settings = await db.settings.loadSettings(name);
-		if (!settings) {
-			const msg = 'Settings could not be loaded from database';
-			logger.error(msg);
-			throw new Error(msg);
-		}
-		return settings;
-	}
-);
-
 export const updateImagePath = createAsyncThunk<string, string, ThunkApi>(
 	'settings/update-image-path',
 	async (path, thunkApi): Promise<string> => {
@@ -36,6 +22,31 @@ export const updateImagePath = createAsyncThunk<string, string, ThunkApi>(
 		logger.debug('Saving settins with name user', settings);
 		await db.settings.saveSettings({ name: 'user', values: settings });
 		return path;
+	}
+);
+
+export const loadSettings = createAsyncThunk<Settings, string | undefined, ThunkApi>(
+	'settings/load',
+	async (name, thunkApi): Promise<Settings> => {
+		const logger = thunkLogger.getActionLogger(loadSettings);
+		logger.debug(`Loading settings with name: ${name}`);
+		const settings = await db.settings.loadSettings(name);
+		if (!settings) {
+			const msg = 'Settings could not be loaded from database';
+			logger.error(msg);
+			throw new Error(msg);
+		}
+
+		if (settings.imagesFolderPath === 'null') {
+			Modal.info({
+				title: 'Hi there!',
+				content:
+					'It looks like this is your first time. Before you do anything you should consider changing path to application data in settings. Happy fapping!',
+			});
+			thunkApi.dispatch(updateImagePath(await window.api.invoke(IpcChannels.GET_PICTURES_PATH)));
+		}
+
+		return settings;
 	}
 );
 

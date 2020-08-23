@@ -4,6 +4,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Post } from '../../types/gelbooruTypes';
 import { thunkLoggerFactory } from '../../util/logger';
 import { exportPostsToDirectory } from '../commonActions';
+import { thumbnailCache } from '../../util/objectUrlCache';
 
 const thunkLogger = thunkLoggerFactory();
 
@@ -18,6 +19,7 @@ export const fetchTreeData = createAsyncThunk<TreeNode, void, ThunkApi>(
 export const fetchPostsInDirectory = createAsyncThunk<Post[], number | undefined, ThunkApi>(
 	'favorites/fetchPostsInDirectory',
 	async (key: number | undefined, thunkApi): Promise<Post[]> => {
+		thumbnailCache.revokeAll();
 		const logger = thunkLogger.getActionLogger(fetchPostsInDirectory);
 		const keyWithDefault = key ?? thunkApi.getState().favorites.activeNodeKey;
 		logger.debug('Getting node without children for key:', keyWithDefault.toString());

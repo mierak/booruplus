@@ -10,6 +10,7 @@ import { mState } from '../helpers/store.helper';
 import FullSizeImage from '../../src/components/FullSizeImage';
 import '@testing-library/jest-dom';
 import { mPost } from '../helpers/test.helper';
+import { imageLoaderMock } from '../helpers/imageBus.mock';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -21,6 +22,11 @@ describe('FullSizeImage', () => {
 		mPost({ id: 4, directory: 'dir4', hash: 'hash4', image: 'name.png', downloaded: 1 }),
 		mPost({ id: 5, directory: 'dir5', hash: 'hash5', image: 'name.bmp', downloaded: 1 }),
 	];
+	const testUrl = '123testurl.jpg';
+	beforeEach(() => {
+		jest.clearAllMocks();
+		imageLoaderMock.mockResolvedValueOnce(testUrl);
+	});
 	it('Renders image correctly', () => {
 		// given
 		const store = mockStore(

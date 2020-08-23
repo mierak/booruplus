@@ -6,6 +6,7 @@ import { db } from '../../db';
 import { ThunkApi, RootState } from '../types';
 import { Post, Tag, PostSearchOptions } from '../../types/gelbooruTypes';
 import { thunkLoggerFactory } from '../../util/logger';
+import { thumbnailCache } from '../../util/objectUrlCache';
 
 const thunkLogger = thunkLoggerFactory();
 
@@ -33,6 +34,7 @@ export const checkPostsAgainstDb = createAsyncThunk<Post[], Post[], ThunkApi>(
 export const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
 	'onlineSearchForm/fetchPosts',
 	async (_, thunkApi): Promise<Post[]> => {
+		thumbnailCache.revokeAll();
 		const logger = thunkLogger.getActionLogger(fetchPosts);
 		const { dispatch } = thunkApi;
 		const getState = thunkApi.getState;

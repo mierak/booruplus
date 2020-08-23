@@ -8,6 +8,7 @@ import { DownloadedSearchFormState } from '../../store/downloadedSearchForm';
 
 import { Tag, Post } from '../../types/gelbooruTypes';
 import { thunkLoggerFactory } from '../../util/logger';
+import { thumbnailCache } from '../../util/objectUrlCache';
 
 const thunkLogger = thunkLoggerFactory();
 
@@ -39,6 +40,7 @@ export const loadTagsByPattern = createAsyncThunk<Tag[], string, ThunkApi>(
 export const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
 	'downloadedSearchForm/fetchPosts',
 	async (_, thunkApi): Promise<Post[]> => {
+		thumbnailCache.revokeAll();
 		const logger = thunkLogger.getActionLogger(fetchPosts);
 		const state = thunkApi.getState();
 

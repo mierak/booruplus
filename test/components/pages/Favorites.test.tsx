@@ -13,7 +13,7 @@ import { mTreeNode, mPost } from '../../helpers/test.helper';
 import { mockedDb } from '../../helpers/database.mock';
 import { deleteImageMock } from '../../helpers/imageBus.mock';
 import * as utils from '../../../src/types/components';
-import { getThumbnailUrl } from '../../../src/service/webService';
+import { thumbnailLoaderMock } from '../../helpers/imageBus.mock';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -22,6 +22,7 @@ describe('pages/Favorites', () => {
 		jest.clearAllMocks();
 		mockedDb.posts.getBulk.mockResolvedValue([]);
 		mockedDb.favorites.getNodeWithoutChildren.mockResolvedValue(mTreeNode());
+		thumbnailLoaderMock.mockResolvedValue('test.png');
 	});
 	const rootNode = mTreeNode({
 		title: 'node1',
@@ -44,7 +45,7 @@ describe('pages/Favorites', () => {
 		],
 	});
 	const expandedKeys = ['0', '11', '111', '12'];
-	it('Renders correctly', () => {
+	it('Renders correctly with no posts', () => {
 		// given
 		const store = mockStore(
 			mState({
@@ -65,6 +66,38 @@ describe('pages/Favorites', () => {
 		// then
 		expect(screen.getByText('node11')).not.toBeNull();
 		expect(screen.getByText('No Posts To Show')).not.toBeNull();
+	});
+	it('Renders posts correctly', () => {
+		// given
+		const posts = [
+			mPost({ id: 1, directory: 'dir1', hash: 'hash1' }),
+			mPost({ id: 2, directory: 'dir2', hash: 'hash2' }),
+			mPost({ id: 3, directory: 'dir3', hash: 'hash3' }),
+			mPost({ id: 4, directory: 'dir4', hash: 'hash4' }),
+			mPost({ id: 5, directory: 'dir5', hash: 'hash5' }),
+		];
+		const store = mockStore(
+			mState({
+				favorites: {
+					rootNode,
+					expandedKeys,
+				},
+				posts: {
+					posts,
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<Favorites />
+			</Provider>
+		);
+
+		// then
+		expect(screen.getByText('node11')).not.toBeNull();
+		expect(screen.getAllByTestId('thumbnail-image')).toHaveLength(5);
 	});
 	it('Fetches posts in default directory and sets search mode to favorites on mount', () => {
 		// given
@@ -141,10 +174,7 @@ describe('pages/Favorites', () => {
 		);
 
 		// then
-		const renderedPosts = screen.getAllByTestId('thumbnail-image');
-		renderedPosts.forEach((post, index) => {
-			expect(post).toHaveAttribute('src', getThumbnailUrl(posts[index].directory, posts[index].hash));
-		});
+		await waitFor(() => expect(screen.getAllByTestId('thumbnail-image')).toHaveLength(5));
 		expect(screen.getAllByRole('img', { name: 'close' })).toHaveLength(5);
 		expect(screen.getAllByRole('img', { name: 'download' })).toHaveLength(3);
 		expect(screen.getAllByRole('img', { name: 'delete' })).toHaveLength(5);
@@ -294,10 +324,12 @@ describe('pages/Favorites', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({
-			type: thunks.favorites.removePostsFromActiveDirectory.pending.type,
-			meta: { arg: [posts[3].id] },
-		});
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.favorites.removePostsFromActiveDirectory.pending.type,
+				meta: { arg: [posts[3].id] },
+			})
+		);
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchPostsInDirectory.pending.type, meta: { arg: 0 } })
 		);

@@ -12,7 +12,7 @@ import Thumbnail from '../../src/components/thumbnails/Thumbnail';
 import '@testing-library/jest-dom';
 import { mPost } from '../helpers/test.helper';
 import * as utils from '../../src/types/components';
-import { getThumbnailUrl } from '../../src/service/webService';
+import { thumbnailLoaderMock } from '../helpers/imageBus.mock';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -24,7 +24,12 @@ describe('Thumbnail', () => {
 		mPost({ id: 4, directory: 'dir4', hash: 'hash4', downloaded: 1 }),
 		mPost({ id: 5, directory: 'dir5', hash: 'hash5', downloaded: 1 }),
 	];
-	it('Renders correctly', () => {
+	const testUrl = '123testurl.jpg';
+	beforeEach(() => {
+		jest.clearAllMocks();
+		thumbnailLoaderMock.mockResolvedValue(testUrl);
+	});
+	it('Renders correctly', async () => {
 		// given
 		const index = 2;
 		const store = mockStore(
@@ -43,7 +48,7 @@ describe('Thumbnail', () => {
 		);
 
 		// then
-		expect(screen.getByTestId('thumbnail-image')).toHaveAttribute('src', getThumbnailUrl(posts[index].directory, posts[index].hash));
+		await waitFor(() => expect(screen.getByTestId('thumbnail-image')).toHaveAttribute('src', testUrl));
 	});
 	it('Dispatches setActivePostIndex() and setActiveView() when thumbnail is clicked', () => {
 		// given

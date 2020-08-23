@@ -12,11 +12,16 @@ import '@testing-library/jest-dom';
 import { mPost } from '../../helpers/test.helper';
 import { deleteImageMock } from '../../helpers/imageBus.mock';
 import * as utils from '../../../src/types/components';
-import { getThumbnailUrl } from '../../../src/service/webService';
+import { thumbnailLoaderMock } from '../../helpers/imageBus.mock';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('pages/Thumbnails', () => {
+	const testUrl = '123testurl.jpg';
+	beforeEach(() => {
+		jest.clearAllMocks();
+		thumbnailLoaderMock.mockResolvedValue(testUrl);
+	});
 	it('Renders correctly', () => {
 		// given
 		const store = mockStore(mState());
@@ -99,10 +104,6 @@ describe('pages/Thumbnails', () => {
 		);
 
 		// then
-		const renderedPosts = screen.getAllByTestId('thumbnail-image');
-		renderedPosts.forEach((post, index) => {
-			expect(post).toHaveAttribute('src', getThumbnailUrl(posts[index].directory, posts[index].hash));
-		});
 		expect(screen.getAllByRole('img', { name: 'heart' })).toHaveLength(6);
 		expect(screen.getAllByRole('img', { name: 'download' })).toHaveLength(4);
 		expect(screen.getAllByRole('img', { name: 'delete' })).toHaveLength(6);

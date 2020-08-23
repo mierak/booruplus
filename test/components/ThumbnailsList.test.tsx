@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { actions } from '../../src/store';
 import { RootState, AppDispatch } from '../../src/store/types';
@@ -10,7 +10,7 @@ import { mState } from '../helpers/store.helper';
 import ThumbnailsList from '../../src/components/thumbnails/ThumbnailsList';
 import '@testing-library/jest-dom';
 import { mPost } from '../helpers/test.helper';
-import { getThumbnailUrl } from '../../src/service/webService';
+import { thumbnailLoaderMock } from '../helpers/imageBus.mock';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -22,7 +22,12 @@ describe('ThumbnailsList', () => {
 		mPost({ id: 4, directory: 'dir4', hash: 'hash4', downloaded: 1 }),
 		mPost({ id: 5, directory: 'dir5', hash: 'hash5', downloaded: 1 }),
 	];
-	it('Renders correctly', () => {
+	const testUrl = '123testurl.jpg';
+	beforeEach(() => {
+		jest.clearAllMocks();
+		thumbnailLoaderMock.mockResolvedValue(testUrl);
+	});
+	it('Renders correctly', async () => {
 		//given
 		const store = mockStore(
 			mState({
@@ -41,7 +46,7 @@ describe('ThumbnailsList', () => {
 
 		// then
 		expect(screen.getByRole('button', { name: 'Load More' }));
-		expect(screen.getAllByTestId('thumbnail-image')[2]).toHaveAttribute('src', getThumbnailUrl(posts[2].directory, posts[2].hash));
+		await waitFor(() => expect(screen.getAllByTestId('thumbnail-image')[3]).toHaveAttribute('src', testUrl));
 	});
 	it('Adds correct event listener to window and unregisters it on unmount', () => {
 		//given

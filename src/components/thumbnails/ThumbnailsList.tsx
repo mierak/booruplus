@@ -57,15 +57,17 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	return postCount <= 0 ? (
 		<StyledEmptyThumbnails centered={props.emptyDataLogoCentered} />
 	) : (
-		<Grid
-			itemCount={postCount}
-			activeIndex={activePostIndex}
-			actions={props.actions}
-			isSingleColumn={props.singleColumn}
-			renderLoadMore={postCount > 0 && searchMode !== 'favorites' && searchMode !== 'open-download'}
-			headerHeight={props.hasHeader ? 72 : 0}
-			contextMenu={props.contextMenu}
-		/>
+		<>
+			<Grid
+				itemCount={postCount}
+				activeIndex={activePostIndex}
+				actions={props.actions}
+				isSingleColumn={props.singleColumn}
+				renderLoadMore={postCount > 0 && searchMode !== 'favorites' && searchMode !== 'open-download'}
+				headerHeight={props.hasHeader ? 72 : 0}
+				contextMenu={props.contextMenu}
+			/>
+		</>
 	);
 };
 

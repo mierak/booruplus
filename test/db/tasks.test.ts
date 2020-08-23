@@ -6,7 +6,6 @@ import { mTask } from '../helpers/test.helper';
 import { save, getAll, remove } from '../../src/db/tasks';
 
 import db from '../../src/db/database';
-import { utc } from 'moment';
 
 describe('db/tasks', () => {
 	describe('save()', () => {

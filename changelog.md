@@ -1,6 +1,10 @@
 # Changelog
-## 0.1.6 - TITLE - DATE
+## 0.1.6 - Image caching - DATE
 - Added option to automatically download images that are missing on disk but marked as downloaded
+- Thumbnails now get automatically downloaded along with posts.
+- Missing images and thumbnails for downloaded posts now get redownloaded automatically next time you view given image/post.
+- Thumbnails and images are now cached upon loading to not hit network/filesystem unnecesarily
+- Show warning that user should change path to data on first app start
 
 ## 0.1.5 - Move multiple posts between directories - 12.8.2020
 - Right clicking favorites directory when multiple posts are selected now shows move all to folder option

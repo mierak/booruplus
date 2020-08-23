@@ -71,7 +71,7 @@ const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 			} else if (getImageExtensionFromFilename(post.image) === 'gif') {
 				return <StyledGif post={post} />;
 			} else {
-				return <StyledControllableImage url={post.fileUrl} post={post} showControls />;
+				return <StyledControllableImage post={post} showControls />;
 			}
 		}
 		return <StyledEmptyThumbnails />;

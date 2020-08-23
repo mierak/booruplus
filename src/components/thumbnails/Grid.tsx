@@ -53,8 +53,17 @@ const innerElementType = forwardRef<HTMLDivElement, { style: CSSProperties; rest
 });
 innerElementType.displayName = 'innerElementType';
 
+const gridStyle: React.CSSProperties = {
+	overflowX: 'hidden',
+	marginLeft: '10px',
+	marginTop: '10px',
+	marginBottom: '10px',
+	outline: 'none',
+};
+
 const Grid: React.FunctionComponent<Props> = (props) => {
 	const [size, setSize] = useState({ width: 600, height: 600 });
+	const [isLoaded, setLoaded] = useState(false);
 	const listRef = React.useRef<HTMLDivElement>(null);
 	const gridRef = React.useRef<FixedSizeGrid>(null);
 
@@ -80,6 +89,7 @@ const Grid: React.FunctionComponent<Props> = (props) => {
 				db();
 			});
 			ro.observe(ref);
+			setLoaded(true);
 		}
 		return (): void => {
 			ref && ro && ro.unobserve(ref);
@@ -120,21 +130,27 @@ const Grid: React.FunctionComponent<Props> = (props) => {
 		overscanRowCount: 1,
 		useIsScrolling: true,
 		overscanColumnCount: 1,
-		style: { overflowX: 'hidden', marginLeft: '10px', marginTop: '10px', marginBottom: '10px', outline: 'none' } as React.CSSProperties,
 		innerElementType: innerElementType,
-		itemData: {
+	};
+
+	const gridItemData = React.useMemo(() => {
+		return {
 			rowCount,
 			columns,
 			renderLoadMore: props.renderLoadMore,
 			itemCount: props.itemCount,
 			contextMenu: props.contextMenu,
 			actions: props.actions,
-		},
-	};
+		};
+	}, [columns, props.actions, props.contextMenu, props.itemCount, props.renderLoadMore, rowCount]);
 
 	return (
 		<Container ref={listRef} headerHeight={props.headerHeight}>
-			<FixedSizeGrid {...gridProps}>{CellRenderer}</FixedSizeGrid>
+			{isLoaded && (
+				<FixedSizeGrid style={gridStyle} itemData={gridItemData} {...gridProps}>
+					{CellRenderer}
+				</FixedSizeGrid>
+			)}
 		</Container>
 	);
 };

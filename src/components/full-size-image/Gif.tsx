@@ -50,16 +50,19 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 		dispatch(actions.loadingStates.setFullImageLoading(true));
 		const ref = imgRef.current;
 		if (ref) {
+			let canceled = false;
 			ref.onload = (): void => {
 				dispatch(actions.loadingStates.setFullImageLoading(false));
 			};
 			const loader = imageLoader(props.post, downloadMissingImage);
-			loader.url.then((url) => {
-				ref.src = url;
+			loader.then((url) => {
+				if (!canceled) {
+					ref.src = url;
+				}
 			});
 
 			return (): void => {
-				loader.cleanup();
+				canceled = true;
 			};
 		}
 	}, [dispatch, downloadMissingImage, props.post]);

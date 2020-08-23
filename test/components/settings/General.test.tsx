@@ -68,7 +68,7 @@ describe('settings/General', () => {
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({ type: thunks.settings.updateTheme.fulfilled.type, payload: 'light' })
 		);
-		expect(ipcSendSpy).toBeCalledWith('theme-changed');
+		expect(ipcSendSpy).toBeCalledWith(IpcChannels.THEME_CHANGED);
 	});
 	it('Dispatches importDatabase() when Import button is pressed', async () => {
 		// given
@@ -197,6 +197,6 @@ describe('settings/General', () => {
 		fireEvent.click(screen.getByRole('button', { name: 'folder-open Open' }));
 
 		// then
-		expect(ipcSendSpy).toBeCalledWith('open-path', store.getState().settings.imagesFolderPath);
+		expect(ipcSendSpy).toBeCalledWith(IpcChannels.OPEN_PATH, store.getState().settings.imagesFolderPath);
 	});
 });

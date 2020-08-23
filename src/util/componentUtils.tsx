@@ -14,7 +14,10 @@ import {
 import { Icon } from '../types/components';
 import { Post } from '../types/gelbooruTypes';
 import { Tooltip } from 'antd';
-import { loadImage, saveImage } from './imageIpcUtils';
+import { loadImage, saveImage, loadThumbnail, saveThumbnail } from './imageIpcUtils';
+import { getThumbnailUrl } from '../service/webService';
+import { thumbnailCache, imageCache, ImageCache, mostViewedCache } from './objectUrlCache';
+import { SuccessfulLoadPostResponse } from 'types/processDto';
 
 export const getIcon = (icon: Icon, onClick?: (() => void) | undefined): React.ReactElement => {
 	switch (icon) {
@@ -67,45 +70,91 @@ export const getThumbnailBorder = (active: string, theme: 'dark' | 'light', sele
 	return 'dashed 1px black';
 };
 
-export const imageLoader = (post: Post, downloadMissingImage = true): { url: Promise<string>; cleanup: () => Promise<void> } => {
+interface LoaderParams {
+	post: Post;
+	downloadMissing: boolean;
+	cache: ImageCache;
+	notFoundResolveValue: string;
+	shouldLog?: boolean;
+	ignoreDownloadedStatus?: boolean;
+	loadFunction: (post: Post) => Promise<SuccessfulLoadPostResponse>;
+	saveCallback: (post: Post) => void;
+}
+
+const loader = ({
+	post,
+	downloadMissing,
+	cache,
+	notFoundResolveValue,
+	shouldLog,
+	ignoreDownloadedStatus,
+	loadFunction,
+	saveCallback,
+}: LoaderParams): Promise<string> => {
 	const log = window.log;
-	let objectUrlExists = false;
-	let objectUrl = '';
-
-	const promise = new Promise<string>((resolve) => {
-		if (post.downloaded) {
-			loadImage(post)
-				.then((result) => {
-					objectUrl = URL.createObjectURL(new Blob([result.data]));
-					log.debug('Post was found and loaded successfuly, ObjectURL:', objectUrl);
-					objectUrlExists = true;
-					resolve(objectUrl);
-				})
-				.catch((err) => {
-					log.debug('Downloaded post not found on disk. Reading from URL');
-					resolve(err.fileUrl);
-					if (downloadMissingImage) {
-						log.debug('Saving missing image. Id: ', post.id);
-						saveImage(post);
-					}
-				});
-		} else {
-			log.debug('Post is not downloaded. Reading from URL', post.fileUrl);
-			resolve(post.fileUrl);
+	return new Promise<string>((resolve) => {
+		if (post.downloaded === 0 && !ignoreDownloadedStatus) {
+			shouldLog && log.debug('Post is not downloaded. Reading from URL', notFoundResolveValue);
+			resolve(notFoundResolveValue);
+			return;
 		}
+
+		const cachedUrl = cache.getIfPresent(post.id);
+		if (cachedUrl) {
+			shouldLog && log.debug('Post found in cache, cached URL:', cachedUrl);
+			resolve(cachedUrl);
+			return;
+		}
+
+		loadFunction(post)
+			.then((result) => {
+				const objectUrl = URL.createObjectURL(new Blob([result.data]));
+				cache.add(objectUrl, post.id);
+				shouldLog && log.debug('Post was found and loaded successfuly, ObjectURL:', objectUrl);
+				resolve(objectUrl);
+			})
+			.catch((_) => {
+				shouldLog && log.debug('Downloaded post not found on disk. Reading from URL', notFoundResolveValue);
+				if (downloadMissing) {
+					shouldLog && log.debug('Saving missing or thumbnail image. Id: ', post.id);
+					saveCallback(post);
+				}
+				resolve(notFoundResolveValue);
+			});
 	});
+};
 
-	const cleanup = async (): Promise<void> => {
-		await promise;
-		if (objectUrlExists) {
-			if (objectUrl) {
-				log.debug('Cleaning up objectUrl', objectUrl);
-				URL.revokeObjectURL(objectUrl);
-			} else {
-				log.error('Could not clean up object URL create for post id', post.id, '. This might cause a memory leak!');
-			}
-		}
-	};
+export const imageLoader = (post: Post, downloadMissingImage = true): Promise<string> => {
+	return loader({
+		post,
+		downloadMissing: downloadMissingImage,
+		cache: imageCache,
+		notFoundResolveValue: post.fileUrl,
+		shouldLog: true,
+		saveCallback: saveImage,
+		loadFunction: loadImage,
+	});
+};
 
-	return { cleanup, url: promise };
+export const thumbnailLoader = (post: Post, downloadMissingThumbnail = true): Promise<string> => {
+	return loader({
+		post,
+		downloadMissing: downloadMissingThumbnail,
+		cache: thumbnailCache,
+		notFoundResolveValue: getThumbnailUrl(post.directory, post.hash),
+		saveCallback: saveThumbnail,
+		loadFunction: loadThumbnail,
+	});
+};
+
+export const mostViewedLoader = (post: Post, downloadMissingThumbnail = true): Promise<string> => {
+	return loader({
+		post,
+		downloadMissing: downloadMissingThumbnail,
+		cache: mostViewedCache,
+		notFoundResolveValue: getThumbnailUrl(post.directory, post.hash),
+		ignoreDownloadedStatus: true,
+		saveCallback: saveThumbnail,
+		loadFunction: loadThumbnail,
+	});
 };

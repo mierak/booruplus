@@ -1,3 +1,4 @@
+jest.mock('../../../src/components/dashboard/MostViewedPosts', () => (): JSX.Element => <div>most viewed posts</div>);
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -17,7 +18,8 @@ describe('pages/Dashboard', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
-	it('Renders correctly', () => {
+
+	it('Renders correctly', async () => {
 		// given
 		const store = mockStore(
 			mState({
@@ -58,7 +60,7 @@ describe('pages/Dashboard', () => {
 		expect(screen.getByText('favorited1')).not.toBeNull();
 		expect(screen.getByText('favorited2')).not.toBeNull();
 	});
-	it('Fetches statistics when loadTagStatistics is true', () => {
+	it('Fetches statistics when loadTagStatistics is true', async () => {
 		// given
 		const store = mockStore(
 			mState({
@@ -87,7 +89,7 @@ describe('pages/Dashboard', () => {
 		expect(favoritePostCountSpy).toBeCalledTimes(1);
 		expect(tagCountSpy).toBeCalledTimes(1);
 	});
-	it('Does not fetch statistics when loadTagStatistics is false', () => {
+	it('Does not fetch statistics when loadTagStatistics is false', async () => {
 		// given
 		const store = mockStore(
 			mState({

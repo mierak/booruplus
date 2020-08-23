@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Card, Empty, Tooltip } from 'antd';
@@ -8,7 +8,7 @@ import { actions, thunks } from '../../store';
 import { AppDispatch, RootState } from '../../store/types';
 
 import { Post } from '../../types/gelbooruTypes';
-import { getThumbnailUrl } from '../../service/webService';
+import { mostViewedLoader } from '../../util/componentUtils';
 
 const StyledMostViewedGrid = styled.div`
 	display: grid;
@@ -77,6 +77,7 @@ const MostViewedPosts: React.FunctionComponent = () => {
 	const mostViewedCount = useSelector((state: RootState) => state.settings.dashboard.mostViewedCount);
 	const mostViewedPosts = useSelector((state: RootState) => state.dashboard.mostViewedPosts);
 	const shouldLoad = useSelector((state: RootState) => state.settings.dashboard.loadMostViewedPosts);
+	const [thumbs, setThumbs] = useState<JSX.Element[]>([]);
 
 	useEffect(() => {
 		if (mostViewedPosts.length === 0) {
@@ -84,44 +85,53 @@ const MostViewedPosts: React.FunctionComponent = () => {
 		}
 	}, [dispatch, mostViewedCount, mostViewedPosts.length, shouldLoad]);
 
-	const handleMostViewedImageClick = (post: Post): void => {
-		dispatch(actions.system.setSearchMode('most-viewed'));
-		dispatch(actions.posts.setPosts(mostViewedPosts));
-		dispatch(actions.posts.setActivePostIndex(mostViewedPosts.findIndex((p) => p.id === post.id)));
-		dispatch(actions.system.setActiveView('image'));
-	};
+	const handleMostViewedImageClick = useCallback(
+		(post: Post): void => {
+			dispatch(actions.system.setSearchMode('most-viewed'));
+			dispatch(actions.posts.setPosts(mostViewedPosts));
+			dispatch(actions.posts.setActivePostIndex(mostViewedPosts.findIndex((p) => p.id === post.id)));
+			dispatch(actions.system.setActiveView('image'));
+		},
+		[dispatch, mostViewedPosts]
+	);
 
 	const handleReload = (): void => {
 		dispatch(thunks.dashboard.fetchMostViewedPosts(mostViewedCount));
 	};
 
-	const renderMostViewedPosts = (): React.ReactNode => {
-		return mostViewedPosts.map((post) => {
-			return (
-				<StyledThumbnailCard hoverable key={post.id} onClick={(): void => handleMostViewedImageClick(post)}>
-					<StyledImageContainer>
-						<StyledImage src={getThumbnailUrl(post.directory, post.hash)} alt='most-viewed-thumbnail' />
-					</StyledImageContainer>
-					<StyledMeta
-						description={
-							<span>
-								Viewed {post.viewCount} times{' '}
-								{post.downloaded === 1 && (
-									<Tooltip destroyTooltipOnHide title='Downloaded'>
-										<CheckCircleTwoTone />
-									</Tooltip>
-								)}
-							</span>
-						}
-					/>
-				</StyledThumbnailCard>
-			);
-		});
-	};
+	useEffect(() => {
+		(async (): Promise<void> => {
+			const promises = mostViewedPosts.map(async (post) => {
+				const url = await mostViewedLoader(post, true);
+				return (
+					<StyledThumbnailCard hoverable key={post.id} onClick={(): void => handleMostViewedImageClick(post)}>
+						<StyledImageContainer>
+							<StyledImage src={url} alt='most-viewed-thumbnail' />
+						</StyledImageContainer>
+						<StyledMeta
+							description={
+								<span>
+									Viewed {post.viewCount} times{' '}
+									{post.downloaded === 1 && (
+										<Tooltip destroyTooltipOnHide title='Downloaded'>
+											<CheckCircleTwoTone />
+										</Tooltip>
+									)}
+								</span>
+							}
+						/>
+					</StyledThumbnailCard>
+				);
+			});
+			const posts = await Promise.all(promises);
+			setThumbs(posts);
+		})();
+	}, [handleMostViewedImageClick, mostViewedPosts]);
+
 	return (
 		<StyledMostViewedCard title='Most Viewed Posts' size='small' extra={<ReloadOutlined onClick={handleReload} title='Reload' />}>
 			<StyledMostViewedGrid>
-				{mostViewedPosts.length > 0 ? renderMostViewedPosts() : <StyledEmpty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
+				{mostViewedPosts.length > 0 ? thumbs : <StyledEmpty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
 			</StyledMostViewedGrid>
 		</StyledMostViewedCard>
 	);

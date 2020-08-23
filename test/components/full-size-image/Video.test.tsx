@@ -1,11 +1,3 @@
-const loadImageMock = jest.fn();
-jest.mock('../../../src/util/componentUtils.tsx', () => {
-	const originalModule = jest.requireActual('../../../src/util/componentUtils.tsx');
-	return {
-		...originalModule,
-		imageLoader: loadImageMock,
-	};
-});
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -19,25 +11,25 @@ import Video from '../../../src/components/full-size-image/Video';
 import '@testing-library/jest-dom';
 import { mPost } from '../../helpers/test.helper';
 import { getPostUrl } from '../../../src/service/webService';
+import { imageLoaderMock } from '../../helpers/imageBus.mock';
+import { IpcChannels } from '../../../src/types/processDto';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('Video', () => {
-	let load: () => void;
 	let play: () => Promise<void>;
 	let pause: () => void;
+	const url = 'objUrl123';
 	beforeEach(() => {
 		jest.clearAllMocks();
-		load = jest.fn();
 		play = jest.fn();
 		pause = jest.fn();
-		window.HTMLMediaElement.prototype.load = load;
 		window.HTMLMediaElement.prototype.play = play;
 		window.HTMLMediaElement.prototype.pause = pause;
+		imageLoaderMock.mockResolvedValue(url);
 	});
 	it('Calls imageLoader, uses returned value and calls cleanup on unmount', async () => {
 		// given
-		const url = 'objUrl123';
 		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'], image: 'filename.webm', fileUrl: 'filename.webm' });
 		const store = mockStore(
 			mState({
@@ -46,11 +38,6 @@ describe('Video', () => {
 				},
 			})
 		);
-		const cleanup = jest.fn();
-		loadImageMock.mockReturnValue({
-			url: Promise.resolve(url),
-			cleanup,
-		});
 
 		// when
 		const { unmount } = render(
@@ -60,11 +47,10 @@ describe('Video', () => {
 		);
 
 		// then
-		expect(loadImageMock).toHaveBeenCalledWith(post, false);
+		expect(imageLoaderMock).toHaveBeenCalledWith(post, false);
 		expect(await screen.findByTestId('video-source')).toHaveAttribute('src', url);
 		expect(play).toHaveBeenCalledTimes(1);
 		unmount();
-		expect(cleanup).toHaveBeenCalledTimes(1);
 	});
 	it('Creates action with open-in-browser IPC message', () => {
 		// given
@@ -84,7 +70,7 @@ describe('Video', () => {
 		fireEvent.click(screen.getByRole('button', { name: 'Open in browser' }));
 
 		// then
-		expect(ipcSendSpy).toBeCalledWith('open-in-browser', getPostUrl(post.id));
+		expect(ipcSendSpy).toBeCalledWith(IpcChannels.OPEN_IN_BROWSER, getPostUrl(post.id));
 	});
 	it('Creates action that shows TagsPopover', () => {
 		// given
