@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { Modal } from 'antd';
 
 import { db } from '../../db';
 
@@ -30,14 +31,21 @@ export const loadSettings = createAsyncThunk<Settings, string | undefined, Thunk
 		const logger = thunkLogger.getActionLogger(loadSettings);
 		logger.debug(`Loading settings with name: ${name}`);
 		const settings = await db.settings.loadSettings(name);
-		if (settings?.imagesFolderPath === 'null') {
-			thunkApi.dispatch(updateImagePath(await window.api.invoke(IpcChannels.GET_PICTURES_PATH)));
-		}
 		if (!settings) {
 			const msg = 'Settings could not be loaded from database';
 			logger.error(msg);
 			throw new Error(msg);
 		}
+
+		if (settings.imagesFolderPath === 'null') {
+			Modal.info({
+				title: 'Hi there!',
+				content:
+					'It looks like this is your first time. Before you do anything you should consider changing path to application data in settings. Happy fapping!',
+			});
+			thunkApi.dispatch(updateImagePath(await window.api.invoke(IpcChannels.GET_PICTURES_PATH)));
+		}
+
 		return settings;
 	}
 );

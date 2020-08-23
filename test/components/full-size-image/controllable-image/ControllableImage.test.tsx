@@ -21,6 +21,7 @@ import '@testing-library/jest-dom';
 import { mPost } from '../../../helpers/test.helper';
 import { defineClientSize, defineClientBoundingRect } from '../../../helpers/utilities.helper';
 import { getPostUrl } from '../../../../src/service/webService';
+import { IpcChannels } from '../../../../src/types/processDto';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -181,7 +182,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		fireEvent.click(screen.getByRole('button', { name: 'Open in browser' }));
 
 		// then
-		expect(ipcSendSpy).toBeCalledWith('open-in-browser', getPostUrl(post.id));
+		expect(ipcSendSpy).toBeCalledWith(IpcChannels.OPEN_IN_BROWSER, getPostUrl(post.id));
 	});
 	it('Creates action that shows TagsPopover', () => {
 		// given
