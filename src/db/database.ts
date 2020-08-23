@@ -118,11 +118,11 @@ const favoritesDefaultNode: FavoritesTreeNode = {
 	parentKey: 0,
 };
 
-db.on('populate', () => {
+db.on('populate', async () => {
 	const settings: SettingsPair = {
 		name: 'default',
 		values: {
-			imagesFolderPath: 'C:\\temp', // TODO change to userfolder
+			imagesFolderPath: 'null',
 			theme: 'dark',
 			apiKey: undefined,
 			downloadMissingImages: true,

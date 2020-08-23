@@ -123,7 +123,7 @@ describe('electron/fileService', () => {
 		it('Calls writeFile() with correct arguments and returns true if succesful', async () => {
 			// given
 			const post = mPost();
-			const imagePath = path.join(settings.imagesFolderPath, 'thumbnails', post.directory, post.hash, '.jpg');
+			const imagePath = path.join(settings.imagesFolderPath, 'thumbnails', post.directory, post.hash).concat('.jpg');
 			const data = Buffer.from('sometestdata');
 
 			// when
@@ -136,7 +136,7 @@ describe('electron/fileService', () => {
 		it('Returns false if write unsuccesful', async () => {
 			// given
 			const post = mPost();
-			const imagePath = path.join(settings.imagesFolderPath, 'thumbnails', post.directory, post.hash, '.jpg');
+			const imagePath = path.join(settings.imagesFolderPath, 'thumbnails', post.directory, post.hash).concat('.jpg');
 			const data = Buffer.from('sometestdata');
 			mockedFs.promises.writeFile.mockImplementationOnce(() => {
 				throw new Error('some error');
@@ -167,7 +167,7 @@ describe('electron/fileService', () => {
 		it('Calls unlink() with correct arguments', async () => {
 			// given
 			const post = mPost();
-			const imagePath = path.join(settings.imagesFolderPath, 'thumbnails', post.directory, post.hash, '.jpg');
+			const imagePath = path.join(settings.imagesFolderPath, 'thumbnails', post.directory, post.hash).concat('.jpg');
 
 			// when
 			await service.deleteThumbnail(post);

@@ -16,7 +16,7 @@ export const getPathProvider = (baseDataPath: string): PathProvider => {
 
 	const getImagePath = (post: Post): string => path.join(imagesPath, post.directory, post.image);
 
-	const getThumbnailPath = (post: Post): string => path.join(thumbnailsPath, post.directory, post.hash, '.jpg');
+	const getThumbnailPath = (post: Post): string => `${path.join(thumbnailsPath, post.directory, post.hash)}.jpg`;
 
 	const getImageDirsPaths = (post: Post): [string, string] => {
 		const dirs = post.directory.split('/');

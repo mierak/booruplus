@@ -26,7 +26,7 @@ describe('service/pathProviderService', () => {
 		const result = service.getThumbnailPath(post);
 
 		// then
-		expect(result).toBe(path.join(basePath, 'thumbnails', post.directory, post.hash, '.jpg'));
+		expect(result).toBe(path.join(basePath, 'thumbnails', post.directory, post.hash).concat('.jpg'));
 		// then
 	});
 	it('getImageDirsPaths() returns correct result', () => {

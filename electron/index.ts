@@ -314,3 +314,7 @@ ipcMain.on(IpcChannels.EXPORT_POSTS, async (_, params: { posts: Post[]; path: st
 		dialog.showErrorBox('Unexpected error occured while exporting images to disk', err.message);
 	}
 });
+
+ipcMain.handle(IpcChannels.GET_PICTURES_PATH, async () => {
+	return path.join(app.getPath('pictures'), 'lolinizer');
+});
