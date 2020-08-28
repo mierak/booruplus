@@ -1,8 +1,9 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { LoadingOutlined } from '@ant-design/icons';
-import { Spin, Typography } from 'antd';
+import { Spin, Typography, Progress } from 'antd';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/types';
 
 interface Props {
 	className?: string;
@@ -10,7 +11,6 @@ interface Props {
 	delay?: number;
 	fullscreen?: boolean;
 	opacity?: number;
-	message?: string;
 }
 
 interface ContainerProps {
@@ -43,10 +43,21 @@ const StyledText = styled(Typography.Text)`
 	transform: translate(-50%, -50%);
 `;
 
+const StyledProgress = styled(Progress)`
+	&& {
+		position: absolute;
+		left: 50%;
+		top: calc(50% + 86px);
+		transform: translate(-50%, -50%);
+		width: 400px;
+	}
+`;
+
 const LoadingMask: React.FunctionComponent<Props> = (props: Props) => {
 	const [visible, setVisible] = useState(false);
-	// const [timeoutHandle, setTimeoutHandle] = useState<number>();
 	const timeoutHandle = useRef<number>();
+	const loadingMaskMessage = useSelector((state: RootState) => state.loadingStates.fullscreenLoadingMaskMessage);
+	const loadingMaskProgress = useSelector((state: RootState) => state.loadingStates.fullscreenLoadingMaskPercentProgress);
 
 	const delay = props.delay ?? 300;
 
@@ -67,7 +78,8 @@ const LoadingMask: React.FunctionComponent<Props> = (props: Props) => {
 				<StyledSpinContainer>
 					<Spin indicator={<LoadingOutlined style={{ fontSize: '64px' }} />} />
 				</StyledSpinContainer>
-				{props.message && <StyledText>{props.message}</StyledText>}
+				{loadingMaskMessage && <StyledText>{loadingMaskMessage}</StyledText>}
+				{loadingMaskProgress !== undefined && <StyledProgress percent={loadingMaskProgress} status='active' />}
 			</Container>
 		);
 	};

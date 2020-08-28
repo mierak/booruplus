@@ -1,5 +1,6 @@
 import { doDatabaseMock, mockedDb } from '../../helpers/database.mock';
 doDatabaseMock();
+jest.mock('antd');
 
 import { AppDispatch } from 'store/types';
 import { RootState } from '../../../src/store/types';
@@ -11,8 +12,12 @@ import { mSettings, mFavoritesTreeNode, mTagHistory, mPost, mTag, mTask } from '
 import { IpcChannels } from '../../../src/types/processDto';
 import { ExportedData } from '../../../src/db/types';
 import { waitFor } from '@testing-library/react';
+import { setFullscreenLoadingMaskState } from '../../../src/store/commonActions';
+import { mocked } from 'ts-jest/utils';
+import { Modal } from 'antd';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
+const mockedModal = mocked(Modal, true);
 
 describe('thunks/settings', () => {
 	const data: ExportedData = {
@@ -58,6 +63,29 @@ describe('thunks/settings', () => {
 				payload: undefined,
 				error: { message: 'Settings could not be loaded from database' },
 			});
+		});
+		it('Shows modal if no imagesFolderPath', async () => {
+			// given
+			const settings = mSettings({
+				imagesFolderPath: 'null',
+			});
+			const returnedPath = 'somepath';
+			const store = mockStore(initialState);
+			mockedDb.settings.loadSettings.mockResolvedValue(settings);
+			const ipcInvokeSpy = jest.fn().mockResolvedValue(returnedPath);
+			(global as any).api = {
+				invoke: ipcInvokeSpy,
+			};
+
+			// when
+			await store.dispatch(thunks.loadSettings('user'));
+
+			// then
+			const dispatchedActions = store.getActions();
+			expect(mockedDb.settings.loadSettings).toHaveBeenCalledWith('user');
+			expect(mockedModal.info).toHaveBeenCalledTimes(1);
+			expect(dispatchedActions[0]).toMatchObject({ type: thunks.loadSettings.pending.type, payload: undefined });
+			await expect(dispatchedActions).toContainMatchingAction({ type: thunks.updateImagePath.pending.type, meta: { arg: returnedPath } });
 		});
 	});
 	describe('saveSettings()', () => {
@@ -127,17 +155,16 @@ describe('thunks/settings', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(ipcInvokeSpy).toBeCalledWith(IpcChannels.OPEN_SELECT_EXPORTED_DATA_FILE_DIALOG);
+			expect(ipcInvokeSpy).toBeCalledWith(IpcChannels.OPEN_SELECT_EXPORT_FILE_LOCATION_DIALOG, 'data');
 			expect(dispatchedActions).toContainMatchingAction({ type: thunks.exportDatabase.fulfilled.type, payload: false });
 		});
 		it('Calls exportDb() and sends message to Ipc with exported data', async () => {
 			// given
 			const store = mockStore(initialState);
 			const filePath = 'testpath';
-			const ipcSendSpy = jest.fn();
+			const ipcInvokeSpy = jest.fn();
 			(global as any).api = {
-				send: ipcSendSpy,
-				invoke: jest.fn().mockResolvedValue(filePath),
+				invoke: ipcInvokeSpy.mockResolvedValue(filePath),
 			};
 			mockedDb.common.exportDb.mockResolvedValue(data);
 
@@ -146,7 +173,7 @@ describe('thunks/settings', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(ipcSendSpy).toBeCalledWith(IpcChannels.SAVE_EXPORTED_DATA, { data: JSON.stringify(data), filePath });
+			expect(ipcInvokeSpy.mock.calls).toContainEqual([IpcChannels.SAVE_EXPORTED_DATA, { data: JSON.stringify(data), filePath }]);
 			expect(dispatchedActions).toContainMatchingAction({ type: thunks.exportDatabase.fulfilled.type, payload: true });
 		});
 	});
@@ -204,6 +231,90 @@ describe('thunks/settings', () => {
 			expect(ipcInvokeSpy).toBeCalledWith(IpcChannels.OPEN_IMPORT_DATA_DIALOG);
 			await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.importDatabase.fulfilled.type, payload: true }));
 			expect(mockedDb.common.clearAndRestoreDb).toBeCalledWith(data, expect.anything());
+		});
+	});
+	describe('exportImages()', () => {
+		it('Invokes SELECT_EXPORT_FILE_LOCATION and EXPORT_IMAGES', async () => {
+			// given
+			const filePath = '/tmp/some/file/path.tar';
+			const store = mockStore(initialState);
+			let callback;
+			const ipcInvokeSpy = jest.fn().mockResolvedValue(filePath);
+			const ipcOnSpy = jest.fn().mockImplementation((_, cb) => {
+				callback = cb;
+				cb(undefined, { done: 1000, total: 10000 });
+			});
+			const ipcRemoveListenerSpy = jest.fn();
+			(global as any).api = {
+				invoke: ipcInvokeSpy,
+				on: ipcOnSpy,
+				removeListener: ipcRemoveListenerSpy,
+			};
+
+			// when
+			await store.dispatch(thunks.exportImages());
+
+			// then
+			const dispatchedActions = store.getActions();
+			expect(ipcInvokeSpy).toHaveBeenCalledWith(IpcChannels.OPEN_SELECT_EXPORT_FILE_LOCATION_DIALOG, 'images');
+			expect(ipcInvokeSpy).toHaveBeenCalledWith(IpcChannels.EXPORT_IMAGES, filePath);
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.exportImages.fulfilled.type,
+				payload: true,
+			});
+			expect(ipcRemoveListenerSpy).toHaveBeenCalledWith(IpcChannels.EXPORT_PROGRESS, callback);
+			expect(dispatchedActions).toContainMatchingAction({ type: setFullscreenLoadingMaskState.type });
+		});
+		it('Invokes Invokes SELECT_EXPORT_FILE_LOCATION and returns false if no path is returned', async () => {
+			// given
+			const filePath = '';
+			const store = mockStore(initialState);
+			const ipcInvokeSpy = jest.fn().mockResolvedValue(filePath);
+			(global as any).api = {
+				invoke: ipcInvokeSpy,
+			};
+
+			// when
+			await store.dispatch(thunks.exportImages());
+
+			// then
+			const dispatchedActions = store.getActions();
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.exportImages.fulfilled.type,
+				payload: false,
+			});
+		});
+	});
+	describe('importImages()', () => {
+		it('Invokes IMPORT_IMAGES', async () => {
+			// given
+			const filePath = '/tmp/some/file/path.tar';
+			const store = mockStore(initialState);
+			let callback;
+			const ipcInvokeSpy = jest.fn().mockResolvedValue(filePath);
+			const ipcOnSpy = jest.fn().mockImplementation((_, cb) => {
+				callback = cb;
+				cb(undefined, { done: 1000, total: 10000 });
+			});
+			const ipcRemoveListenerSpy = jest.fn();
+			(global as any).api = {
+				invoke: ipcInvokeSpy,
+				on: ipcOnSpy,
+				removeListener: ipcRemoveListenerSpy,
+			};
+
+			// when
+			await store.dispatch(thunks.importImages());
+
+			// then
+			const dispatchedActions = store.getActions();
+			expect(ipcInvokeSpy).toHaveBeenCalledWith(IpcChannels.IMPORT_IMAGES);
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.importImages.fulfilled.type,
+				payload: true,
+			});
+			expect(ipcRemoveListenerSpy).toHaveBeenCalledWith(IpcChannels.IMPORT_PROGRESS, callback);
+			expect(dispatchedActions).toContainMatchingAction({ type: setFullscreenLoadingMaskState.type });
 		});
 	});
 });

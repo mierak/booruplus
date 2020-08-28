@@ -1,14 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Post } from 'src/types/gelbooruTypes';
 import { SavePostDto } from 'src/types/processDto';
-import { IpcChannels } from 'types/processDto';
+import { IpcChannels, IpcListener } from 'src/types/processDto';
 import log from 'electron-log';
+
+interface IpcListener {
+	listener: (event: IpcRendererEvent, ...args: unknown[]) => void;
+}
 
 export declare global {
 	interface Window {
 		api: {
 			send<T = string>(channel: IpcChannels, data?: T): void;
 			invoke<T>(channel: IpcChannels, post?: Post | SavePostDto): Promise<T>;
+			on(channel: IpcChannels, listener: IpcListener): void;
+			removeListener(channel: IpcChannels, listener: IpcListener): void;
 		};
 		log: typeof log.functions;
 	}

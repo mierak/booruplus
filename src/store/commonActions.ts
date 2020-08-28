@@ -6,7 +6,9 @@ import { IpcChannels } from '../types/processDto';
 
 const thunkLogger = thunkLoggerFactory();
 
-export const setFullscreenLoadingMaskMessage = createAction<string>('loadingState/setFullscreenLoadingMaskMessage');
+export const setFullscreenLoadingMaskState = createAction<string | { message: string; progressPercent: number }>(
+	'loadingState/setFullscreenLoadingMaskMessage'
+);
 
 export const exportPostsToDirectory = createAsyncThunk<Post[], 'all' | 'selected' | Post[], ThunkApi>(
 	'posts/exportPostsToDirectory',

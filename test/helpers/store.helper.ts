@@ -93,6 +93,8 @@ const mLoadingStates = (ls?: Partial<LoadingStates>): LoadingStates => {
 		isScrolling: ls?.isScrolling ?? false,
 		isFetchingPosts: ls?.isFetchingPosts ?? initialState.loadingStates.isFetchingPosts,
 		isSearchDisabled: ls?.isSearchDisabled ?? initialState.loadingStates.isSearchDisabled,
+		fullscreenLoadingMaskPercentProgress:
+			ls?.fullscreenLoadingMaskPercentProgress ?? initialState.loadingStates.fullscreenLoadingMaskPercentProgress,
 	};
 };
 

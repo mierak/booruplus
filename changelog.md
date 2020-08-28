@@ -5,6 +5,7 @@
 - Missing images and thumbnails for downloaded posts now get redownloaded automatically next time you view given image/post.
 - Thumbnails and images are now cached upon loading to not hit network/filesystem unnecesarily
 - Show warning that user should change path to data on first app start
+- Added ability to export downloaded images to an archive (as a backup or porting to a different PC) and import said backup to your current data folder path
 
 ## 0.1.5 - Move multiple posts between directories - 12.8.2020
 - Right clicking favorites directory when multiple posts are selected now shows move all to folder option
