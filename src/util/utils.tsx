@@ -223,3 +223,11 @@ export const getRowColFromIndex = ({ index, columns }: RowColFromIndexParams): {
 		columnIndex: index % columns,
 	};
 };
+
+export const addThousandsSeparator = (number: number, separator?: string): string => {
+	return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator ?? ' ');
+};
+
+export const formatPercentProgress = (done: number, total: number): string => {
+	return `${addThousandsSeparator(Math.round(done / 1024 / 1024))} MB / ${addThousandsSeparator(Math.round(total / 1024 / 1024))} MB.`;
+};

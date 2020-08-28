@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import * as thunks from './thunks';
-import { setFullscreenLoadingMaskMessage } from './commonActions';
+import { setFullscreenLoadingMaskState } from './commonActions';
 
 export interface LoadingStates {
 	isMostFavoritedTagsLoading: boolean;
@@ -9,6 +9,7 @@ export interface LoadingStates {
 	isFullImageLoading: boolean;
 	isFullscreenLoadingMaskVisible: boolean;
 	fullscreenLoadingMaskMessage?: string;
+	fullscreenLoadingMaskPercentProgress?: number;
 	isScrolling: boolean;
 	isFetchingPosts: boolean;
 	isSearchDisabled: boolean;
@@ -139,9 +140,44 @@ const loadingState = createSlice({
 			state.isFullscreenLoadingMaskVisible = false;
 			state.fullscreenLoadingMaskMessage = undefined;
 		});
+		// Export images
+		builder.addCase(thunks.settings.exportImages.pending, (state) => {
+			state.fullscreenLoadingMaskMessage = 'Preparing to export images...';
+			state.isFullscreenLoadingMaskVisible = true;
+		});
+		builder.addCase(thunks.settings.exportImages.fulfilled, (state) => {
+			state.isFullscreenLoadingMaskVisible = false;
+			state.fullscreenLoadingMaskMessage = undefined;
+			state.fullscreenLoadingMaskPercentProgress = undefined;
+		});
+		builder.addCase(thunks.settings.exportImages.rejected, (state) => {
+			state.isFullscreenLoadingMaskVisible = false;
+			state.fullscreenLoadingMaskMessage = undefined;
+			state.fullscreenLoadingMaskPercentProgress = undefined;
+		});
+		//Import images
+		builder.addCase(thunks.settings.importImages.pending, (state) => {
+			state.fullscreenLoadingMaskMessage = 'Preparing to import images...';
+			state.isFullscreenLoadingMaskVisible = true;
+		});
+		builder.addCase(thunks.settings.importImages.fulfilled, (state) => {
+			state.isFullscreenLoadingMaskVisible = false;
+			state.fullscreenLoadingMaskMessage = undefined;
+			state.fullscreenLoadingMaskPercentProgress = undefined;
+		});
+		builder.addCase(thunks.settings.importImages.rejected, (state) => {
+			state.isFullscreenLoadingMaskVisible = false;
+			state.fullscreenLoadingMaskMessage = undefined;
+			state.fullscreenLoadingMaskPercentProgress = undefined;
+		});
 
-		builder.addCase(setFullscreenLoadingMaskMessage, (state, action) => {
-			state.fullscreenLoadingMaskMessage = action.payload;
+		builder.addCase(setFullscreenLoadingMaskState, (state, action) => {
+			if (typeof action.payload === 'string') {
+				state.fullscreenLoadingMaskMessage = action.payload;
+			} else {
+				state.fullscreenLoadingMaskMessage = action.payload.message;
+				state.fullscreenLoadingMaskPercentProgress = action.payload.progressPercent;
+			}
 		});
 	},
 });

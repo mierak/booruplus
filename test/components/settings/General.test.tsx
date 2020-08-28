@@ -14,7 +14,7 @@ import { IpcChannels } from '../../../src/types/processDto';
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('settings/General', () => {
-	it('Render correctly', () => {
+	it('Renders correctly', () => {
 		// given
 		const store = mockStore(
 			mState({
@@ -37,6 +37,10 @@ describe('settings/General', () => {
 		expect(screen.getByText('Dark')).not.toBeNull();
 		expect(screen.getByRole('button', { name: 'folder Select' })).not.toBeNull();
 		expect(screen.getByRole('button', { name: 'folder-open Open' })).not.toBeNull();
+		expect(screen.getByRole('button', { name: 'import Import Database' })).not.toBeNull();
+		expect(screen.getByRole('button', { name: 'export Export Database' })).not.toBeNull();
+		expect(screen.getByRole('button', { name: 'import Import Images' })).not.toBeNull();
+		expect(screen.getByRole('button', { name: 'export Export Images' })).not.toBeNull();
 	});
 	it('Dispatches updateTheme() and then calls IPC for reload', async () => {
 		// given
@@ -80,7 +84,7 @@ describe('settings/General', () => {
 				<General />
 			</Provider>
 		);
-		fireEvent.click(screen.getByText('Import'));
+		fireEvent.click(screen.getByText('Import Database'));
 
 		// then
 		const dispatchedActions = store.getActions();
@@ -96,11 +100,49 @@ describe('settings/General', () => {
 				<General />
 			</Provider>
 		);
-		fireEvent.click(screen.getByText('Export'));
+		fireEvent.click(screen.getByText('Export Database'));
 
 		// then
 		const dispatchedActions = store.getActions();
 		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.settings.exportDatabase.pending.type }));
+	});
+	it('Dispatches importImages() when Import Images button is pressed', async () => {
+		// given
+		const store = mockStore(mState());
+
+		// when
+		render(
+			<Provider store={store}>
+				<General />
+			</Provider>
+		);
+		fireEvent.click(screen.getByText('Import Images'));
+		fireEvent.click(await screen.findByText('Import')); // Confirm modal
+
+		// then
+		const dispatchedActions = store.getActions();
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.settings.importImages.pending.type,
+			})
+		);
+	});
+	it('Dispatches exportImages() when Export Images button is pressed', async () => {
+		// given
+		const store = mockStore(mState());
+
+		// when
+		render(
+			<Provider store={store}>
+				<General />
+			</Provider>
+		);
+		fireEvent.click(screen.getByText('Export Images'));
+		fireEvent.click(await screen.findByText('Export')); // Confirm modal
+
+		// then
+		const dispatchedActions = store.getActions();
+		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.settings.exportImages.pending.type }));
 	});
 	it('Sends open select folder dialog message to IPC and then dispatches updateImagePath()', async () => {
 		// given

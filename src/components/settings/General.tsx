@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FolderOpenOutlined, FolderOutlined, ImportOutlined, ExportOutlined } from '@ant-design/icons';
-import { Form, Input, Button, Select, Checkbox } from 'antd';
+import { Form, Input, Button, Select, Checkbox, Modal } from 'antd';
 
 import { AppDispatch, RootState } from '../../store/types';
 import { IpcChannels } from '../../types/processDto';
@@ -15,13 +15,14 @@ interface SelectFolderDialogResponse {
 
 interface ButtonProps {
 	$isOffset?: boolean;
+	$wide?: boolean;
 }
 
 const { Item } = Form;
 
 const StyledButton = styled(Button)<ButtonProps>`
-	width: 100px;
-	margin-left: ${(props: ButtonProps): string => (props.$isOffset ? '8px' : '0')};
+	width: ${(props): string => (props.$wide ? '170px' : '100px')};
+	margin-left: ${(props): string => (props.$isOffset ? '8px' : '0')};
 `;
 
 const labelCol = { span: 4 };
@@ -64,6 +65,44 @@ const General: React.FunctionComponent = () => {
 		dispatch(thunks.settings.exportDatabase());
 	};
 
+	const handleExportImages = (): void => {
+		Modal.confirm({
+			title: 'Warning!',
+			content:
+				'This process could take a while, depending on the size of your downloaded images. This could take over 10 minutes, proceed with caution! Alternatively you can copy images to your new directory manually.',
+			okButtonProps: {
+				type: 'default',
+			},
+			cancelButtonProps: {
+				type: 'primary',
+			},
+			okText: 'Cancel',
+			cancelText: 'Export',
+			onCancel: () => {
+				dispatch(thunks.settings.exportImages());
+			},
+		});
+	};
+
+	const handleImportImages = (): void => {
+		Modal.confirm({
+			title: 'Warning!',
+			content:
+				'This process could take a while, depending on the size of your downloaded images. This could take over 10 minutes, proceed with caution! Alternatively you can copy images to your new directory manually. Images will be extract to folder set as current "Path to data".',
+			okButtonProps: {
+				type: 'default',
+			},
+			cancelButtonProps: {
+				type: 'primary',
+			},
+			okText: 'Cancel',
+			cancelText: 'Import',
+			onCancel: () => {
+				dispatch(thunks.settings.importImages());
+			},
+		});
+	};
+
 	return (
 		<Form>
 			<Item label='Path to data' labelCol={labelCol} wrapperCol={wrapperCol}>
@@ -88,11 +127,19 @@ const General: React.FunctionComponent = () => {
 				</Select>
 			</Item>
 			<Item label='Import/Export' labelCol={labelCol} wrapperCol={wrapperCol}>
-				<StyledButton onClick={handleImport}>
-					<ImportOutlined /> Import
+				<StyledButton $wide onClick={handleImport}>
+					<ImportOutlined /> Import Database
 				</StyledButton>
-				<StyledButton $isOffset onClick={handleExport}>
-					<ExportOutlined /> Export
+				<StyledButton $wide $isOffset onClick={handleExport}>
+					<ExportOutlined /> Export Database
+				</StyledButton>
+			</Item>
+			<Item wrapperCol={{ offset: 4 }}>
+				<StyledButton $wide onClick={handleImportImages}>
+					<ImportOutlined /> Import Images
+				</StyledButton>
+				<StyledButton $isOffset $wide onClick={handleExportImages}>
+					<ExportOutlined /> Export Images
 				</StyledButton>
 			</Item>
 			<Item wrapperCol={{ offset: 4 }}>

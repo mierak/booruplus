@@ -118,6 +118,7 @@
 		"@types/lodash.debounce": "^4.0.6",
 		"@types/node-fetch": "^2.5.7",
 		"@types/react-window": "^1.8.2",
+		"@types/tar": "^4.0.3",
 		"@welldone-software/why-did-you-render": "^4.3.1",
 		"ant-design-pro": "^2.3.2",
 		"antd": "^4.4.3",
@@ -135,6 +136,7 @@
 		"react-window": "^1.8.5",
 		"redux": "^4.0.5",
 		"redux-thunk": "^2.3.0",
-		"styled-components": "^5.1.0"
+		"styled-components": "^5.1.0",
+		"tar": "^6.0.5"
 	}
 }

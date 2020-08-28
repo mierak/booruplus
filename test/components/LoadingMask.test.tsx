@@ -41,17 +41,47 @@ describe('LoadingMask', () => {
 	});
 	it('Renders message', async () => {
 		// given
-		const store = mockStore(mState());
 		const message = 'test message';
+		const store = mockStore(
+			mState({
+				loadingStates: {
+					fullscreenLoadingMaskMessage: message,
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<LoadingMask visible={false} delay={0} fullscreen message={message} />
+				<LoadingMask visible={true} delay={0} fullscreen />
 			</Provider>
 		);
 
 		// then
 		expect(screen.findByText(message));
+	});
+	it('Renders progressbar', async () => {
+		// given
+		const message = 'test messageasdf';
+		const progressPercent = 86;
+		const store = mockStore(
+			mState({
+				loadingStates: {
+					fullscreenLoadingMaskMessage: message,
+					fullscreenLoadingMaskPercentProgress: progressPercent,
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<LoadingMask visible={true} delay={0} fullscreen />
+			</Provider>
+		);
+
+		// then
+		expect(screen.findByText(message));
+		expect(screen.findByText('86%'));
 	});
 });

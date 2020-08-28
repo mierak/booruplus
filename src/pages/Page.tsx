@@ -24,7 +24,6 @@ const Page: React.FunctionComponent = () => {
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 	const settings = useSelector((state: RootState) => state.settings);
 	const loadingMaskVisible = useSelector((state: RootState) => state.loadingStates.isFullscreenLoadingMaskVisible);
-	const loadingMaskMessage = useSelector((state: RootState) => state.loadingStates.fullscreenLoadingMaskMessage);
 
 	useEffect(() => {
 		(async (): Promise<void> => {
@@ -49,8 +48,8 @@ const Page: React.FunctionComponent = () => {
 	}, [loaded, settings.theme]);
 
 	useEffect(() => {
-		window.api.send(IpcChannels.SETTINGS_LOADED, settings);
-	}, [settings]);
+		loaded && window.api.send(IpcChannels.SETTINGS_LOADED, settings);
+	}, [loaded, settings]);
 
 	const renderView = (): React.ReactNode => {
 		switch (activeView) {
@@ -71,7 +70,7 @@ const Page: React.FunctionComponent = () => {
 
 	return (
 		<>
-			<LoadingMask visible={loadingMaskVisible} message={loadingMaskMessage} delay={0} opacity={0.9} />
+			<LoadingMask delay={0} opacity={0.9} visible={loadingMaskVisible} />
 			{loaded ? <AppLayout>{renderView()}</AppLayout> : ''}
 		</>
 	);

@@ -1,6 +1,7 @@
 import db from './database';
 import { ExportedData, ExportedRawData, SavedSearch, SavedSearchWithB64Previews } from './types';
 import { blobToBase64 } from '../util/utils';
+import Dexie from 'dexie';
 
 const allTables = [db.favorites, db.posts, db.savedSearches, db.settings, db.tags, db.tagSearchHistory, db.tasks];
 
@@ -143,9 +144,9 @@ export const exportDb = (onProgress: (message: string) => void): Promise<Exporte
 		const tasks = await db.tasks.toArray();
 
 		onProgress('Converting saved searches previews');
-		const newSearches = await blobPreviewsToBase64(savedSearches);
+		const t = await Dexie.waitFor<SavedSearchWithB64Previews[]>(blobPreviewsToBase64(savedSearches));
 		onProgress('Export finished');
 
-		return { posts, favorites, settings, tags, tagSearchHistory, tasks, savedSearches: newSearches };
+		return { posts, favorites, settings, tags, tagSearchHistory, tasks, savedSearches: t };
 	});
 };

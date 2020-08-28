@@ -2,7 +2,7 @@ import { doDatabaseMock } from '../helpers/database.mock';
 doDatabaseMock();
 import reducer, { actions, initialState, LoadingStates } from '../../src/store/loadingStates';
 import { thunks } from '../../src/store/';
-import { setFullscreenLoadingMaskMessage } from '../../src/store/commonActions';
+import { setFullscreenLoadingMaskState } from '../../src/store/commonActions';
 import { createAction } from '../helpers/test.helper';
 
 describe('store/loadingStates', () => {
@@ -215,13 +215,26 @@ describe('store/loadingStates', () => {
 	it('Sets loading mask message on setFullscreenLoadingMaskMessage', () => {
 		// given
 		const message = 'testmessage';
-		const action = createAction(setFullscreenLoadingMaskMessage.type, message);
+		const action = createAction(setFullscreenLoadingMaskState.type, message);
 
 		// when
 		const result = reducer({ ...initialState, fullscreenLoadingMaskMessage: '' }, action);
 
 		// then
 		expect(result.fullscreenLoadingMaskMessage).toEqual(message);
+	});
+	it('Sets loading mask message and progress on setFullscreenLoadingMaskMessage', () => {
+		// given
+		const message = 'testmessage';
+		const progressPercent = 43;
+		const action = createAction(setFullscreenLoadingMaskState.type, { message, progressPercent });
+
+		// when
+		const result = reducer({ ...initialState, fullscreenLoadingMaskMessage: '' }, action);
+
+		// then
+		expect(result.fullscreenLoadingMaskMessage).toEqual(message);
+		expect(result.fullscreenLoadingMaskPercentProgress).toEqual(progressPercent);
 	});
 	it('Correctly changes state when online fetchPosts is initiated', () => {
 		// given
@@ -394,5 +407,113 @@ describe('store/loadingStates', () => {
 		// then
 		expect(result.isSearchDisabled).toBe(false);
 		expect(result.isFetchingPosts).toBe(false);
+	});
+	describe('Export images', () => {
+		it('pending', () => {
+			// given
+			const action = createAction(thunks.settings.exportImages.pending.type);
+			const state: LoadingStates = {
+				...initialState,
+				fullscreenLoadingMaskMessage: 'asdf',
+				isFullscreenLoadingMaskVisible: false,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.fullscreenLoadingMaskMessage).toBe('Preparing to export images...');
+			expect(result.isFullscreenLoadingMaskVisible).toBe(true);
+		});
+		it('fulfilled', () => {
+			// given
+			const action = createAction(thunks.settings.exportImages.fulfilled.type);
+			const state: LoadingStates = {
+				...initialState,
+				fullscreenLoadingMaskMessage: 'asdf',
+				isFullscreenLoadingMaskVisible: true,
+				fullscreenLoadingMaskPercentProgress: 50,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.fullscreenLoadingMaskMessage).toBe(undefined);
+			expect(result.isFullscreenLoadingMaskVisible).toBe(false);
+			expect(result.fullscreenLoadingMaskPercentProgress).toBe(undefined);
+		});
+		it('rejected', () => {
+			// given
+			const action = createAction(thunks.settings.exportImages.rejected.type);
+			const state: LoadingStates = {
+				...initialState,
+				fullscreenLoadingMaskMessage: 'asdf',
+				isFullscreenLoadingMaskVisible: true,
+				fullscreenLoadingMaskPercentProgress: 50,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.fullscreenLoadingMaskMessage).toBe(undefined);
+			expect(result.isFullscreenLoadingMaskVisible).toBe(false);
+			expect(result.fullscreenLoadingMaskPercentProgress).toBe(undefined);
+		});
+	});
+	describe('Import images', () => {
+		it('pending', () => {
+			// given
+			const action = createAction(thunks.settings.importImages.pending.type);
+			const state: LoadingStates = {
+				...initialState,
+				fullscreenLoadingMaskMessage: 'asdf',
+				isFullscreenLoadingMaskVisible: false,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.fullscreenLoadingMaskMessage).toBe('Preparing to import images...');
+			expect(result.isFullscreenLoadingMaskVisible).toBe(true);
+		});
+		it('fulfilled', () => {
+			// given
+			const action = createAction(thunks.settings.importImages.fulfilled.type);
+			const state: LoadingStates = {
+				...initialState,
+				fullscreenLoadingMaskMessage: 'asdf',
+				isFullscreenLoadingMaskVisible: true,
+				fullscreenLoadingMaskPercentProgress: 50,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.fullscreenLoadingMaskMessage).toBe(undefined);
+			expect(result.isFullscreenLoadingMaskVisible).toBe(false);
+			expect(result.fullscreenLoadingMaskPercentProgress).toBe(undefined);
+		});
+		it('rejected', () => {
+			// given
+			const action = createAction(thunks.settings.importImages.rejected.type);
+			const state: LoadingStates = {
+				...initialState,
+				fullscreenLoadingMaskMessage: 'asdf',
+				isFullscreenLoadingMaskVisible: true,
+				fullscreenLoadingMaskPercentProgress: 50,
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.fullscreenLoadingMaskMessage).toBe(undefined);
+			expect(result.isFullscreenLoadingMaskVisible).toBe(false);
+			expect(result.fullscreenLoadingMaskPercentProgress).toBe(undefined);
+		});
 	});
 });

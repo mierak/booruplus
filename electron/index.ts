@@ -1,4 +1,14 @@
-import { app, dialog, BrowserWindow, ipcMain, IpcMainInvokeEvent, IpcMainEvent, MessageBoxOptions, shell } from 'electron';
+import {
+	app,
+	dialog,
+	BrowserWindow,
+	ipcMain,
+	IpcMainInvokeEvent,
+	IpcMainEvent,
+	MessageBoxOptions,
+	shell,
+	SaveDialogSyncOptions,
+} from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 import fs from 'fs';
 import zlib from 'zlib';
@@ -9,6 +19,7 @@ import fetch from 'node-fetch';
 import { Settings } from '../src/store/types';
 import { SavePostDto, IpcChannels, ExportDataDto, SaveThumbnailDto } from '../src/types/processDto';
 import { getFileService, FileService } from './fileService';
+import { getArchiveService, ArchiveService } from './archiveService';
 import { Post } from '../src/types/gelbooruTypes';
 
 import path from 'path';
@@ -97,10 +108,12 @@ app.whenReady().then(() => {
 
 let settings: Settings;
 let fileService: FileService;
+let archiveService: ArchiveService;
 
 ipcMain.on(IpcChannels.SETTINGS_LOADED, (_: IpcMainEvent, value: Settings) => {
 	settings = value;
 	fileService = getFileService(value);
+	archiveService = getArchiveService(value);
 });
 
 ipcMain.on(IpcChannels.THEME_CHANGED, async () => {
@@ -208,13 +221,25 @@ ipcMain.handle(IpcChannels.OPEN_SELECT_FOLDER_DIALOG, async () => {
 	return '';
 });
 
-ipcMain.handle(IpcChannels.OPEN_SELECT_EXPORTED_DATA_FILE_DIALOG, async () => {
-	log.debug('Opening select exported data file dialog.');
-	const dialogResult = await dialog.showSaveDialog(window, {
-		properties: ['createDirectory', 'showOverwriteConfirmation', 'dontAddToRecent'],
-		filters: [{ name: 'Lolinizer backup', extensions: ['lbak'] }],
-		defaultPath: `lolinizer_export_${moment().format('YYYYMMDDHHmmss')}`,
-	});
+ipcMain.handle(IpcChannels.OPEN_SELECT_EXPORT_FILE_LOCATION_DIALOG, async (_, type: 'data' | 'images') => {
+	log.debug(`Opening select export file location dialog for [${type}]`);
+
+	let options: SaveDialogSyncOptions;
+	if (type === 'data') {
+		options = {
+			properties: ['createDirectory', 'showOverwriteConfirmation', 'dontAddToRecent'],
+			filters: [{ name: 'Lolinizer backup', extensions: ['lbak'] }],
+			defaultPath: `lolinizer_export_${moment().format('YYYYMMDDHHmmss')}`,
+		};
+	} else {
+		options = {
+			properties: ['createDirectory', 'showOverwriteConfirmation', 'dontAddToRecent'],
+			filters: [{ name: 'Lolinizer backup images', extensions: ['tar'] }],
+			defaultPath: `lolinizer_images_export_${moment().format('YYYYMMDDHHmmss')}`,
+		};
+	}
+
+	const dialogResult = await dialog.showSaveDialog(window, options);
 	const filePath = dialogResult.filePath;
 	if (!dialogResult.canceled && filePath) {
 		log.debug(`Selected file: ${filePath}`);
@@ -225,7 +250,7 @@ ipcMain.handle(IpcChannels.OPEN_SELECT_EXPORTED_DATA_FILE_DIALOG, async () => {
 	}
 });
 
-ipcMain.on(IpcChannels.SAVE_EXPORTED_DATA, async (_, data: ExportDataDto) => {
+ipcMain.handle(IpcChannels.SAVE_EXPORTED_DATA, async (_, data: ExportDataDto) => {
 	log.debug('Compressing exported data.');
 	zlib.brotliCompress(
 		data.data,
@@ -252,6 +277,27 @@ ipcMain.on(IpcChannels.SAVE_EXPORTED_DATA, async (_, data: ExportDataDto) => {
 			}
 		}
 	);
+});
+
+ipcMain.handle(IpcChannels.EXPORT_IMAGES, async (_, path: string) => {
+	return archiveService.archiveImages(path, (done: number, total: number): void => {
+		window.webContents.send(IpcChannels.EXPORT_PROGRESS, { done, total });
+	});
+});
+
+ipcMain.handle(IpcChannels.IMPORT_IMAGES, async () => {
+	log.debug('Opening import data dialog.');
+	const dialogResult = await dialog.showOpenDialog(window, {
+		filters: [{ name: 'Lolinizer images backup', extensions: ['tar'] }],
+		properties: ['dontAddToRecent', 'openFile'],
+	});
+
+	if (!dialogResult.canceled && dialogResult.filePaths.length > 0) {
+		log.debug(`Decompressing file: ${dialogResult.filePaths[0]}`);
+		return archiveService.extractImages(dialogResult.filePaths[0], (done: number, total: number): void => {
+			window.webContents.send(IpcChannels.IMPORT_PROGRESS, { done, total });
+		});
+	}
 });
 
 ipcMain.handle(IpcChannels.OPEN_IMPORT_DATA_DIALOG, async () => {
