@@ -18,7 +18,8 @@ import { thunks } from '../store';
 import LoadingMask from '../components/LoadingMask';
 
 const Page: React.FunctionComponent = () => {
-	const [loaded, setLoaded] = useState(false);
+	const [hydrated, setHydrated] = useState(false);
+	const [stylesLoaded, setStylesLoaded] = useState(false);
 	const dispatch = useDispatch<AppDispatch>();
 
 	const activeView = useSelector((state: RootState) => state.system.activeView);
@@ -31,12 +32,12 @@ const Page: React.FunctionComponent = () => {
 			await dispatch(thunks.tasks.rehydrateFromDb());
 			await dispatch(thunks.favorites.fetchTreeData());
 			await dispatch(thunks.favorites.fetchAllKeys());
-			setLoaded(true);
+			setHydrated(true);
 		})();
 	}, [dispatch]);
 
 	useEffect(() => {
-		if (loaded) {
+		if (hydrated) {
 			if (settings.theme === 'dark') {
 				require('../css/scrollbar.dark.css');
 				require('antd/dist/antd.dark.css');
@@ -44,12 +45,13 @@ const Page: React.FunctionComponent = () => {
 				require('../css/scrollbar.light.css');
 				require('antd/dist/antd.css');
 			}
+			setStylesLoaded(true);
 		}
-	}, [loaded, settings.theme]);
+	}, [hydrated, settings.theme]);
 
 	useEffect(() => {
-		loaded && window.api.send(IpcChannels.SETTINGS_LOADED, settings);
-	}, [loaded, settings]);
+		hydrated && window.api.send(IpcChannels.SETTINGS_LOADED, settings);
+	}, [hydrated, settings]);
 
 	const renderView = (): React.ReactNode => {
 		switch (activeView) {
@@ -71,7 +73,7 @@ const Page: React.FunctionComponent = () => {
 	return (
 		<>
 			<LoadingMask delay={0} opacity={0.9} visible={loadingMaskVisible} />
-			{loaded ? <AppLayout>{renderView()}</AppLayout> : ''}
+			{stylesLoaded ? <AppLayout>{renderView()}</AppLayout> : ''}
 		</>
 	);
 };
