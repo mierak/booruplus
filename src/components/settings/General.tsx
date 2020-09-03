@@ -34,6 +34,7 @@ const General: React.FunctionComponent = () => {
 	const imagesFolderPath = useSelector((state: RootState) => state.settings.imagesFolderPath);
 	const theme = useSelector((state: RootState) => state.settings.theme);
 	const downloadMissingImages = useSelector((state: RootState) => state.settings.downloadMissingImages);
+	const imageHover = useSelector((state: RootState) => state.settings.imageHover);
 
 	const handleThemeChange = (value: 'dark' | 'light'): void => {
 		dispatch(thunks.settings.updateTheme(value)).then(() => {
@@ -55,6 +56,10 @@ const General: React.FunctionComponent = () => {
 
 	const handleToggleDownloadMissingIMages = (): void => {
 		dispatch(actions.settings.toggleDownloadMissingImages());
+	};
+
+	const handleToggleImageHover = (): void => {
+		dispatch(actions.settings.toggleImageHover());
 	};
 
 	const handleImport = (): void => {
@@ -145,6 +150,11 @@ const General: React.FunctionComponent = () => {
 			<Item wrapperCol={{ offset: 4 }}>
 				<Checkbox checked={downloadMissingImages} onClick={handleToggleDownloadMissingIMages}>
 					Download missing images
+				</Checkbox>
+			</Item>
+			<Item wrapperCol={{ offset: 4 }}>
+				<Checkbox checked={imageHover} onClick={handleToggleImageHover}>
+					Preview on thumbnail hover
 				</Checkbox>
 			</Item>
 		</Form>

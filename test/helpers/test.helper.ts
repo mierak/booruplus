@@ -65,6 +65,7 @@ export const mSettings = (settings?: Partial<Settings>): Settings => {
 		apiKey: settings?.apiKey ?? 'mock_api_key',
 		gelbooruUsername: settings?.gelbooruUsername ?? 'gelUser',
 		downloadMissingImages: settings?.downloadMissingImages ?? true,
+		imageHover: settings?.imageHover ?? true,
 		dashboard: settings?.dashboard ?? {
 			loadMostFavoritedTags: dashboard?.loadMostFavoritedTags ?? true,
 			loadMostSearchedTags: dashboard?.loadMostSearchedTags ?? true,

@@ -128,6 +128,16 @@ describe('store/settings', () => {
 		// then
 		expect(result.downloadMissingImages).toEqual(true);
 	});
+	it('Toggles imageHover', () => {
+		// given
+		const action = createAction(actions.toggleImageHover.type);
+
+		// when
+		const result = reducer({ ...initialState, imageHover: false }, action);
+
+		// then
+		expect(result.imageHover).toEqual(true);
+	});
 	it('Updates imagesPath when updateImagePath is fulfilled', () => {
 		// given
 		const path = 'img_path';

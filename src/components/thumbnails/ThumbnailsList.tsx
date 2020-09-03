@@ -45,6 +45,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const postCount = useSelector((state: RootState) => state.posts.posts.length);
 	const activePostIndex = useSelector((state: RootState) => state.posts.activePostIndex);
 	const searchMode = useSelector((state: RootState) => state.system.searchMode);
+	const useImageHover = useSelector((state: RootState) => state.settings.imageHover);
 
 	useEffect(() => {
 		const handleKeyPress = (event: KeyboardEvent): void => {
@@ -127,9 +128,9 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 				renderLoadMore={postCount > 0 && searchMode !== 'favorites' && searchMode !== 'open-download'}
 				headerHeight={props.hasHeader ? 72 : 0}
 				contextMenu={props.contextMenu}
-				onCellMouseEnter={!props.singleColumn ? onMouseEnter : undefined}
-				onCellMouseLeave={!props.singleColumn ? onMouseLeave : undefined}
-				onCellMouseMove={!props.singleColumn ? onMouseMove : undefined}
+				onCellMouseEnter={!props.singleColumn && useImageHover ? onMouseEnter : undefined}
+				onCellMouseLeave={!props.singleColumn && useImageHover ? onMouseLeave : undefined}
+				onCellMouseMove={!props.singleColumn && useImageHover ? onMouseMove : undefined}
 			/>
 		</Container>
 	);

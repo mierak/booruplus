@@ -66,6 +66,7 @@ export interface Settings {
 	apiKey: string | undefined;
 	gelbooruUsername?: string;
 	downloadMissingImages: boolean;
+	imageHover: boolean;
 	dashboard: DashboardSettings;
 	favorites: {
 		siderWidth: number | undefined;

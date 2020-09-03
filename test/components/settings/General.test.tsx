@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { thunks } from '../../../src/store';
+import { thunks, actions } from '../../../src/store';
 import { RootState, AppDispatch } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -240,5 +240,49 @@ describe('settings/General', () => {
 
 		// then
 		expect(ipcSendSpy).toBeCalledWith(IpcChannels.OPEN_PATH, store.getState().settings.imagesFolderPath);
+	});
+	it('Dispatches toggle imageHover', () => {
+		// given
+		const store = mockStore(
+			mState({
+				settings: {
+					imageHover: false,
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<General />
+			</Provider>
+		);
+		fireEvent.click(screen.getByRole('checkbox', { name: 'Preview on thumbnail hover' }));
+
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({ type: actions.settings.toggleImageHover.type });
+	});
+	it('Dispatches toggle downloadMissingImages', () => {
+		// given
+		const store = mockStore(
+			mState({
+				settings: {
+					downloadMissingImages: false,
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<General />
+			</Provider>
+		);
+		fireEvent.click(screen.getByRole('checkbox', { name: 'Download missing images' }));
+
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({ type: actions.settings.toggleDownloadMissingImages.type });
 	});
 });

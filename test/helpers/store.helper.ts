@@ -143,6 +143,7 @@ const mSettingsState = (ss?: DeepPartial<Settings>): Settings => {
 		theme: ss?.theme ?? initialState.settings.theme,
 		gelbooruUsername: ss?.gelbooruUsername ?? initialState.settings.gelbooruUsername,
 		downloadMissingImages: ss?.downloadMissingImages ?? initialState.settings.downloadMissingImages,
+		imageHover: ss?.imageHover ?? initialState.settings.imageHover,
 		dashboard: mDashboardSettingsState(ss?.dashboard) ?? initialState.settings.dashboard,
 		favorites: {
 			siderWidth: ss?.favorites?.siderWidth ?? initialState.settings.favorites.siderWidth,
