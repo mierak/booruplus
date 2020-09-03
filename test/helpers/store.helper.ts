@@ -24,6 +24,10 @@ const mPostsState = (ps?: Partial<PostsState>): PostsState => {
 	return {
 		activePostIndex: ps?.activePostIndex ?? initialState.posts.activePostIndex,
 		posts: ps?.posts ?? initialState.posts.posts,
+		hoveredPost: ps?.hoveredPost ?? {
+			post: ps?.hoveredPost?.post ?? undefined,
+			visible: ps?.hoveredPost?.visible ?? false,
+		},
 	};
 };
 

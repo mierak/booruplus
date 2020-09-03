@@ -8,3 +8,7 @@ export const getPostUrl = (postId: number): string => {
 export const getThumbnailUrl = (directory: string, hash: string): string => {
 	return `${GELBOORU_URL}/thumbnails/${directory}/thumbnail_${hash}.jpg`;
 };
+
+export const getPreviewUrl = (directory: string, hash: string): string => {
+	return `${GELBOORU_URL}/samples/${directory}/sample_${hash}.jpg`;
+};

@@ -6,6 +6,7 @@ import { Card, Popconfirm, Menu, Dropdown } from 'antd';
 
 import { actions } from '../../store';
 import { RootState, AppDispatch } from '../../store/types';
+import { Post } from '../../types/gelbooruTypes';
 
 import { CardAction, ContextMenu, openNotificationWithIcon } from '../../types/components';
 import { renderPostCardAction, getThumbnailBorder, thumbnailLoader } from '../../util/componentUtils';
@@ -15,6 +16,9 @@ interface Props {
 	contextMenu?: ContextMenu[];
 	actions?: CardAction[];
 	isScrolling?: boolean;
+	onMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
+	onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
+	onMouseMove?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
 }
 
 interface CardProps {
@@ -83,9 +87,6 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		const ref = imageRef.current;
 		if (ref && post) {
 			let canceled = false;
-			ref.onload = (): void => {
-				// dispatch(actions.loadingStates.setFullImageLoading(false));
-			};
 			const loader = thumbnailLoader(post, true);
 			loader.then((url) => {
 				if (!canceled) {
@@ -185,7 +186,15 @@ const Thumbnail = (props: Props): React.ReactElement => {
 			>
 				<StyledImageContainer onClick={(event: React.MouseEvent): void => handleThumbnailClick(event)}>
 					{post && post.selected && <CheckCircleTwoTone style={{ fontSize: '20px', position: 'absolute', top: '5px', right: '5px' }} />}
-					{post && <StyledThumbnailImage ref={imageRef} data-testid='thumbnail-image'></StyledThumbnailImage>}
+					{post && (
+						<StyledThumbnailImage
+							ref={imageRef}
+							data-testid='thumbnail-image'
+							onMouseEnter={(e): void => post && props.onMouseEnter && props.onMouseEnter(e, post)}
+							onMouseLeave={(e): void => post && props.onMouseLeave && props.onMouseLeave(e, post)}
+							onMouseMove={(e): void => post && props.onMouseMove && props.onMouseMove(e, post)}
+						></StyledThumbnailImage>
+					)}
 				</StyledImageContainer>
 			</StyledCard>
 		);

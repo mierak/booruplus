@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { CardAction, ContextMenu } from 'types/components';
 import Cell from './Cell';
 import LoadMoreButton from '../search-form/LoadMoreButton';
+import { Post } from '../../types/gelbooruTypes';
 
 interface CellRendererProps {
 	columnIndex: number;
@@ -16,6 +17,9 @@ interface CellRendererProps {
 		itemCount: number;
 		actions: CardAction[];
 		contextMenu: ContextMenu[];
+		onMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
+		onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
+		onMouseMove?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
 	};
 }
 
@@ -35,6 +39,9 @@ const CellRenderer = (cellProps: CellRendererProps): React.ReactElement => {
 				itemCount={cellProps.data.itemCount}
 				contextMenu={cellProps.data.contextMenu}
 				actions={cellProps.data.actions}
+				onMouseEnter={cellProps.data.onMouseEnter}
+				onMouseLeave={cellProps.data.onMouseLeave}
+				onMouseMove={cellProps.data.onMouseMove}
 			/>
 		);
 	}

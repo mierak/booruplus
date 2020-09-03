@@ -8,6 +8,7 @@ import CellRenderer from './CellRenderer';
 import { getRowColFromIndex } from '../../util/utils';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store/types';
+import { Post } from '../../types/gelbooruTypes';
 import { actions } from '../../store/';
 
 interface Props {
@@ -19,6 +20,9 @@ interface Props {
 	renderLoadMore?: boolean;
 	headerHeight?: number;
 	debounceDelay?: number;
+	onCellMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
+	onCellMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
+	onCellMouseMove?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
 }
 
 interface ContainerProps {
@@ -141,8 +145,21 @@ const Grid: React.FunctionComponent<Props> = (props) => {
 			itemCount: props.itemCount,
 			contextMenu: props.contextMenu,
 			actions: props.actions,
+			onMouseEnter: props.onCellMouseEnter,
+			onMouseLeave: props.onCellMouseLeave,
+			onMouseMove: props.onCellMouseMove,
 		};
-	}, [columns, props.actions, props.contextMenu, props.itemCount, props.renderLoadMore, rowCount]);
+	}, [
+		columns,
+		props.actions,
+		props.contextMenu,
+		props.itemCount,
+		props.onCellMouseEnter,
+		props.onCellMouseLeave,
+		props.onCellMouseMove,
+		props.renderLoadMore,
+		rowCount,
+	]);
 
 	return (
 		<Container ref={listRef} headerHeight={props.headerHeight}>
