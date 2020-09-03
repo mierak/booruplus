@@ -11,6 +11,7 @@ export const initialState: Settings = {
 	theme: 'dark',
 	apiKey: undefined,
 	downloadMissingImages: true,
+	imageHover: true,
 	dashboard: {
 		mostViewedCount: 28,
 		loadMostSearchedTags: true,
@@ -62,6 +63,9 @@ const settingsSlice = createSlice({
 		},
 		toggleDownloadMissingImages: (state): void => {
 			state.downloadMissingImages = !state.downloadMissingImages;
+		},
+		toggleImageHover: (state): void => {
+			state.imageHover = !state.imageHover;
 		},
 	},
 	extraReducers: (builder) => {

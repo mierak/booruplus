@@ -126,6 +126,7 @@ db.on('populate', async () => {
 			theme: 'dark',
 			apiKey: undefined,
 			downloadMissingImages: true,
+			imageHover: true,
 			dashboard: {
 				mostViewedCount: 28,
 				loadMostFavoritedTags: true,
