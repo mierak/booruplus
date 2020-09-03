@@ -1,5 +1,6 @@
 # Changelog
-## 0.1.6 - Image caching - DATE
+## 0.1.6 - Image caching and Image hover - DATE
+- Hovering over thumbnail in thumbnails list now shows a pop up preview after a short while
 - Added option to automatically download images that are missing on disk but marked as downloaded
 - Thumbnails now get automatically downloaded along with posts.
 - Missing images and thumbnails for downloaded posts now get redownloaded automatically next time you view given image/post.

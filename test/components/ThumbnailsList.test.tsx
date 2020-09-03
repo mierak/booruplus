@@ -5,6 +5,7 @@ import { actions } from '../../src/store';
 import { RootState, AppDispatch } from '../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import userEvent from '@testing-library/user-event';
 import { mState } from '../helpers/store.helper';
 
 import ThumbnailsList from '../../src/components/thumbnails/ThumbnailsList';
@@ -173,5 +174,56 @@ describe('ThumbnailsList', () => {
 
 		// then
 		expect(screen.queryByText('Load More')).toBeNull();
+	});
+	it('Dispatches setHoveredPost on mouseEnter on thumbnail', async () => {
+		//given
+		const store = mockStore(
+			mState({
+				posts: {
+					posts,
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<ThumbnailsList />
+			</Provider>
+		);
+		userEvent.hover(screen.getAllByTestId('thumbnail-image')[0]);
+
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.posts.setHoveredPost.type,
+			payload: { post: posts[0], visible: true },
+		});
+	});
+	it('Dispatches setHoveredPost on mouseLeave on thumbnail', async () => {
+		//given
+		const store = mockStore(
+			mState({
+				posts: {
+					posts,
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<ThumbnailsList />
+			</Provider>
+		);
+		userEvent.hover(screen.getAllByTestId('thumbnail-image')[0]);
+		userEvent.unhover(screen.getAllByTestId('thumbnail-image')[0]);
+
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.posts.setHoveredPost.type,
+			payload: { post: undefined, visible: false },
+		});
 	});
 });

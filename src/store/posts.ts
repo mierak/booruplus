@@ -3,14 +3,24 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Post } from '../types/gelbooruTypes';
 import * as thunks from './thunks';
 
+interface HoveredPost {
+	visible: boolean;
+	post: Post | undefined;
+}
+
 export interface PostsState {
 	activePostIndex: number | undefined;
 	posts: Post[];
+	hoveredPost: HoveredPost;
 }
 
 export const initialState: PostsState = {
 	activePostIndex: undefined,
 	posts: [],
+	hoveredPost: {
+		visible: false,
+		post: undefined,
+	},
 };
 const postsSlice = createSlice({
 	name: 'posts',
@@ -86,6 +96,10 @@ const postsSlice = createSlice({
 				const index = state.activePostIndex === 0 ? state.posts.length - 1 : state.activePostIndex - 1;
 				state.activePostIndex = index;
 			}
+		},
+		setHoveredPost: (state, action: PayloadAction<Partial<HoveredPost>>): void => {
+			state.hoveredPost.post = action.payload.post;
+			action.payload.visible !== undefined && (state.hoveredPost.visible = action.payload.visible);
 		},
 	},
 	extraReducers: (builder) => {

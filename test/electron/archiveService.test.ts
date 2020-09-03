@@ -6,13 +6,13 @@ jest.mock('electron-log', () => {
 });
 const actualFs = jest.requireActual('fs');
 jest.mock('fs');
-import { Writable, Readable, PassThrough } from 'stream';
+import { Readable } from 'stream';
 jest.mock('stream');
 jest.mock('tar');
 import { mocked } from 'ts-jest/utils';
 import path from 'path';
 import stream from 'stream';
-import fs, { Dirent, WriteStream } from 'fs';
+import fs, { Dirent } from 'fs';
 import { mSettings } from '../helpers/test.helper';
 import tar from 'tar';
 import { getArchiveService } from '../../electron/archiveService';

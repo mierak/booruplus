@@ -1,3 +1,14 @@
+jest.mock('lodash', () => {
+	const orig = jest.requireActual('lodash');
+	return {
+		...orig,
+		debounce: (cb: any, _: number): any => {
+			const func = (): void => cb();
+			func.cancel = jest.fn();
+			return func;
+		},
+	};
+});
 import { log } from './helpers/window.mock';
 (global as any).log = log;
 

@@ -15,9 +15,10 @@ import { Icon } from '../types/components';
 import { Post } from '../types/gelbooruTypes';
 import { Tooltip } from 'antd';
 import { loadImage, saveImage, loadThumbnail, saveThumbnail } from './imageIpcUtils';
-import { getThumbnailUrl } from '../service/webService';
+import { getThumbnailUrl, getPreviewUrl } from '../service/webService';
 import { thumbnailCache, imageCache, ImageCache, mostViewedCache } from './objectUrlCache';
 import { SuccessfulLoadPostResponse } from 'types/processDto';
+import { isFilenameVideo } from './utils';
 
 export const getIcon = (icon: Icon, onClick?: (() => void) | undefined): React.ReactElement => {
 	switch (icon) {
@@ -68,6 +69,35 @@ export const getThumbnailBorder = (active: string, theme: 'dark' | 'light', sele
 		if (theme === 'dark') return 'dashed 1px white';
 	}
 	return 'dashed 1px black';
+};
+interface SetImageSizeParams {
+	post: Post;
+	windowSize: { width: number; height: number };
+}
+
+export const getPreviewImageSize = ({ post, windowSize }: SetImageSizeParams): { width: number; height: number } => {
+	const ratio = post.width / post.height;
+	if (post.width > post.height) {
+		const width = windowSize.width * 0.66;
+		const height = width / ratio;
+		if (height > windowSize.height * 0.95) {
+			const height2 = windowSize.height * 0.95;
+			const width2 = height2 * ratio;
+			return { width: width2, height: height2 };
+		} else {
+			return { width, height };
+		}
+	} else {
+		const height = windowSize.height * 0.95;
+		const width = height * ratio;
+		if (width > windowSize.width * 0.66) {
+			const width2 = windowSize.width * 0.66;
+			const height2 = width2 / ratio;
+			return { width: width2, height: height2 };
+		} else {
+			return { width, height };
+		}
+	}
 };
 
 interface LoaderParams {
@@ -156,5 +186,35 @@ export const mostViewedLoader = (post: Post, downloadMissingThumbnail = true): P
 		ignoreDownloadedStatus: true,
 		saveCallback: saveThumbnail,
 		loadFunction: loadThumbnail,
+	});
+};
+
+export const previewLoader = (post: Post): Promise<string | undefined> => {
+	return new Promise<string | undefined>((resolve) => {
+		const cached = imageCache.getIfPresent(post.id);
+		if (cached) {
+			resolve(cached);
+		}
+		if (post.downloaded) {
+			if (isFilenameVideo(post.image)) {
+				resolve(undefined);
+			} else {
+				loadImage(post)
+					.then((result) => {
+						const objectUrl = URL.createObjectURL(new Blob([result.data]));
+						imageCache.add(objectUrl, post.id);
+						resolve(objectUrl);
+					})
+					.catch(() => {
+						resolve(post.fileUrl);
+					});
+			}
+		} else {
+			if (post.sample) {
+				resolve(getPreviewUrl(post.directory, post.hash));
+			} else {
+				resolve(post.fileUrl);
+			}
+		}
 	});
 };

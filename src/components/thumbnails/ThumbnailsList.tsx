@@ -9,6 +9,8 @@ import { RootState } from '../../store/types';
 import EmptyThumbnails from '../EmptyThumbnails';
 import { CardAction, ContextMenu } from '../../types/components';
 import Grid from './Grid';
+import { Post } from '../../types/gelbooruTypes';
+import PreviewImage from './PreviewImage';
 
 interface Props {
 	className?: string;
@@ -18,6 +20,10 @@ interface Props {
 	hasHeader?: boolean;
 	singleColumn?: boolean;
 }
+
+const Container = styled.div`
+	height: 100%;
+`;
 
 interface StyledEmptyThumbnailsProps {
 	centered?: boolean;
@@ -32,6 +38,10 @@ const StyledEmptyThumbnails = styled(EmptyThumbnails)`
 
 const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
+	const hoverImageRef = React.useRef<HTMLImageElement>(null);
+	const containerRef = React.useRef<HTMLDivElement>(null);
+	const mousePosition = React.useRef({ x: 0, y: 0 });
+
 	const postCount = useSelector((state: RootState) => state.posts.posts.length);
 	const activePostIndex = useSelector((state: RootState) => state.posts.activePostIndex);
 	const searchMode = useSelector((state: RootState) => state.system.searchMode);
@@ -54,10 +64,61 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 		};
 	}, [dispatch]);
 
+	const positionHoverImage = (): void => {
+		const hoverContainer = hoverImageRef.current;
+		if (!hoverContainer) {
+			return;
+		}
+
+		const x = mousePosition.current.x;
+		const y = mousePosition.current.y;
+		hoverContainer.style.top = y - hoverContainer.clientHeight / 2 + 'px';
+		hoverContainer.style.left = `${x + (window.innerWidth / 2 < x ? -30 - hoverContainer.getBoundingClientRect().width : 30)}px`;
+
+		const windowRect = {
+			left: 0,
+			top: 0,
+			right: window.innerWidth,
+			bottom: window.innerHeight,
+		};
+		const hoverRect = hoverContainer.getBoundingClientRect();
+
+		if (hoverRect.right > windowRect.right) {
+			hoverContainer.style.left = windowRect.right - hoverRect.width + 'px';
+		}
+		if (hoverRect.bottom > windowRect.bottom) {
+			hoverContainer.style.top = windowRect.bottom - hoverRect.height + 'px';
+		}
+		if (hoverRect.left < 0) {
+			hoverContainer.style.left = '0px';
+		}
+		if (hoverRect.top < 0) {
+			hoverContainer.style.top = '0px';
+		}
+	};
+
+	const onMouseEnter = (_: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post): void => {
+		dispatch(actions.posts.setHoveredPost({ post: post, visible: true }));
+	};
+
+	const onMouseLeave = (_: React.MouseEvent<HTMLDivElement, MouseEvent>, __: Post): void => {
+		dispatch(actions.posts.setHoveredPost({ post: undefined, visible: false }));
+	};
+
+	const onMouseMove = (_: React.MouseEvent<HTMLDivElement, MouseEvent>, __: Post): void => {
+		positionHoverImage();
+	};
+
+	const setMouse = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+		mousePosition.current.x = event.clientX;
+		mousePosition.current.y = event.clientY;
+	};
+
 	return postCount <= 0 ? (
 		<StyledEmptyThumbnails centered={props.emptyDataLogoCentered} />
 	) : (
-		<>
+		<Container ref={containerRef} onMouseMove={setMouse}>
+			<PreviewImage ref={hoverImageRef} setImagePosition={positionHoverImage} />
 			<Grid
 				itemCount={postCount}
 				activeIndex={activePostIndex}
@@ -66,8 +127,11 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 				renderLoadMore={postCount > 0 && searchMode !== 'favorites' && searchMode !== 'open-download'}
 				headerHeight={props.hasHeader ? 72 : 0}
 				contextMenu={props.contextMenu}
+				onCellMouseEnter={!props.singleColumn ? onMouseEnter : undefined}
+				onCellMouseLeave={!props.singleColumn ? onMouseLeave : undefined}
+				onCellMouseMove={!props.singleColumn ? onMouseMove : undefined}
 			/>
-		</>
+		</Container>
 	);
 };
 

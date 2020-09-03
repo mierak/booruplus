@@ -137,6 +137,10 @@ describe('thunks/savedSearches', () => {
 				posts: {
 					posts,
 					activePostIndex: 0,
+					hoveredPost: {
+						post: undefined,
+						visible: false,
+					},
 				},
 			});
 
@@ -167,6 +171,10 @@ describe('thunks/savedSearches', () => {
 				posts: {
 					posts,
 					activePostIndex: 0,
+					hoveredPost: {
+						post: undefined,
+						visible: false,
+					},
 				},
 			});
 

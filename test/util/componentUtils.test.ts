@@ -25,9 +25,16 @@ jest.mock('../../src/util/objectUrlCache', () => ({
 	},
 }));
 import { createObjectURL, revokeObjectURL } from '../helpers/window.mock';
-import { getThumbnailBorder, imageLoader, thumbnailLoader, mostViewedLoader } from '../../src/util/componentUtils';
+import {
+	getThumbnailBorder,
+	imageLoader,
+	thumbnailLoader,
+	mostViewedLoader,
+	getPreviewImageSize,
+	previewLoader,
+} from '../../src/util/componentUtils';
 import { mPost } from '../helpers/test.helper';
-import { getThumbnailUrl } from '../../src/service/webService';
+import { getThumbnailUrl, getPreviewUrl } from '../../src/service/webService';
 
 describe('componentUtils', () => {
 	Object.defineProperty(window, 'URL', {
@@ -238,6 +245,83 @@ describe('componentUtils', () => {
 			});
 		});
 	});
+	describe('previewLoader()', () => {
+		describe('Post is downloaded', () => {
+			it('Resolves undefined if post is a video', async () => {
+				// given
+				const post = mPost({ image: 'someimage.webm', downloaded: 1 });
+
+				// when
+				const result = await previewLoader(post);
+
+				// then
+				expect(result).toBeUndefined();
+			});
+			it('Resolves fileUrl if post fails to load from disk', async () => {
+				// given
+				const post = mPost({ image: 'someimage.jpg', downloaded: 1 });
+				loadImageMock.mockRejectedValueOnce(undefined);
+
+				// when
+				const result = await previewLoader(post);
+
+				// then
+				expect(result).toBe(post.fileUrl);
+			});
+			it('Creates and resolves objectUrl if post is found on disk', async () => {
+				// given
+				const objectUrl = 'someobjecturl';
+				const post = mPost({
+					image: 'someimage.jpg',
+					downloaded: 1,
+				});
+				loadImageMock.mockResolvedValueOnce(new Blob(['asdasdasd']));
+				createObjectURL.mockReturnValueOnce(objectUrl);
+
+				// when
+				const result = await previewLoader(post);
+
+				// then
+				expect(result).toBe(objectUrl);
+			});
+		});
+		describe('Post is not downloaded', () => {
+			it('Resolves fileUrl if post has no sample', async () => {
+				// given
+				const post = mPost({ sample: false });
+
+				// when
+				const result = await previewLoader(post);
+
+				// then
+				expect(result).toBe(post.fileUrl);
+			});
+			it('Resolves previewUrl if post has sample', async () => {
+				// given
+				const post = mPost({ sample: true });
+
+				// when
+				const result = await previewLoader(post);
+
+				// then
+				expect(result).toBe(getPreviewUrl(post.directory, post.hash));
+			});
+		});
+		describe('Post is cached', () => {
+			it('Returns the cached post', async () => {
+				// given
+				const objectUrl = 'someobjecturl';
+				const post = mPost({ id: 987645 });
+				getImageIfPresent.mockReturnValue(objectUrl);
+
+				// when
+				const result = await previewLoader(post);
+
+				// then
+				expect(result).toEqual(objectUrl);
+			});
+		});
+	});
 	describe('mostViewedLoader()', () => {
 		it('Ignores downloaded status of a post', async () => {
 			// given
@@ -253,6 +337,60 @@ describe('componentUtils', () => {
 			// then
 			expect(loadThumbnailMock).toHaveBeenCalledWith(post);
 			expect(result).toEqual(getThumbnailUrl(testDir, testHash));
+		});
+	});
+	describe('setImageSizeStyle()', () => {
+		describe('width > height', () => {
+			it('height > window.height', () => {
+				// given
+				const windowSize = { width: 800, height: 200 };
+				const post = mPost({ width: 640, height: 320 });
+
+				// when
+				const result = getPreviewImageSize({ post, windowSize });
+
+				// then
+				expect(result.width).toBe(380);
+				expect(result.height).toBe(190);
+			});
+			it('height < window.height', () => {
+				// given
+				const windowSize = { width: 800, height: 800 };
+				const post = mPost({ width: 640, height: 639 });
+
+				// when
+				const result = getPreviewImageSize({ post, windowSize });
+
+				// then
+				expect(result.width).toBe(528);
+				expect(result.height).toBe(527.175);
+			});
+		});
+		describe('width < height', () => {
+			it('width < window.width', () => {
+				// given
+				const windowSize = { width: 800, height: 800 };
+				const post = mPost({ width: 320, height: 640 });
+
+				// when
+				const result = getPreviewImageSize({ post, windowSize });
+
+				// then
+				expect(result.width).toBe(380);
+				expect(result.height).toBe(760);
+			});
+			it('width > window.width', () => {
+				// given
+				const windowSize = { width: 300, height: 800 };
+				const post = mPost({ width: 639, height: 640 });
+
+				// when
+				const result = getPreviewImageSize({ post, windowSize });
+
+				// then
+				expect(result.width).toBe(198);
+				expect(result.height).toBe(198.30985915492957);
+			});
 		});
 	});
 });

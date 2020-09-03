@@ -320,6 +320,26 @@ describe('store/posts', () => {
 			});
 		});
 	});
+	describe('setHoveredPost', () => {
+		it('Sets the whole hovered post state', () => {
+			// given
+			const post = mPost();
+			const action = createAction(actions.setHoveredPost.type, { post, visible: true });
+			const state: PostsState = {
+				...initialState,
+				hoveredPost: {
+					post: undefined,
+					visible: false,
+				},
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.hoveredPost).toMatchObject({ post, visible: true });
+		});
+	});
 	it('Resets state when online fetchPosts is pending', () => {
 		// given
 		const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];

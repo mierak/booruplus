@@ -56,6 +56,7 @@ import {
 	thumbnailLoaderMock,
 	imageLoaderMock,
 	mostViewedLoaderMock,
+	previewLoaderMock,
 } from '../helpers/imageBus.mock';
 
 jest.mock('../../src/util/imageIpcUtils', () => ({
@@ -73,6 +74,7 @@ jest.mock('../../src/util/componentUtils', () => {
 		thumbnailLoader: thumbnailLoaderMock,
 		imageLoader: imageLoaderMock,
 		mostViewedLoader: mostViewedLoaderMock,
+		previewLoader: previewLoaderMock,
 	};
 });
 
@@ -116,6 +118,13 @@ Object.defineProperties((global as any).HTMLElement.prototype, {
 					right: 0,
 				}
 			);
+		},
+	},
+	onload: {
+		set: function(cb: any): void {
+			setTimeout(() => {
+				cb();
+			}, 100);
 		},
 	},
 });

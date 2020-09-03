@@ -266,4 +266,73 @@ describe('Thumbnail', () => {
 		expect(screen.queryByRole('img', { name: 'plus' })).toBeNull();
 		expect(notificationSpy).toBeCalledWith('error', 'Cannot find post', 'Cannot render post actions because post is undefined', 5);
 	});
+	describe('calls mouse listeners', () => {
+		it('onMouseEnter()', () => {
+			//given
+			const onMouseEnter = jest.fn();
+			const store = mockStore(
+				mState({
+					posts: {
+						posts,
+					},
+				})
+			);
+
+			// when
+			render(
+				<Provider store={store}>
+					<Thumbnail index={0} onMouseEnter={onMouseEnter} />
+				</Provider>
+			);
+			userEvent.hover(screen.getAllByTestId('thumbnail-image')[0]);
+
+			// then
+			expect(onMouseEnter).toHaveBeenCalledWith(expect.anything(), posts[0]);
+		});
+		it('onMouseLeave()', () => {
+			//given
+			const onMouseLeave = jest.fn();
+			const store = mockStore(
+				mState({
+					posts: {
+						posts,
+					},
+				})
+			);
+
+			// when
+			render(
+				<Provider store={store}>
+					<Thumbnail index={0} onMouseLeave={onMouseLeave} />
+				</Provider>
+			);
+			userEvent.hover(screen.getAllByTestId('thumbnail-image')[0]);
+			userEvent.unhover(screen.getAllByTestId('thumbnail-image')[0]);
+
+			// then
+			expect(onMouseLeave).toHaveBeenCalledWith(expect.anything(), posts[0]);
+		});
+		it('onMouseMove()', () => {
+			//given
+			const onMouseMove = jest.fn();
+			const store = mockStore(
+				mState({
+					posts: {
+						posts,
+					},
+				})
+			);
+
+			// when
+			render(
+				<Provider store={store}>
+					<Thumbnail index={0} onMouseMove={onMouseMove} />
+				</Provider>
+			);
+			userEvent.hover(screen.getAllByTestId('thumbnail-image')[0]);
+
+			// then
+			expect(onMouseMove).toHaveBeenCalledWith(expect.anything(), posts[0]);
+		});
+	});
 });

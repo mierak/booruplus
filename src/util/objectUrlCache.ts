@@ -43,9 +43,8 @@ const createPermanentCache = (): ImageCache => {
 	return { add, revokeAll, getIfPresent };
 };
 
-const createRotatingCache = (): ImageCache => {
+const createRotatingCache = (cacheSize = 5): ImageCache => {
 	const log = window.log;
-	const cacheSize = 5;
 	let cache: ImageCacheItem[] = [];
 
 	const add = (objectUrl: string, postId: number): void => {
