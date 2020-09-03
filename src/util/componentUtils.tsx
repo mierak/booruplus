@@ -213,7 +213,11 @@ export const previewLoader = (post: Post): Promise<string | undefined> => {
 			if (post.sample) {
 				resolve(getPreviewUrl(post.directory, post.hash));
 			} else {
-				resolve(post.fileUrl);
+				if (isFilenameVideo(post.image)) {
+					resolve(undefined);
+				} else {
+					resolve(post.fileUrl);
+				}
 			}
 		}
 	});
