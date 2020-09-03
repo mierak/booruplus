@@ -306,6 +306,16 @@ describe('componentUtils', () => {
 				// then
 				expect(result).toBe(getPreviewUrl(post.directory, post.hash));
 			});
+			it('Resolves undefined if post is a video and has no sample', async () => {
+				// given
+				const post = mPost({ image: 'someimage.webm', downloaded: 0 });
+
+				// when
+				const result = await previewLoader(post);
+
+				// then
+				expect(result).toBeUndefined();
+			});
 		});
 		describe('Post is cached', () => {
 			it('Returns the cached post', async () => {
