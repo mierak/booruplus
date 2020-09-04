@@ -1,5 +1,5 @@
 # Changelog
-## 0.1.6 - Image caching and Image hover - DATE
+## 0.1.6 - Image caching and Image hover - 4.9.2020
 - Hovering over thumbnail in thumbnails list now shows a pop up preview after a short while. There is a new toggle that lets you disable this in the options.
 - Added option to automatically download images that are missing on disk but marked as downloaded
 - Thumbnails now get automatically downloaded along with posts.
@@ -7,6 +7,7 @@
 - Thumbnails and images are now cached upon loading to not hit network/filesystem unnecesarily
 - Show warning that user should change path to data on first app start
 - Added ability to export downloaded images to an archive (as a backup or porting to a different PC) and import said backup to your current data folder path
+- Pressing backspace while viewing full image in Image View now switches you back to thumbnails list
 
 ## 0.1.5 - Move multiple posts between directories - 12.8.2020
 - Right clicking favorites directory when multiple posts are selected now shows move all to folder option
