@@ -56,6 +56,8 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 				case 37:
 					dispatch(actions.posts.previousPost());
 					break;
+				case 8:
+					dispatch(actions.system.setActiveView('thumbnails'));
 			}
 		};
 		window.addEventListener('keydown', handleKeyPress, true);
