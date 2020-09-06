@@ -1,5 +1,6 @@
 import path from 'path';
-import { Post } from '../types/gelbooruTypes';
+
+import { Post } from '@appTypes/gelbooruTypes';
 
 interface PathProvider {
 	getImagePath(post: Post): string;

@@ -1,12 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { db } from '../../db';
-import * as api from '../../service/apiService';
-
-import { ThunkApi, RatingCounts, TagHistory, FoundTags, NotFoundTags } from '../types';
-import { Tag, Post } from '../../types/gelbooruTypes';
-import { thunkLoggerFactory } from '../../util/logger';
-import { mostViewedCache } from '../../util/objectUrlCache';
+import { db } from '@db';
+import * as api from '@service/apiService';
+import { ThunkApi, RatingCounts, TagHistory, FoundTags, NotFoundTags } from '@store/types';
+import { Tag, Post } from '@appTypes/gelbooruTypes';
+import { thunkLoggerFactory } from '@util/logger';
+import { mostViewedCache } from '@util/objectUrlCache';
 
 const thunkLogger = thunkLoggerFactory();
 

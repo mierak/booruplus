@@ -1,7 +1,8 @@
-import { SavedSearch } from '../types/gelbooruTypes';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { db } from '../db';
+import { db } from '@db';
+import { SavedSearch } from '@appTypes/gelbooruTypes';
+
 import * as thunks from './thunks';
 
 export interface SavedSearchesState {

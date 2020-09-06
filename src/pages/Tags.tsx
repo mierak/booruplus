@@ -4,15 +4,14 @@ import styled from 'styled-components';
 import { FilterDropdownProps, TablePaginationConfig } from 'antd/lib/table/interface';
 import { SearchOutlined } from '@ant-design/icons';
 import { Table, Tag as AntTag, Space, Button } from 'antd';
-
-import { thunks } from '../store';
-import { RootState, AppDispatch } from '../store/types';
-
-import { Tag, TagType } from '../types/gelbooruTypes';
-import { capitalize, getTagColor } from '../util/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
-import TagSearchFilter from '../components/tags/TagSearchFilter';
-import TypeSearchFilter from '../components/tags/TypeSearchFilter';
+
+import { thunks } from '@store';
+import { RootState, AppDispatch } from '@store/types';
+import { Tag, TagType } from '@appTypes/gelbooruTypes';
+import { capitalize, getTagColor } from '@util/utils';
+import TagSearchFilter from '@components/tags/TagSearchFilter';
+import TypeSearchFilter from '@components/tags/TypeSearchFilter';
 
 const { Column } = Table;
 

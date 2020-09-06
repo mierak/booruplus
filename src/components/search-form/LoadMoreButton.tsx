@@ -3,9 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { Button } from 'antd';
 
-import { AppDispatch, RootState, ThunkApi } from '../../store/types';
-import { thunks } from '../../store';
-import { Post } from '../../types/gelbooruTypes';
+import { AppDispatch, RootState, ThunkApi } from '@store/types';
+import { thunks } from '@store';
+import { Post } from '@appTypes/gelbooruTypes';
 
 interface Props {
 	className?: string;

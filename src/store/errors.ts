@@ -1,6 +1,8 @@
 import { createSlice, AsyncThunk, ActionReducerMapBuilder } from '@reduxjs/toolkit';
+
+import { thunkLoggerFactory } from '@util/logger';
+
 import * as thunks from './thunks';
-import { thunkLoggerFactory } from '../util/logger';
 import { ThunkApi } from './types';
 
 const thunkLogger = thunkLoggerFactory();

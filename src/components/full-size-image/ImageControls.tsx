@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ImageControl } from '../../types/components';
 import { Button, Popover } from 'antd';
-import { getIcon } from '../../util/componentUtils';
+
+import { ImageControl } from '@appTypes/components';
+import { getIcon } from '@util/componentUtils';
 
 interface ContainerProps {
 	count: number;
@@ -26,7 +27,7 @@ const ImageControls: React.FunctionComponent<Props> = (props: Props) => {
 	const rendnerActions = (): React.ReactNode => {
 		const actions = props.actions.map((action) => {
 			if (!action.popOver) {
-				return <Button key={action.key} type="primary" title={action.tooltip} icon={getIcon(action.icon)} onClick={action.onClick} />;
+				return <Button key={action.key} type='primary' title={action.tooltip} icon={getIcon(action.icon)} onClick={action.onClick} />;
 			}
 			return (
 				<Popover
@@ -36,7 +37,7 @@ const ImageControls: React.FunctionComponent<Props> = (props: Props) => {
 					trigger={action.popOver.trigger}
 					onVisibleChange={action.popOver.onVisibleChange}
 				>
-					<Button type="primary" title={action.tooltip} icon={getIcon(action.icon)} onClick={action.onClick} />
+					<Button type='primary' title={action.tooltip} icon={getIcon(action.icon)} onClick={action.onClick} />
 				</Popover>
 			);
 		});

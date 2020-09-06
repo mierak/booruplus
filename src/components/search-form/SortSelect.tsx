@@ -1,8 +1,9 @@
 import React from 'react';
 import { Select } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState, Sort } from '../../store/types';
-import { actions } from '../../store';
+
+import { AppDispatch, RootState, Sort } from '@store/types';
+import { actions } from '@store';
 
 interface Props {
 	className?: string;

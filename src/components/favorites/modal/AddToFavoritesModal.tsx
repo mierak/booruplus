@@ -4,10 +4,10 @@ import styled from 'styled-components';
 import { Modal, Tree } from 'antd';
 import { EventDataNode, DataNode } from 'rc-tree/lib/interface';
 
-import { actions, thunks } from '../../../store';
-import { RootState, AppDispatch, TreeNode } from '../../../store/types';
+import { actions, thunks } from '@store';
+import { RootState, AppDispatch, TreeNode } from '@store/types';
+import { openNotificationWithIcon } from '@appTypes/components';
 
-import { openNotificationWithIcon } from '../../../types/components';
 import ModalFooter from './common/ModalFooter';
 
 interface Info {

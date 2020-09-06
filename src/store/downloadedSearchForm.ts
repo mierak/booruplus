@@ -1,25 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Tag, Rating } from '../types/gelbooruTypes';
-import * as thunks from './thunks';
-import { Sort, SortOrder } from './types';
+import { Tag, Rating } from '@appTypes/gelbooruTypes';
 
-export interface DownloadedSearchFormState {
-	selectedTags: Tag[];
-	excludedTags: Tag[];
-	tagOptions: Tag[];
-	rating: Rating;
-	postLimit: number;
-	page: number;
-	sort: Sort;
-	sortOrder: SortOrder;
-	showNonBlacklisted: boolean;
-	showBlacklisted: boolean;
-	showFavorites: boolean;
-	showVideos: boolean;
-	showImages: boolean;
-	showGifs: boolean;
-}
+import * as thunks from './thunks';
+import { Sort, SortOrder, DownloadedSearchFormState } from './types';
 
 export const initialState: DownloadedSearchFormState = {
 	selectedTags: [],

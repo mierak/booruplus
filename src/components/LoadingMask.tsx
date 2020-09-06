@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin, Typography, Progress } from 'antd';
 import { useSelector } from 'react-redux';
-import { RootState } from '../store/types';
+
+import { RootState } from '@store/types';
 
 interface Props {
 	className?: string;

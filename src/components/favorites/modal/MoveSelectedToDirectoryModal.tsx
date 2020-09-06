@@ -2,9 +2,10 @@ import React from 'react';
 import { Modal } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { AppDispatch, RootState } from '../../../store/types';
-import { actions, thunks } from '../../../store';
-import { openNotificationWithIcon } from '../../../types/components';
+import { AppDispatch, RootState } from '@store/types';
+import { actions, thunks } from '@store';
+import { openNotificationWithIcon } from '@appTypes/components';
+
 import ModalFooter from './common/ModalFooter';
 
 const MoveSelectedToDirectoryModal: React.FunctionComponent = () => {

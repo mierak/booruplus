@@ -1,10 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { CardAction, ContextMenu } from 'types/components';
+import { CardAction, ContextMenu } from '@appTypes/components';
+import LoadMoreButton from '@components/search-form/LoadMoreButton';
+import { Post } from '@appTypes//gelbooruTypes';
+
 import Cell from './Cell';
-import LoadMoreButton from '../search-form/LoadMoreButton';
-import { Post } from '../../types/gelbooruTypes';
 
 interface CellRendererProps {
 	columnIndex: number;

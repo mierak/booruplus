@@ -1,6 +1,7 @@
-import { Tag, Rating, PostDto, Post } from '../types/gelbooruTypes';
-import { Entity } from '../db/types';
 import moment from 'moment';
+
+import { Tag, Rating, PostDto, Post } from '@appTypes/gelbooruTypes';
+import { Entity } from '@db/types';
 
 export const getTagColor = (tag: Tag | string): string | undefined => {
 	const type = typeof tag === 'string' ? tag : tag.type;

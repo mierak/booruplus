@@ -2,17 +2,19 @@ import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { actions } from '../../store';
-import { AppDispatch, RootState } from '../../store/types';
+import { actions } from '@store';
+import { AppDispatch, RootState } from '@store/types';
+import { imageLoader } from '@util/componentUtils';
+import { getPostUrl } from '@service/webService';
 
-import { IpcChannels } from '../../types/processDto';
-import { Post } from '../../types/gelbooruTypes';
+import { IpcChannels } from '@appTypes/processDto';
+import { ImageControl } from '@appTypes/components';
+import { Post } from '@appTypes/gelbooruTypes';
+
+import LoadingMask from '@components/LoadingMask';
+
 import TagsPopover from './TagsPopover';
-import { ImageControl } from '../../types/components';
 import ImageControls from './ImageControls';
-import { getPostUrl } from '../../service/webService';
-import LoadingMask from '../LoadingMask';
-import { imageLoader } from '../../util/componentUtils';
 
 interface Props {
 	className?: string;

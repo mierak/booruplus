@@ -13,10 +13,10 @@ import {
 	DownloadOutlined,
 } from '@ant-design/icons';
 
-import { actions } from '../../store';
-import { RootState, View } from '../../store/types';
+import { actions } from '@store';
+import { RootState, View } from '@store/types';
+import Modals from '@components/Modals';
 
-import Modals from '../Modals';
 import Drawers from './Drawers';
 
 const { Content, Sider } = Layout;

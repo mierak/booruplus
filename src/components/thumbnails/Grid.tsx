@@ -1,15 +1,16 @@
 import React, { forwardRef, CSSProperties, useState, useEffect, useLayoutEffect } from 'react';
 import debounce from 'lodash.debounce';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
 import { FixedSizeGrid } from 'react-window';
 
-import { ContextMenu, CardAction } from 'types/components';
+import { ContextMenu, CardAction } from '@appTypes/components';
+import { getRowColFromIndex } from '@util/utils';
+import { AppDispatch } from '@store/types';
+import { Post } from '@appTypes/gelbooruTypes';
+import { actions } from '@store/';
+
 import CellRenderer from './CellRenderer';
-import { getRowColFromIndex } from '../../util/utils';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../store/types';
-import { Post } from '../../types/gelbooruTypes';
-import { actions } from '../../store/';
 
 interface Props {
 	itemCount: number;

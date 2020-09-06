@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { Tag as AntTag, Card } from 'antd';
 
-import { RootState, SearchMode } from '../../store/types';
-import { actions } from '../../store';
+import { RootState, SearchMode } from '@store/types';
+import { actions } from '@store';
 
-import { Tag } from '../../types/gelbooruTypes';
-import { getTagColor } from '../../util/utils';
+import { Tag } from '@appTypes/gelbooruTypes';
+import { getTagColor } from '@util/utils';
 
 const StyledCard = styled(Card)`
 	border-color: ${(props): string => (props.theme === 'light' ? 'rgb(217, 217, 217);' : '#434343')};

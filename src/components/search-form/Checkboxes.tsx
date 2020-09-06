@@ -2,8 +2,8 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Checkbox } from 'antd';
 
-import { RootState } from '../../store/types';
-import { actions } from '../../store';
+import { RootState } from '@store/types';
+import { actions } from '@store';
 
 const Checkboxes: React.FunctionComponent = () => {
 	const dispatch = useDispatch();

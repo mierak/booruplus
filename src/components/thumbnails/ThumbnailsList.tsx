@@ -3,13 +3,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-import { actions } from '../../store';
-import { RootState } from '../../store/types';
+import { actions } from '@store';
+import { RootState } from '@store/types';
+import { CardAction, ContextMenu } from '@appTypes/components';
+import { Post } from '@appTypes/gelbooruTypes';
+import EmptyThumbnails from '@components/EmptyThumbnails';
 
-import EmptyThumbnails from '../EmptyThumbnails';
-import { CardAction, ContextMenu } from '../../types/components';
 import Grid from './Grid';
-import { Post } from '../../types/gelbooruTypes';
 import PreviewImage from './PreviewImage';
 
 interface Props {

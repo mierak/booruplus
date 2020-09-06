@@ -3,13 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Layout } from 'antd';
 
-import { actions, thunks } from '../store';
-import ThumbnailsList from '../components/thumbnails/ThumbnailsList';
-
-import SiderContent from '../components/favorites/SiderContent';
-import { Post } from '../types/gelbooruTypes';
-import { RootState, AppDispatch } from '../store/types';
-import { CardAction, openNotificationWithIcon } from '../types/components';
+import { actions, thunks } from '@store';
+import ThumbnailsList from '@components/thumbnails/ThumbnailsList';
+import SiderContent from '@components/favorites/SiderContent';
+import { Post } from '@appTypes/gelbooruTypes';
+import { RootState, AppDispatch } from '@store/types';
+import { CardAction, openNotificationWithIcon } from '@appTypes/components';
 
 interface Props {
 	className?: string;

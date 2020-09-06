@@ -3,8 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { Form, Row, Col, Checkbox, InputNumber } from 'antd';
 
-import { actions } from '../../store';
-import { RootState, AppDispatch } from '../../store/types';
+import { actions } from '@store';
+import { RootState, AppDispatch } from '@store/types';
 
 const { Item } = Form;
 

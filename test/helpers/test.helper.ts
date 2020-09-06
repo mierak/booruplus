@@ -1,5 +1,5 @@
 import { Tag, Post, SavedSearch, SavedSearchPreview } from '../../src/types/gelbooruTypes';
-import { Task, Settings, TagHistory, TreeNode } from 'store/types';
+import { Task, Settings, TagHistory, TreeNode } from '@store/types';
 import { FavoritesTreeNode } from '../../src/db/types';
 import { getImageExtensionFromFilename } from '../../src/util/utils';
 import { AnyAction } from 'redux';

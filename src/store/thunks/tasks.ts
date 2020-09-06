@@ -1,10 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { db } from '../../db';
-
-import { ThunkApi, Task } from '../../store/types';
-
-import { thunkLoggerFactory } from '../../util/logger';
+import { db } from '@db';
+import { ThunkApi, Task } from '@store/types';
+import { thunkLoggerFactory } from '@util/logger';
 
 const thunkLogger = thunkLoggerFactory();
 

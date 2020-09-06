@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
 import { View, SearchMode } from './types';
 import * as thunks from './thunks';
 

@@ -3,8 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RadioChangeEvent } from 'antd/lib/radio';
 import { Radio } from 'antd';
 
-import { actions } from '../../store';
-import { RootState, AppDispatch, SortOrder } from '../../store/types';
+import { actions } from '@store';
+import { RootState, AppDispatch, SortOrder } from '@store/types';
 
 interface Props {
 	className?: string;
@@ -27,8 +27,8 @@ const OrderSelect: React.FunctionComponent<Props> = (props: Props) => {
 
 	return (
 		<Radio.Group value={value} className={props.className} onChange={handleChange}>
-			<Radio value="desc">Desc</Radio>
-			<Radio value="asc">Asc</Radio>
+			<Radio value='desc'>Desc</Radio>
+			<Radio value='asc'>Asc</Radio>
 		</Radio.Group>
 	);
 };

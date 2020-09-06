@@ -2,8 +2,8 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { InputNumber } from 'antd';
 
-import { RootState } from '../../store/types';
-import { actions } from '../../store';
+import { RootState } from '@store/types';
+import { actions } from '@store';
 
 interface Props {
 	mode: 'online' | 'offline';

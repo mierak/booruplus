@@ -7,7 +7,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import * as thunks from '../../../src/store/thunks/dashboard';
 import { mTagHistory, mTag, mPost } from '../../helpers/test.helper';
-import { Tag } from 'types/gelbooruTypes';
+import { Tag } from '@appTypes/gelbooruTypes';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 

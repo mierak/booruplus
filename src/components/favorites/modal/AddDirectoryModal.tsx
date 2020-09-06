@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Input, Form } from 'antd';
 
-import { actions, thunks } from '../../../store';
-import { AppDispatch, RootState } from '../../../store/types';
+import { actions, thunks } from '@store';
+import { AppDispatch, RootState } from '@store/types';
+import { openNotificationWithIcon } from '@appTypes/components';
 
-import { openNotificationWithIcon } from '../../../types/components';
 import ModalFooter from './common/ModalFooter';
 
 interface ValidationStatus {

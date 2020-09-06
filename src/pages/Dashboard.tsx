@@ -3,12 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { Statistic, Row, Col, Card } from 'antd';
 
-import { RootState } from '../store/types';
-import { thunks } from '../store';
-
-import RatingDistributionsChart from '../components/dashboard/RatingDistributionsChart';
-import TagStatistic from '../components/dashboard/TagStatistic';
-import MostViewedPosts from '../components/dashboard/MostViewedPosts';
+import { RootState } from '@store/types';
+import { thunks } from '@store';
+import RatingDistributionsChart from '@components/dashboard/RatingDistributionsChart';
+import MostViewedPosts from '@components/dashboard/MostViewedPosts';
+import TagStatistic from '@components/dashboard/TagStatistic';
 
 interface Props {
 	className?: string;

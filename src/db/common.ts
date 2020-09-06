@@ -1,6 +1,6 @@
 import db from './database';
 import { ExportedData, ExportedRawData, SavedSearch, SavedSearchWithB64Previews } from './types';
-import { blobToBase64 } from '../util/utils';
+import { blobToBase64 } from '@util/utils';
 import Dexie from 'dexie';
 
 const allTables = [db.favorites, db.posts, db.savedSearches, db.settings, db.tags, db.tagSearchHistory, db.tasks];

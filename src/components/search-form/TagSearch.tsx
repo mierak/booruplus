@@ -4,12 +4,12 @@ import styled from 'styled-components';
 import { SelectValue } from 'antd/lib/select';
 import { Select, Spin } from 'antd';
 
-import { actions, thunks } from '../../store';
-import { RootState } from '../../store/types';
+import { actions, thunks } from '@store';
+import { RootState } from '@store/types';
 
-import { Tag } from '../../types/gelbooruTypes';
-import TagSelectOption from '../TagSelectOption';
-import { useDebounce } from '../../hooks/useDebounce';
+import { Tag } from '@appTypes/gelbooruTypes';
+import { useDebounce } from '@hooks/useDebounce';
+import TagSelectOption from '@components/TagSelectOption';
 
 interface Props {
 	mode: 'online' | 'offline';

@@ -1,13 +1,15 @@
 import React from 'react';
 import { Modal, Button, Tabs } from 'antd';
-import { actions, thunks } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../store/types';
+
+import { actions, thunks } from '@store';
+import { openNotificationWithIcon } from '@appTypes/components';
+import { AppDispatch, RootState } from '@store/types';
+import { validateApiKey } from '@util/utils';
+
 import General from './General';
 import Dashboard from './Dashboard';
 import Gelbooru from './Gelbooru';
-import { validateApiKey } from '../../util/utils';
-import { openNotificationWithIcon } from '../../types/components';
 
 interface Props {
 	className?: string;
@@ -37,10 +39,10 @@ const SettingsModal: React.FunctionComponent<Props> = (props: Props) => {
 
 	const renderModalFooter = (): React.ReactNode => {
 		return [
-			<Button type="primary" key="add" onClick={handleSaveSettings}>
+			<Button type='primary' key='add' onClick={handleSaveSettings}>
 				Save
 			</Button>,
-			<Button key="cancel" onClick={handleClose}>
+			<Button key='cancel' onClick={handleClose}>
 				Cancel
 			</Button>,
 		];
@@ -51,21 +53,21 @@ const SettingsModal: React.FunctionComponent<Props> = (props: Props) => {
 			className={props.className}
 			centered
 			footer={renderModalFooter()}
-			title="Settings"
+			title='Settings'
 			visible={true}
 			destroyOnClose
 			onCancel={handleClose}
 			width={900}
 			bodyStyle={{ height: '500px' }}
 		>
-			<Tabs tabPosition="left" tabBarStyle={{ width: '150px', height: '100%' }} style={{ height: '100%' }}>
-				<TabPane key="1" tab="General">
+			<Tabs tabPosition='left' tabBarStyle={{ width: '150px', height: '100%' }} style={{ height: '100%' }}>
+				<TabPane key='1' tab='General'>
 					<General />
 				</TabPane>
-				<TabPane key="2" tab="Dashboard">
+				<TabPane key='2' tab='Dashboard'>
 					<Dashboard />
 				</TabPane>
-				<TabPane key="3" tab="Gelbooru">
+				<TabPane key='3' tab='Gelbooru'>
 					<Gelbooru />
 				</TabPane>
 			</Tabs>

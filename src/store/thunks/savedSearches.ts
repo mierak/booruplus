@@ -1,17 +1,14 @@
+import { notification } from 'antd';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { db } from '../../db';
+import { db } from '@db';
+import { ThunkApi } from '@store/types';
+import { Rating, SavedSearch, Tag, Post } from '@appTypes/gelbooruTypes';
+import { getThumbnailUrl } from '@service/webService';
+import { thunkLoggerFactory } from '@util/logger';
 
-import { ThunkApi } from '../../store/types';
-
-import { Rating, SavedSearch, Tag, Post } from '../../types/gelbooruTypes';
-
-import { notification } from 'antd';
-import * as onlineSearchFormThunk from './onlineSearchForm';
 import * as downloadedSearchFormThunk from './downloadedSearchForm';
-import { getThumbnailUrl } from '../../service/webService';
-
-import { thunkLoggerFactory } from '../../util/logger';
+import * as onlineSearchFormThunk from './onlineSearchForm';
 
 const thunkLogger = thunkLoggerFactory();
 

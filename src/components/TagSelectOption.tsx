@@ -1,8 +1,8 @@
 import React from 'react';
 import { Tag } from 'antd';
 
-import { Tag as GelbooruTag } from '../types/gelbooruTypes';
-import { getTagColor, capitalize } from '../util/utils';
+import { Tag as GelbooruTag } from '@appTypes/gelbooruTypes';
+import { getTagColor, capitalize } from '@util/utils';
 
 interface Props {
 	tag: GelbooruTag;

@@ -2,10 +2,10 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Select } from 'antd';
 
-import { RootState } from '../../store/types';
-import { actions } from '../../store';
+import { RootState } from '@store/types';
+import { actions } from '@store';
 
-import { Rating } from '../../types/gelbooruTypes';
+import { Rating } from '@appTypes/gelbooruTypes';
 
 interface Props {
 	mode: 'online' | 'offline';

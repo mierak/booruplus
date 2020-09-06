@@ -2,8 +2,8 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button } from 'antd';
 
-import { RootState } from '../../store/types';
-import { thunks } from '../../store';
+import { RootState } from '@store/types';
+import { thunks } from '@store';
 
 interface Props {
 	mode: 'online' | 'offline';
@@ -27,7 +27,7 @@ const SaveSearchButton: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	};
 
 	return (
-		<Button htmlType="submit" type="primary" onClick={handleSaveSearch} style={{ marginLeft: '8px' }}>
+		<Button htmlType='submit' type='primary' onClick={handleSaveSearch} style={{ marginLeft: '8px' }}>
 			Save Search
 		</Button>
 	);

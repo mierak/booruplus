@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import Dexie from 'dexie';
-import { Post, Tag } from '../types/gelbooruTypes';
-import { SettingsPair, SavedSearch, FavoritesTreeNode } from './types';
-import { Task } from '../store/types';
 import moment from 'moment';
+
+import { Post, Tag } from '@appTypes/gelbooruTypes';
+import { Task } from '@store/types';
+
+import { SettingsPair, SavedSearch, FavoritesTreeNode } from './types';
 
 class Database extends Dexie {
 	posts: Dexie.Table<Post, number>;

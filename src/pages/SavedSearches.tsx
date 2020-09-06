@@ -4,11 +4,10 @@ import styled from 'styled-components';
 import { Table, Tag, Row, Col, Card, Popconfirm, Tooltip, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
-import { actions, thunks } from '../store';
-import { RootState, AppDispatch } from '../store/types';
-
-import { SavedSearch, Tag as GelbooruTag } from '../types/gelbooruTypes';
-import { getTagColor } from '../util/utils';
+import { actions, thunks } from '@store';
+import { RootState, AppDispatch } from '@store/types';
+import { SavedSearch, Tag as GelbooruTag } from '@appTypes/gelbooruTypes';
+import { getTagColor } from '@util/utils';
 
 const { Column } = Table;
 

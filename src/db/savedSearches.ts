@@ -1,7 +1,8 @@
 import db from './database';
-import { SavedSearch, Rating, Tag, Post } from '../types/gelbooruTypes';
+import { SavedSearch, Rating, Tag, Post } from '@appTypes/gelbooruTypes';
+import { compareTagArrays } from '@util/utils';
+
 import { SavedSearch as DbSavedSearch } from './types';
-import { compareTagArrays } from '../util/utils';
 
 export const save = async (savedSearch: SavedSearch): Promise<number | undefined> => {
 	const dbSearch: DbSavedSearch = {

@@ -4,10 +4,10 @@ import styled from 'styled-components';
 import { Table, Tag as AntTag, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
-import { AppDispatch, RootState } from '../../store/types';
-import { Tag } from '../../types/gelbooruTypes';
-import { actions, thunks } from '../../store';
-import { getTagColor, sortTagsByType } from '../../util/utils';
+import { AppDispatch, RootState } from '@store/types';
+import { Tag } from '@appTypes/gelbooruTypes';
+import { actions, thunks } from '@store';
+import { getTagColor, sortTagsByType } from '@util/utils';
 
 interface Props {
 	tags: string[];

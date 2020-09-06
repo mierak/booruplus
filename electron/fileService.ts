@@ -1,9 +1,9 @@
 import fs from 'fs';
 import log from 'electron-log';
 
-import { Settings } from '../src/store/types';
-import { Post } from '../src/types/gelbooruTypes';
-import { getPathProvider } from '../src/service/pathProviderService';
+import { Settings } from '@store/types';
+import { Post } from '@appTypes/gelbooruTypes';
+import { getPathProvider } from '@service/pathProviderService';
 
 export interface FileService {
 	loadImage: (post: Post) => Promise<{ data: Buffer | undefined; post: Post }>;
