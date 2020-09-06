@@ -1,11 +1,13 @@
-import { AppThunk, ThunkApi } from '../../store/types';
-import { db } from '../../db';
-import { Tag, TagType } from '../../types/gelbooruTypes';
-import * as api from '../../service/apiService';
 import { createAsyncThunk } from '@reduxjs/toolkit';
+
+import { db } from '@db';
+import { AppThunk, ThunkApi } from '@store/types';
+import { Tag, TagType } from '@appTypes/gelbooruTypes';
+import * as api from '@service/apiService';
+import { thunkLoggerFactory } from '@util/logger';
+
 import * as onlineSearchFormThunk from './onlineSearchForm';
 import * as downloadedSearchFormThunk from './downloadedSearchForm';
-import { thunkLoggerFactory } from '../../util/logger';
 
 const thunkLogger = thunkLoggerFactory();
 

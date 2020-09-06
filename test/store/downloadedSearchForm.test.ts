@@ -1,8 +1,9 @@
 import { doDatabaseMock } from '../helpers/database.mock';
 doDatabaseMock();
-import reducer, { actions, initialState, DownloadedSearchFormState } from '../../src/store/downloadedSearchForm';
+import reducer, { actions, initialState } from '../../src/store/downloadedSearchForm';
 import { thunks } from '../../src/store/';
 import { createAction, mTag, createPendingAction } from '../helpers/test.helper';
+import { DownloadedSearchFormState } from '@store/types';
 
 describe('store/downloadedSearchForm', () => {
 	it('Adds tag', () => {

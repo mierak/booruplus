@@ -3,11 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Drawer } from 'antd';
 
-import { AppDispatch, RootState } from '../../store/types';
-import { actions } from '../../store';
-import DownloadedSearchForm from '../DownloadedSearchForm';
-import OnlineSearchForm from '../OnlineSearchForm';
-import Tasks from '../../pages/Tasks';
+import { AppDispatch, RootState } from '@store/types';
+import { actions } from '@store';
+
+import Tasks from '@pages/Tasks';
+
+import DownloadedSearchForm from '@components/DownloadedSearchForm';
+import OnlineSearchForm from '@components/OnlineSearchForm';
 
 interface DrawerProps {
 	$disablePadding?: boolean;
@@ -40,8 +42,8 @@ const Drawers: React.FunctionComponent = () => {
 	return (
 		<>
 			<Drawer
-				title="New Online Search"
-				placement="right"
+				title='New Online Search'
+				placement='right'
 				width={700}
 				closable={true}
 				visible={searchFormDrawerVisible}
@@ -50,8 +52,8 @@ const Drawers: React.FunctionComponent = () => {
 				<OnlineSearchForm />
 			</Drawer>
 			<Drawer
-				title="New Offline Search"
-				placement="right"
+				title='New Offline Search'
+				placement='right'
 				width={700}
 				visible={downloadedSearchFormDrawerVisible}
 				onClose={handleDownloadedSearchFormDrawerClose}
@@ -60,8 +62,8 @@ const Drawers: React.FunctionComponent = () => {
 			</Drawer>
 			<StyledDrawer
 				$disablePadding
-				title="Downloads"
-				placement="right"
+				title='Downloads'
+				placement='right'
 				width={500}
 				visible={isTasksDrawerVisible}
 				onClose={handleTasksDrawerClose}

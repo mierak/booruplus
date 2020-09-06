@@ -1,16 +1,16 @@
 import { initialState } from '../../src/store';
-import { RootState, Settings } from 'store/types';
-import { PostsState } from 'store/posts';
-import { DashboardState } from 'store/dashboard';
-import { DownloadedSearchFormState } from 'store/downloadedSearchForm';
-import { SearchFormState } from 'store/onlineSearchForm';
-import { FavoritesState } from 'store/favorites';
-import { LoadingStates } from 'store/loadingStates';
-import { TasksState } from 'store/tasks';
-import { SystemState } from 'store/system';
-import { SavedSearchesState } from 'store/savedSearches';
-import { TagsState } from 'store/tags';
-import Modals from 'store/modals';
+import { RootState, Settings } from '@store/types';
+import { PostsState } from '@store/posts';
+import { DashboardState } from '@store/dashboard';
+import { DownloadedSearchFormState } from '@store/types';
+import { SearchFormState } from '@store/onlineSearchForm';
+import { FavoritesState } from '@store/favorites';
+import { LoadingStates } from '@store/loadingStates';
+import { TasksState } from '@store/tasks';
+import { SystemState } from '@store/system';
+import { SavedSearchesState } from '@store/savedSearches';
+import { TagsState } from '@store/tags';
+import Modals from '@store/modals';
 
 type DeepPartial<T> = {
 	[P in keyof T]?: T[P] extends Array<infer U>

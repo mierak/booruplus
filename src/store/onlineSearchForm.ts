@@ -1,8 +1,8 @@
-import { Tag, Rating } from '../types/gelbooruTypes';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Sort, SortOrder } from './types';
+import { Tag, Rating } from '@appTypes/gelbooruTypes';
 
+import { Sort, SortOrder } from './types';
 import * as thunks from './thunks';
 
 export interface SearchFormState {

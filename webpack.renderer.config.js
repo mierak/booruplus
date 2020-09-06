@@ -36,12 +36,14 @@ module.exports = {
 	resolve: {
 		extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
 		alias: {
-			db: path.resolve(__dirname, 'db'),
-			service: path.resolve(__dirname, 'service'),
-			types: path.resolve(__dirname, 'types'),
-			util: path.resolve(__dirname, 'util'),
-			store: path.resolve(__dirname, 'store'),
-			hooks: path.resolve(__dirname, 'src/hooks'),
+			'@db': path.resolve(__dirname, 'src/db'),
+			'@service': path.resolve(__dirname, 'src/service'),
+			'@appTypes': path.resolve(__dirname, 'src/types'),
+			'@util': path.resolve(__dirname, 'src/util'),
+			'@store': path.resolve(__dirname, 'src/store'),
+			'@hooks': path.resolve(__dirname, 'src/hooks'),
+			'@components': path.resolve(__dirname, 'src/components'),
+			'@pages': path.resolve(__dirname, 'src/pages'),
 		},
 	},
 };

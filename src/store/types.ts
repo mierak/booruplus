@@ -1,7 +1,8 @@
 import { mainReducer, store } from '.';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import { Tag } from '../types/gelbooruTypes';
+
+import { Tag, Rating } from '@appTypes/gelbooruTypes';
 
 export type RootState = ReturnType<typeof mainReducer>;
 
@@ -72,6 +73,23 @@ export interface Settings {
 		siderWidth: number | undefined;
 		expandedKeys: string[];
 	};
+}
+
+export interface DownloadedSearchFormState {
+	selectedTags: Tag[];
+	excludedTags: Tag[];
+	tagOptions: Tag[];
+	rating: Rating;
+	postLimit: number;
+	page: number;
+	sort: Sort;
+	sortOrder: SortOrder;
+	showNonBlacklisted: boolean;
+	showBlacklisted: boolean;
+	showFavorites: boolean;
+	showVideos: boolean;
+	showImages: boolean;
+	showGifs: boolean;
 }
 
 export interface DownloadTaskState {

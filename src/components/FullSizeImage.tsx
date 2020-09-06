@@ -2,10 +2,10 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
-import { RootState } from '../store/types';
-import { thunks } from '../store';
+import { RootState } from '@store/types';
+import { thunks } from '@store';
 
-import { isFilenameVideo, getImageExtensionFromFilename } from '../util/utils';
+import { isFilenameVideo, getImageExtensionFromFilename } from '@util/utils';
 
 import EmptyThumbnails from './EmptyThumbnails';
 import ControllableImage from './full-size-image/controllable-image/ControllableImage';

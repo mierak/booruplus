@@ -4,11 +4,11 @@ import styled from 'styled-components';
 import { Card, Empty, Tooltip } from 'antd';
 import { CheckCircleTwoTone, ReloadOutlined } from '@ant-design/icons';
 
-import { actions, thunks } from '../../store';
-import { AppDispatch, RootState } from '../../store/types';
+import { actions, thunks } from '@store';
+import { AppDispatch, RootState } from '@store/types';
 
-import { Post } from '../../types/gelbooruTypes';
-import { mostViewedLoader } from '../../util/componentUtils';
+import { Post } from '@appTypes/gelbooruTypes';
+import { mostViewedLoader } from '@util/componentUtils';
 
 const StyledMostViewedGrid = styled.div`
 	display: grid;

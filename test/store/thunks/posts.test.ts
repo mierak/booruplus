@@ -11,7 +11,7 @@ import thunk from 'redux-thunk';
 import * as thunks from '../../../src/store/thunks/posts';
 import { actions as tasksActions } from '../../../src/store/tasks';
 import { mTag, mPost } from '../../helpers/test.helper';
-import { Post, PostSearchOptions } from 'types/gelbooruTypes';
+import { Post, PostSearchOptions } from '@appTypes/gelbooruTypes';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 jest.mock('../../../src/service/apiService', () => {

@@ -5,7 +5,7 @@ import addToFavoritesModal, {
 	initialState as addToFavoritesInitialState,
 	AddToFavoritesModalState,
 } from './addToFavoritesModal';
-import { ActiveModal } from '../types';
+import { ActiveModal } from '@store/types';
 
 export interface ModalsState {
 	activeModal: ActiveModal;

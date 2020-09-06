@@ -1,5 +1,6 @@
 import db from './database';
-import { Tag, TagType } from '../types/gelbooruTypes';
+
+import { Tag, TagType } from '@appTypes/gelbooruTypes';
 
 export const save = async (tag: Tag): Promise<number | void> => {
 	return db.tags.put(tag);

@@ -2,8 +2,8 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Form, Col, Row } from 'antd';
 
-import { actions } from '../store';
-import { AppDispatch } from '../store/types';
+import { actions } from '@store';
+import { AppDispatch } from '@store/types';
 
 import TagSearch from './search-form/TagSearch';
 import RatingSelect from './search-form/RatingSelect';

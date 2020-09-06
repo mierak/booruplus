@@ -2,20 +2,20 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { Renderer } from './renderer';
+import { Renderer } from '@components/full-size-image/controllable-image/renderer';
 
-import { AppDispatch, RootState } from '../../../store/types';
-import { actions } from '../../../store';
+import { AppDispatch, RootState } from '@store/types';
+import { actions } from '@store';
 
-import { Post } from '../../../types/gelbooruTypes';
-import { ImageControl } from '../../../types/components';
-import { IpcChannels } from '../../../types/processDto';
+import { Post } from '@appTypes/gelbooruTypes';
+import { ImageControl } from '@appTypes/components';
+import { IpcChannels } from '@appTypes/processDto';
 
-import TagsPopover from '../TagsPopover';
-import ImageControls from '../ImageControls';
-import LoadingMask from '../../../components/LoadingMask';
-import { getPostUrl } from '../../../service/webService';
-import { imageLoader } from '../../../util/componentUtils';
+import TagsPopover from '@components/full-size-image/TagsPopover';
+import ImageControls from '@components/full-size-image/ImageControls';
+import LoadingMask from '@components/LoadingMask';
+import { getPostUrl } from '@service/webService';
+import { imageLoader } from '@util/componentUtils';
 
 interface Props {
 	className?: string;

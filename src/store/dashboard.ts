@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { TagHistory, RatingCounts } from './types';
-import { Tag, Post } from '../types/gelbooruTypes';
+import { Tag, Post } from '@appTypes/gelbooruTypes';
+
 import * as thunks from './thunks';
+import { TagHistory, RatingCounts } from './types';
 
 const log = window.log;
 

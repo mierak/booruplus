@@ -1,5 +1,6 @@
 import db from './database';
-import { Task } from '../store/types';
+
+import { Task } from '@store/types';
 
 export const save = (task: Task): Promise<number> => {
 	return db.tasks.put(task);

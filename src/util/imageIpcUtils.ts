@@ -1,6 +1,6 @@
-import { Post } from '../types/gelbooruTypes';
-import { LoadPostResponse, SuccessfulLoadPostResponse, SavePostDto, IpcChannels, SaveThumbnailDto } from '../types/processDto';
-import { getThumbnailUrl } from '../service/webService';
+import { Post } from '@appTypes/gelbooruTypes';
+import { LoadPostResponse, SuccessfulLoadPostResponse, SavePostDto, IpcChannels, SaveThumbnailDto } from '@appTypes/processDto';
+import { getThumbnailUrl } from '@service/webService';
 
 export const deleteImage = (post: Post): void => {
 	window.api.invoke(IpcChannels.DELETE_IMAGE, post);

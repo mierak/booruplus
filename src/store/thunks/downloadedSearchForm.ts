@@ -1,14 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { db } from '../../db';
-import { FilterOptions } from '../../db/types';
-
-import { ThunkApi } from '../../store/types';
-import { DownloadedSearchFormState } from '../../store/downloadedSearchForm';
-
-import { Tag, Post } from '../../types/gelbooruTypes';
-import { thunkLoggerFactory } from '../../util/logger';
-import { thumbnailCache } from '../../util/objectUrlCache';
+import { db } from '@db';
+import { FilterOptions } from '@db/types';
+import { ThunkApi, DownloadedSearchFormState } from '@store/types';
+import { Tag, Post } from '@appTypes/gelbooruTypes';
+import { thunkLoggerFactory } from '@util/logger';
+import { thumbnailCache } from '@util/objectUrlCache';
 
 const thunkLogger = thunkLoggerFactory();
 

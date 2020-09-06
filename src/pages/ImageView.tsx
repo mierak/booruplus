@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Layout } from 'antd';
 
-import { actions } from '../store';
-import { RootState } from '../store/types';
+import { actions } from '@store';
+import { RootState } from '@store/types';
 
-import ThumbnailsList from '../components/thumbnails/ThumbnailsList';
-import FullSizeImage from '../components/FullSizeImage';
+import ThumbnailsList from '@components/thumbnails/ThumbnailsList';
+import FullSizeImage from '@components/FullSizeImage';
 
 interface Props {
 	className?: string;

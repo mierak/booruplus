@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Tag } from '../types/gelbooruTypes';
+import { Tag } from '@appTypes/gelbooruTypes';
+
 import * as thunks from './thunks';
 
 export interface TagsState {

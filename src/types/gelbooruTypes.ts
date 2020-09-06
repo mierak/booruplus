@@ -1,5 +1,5 @@
-import { Entity } from '../db/types';
-import { Sort, SortOrder } from '../store/types';
+import { Entity } from '@db/types';
+import { Sort, SortOrder } from '@store/types';
 
 export interface PostDto {
 	source: string;

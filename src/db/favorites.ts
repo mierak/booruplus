@@ -1,6 +1,7 @@
 import db from './database';
 import { FavoritesTreeNode, Counts } from './types';
-import { TreeNode } from '../store/types';
+
+import { TreeNode } from '@store/types';
 
 export const addChildToNode = async (parentKey: number, title: string): Promise<number> => {
 	const parent = await db.favorites.get(parentKey);

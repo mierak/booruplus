@@ -1,8 +1,9 @@
 import db from './database';
 
-import { Post, Rating } from '../types/gelbooruTypes';
+import { Post, Rating } from '@appTypes/gelbooruTypes';
+import { intersection, getRatingName, isExtensionVideo, toAscii } from '@util/utils';
+
 import { FilterOptions } from './types';
-import { intersection, getRatingName, isExtensionVideo, toAscii } from '../util/utils';
 
 export const saveOrUpdateFromApi = async (post: Post): Promise<Post> => {
 	const clone: Post = { ...post };

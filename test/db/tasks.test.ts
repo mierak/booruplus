@@ -1,7 +1,7 @@
 import Dexie from 'dexie';
 Dexie.dependencies.indexedDB = require('fake-indexeddb');
 Dexie.dependencies.IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
-import { Task } from 'store/types';
+import { Task } from '@store/types';
 import { mTask } from '../helpers/test.helper';
 import { save, getAll, remove } from '../../src/db/tasks';
 

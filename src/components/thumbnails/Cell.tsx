@@ -1,8 +1,10 @@
 import React from 'react';
-import { CardAction, ContextMenu } from 'types/components';
+
+import { CardAction, ContextMenu } from '@appTypes/components';
+import { getIndexFromRowCol } from '@util/utils';
+import { Post } from '@appTypes/gelbooruTypes';
+
 import Thumbnail from './Thumbnail';
-import { getIndexFromRowCol } from '../../util/utils';
-import { Post } from '../../types/gelbooruTypes';
 
 interface CellProps {
 	columnIndex: number;

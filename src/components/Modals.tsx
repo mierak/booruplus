@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { RootState } from '../store/types';
+import { RootState } from '@store/types';
 
 import AddDirectoryModal from './favorites/modal/AddDirectoryModal';
 import AddtoFavoritesModal from './favorites/modal/AddToFavoritesModal';

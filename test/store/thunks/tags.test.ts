@@ -11,7 +11,7 @@ import * as thunks from '../../../src/store/thunks/tags';
 import * as downloadedSearchFormThunk from '../../../src/store/thunks/downloadedSearchForm';
 import * as onlineSearchFormThunk from '../../../src/store/thunks/onlineSearchForm';
 import { mTag } from '../../helpers/test.helper';
-import { Tag } from 'types/gelbooruTypes';
+import { Tag } from '@appTypes/gelbooruTypes';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 jest.mock('../../../src/service/apiService', () => {

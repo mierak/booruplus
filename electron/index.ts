@@ -16,11 +16,12 @@ import moment from 'moment';
 import log from 'electron-log';
 import fetch from 'node-fetch';
 
-import { Settings } from '../src/store/types';
-import { SavePostDto, IpcChannels, ExportDataDto, SaveThumbnailDto } from '../src/types/processDto';
+import { Settings } from '@store/types';
+import { SavePostDto, IpcChannels, ExportDataDto, SaveThumbnailDto } from '@appTypes/processDto';
+import { Post } from '@appTypes/gelbooruTypes';
+
 import { getFileService, FileService } from './fileService';
 import { getArchiveService, ArchiveService } from './archiveService';
-import { Post } from '../src/types/gelbooruTypes';
 
 import path from 'path';
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Tooltip } from 'antd';
 import {
 	HeartOutlined,
 	DownloadOutlined,
@@ -11,13 +12,14 @@ import {
 	TagsOutlined,
 	GlobalOutlined,
 } from '@ant-design/icons';
-import { Icon } from '../types/components';
-import { Post } from '../types/gelbooruTypes';
-import { Tooltip } from 'antd';
-import { loadImage, saveImage, loadThumbnail, saveThumbnail } from './imageIpcUtils';
-import { getThumbnailUrl, getPreviewUrl } from '../service/webService';
+
+import { Icon } from '@appTypes/components';
+import { Post } from '@appTypes/gelbooruTypes';
+import { getThumbnailUrl, getPreviewUrl } from '@service/webService';
+import { SuccessfulLoadPostResponse } from '@appTypes/processDto';
+
 import { thumbnailCache, imageCache, ImageCache, mostViewedCache } from './objectUrlCache';
-import { SuccessfulLoadPostResponse } from 'types/processDto';
+import { loadImage, saveImage, loadThumbnail, saveThumbnail } from './imageIpcUtils';
 import { isFilenameVideo } from './utils';
 
 export const getIcon = (icon: Icon, onClick?: (() => void) | undefined): React.ReactElement => {

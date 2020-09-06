@@ -2,13 +2,12 @@ import { doDatabaseMock, mockedDb } from '../../helpers/database.mock';
 doDatabaseMock();
 
 import { initialState } from '../../../src/store';
-import { RootState, AppDispatch } from '../../../src/store/types';
+import { RootState, AppDispatch, DownloadedSearchFormState } from '@store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import * as thunks from '../../../src/store/thunks/downloadedSearchForm';
 import { mPost, mTag } from '../../helpers/test.helper';
-import { DownloadedSearchFormState } from 'store/downloadedSearchForm';
-import { Tag } from 'types/gelbooruTypes';
+import { Tag } from '@appTypes/gelbooruTypes';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 

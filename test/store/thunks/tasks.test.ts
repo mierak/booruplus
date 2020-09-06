@@ -1,7 +1,7 @@
 import { doDatabaseMock, mockedDb } from '../../helpers/database.mock';
 doDatabaseMock();
 
-import { AppDispatch } from 'store/types';
+import { AppDispatch } from '@store/types';
 import { RootState } from '../../../src/store/types';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';

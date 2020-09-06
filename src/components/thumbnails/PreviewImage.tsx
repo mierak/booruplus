@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { debounce } from 'lodash';
 import { LoadingOutlined } from '@ant-design/icons';
-
-import { RootState } from '../../store/types';
-import { imageCache } from '../../util/objectUrlCache';
-import { previewLoader, getPreviewImageSize } from '../../util/componentUtils';
 import { Spin, Empty } from 'antd';
+
+import { RootState } from '@store/types';
+import { imageCache } from '@util/objectUrlCache';
+import { previewLoader, getPreviewImageSize } from '@util/componentUtils';
 
 interface Props {
 	setImagePosition: () => void;

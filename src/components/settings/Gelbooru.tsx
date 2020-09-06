@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Descriptions, Form, Input } from 'antd';
 
-import { AppDispatch, RootState } from '../../store/types';
-import { actions } from '../../store';
+import { AppDispatch, RootState } from '@store/types';
+import { actions } from '@store';
 
-import { IpcChannels } from '../../types/processDto';
-import { validateApiKey } from '../../util/utils';
-import { OPTIONS_URL } from '../../service/webService';
+import { IpcChannels } from '@appTypes/processDto';
+import { validateApiKey } from '@util/utils';
+import { OPTIONS_URL } from '@service/webService';
 
 interface ApiKeyValidationStatus {
 	validateStatus: 'error' | 'success' | '';

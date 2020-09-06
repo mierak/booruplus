@@ -4,12 +4,11 @@ import styled from 'styled-components';
 import { CheckCircleTwoTone } from '@ant-design/icons';
 import { Card, Popconfirm, Menu, Dropdown } from 'antd';
 
-import { actions } from '../../store';
-import { RootState, AppDispatch } from '../../store/types';
-import { Post } from '../../types/gelbooruTypes';
-
-import { CardAction, ContextMenu, openNotificationWithIcon } from '../../types/components';
-import { renderPostCardAction, getThumbnailBorder, thumbnailLoader } from '../../util/componentUtils';
+import { actions } from '@store';
+import { RootState, AppDispatch } from '@store/types';
+import { Post } from '@appTypes/gelbooruTypes';
+import { CardAction, ContextMenu, openNotificationWithIcon } from '@appTypes/components';
+import { renderPostCardAction, getThumbnailBorder, thumbnailLoader } from '@util/componentUtils';
 
 interface Props {
 	index: number;

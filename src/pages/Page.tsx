@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { RootState, AppDispatch } from '../store/types';
-import { IpcChannels } from '../types/processDto';
+import { RootState, AppDispatch } from '@store/types';
+import { thunks } from '@store';
+import { IpcChannels } from '@appTypes/processDto';
+import LoadingMask from '@components/LoadingMask';
+import AppLayout from '@components/layout/Layout';
 
-import AppLayout from '../components/layout/Layout';
 import ImageView from './ImageView';
 import SavedSearches from './SavedSearches';
 import Favorites from './Favorites';
@@ -14,8 +16,6 @@ import Thumbnails from './Thumbnails';
 
 import 'ant-design-pro/dist/ant-design-pro.css';
 import '../css/index.css';
-import { thunks } from '../store';
-import LoadingMask from '../components/LoadingMask';
 
 const Page: React.FunctionComponent = () => {
 	const [hydrated, setHydrated] = useState(false);

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { AppThunk } from '../../store/types';
+import { AppThunk } from '@store/types';
 
 const log = window.log;
 

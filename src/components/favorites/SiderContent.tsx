@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import { EventDataNode } from 'rc-tree/lib/interface';
 import { Dropdown, Menu, Tree } from 'antd';
 
-import { actions, thunks } from '../../store';
-import { AppDispatch, RootState } from '../../store/types';
+import { actions, thunks } from '@store';
+import { AppDispatch, RootState } from '@store/types';
 
 interface PProps {
 	x: number;

@@ -4,7 +4,7 @@ import path from 'path';
 import tar from 'tar';
 import { pipeline } from 'stream';
 
-import { Settings } from '../src/store/types';
+import { Settings } from '@store/types';
 
 type onProgress = (done: number, total: number) => void;
 

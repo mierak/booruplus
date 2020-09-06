@@ -1,10 +1,10 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Progress, Popover } from 'antd';
-
-import { RootState, Task, AppDispatch } from '../store/types';
-import { thunks } from '../store';
 import moment from 'moment';
+
+import { RootState, Task, AppDispatch } from '@store/types';
+import { thunks } from '@store';
 
 interface Props {
 	className?: string;
@@ -48,7 +48,7 @@ const TaskProgress: React.FunctionComponent<Props> = (props: Props) => {
 
 		taskProgress >= 1 &&
 			buttons.push(
-				<Button key="btn-task-open" type="link" onClick={handleOpen}>
+				<Button key='btn-task-open' type='link' onClick={handleOpen}>
 					Open
 				</Button>
 			);
@@ -56,7 +56,7 @@ const TaskProgress: React.FunctionComponent<Props> = (props: Props) => {
 			task.state !== 'failed' &&
 			taskProgress < 1 &&
 			buttons.push(
-				<Button key="btn-task-cancel" type="link" onClick={handleCancel}>
+				<Button key='btn-task-cancel' type='link' onClick={handleCancel}>
 					Cancel
 				</Button>
 			);

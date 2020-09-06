@@ -11,7 +11,7 @@ import 'jest-fetch-mock';
 import { enableFetchMocks } from 'jest-fetch-mock';
 
 import * as utils from '../../src/util/utils';
-import { PostSearchOptions, Rating } from 'types/gelbooruTypes';
+import { PostSearchOptions, Rating } from '@appTypes/gelbooruTypes';
 
 enableFetchMocks();
 

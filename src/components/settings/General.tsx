@@ -4,9 +4,9 @@ import styled from 'styled-components';
 import { FolderOpenOutlined, FolderOutlined, ImportOutlined, ExportOutlined } from '@ant-design/icons';
 import { Form, Input, Button, Select, Checkbox, Modal } from 'antd';
 
-import { AppDispatch, RootState } from '../../store/types';
-import { IpcChannels } from '../../types/processDto';
-import { thunks, actions } from '../../store';
+import { AppDispatch, RootState } from '@store/types';
+import { thunks, actions } from '@store';
+import { IpcChannels } from '@appTypes/processDto';
 
 interface SelectFolderDialogResponse {
 	canceled: boolean;

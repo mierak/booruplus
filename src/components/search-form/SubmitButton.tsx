@@ -2,8 +2,8 @@ import React from 'react';
 import { Popconfirm, Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { actions, thunks } from '../../store';
-import { AppDispatch, RootState } from '../../store/types';
+import { actions, thunks } from '@store';
+import { AppDispatch, RootState } from '@store/types';
 
 interface Props {
 	mode: 'online' | 'offline';

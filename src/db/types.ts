@@ -1,5 +1,5 @@
-import { Settings, Sort, SortOrder, Task } from '../store/types';
-import { Tag, Rating, Post } from '../types/gelbooruTypes';
+import { Settings, Sort, SortOrder, Task } from '@store/types';
+import { Tag, Rating, Post } from '@appTypes/gelbooruTypes';
 
 export interface Entity {
 	id: number;

@@ -2,11 +2,10 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal } from 'antd';
 
-import { actions } from '../../../store';
-import { AppDispatch, RootState } from '../../../store/types';
+import { actions, thunks } from '@store';
+import { AppDispatch, RootState } from '@store/types';
+import { openNotificationWithIcon } from '@appTypes/components';
 
-import { openNotificationWithIcon } from '../../../types/components';
-import { thunks } from '../../../store';
 import ModalFooter from './common/ModalFooter';
 
 const DeleteDirectoryModal: React.FunctionComponent = () => {

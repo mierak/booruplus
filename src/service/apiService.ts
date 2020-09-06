@@ -1,7 +1,7 @@
-import { Post, PostDto, Tag, PostSearchOptions } from '../types/gelbooruTypes';
-import { delay, escapeTag, postParser } from '../util/utils';
+import { Post, PostDto, Tag, PostSearchOptions } from '@appTypes/gelbooruTypes';
+import { delay, escapeTag, postParser } from '@util/utils';
 import { GELBOORU_URL } from './webService';
-import { getApiLogger } from '../util/logger';
+import { getApiLogger } from '@util/logger';
 
 export const BASE_URL = `${GELBOORU_URL}/index.php?page=dapi&q=index&json=1`;
 export const BASE_TAG_URL = `${BASE_URL}&s=tag`;

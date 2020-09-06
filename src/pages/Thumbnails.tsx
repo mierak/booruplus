@@ -14,15 +14,14 @@ import {
 	SaveOutlined,
 	ExportOutlined,
 } from '@ant-design/icons';
-
-import { actions, thunks } from '../store';
-import { exportPostsToDirectory } from '../store/commonActions';
-import { RootState, AppDispatch } from '../store/types';
-
-import ThumbnailsList from '../components/thumbnails/ThumbnailsList';
-import { CardAction, openNotificationWithIcon } from '../types/components';
-import { Post } from '../types/gelbooruTypes';
 import useModal from 'antd/lib/modal/useModal';
+
+import { actions, thunks } from '@store';
+import { exportPostsToDirectory } from '@store/commonActions';
+import { RootState, AppDispatch } from '@store/types';
+import ThumbnailsList from '@components/thumbnails/ThumbnailsList';
+import { CardAction, openNotificationWithIcon } from '@appTypes/components';
+import { Post } from '@appTypes/gelbooruTypes';
 
 interface Props {
 	className?: string;
