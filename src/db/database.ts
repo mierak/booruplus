@@ -93,6 +93,22 @@ class Database extends Dexie {
 		this.version(19).stores({
 			posts: 'id, rating, *tags, downloaded, viewCount, blacklisted',
 		});
+		this.version(20).upgrade((tx) => {
+			return tx
+				.table('posts')
+				.toCollection()
+				.modify((post) => {
+					post.createdAt = post.createdAt * 1000;
+				});
+		});
+		this.version(21).upgrade((tx) => {
+			return tx
+				.table('savedSearches')
+				.toCollection()
+				.modify((ss) => {
+					ss.lastSearched = moment(ss.lastSearched).valueOf();
+				});
+		});
 		this.tagSearchHistory = this.table('tagSearchHistory');
 		this.settings = this.table('settings');
 		this.posts = this.table('posts');

@@ -3,7 +3,7 @@ import log from 'electron-log';
 
 import { Settings } from '@store/types';
 import { Post } from '@appTypes/gelbooruTypes';
-import { getPathProvider } from '@service/pathProviderService';
+import { getPathProvider } from '../src/service/pathProviderService';
 
 export interface FileService {
 	loadImage: (post: Post) => Promise<{ data: Buffer | undefined; post: Post }>;

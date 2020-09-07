@@ -17,7 +17,7 @@ import log from 'electron-log';
 import fetch from 'node-fetch';
 
 import { Settings } from '@store/types';
-import { SavePostDto, IpcChannels, ExportDataDto, SaveThumbnailDto } from '@appTypes/processDto';
+import { SavePostDto, IpcChannels, ExportDataDto, SaveThumbnailDto } from '../src/types/processDto';
 import { Post } from '@appTypes/gelbooruTypes';
 
 import { getFileService, FileService } from './fileService';

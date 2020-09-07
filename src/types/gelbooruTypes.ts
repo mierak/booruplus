@@ -77,7 +77,7 @@ export interface SavedSearch {
 	tags: Tag[];
 	excludedTags: Tag[];
 	rating: Rating;
-	lastSearched?: string;
+	lastSearched?: number;
 	previews: SavedSearchPreview[];
 }
 

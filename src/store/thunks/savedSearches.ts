@@ -1,5 +1,6 @@
 import { notification } from 'antd';
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import moment from 'moment';
 
 import { db } from '@db';
 import { ThunkApi } from '@store/types';
@@ -17,7 +18,7 @@ export const searchOnline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi>
 	async (savedSearch, thunkApi): Promise<SavedSearch> => {
 		const logger = thunkLogger.getActionLogger(searchOnline);
 		const clone = { ...savedSearch };
-		clone.lastSearched = new Date().toUTCString();
+		clone.lastSearched = moment().valueOf();
 		logger.debug('Updating last searched to', clone.lastSearched);
 		db.savedSearches.save(clone);
 		await thunkApi.dispatch(onlineSearchFormThunk.fetchPosts());
@@ -30,7 +31,7 @@ export const searchOffline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi
 	async (savedSearch, thunkApi): Promise<SavedSearch> => {
 		const logger = thunkLogger.getActionLogger(searchOffline);
 		const clone = { ...savedSearch };
-		clone.lastSearched = new Date().toUTCString();
+		clone.lastSearched = moment().valueOf();
 		logger.debug('Updating last searched to', clone.lastSearched);
 		db.savedSearches.save(clone);
 		await thunkApi.dispatch(downloadedSearchFormThunk.fetchPosts());
