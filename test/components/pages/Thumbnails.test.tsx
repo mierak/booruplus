@@ -39,6 +39,46 @@ describe('pages/Thumbnails', () => {
 		expect(screen.getByRole('button', { name: 'heart Add to Favorites' })).not.toBeNull();
 		expect(screen.getByRole('button', { name: 'delete Blacklist' })).not.toBeNull();
 	});
+	it('Does not render "Save Search" when search mode is "saved-search-online"', () => {
+		// given
+		const store = mockStore(
+			mState({
+				system: {
+					searchMode: 'saved-search-online',
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<Thumbnails />
+			</Provider>
+		);
+
+		// then
+		expect(screen.queryByRole('menuitem', { name: 'save Save Search' })).not.toBeInTheDocument();
+	});
+	it('Does not render "Save Search" when search mode is "saved-search-offline"', () => {
+		// given
+		const store = mockStore(
+			mState({
+				system: {
+					searchMode: 'saved-search-offline',
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<Thumbnails />
+			</Provider>
+		);
+
+		// then
+		expect(screen.queryByRole('menuitem', { name: 'save Save Search' })).not.toBeInTheDocument();
+	});
 	it('Renders add to previews menu when search mode is set to saved-search-online', () => {
 		// given
 		const store = mockStore(
