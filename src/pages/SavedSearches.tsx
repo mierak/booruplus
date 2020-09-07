@@ -108,9 +108,16 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 					</Button>
 				</Col>
 				<Col span={8}>
-					<Button type='link' onClick={(): void => handleDelete(record)}>
-						Delete
-					</Button>
+					<Popconfirm
+						title='Are you sure you want to delete this Saved Search?'
+						okText='Cancel'
+						cancelText='Delete'
+						okType='default'
+						cancelButtonProps={{ type: 'primary' }}
+						onCancel={(): void => handleDelete(record)}
+					>
+						<Button type='link'>Delete</Button>
+					</Popconfirm>
 				</Col>
 			</Row>
 		);

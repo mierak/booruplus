@@ -336,9 +336,11 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 						Selected
 					</Menu.Item>
 				</Menu.SubMenu>
-				<Menu.Item onClick={handleSaveSearch} icon={<SaveOutlined />}>
-					Save Search
-				</Menu.Item>
+				{mode !== 'saved-search-offline' && mode !== 'saved-search-online' ? (
+					<Menu.Item onClick={handleSaveSearch} icon={<SaveOutlined />}>
+						Save Search
+					</Menu.Item>
+				) : null}
 			</StyledMenu>
 		);
 	};

@@ -107,7 +107,7 @@ describe('pages/SavedSearches', () => {
 			meta: { arg: savedSearches[2] },
 		});
 	});
-	it('Calls removeSavedSearch with correct Saved Search when Delete buttons is pressed()', () => {
+	it('Calls removeSavedSearch with correct Saved Search when Delete buttons is pressed()', async () => {
 		// given
 		const savedSearches = [
 			mSavedSearch({ id: 1, tags: [mTag({ id: 1, tag: 'tag1' })], rating: 'any', lastSearched: 123456 }),
@@ -129,6 +129,8 @@ describe('pages/SavedSearches', () => {
 			</Provider>
 		);
 		fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[2]);
+		const allDeleteButtons = await screen.findAllByRole('button', { name: 'Delete' });
+		fireEvent.click(allDeleteButtons[allDeleteButtons.length - 1]);
 
 		// then
 		const dispatchedActions = store.getActions();
