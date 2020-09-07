@@ -10,12 +10,14 @@ import { mState } from '../../helpers/store.helper';
 import SavedSearches from '../../../src/pages/SavedSearches';
 import '@testing-library/jest-dom';
 import { mTag, mSavedSearch, mSavedSearchPreview, mPost } from '../../helpers/test.helper';
+import moment from 'moment';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('pages/SavedSearches', () => {
 	it('Renders correctly', () => {
 		// given
+		const formatedDate = moment(123456).format('LL HH:mm:ss');
 		const store = mockStore(
 			mState({
 				savedSearches: {
@@ -41,7 +43,7 @@ describe('pages/SavedSearches', () => {
 		expect(screen.getByRole('columnheader', { name: 'Rating' })).not.toBeNull();
 		expect(screen.getByRole('columnheader', { name: 'Last Searched' })).not.toBeNull();
 		expect(screen.getByRole('columnheader', { name: 'Actions' })).not.toBeNull();
-		expect(screen.getByRole('row', { name: 'tag1 any January 1, 1970 01:02:03 Online Offline Delete' }));
+		expect(screen.getByRole('row', { name: `tag1 any ${formatedDate} Online Offline Delete` }));
 		expect(screen.getByRole('row', { name: 'tag2 explicit Never Online Offline Delete' }));
 		expect(screen.getByRole('row', { name: 'tag3 questionable Never Online Offline Delete' }));
 	});
