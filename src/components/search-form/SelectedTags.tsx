@@ -45,7 +45,9 @@ const SelectedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
 		const removeExcludedTag =
 			(mode === 'offline' && actions.downloadedSearchForm.removeExcludedTag) || actions.onlineSearchForm.removeExcludedTag;
 		dispatch(removeExcludedTag(tag));
-		dispatch(addTag(tag));
+		if (!selectedTags.some((t) => t.id === tag.id)) {
+			dispatch(addTag(tag));
+		}
 	};
 
 	const allowDrop = (event: React.DragEvent): void => {

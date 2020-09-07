@@ -43,7 +43,9 @@ const ExcludedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
 		const tag: Tag = JSON.parse(event.dataTransfer.getData('tag'));
 		const removeTag = (mode === 'offline' && actions.downloadedSearchForm.removeTag) || actions.onlineSearchForm.removeTag;
 		const addExcludedTag = (mode === 'offline' && actions.downloadedSearchForm.addExcludedTag) || actions.onlineSearchForm.addExcludedTag;
-		dispatch(addExcludedTag(tag));
+		if (!excludededTags.some((t) => t.id === tag.id)) {
+			dispatch(addExcludedTag(tag));
+		}
 		dispatch(removeTag(tag));
 	};
 
