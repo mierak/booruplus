@@ -144,6 +144,7 @@ export const toAscii = (c: string): number => {
 
 export const postParser = (): ((params: PostDto) => Post) => {
 	const domParser = new DOMParser();
+	const dateFormat = 'ddd MMM DD hh:mm:ss ZZ YYYY';
 
 	const parseTags = (tagString: string): string[] => {
 		const array = tagString.split(' ');
@@ -171,7 +172,7 @@ export const postParser = (): ((params: PostDto) => Post) => {
 			sampleWidth: params.sample_width,
 			score: params.score,
 			fileUrl: params.file_url,
-			createdAt: moment(params.created_at).unix(),
+			createdAt: moment(params.created_at, dateFormat).valueOf(),
 			image: params.image,
 			blacklisted: params.blacklisted !== undefined ? params.blacklisted : 0,
 			downloaded: params.downloaded !== undefined ? params.downloaded : 0,

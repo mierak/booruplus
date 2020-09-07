@@ -48,7 +48,7 @@ describe('db/common', () => {
 					excludedTags: [],
 					tags: [mTag({ tag: 'tag1' })],
 					rating: 'any',
-					lastSearched: 'now',
+					lastSearched: 123456,
 					previews: [
 						{
 							id: 1,
@@ -62,7 +62,7 @@ describe('db/common', () => {
 					excludedTags: [],
 					tags: [mTag({ tag: 'tag2' })],
 					rating: 'any',
-					lastSearched: 'now',
+					lastSearched: 123456,
 					previews: [
 						{
 							id: 1,
@@ -91,7 +91,7 @@ describe('db/common', () => {
 				{
 					id: 1,
 					rating: 'any',
-					lastSearched: 'now',
+					lastSearched: 123456,
 					tags: [mTag({ tag: 'tag1' })],
 					excludedTags: [],
 					previews: [
@@ -102,7 +102,7 @@ describe('db/common', () => {
 				{
 					id: 2,
 					rating: 'any',
-					lastSearched: 'now',
+					lastSearched: 123456,
 					tags: [mTag({ tag: 'tag2' })],
 					excludedTags: [],
 					previews: [

@@ -8,6 +8,7 @@ import { actions, thunks } from '@store';
 import { RootState, AppDispatch } from '@store/types';
 import { SavedSearch, Tag as GelbooruTag } from '@appTypes/gelbooruTypes';
 import { getTagColor } from '@util/utils';
+import moment from 'moment';
 
 const { Column } = Table;
 
@@ -127,7 +128,7 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 
 	const renderLastSearched = (_: unknown, savedSearch: SavedSearch): JSX.Element => {
 		if (savedSearch.lastSearched) {
-			return <span>{savedSearch.lastSearched.toLocaleString()}</span>;
+			return <span>{moment(savedSearch.lastSearched).format('LL HH:mm:ss')}</span>;
 		} else {
 			return <span>Never</span>;
 		}

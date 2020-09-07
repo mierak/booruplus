@@ -10,17 +10,19 @@ import { mState } from '../../helpers/store.helper';
 import SavedSearches from '../../../src/pages/SavedSearches';
 import '@testing-library/jest-dom';
 import { mTag, mSavedSearch, mSavedSearchPreview, mPost } from '../../helpers/test.helper';
+import moment from 'moment';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('pages/SavedSearches', () => {
 	it('Renders correctly', () => {
 		// given
+		const formatedDate = moment(123456).format('LL HH:mm:ss');
 		const store = mockStore(
 			mState({
 				savedSearches: {
 					savedSearches: [
-						mSavedSearch({ id: 1, tags: [mTag({ id: 1, tag: 'tag1' })], rating: 'any', lastSearched: 'somedate' }),
+						mSavedSearch({ id: 1, tags: [mTag({ id: 1, tag: 'tag1' })], rating: 'any', lastSearched: 123456 }),
 						mSavedSearch({ id: 2, excludedTags: [mTag({ id: 2, tag: 'tag2' })] }),
 						mSavedSearch({ id: 3, tags: [mTag({ id: 3, tag: 'tag3' })], rating: 'questionable' }),
 					],
@@ -41,14 +43,14 @@ describe('pages/SavedSearches', () => {
 		expect(screen.getByRole('columnheader', { name: 'Rating' })).not.toBeNull();
 		expect(screen.getByRole('columnheader', { name: 'Last Searched' })).not.toBeNull();
 		expect(screen.getByRole('columnheader', { name: 'Actions' })).not.toBeNull();
-		expect(screen.getByRole('row', { name: 'tag1 any somedate Online Offline Delete' }));
+		expect(screen.getByRole('row', { name: `tag1 any ${formatedDate} Online Offline Delete` }));
 		expect(screen.getByRole('row', { name: 'tag2 explicit Never Online Offline Delete' }));
 		expect(screen.getByRole('row', { name: 'tag3 questionable Never Online Offline Delete' }));
 	});
 	it('Calls searchOnline with correct Saved Search when Online buttons is pressed()', () => {
 		// given
 		const savedSearches = [
-			mSavedSearch({ id: 1, tags: [mTag({ id: 1, tag: 'tag1' })], rating: 'any', lastSearched: 'somedate' }),
+			mSavedSearch({ id: 1, tags: [mTag({ id: 1, tag: 'tag1' })], rating: 'any', lastSearched: 123456 }),
 			mSavedSearch({ id: 2, excludedTags: [mTag({ id: 2, tag: 'tag2' })] }),
 			mSavedSearch({ id: 3, tags: [mTag({ id: 3, tag: 'tag3' })], rating: 'questionable' }),
 		];
@@ -78,7 +80,7 @@ describe('pages/SavedSearches', () => {
 	it('Calls searchOffline with correct Saved Search when Offline buttons is pressed()', () => {
 		// given
 		const savedSearches = [
-			mSavedSearch({ id: 1, tags: [mTag({ id: 1, tag: 'tag1' })], rating: 'any', lastSearched: 'somedate' }),
+			mSavedSearch({ id: 1, tags: [mTag({ id: 1, tag: 'tag1' })], rating: 'any', lastSearched: 123456 }),
 			mSavedSearch({ id: 2, excludedTags: [mTag({ id: 2, tag: 'tag2' })] }),
 			mSavedSearch({ id: 3, tags: [mTag({ id: 3, tag: 'tag3' })], rating: 'questionable' }),
 		];
@@ -108,7 +110,7 @@ describe('pages/SavedSearches', () => {
 	it('Calls removeSavedSearch with correct Saved Search when Delete buttons is pressed()', () => {
 		// given
 		const savedSearches = [
-			mSavedSearch({ id: 1, tags: [mTag({ id: 1, tag: 'tag1' })], rating: 'any', lastSearched: 'somedate' }),
+			mSavedSearch({ id: 1, tags: [mTag({ id: 1, tag: 'tag1' })], rating: 'any', lastSearched: 123456 }),
 			mSavedSearch({ id: 2, excludedTags: [mTag({ id: 2, tag: 'tag2' })] }),
 			mSavedSearch({ id: 3, tags: [mTag({ id: 3, tag: 'tag3' })], rating: 'questionable' }),
 		];
@@ -142,7 +144,7 @@ describe('pages/SavedSearches', () => {
 				id: 1,
 				tags: [mTag({ id: 1, tag: 'tag1' })],
 				rating: 'any',
-				lastSearched: 'somedate',
+				lastSearched: 123456,
 				previews: [
 					mSavedSearchPreview({ id: 1, objectUrl: 'url1' }),
 					mSavedSearchPreview({ id: 2, objectUrl: 'url2' }),
@@ -180,7 +182,7 @@ describe('pages/SavedSearches', () => {
 				id: 1,
 				tags: [mTag({ id: 1, tag: 'tag1' })],
 				rating: 'any',
-				lastSearched: 'somedate',
+				lastSearched: 123456,
 				previews: [
 					mSavedSearchPreview({ id: 1, objectUrl: 'url1' }),
 					mSavedSearchPreview({ id: 2, objectUrl: 'url2' }),
@@ -225,7 +227,7 @@ describe('pages/SavedSearches', () => {
 				id: 1,
 				tags: [mTag({ id: 1, tag: 'tag1' })],
 				rating: 'any',
-				lastSearched: 'somedate',
+				lastSearched: 123456,
 				previews: [
 					mSavedSearchPreview({ id: 1, objectUrl: 'url1', post: posts[0] }),
 					mSavedSearchPreview({ id: 2, objectUrl: 'url2', post: posts[1] }),

@@ -21,7 +21,7 @@ export interface SavedSearch {
 	tags: Tag[];
 	excludedTags: Tag[];
 	rating: Rating;
-	lastSearched?: string;
+	lastSearched?: number;
 	previews: SavedSearchPreview[];
 }
 
@@ -30,7 +30,7 @@ export interface SavedSearchWithB64Previews {
 	tags: Tag[];
 	excludedTags: Tag[];
 	rating: Rating;
-	lastSearched?: string;
+	lastSearched?: number;
 	previews: {
 		id: number;
 		data: string;
