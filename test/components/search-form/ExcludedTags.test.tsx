@@ -216,4 +216,41 @@ describe('search-from/ExcludedTags', () => {
 		// then
 		expect(preventDefaultSpy).toBeCalledTimes(1);
 	});
+	it('Does not duplicate excluded tag on drag', () => {
+		// given
+		const tag = mTag({ id: 1, tag: 'excludedTag' });
+		const store = mockStore(
+			mState({
+				downloadedSearchForm: {
+					excludedTags: [tag],
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<ExcludedTags mode='offline' />
+			</Provider>
+		);
+		const destination = screen.getByTestId('excluded-tags-container');
+		const dropEvent = createEvent.drop(destination);
+		Object.defineProperty(dropEvent, 'dataTransfer', {
+			value: {
+				getData: (): string => JSON.stringify(tag),
+			},
+		});
+		fireEvent(destination, dropEvent);
+
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.downloadedSearchForm.removeTag.type,
+			payload: tag,
+		});
+		expect(dispatchedActions).not.toContainMatchingAction({
+			type: actions.downloadedSearchForm.addExcludedTag.type,
+			payload: tag,
+		});
+	});
 });
