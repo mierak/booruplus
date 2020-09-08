@@ -27,7 +27,11 @@ const TagsPopover: React.FunctionComponent<Props> = ({ tags }: Props) => {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		if (visible) {
+		setFetchedTags([]);
+	}, [tags]);
+
+	useEffect(() => {
+		if (visible && !fetchedTags.length) {
 			setLoading(true);
 			const fetchTags = async (): Promise<void> => {
 				containerRef.current && containerRef.current.scrollTo(0, 0);
@@ -37,7 +41,7 @@ const TagsPopover: React.FunctionComponent<Props> = ({ tags }: Props) => {
 			};
 			fetchTags();
 		}
-	}, [dispatch, tags, visible]);
+	}, [dispatch, fetchedTags.length, tags, visible]);
 
 	const renderTag = (_text: unknown, tag: Tag): React.ReactNode => {
 		return <AntTag color={getTagColor(tag.type)}>{tag.tag}</AntTag>;
@@ -86,7 +90,7 @@ const TagsPopover: React.FunctionComponent<Props> = ({ tags }: Props) => {
 
 	return (
 		<Container ref={containerRef}>
-			<Table dataSource={fetchedTags} rowKey='id' size='small' pagination={false} bordered loading={loading}>
+			<Table dataSource={loading ? undefined : fetchedTags} rowKey='id' size='small' pagination={false} bordered loading={loading}>
 				<Table.Column title='Tag' dataIndex='tag' render={renderTag} />
 				<Table.Column title='Search' dataIndex='' render={renderActions} />
 			</Table>
