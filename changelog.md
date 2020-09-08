@@ -1,4 +1,12 @@
 # Changelog
+
+## 0.1.7 - TITLE - DATE
+- BUG FIX: Save Search button will not whos on thumbnails page when current search mode is saved-search
+- BUG FIX: Added confirmation for Saved Search delete
+- BUG FIX: No longer duplicate tags when drag and dropping selected tag on the Selected Tags field in search form. Same goes for excluded tags
+- BUG FIX: Preview for videos without explicit preview file now shows Preview not available instead of infinite loader
+- BUG FIX: Tags popover on fullsize image no longer refetches tags when image was not changed
+
 ## 0.1.6 - Image caching and Image hover - 4.9.2020
 - Hovering over thumbnail in thumbnails list now shows a pop up preview after a short while. There is a new toggle that lets you disable this in the options.
 - Added option to automatically download images that are missing on disk but marked as downloaded
