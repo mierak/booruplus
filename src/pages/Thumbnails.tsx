@@ -32,10 +32,6 @@ const Container = styled.div`
 	height: 100vh;
 `;
 
-const StyledMenu = styled(Menu)`
-	/* height: 32px; */
-`;
-
 const StyledPageHeader = styled(PageHeader)`
 	.ant-page-header-heading {
 		justify-content: flex-start;
@@ -64,7 +60,6 @@ const StyledSpin = styled(Spin)`
 const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const [modal, contextHolder] = useModal();
-
 	const showModal = ({
 		title,
 		message,
@@ -77,8 +72,8 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 		okText: string;
 		cancelText: string;
 		onOk: () => unknown;
-	}): void => {
-		modal.confirm({
+	}): ReturnType<typeof modal.confirm> => {
+		return modal.confirm({
 			title: title,
 			content: message,
 			cancelButtonProps: {
@@ -175,7 +170,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleDownloadWholeSearch = async (): Promise<void> => {
-		showModal({
+		const m = showModal({
 			title: 'Download?',
 			message: 'This will search for all posts with current parameters and then download them. This could take a while. Are you sure?',
 			cancelText: 'Cancel',
@@ -184,10 +179,11 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 				dispatch(thunks.posts.downloadWholeSearch());
 			},
 		});
+		m.destroy();
 	};
 
 	const handleBlacklistAll = (): void => {
-		showModal({
+		const m = showModal({
 			title: 'Blacklist?',
 			message: 'All current posts will be blacklisted to. You will not see them anymore. Continue?',
 			cancelText: 'Cancel',
@@ -196,10 +192,11 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 				dispatch(thunks.posts.blacklistAllPosts());
 			},
 		});
+		m.destroy();
 	};
 
 	const handleBlacklistSelected = (): void => {
-		showModal({
+		const m = showModal({
 			title: 'Blacklist?',
 			message: 'Selected posts will be blacklisted to. You will not see them anymore. Continue?',
 			cancelText: 'Cancel',
@@ -208,6 +205,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 				dispatch(thunks.posts.blacklistSelectedPosts());
 			},
 		});
+		m.destroy();
 	};
 
 	const handleAddAllToFavorites = (): void => {
@@ -221,7 +219,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleDownloadAll = async (): Promise<void> => {
-		showModal({
+		const m = showModal({
 			title: 'Download?',
 			message: 'All current posts will be downloaded. Continue?',
 			cancelText: 'Cancel',
@@ -230,10 +228,11 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 				dispatch(thunks.posts.downloadAllPosts());
 			},
 		});
+		m.destroy();
 	};
 
 	const handleDownloadSelected = async (): Promise<void> => {
-		showModal({
+		const m = showModal({
 			title: 'Download?',
 			message: 'Selected posts will be downloaded. Continue?',
 			cancelText: 'Cancel',
@@ -242,10 +241,11 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 				dispatch(thunks.posts.downloadSelectedPosts());
 			},
 		});
+		m.destroy();
 	};
 
 	const handleSaveSearch = async (): Promise<void> => {
-		showModal({
+		const m = showModal({
 			title: 'Add search to Saved Searches?',
 			message: 'Current search with its parameters will be saved. Continue?',
 			cancelText: 'Cancel',
@@ -254,10 +254,11 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 				dispatch(thunks.savedSearches.saveSearch({ tags: selectedTags, excludedTags, rating }));
 			},
 		});
+		m.destroy();
 	};
 
 	const handleAddSelectedToPreviews = (): void => {
-		showModal({
+		const m = showModal({
 			title: 'Add previews?',
 			message: 'Selected posts will be added to the current Saved Search preview. Continue?',
 			cancelText: 'Cancel',
@@ -266,10 +267,11 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 				dispatch(thunks.savedSearches.addSelectedPreviewsToActiveSavedSearch());
 			},
 		});
+		m.destroy();
 	};
 
 	const handleAddAllToPreviews = (): void => {
-		showModal({
+		const m = showModal({
 			title: 'Add previews?',
 			message: 'All current posts will be added to the current Saved Search preview. Continue?',
 			cancelText: 'Cancel',
@@ -278,6 +280,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 				dispatch(thunks.savedSearches.addAllPreviewsToActiveSavedSearch());
 			},
 		});
+		m.destroy();
 	};
 
 	const handleExportAll = (): void => {
@@ -290,7 +293,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 
 	const renderMenu = (): React.ReactNode => {
 		return (
-			<StyledMenu mode='horizontal' forceSubMenuRender>
+			<Menu mode='horizontal' forceSubMenuRender>
 				<Menu.SubMenu title='Download' icon={<DownloadOutlined />}>
 					<Menu.Item onClick={handleDownloadAll} icon={<EyeOutlined />}>
 						All
@@ -341,7 +344,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 						Save Search
 					</Menu.Item>
 				) : null}
-			</StyledMenu>
+			</Menu>
 		);
 	};
 

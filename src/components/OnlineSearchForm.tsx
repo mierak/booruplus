@@ -7,7 +7,6 @@ import { AppDispatch } from '@store/types';
 
 import TagSearch from './search-form/TagSearch';
 import RatingSelect from './search-form/RatingSelect';
-import SaveSearchButton from './search-form/SaveSearchButton';
 import PostCountSelect from './search-form/PostCountSelect';
 import PageSelect from './search-form/PageSelect';
 import SelectedTags from './search-form/SelectedTags';
@@ -81,7 +80,6 @@ const SearchForm: React.FunctionComponent<Props> = (props: Props) => {
 				<Button htmlType='submit' onClick={handleClose} style={{ marginLeft: '8px' }}>
 					Close
 				</Button>
-				<SaveSearchButton mode='online' />
 			</Form.Item>
 		</Form>
 	);

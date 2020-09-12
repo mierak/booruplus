@@ -1,3 +1,5 @@
+import { doDatabaseMock, mockedDb } from '../../helpers/database.mock';
+doDatabaseMock();
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -9,7 +11,7 @@ import { mState } from '../../helpers/store.helper';
 
 import Thumbnails from '../../../src/pages/Thumbnails';
 import '@testing-library/jest-dom';
-import { mPost } from '../../helpers/test.helper';
+import { mPost, mTag } from '../../helpers/test.helper';
 import { deleteImageMock } from '../../helpers/imageBus.mock';
 import * as utils from '../../../src/types/components';
 import { thumbnailLoaderMock } from '../../helpers/imageBus.mock';
@@ -361,6 +363,45 @@ describe('pages/Thumbnails', () => {
 			</Provider>
 		);
 
+		// then
 		expect(screen.getByRole('img', { name: 'loading' })).not.toBeNull();
+	});
+	it.each([
+		['online', 'onlineSearchForm'],
+		['offline', 'downloadedSearchForm'],
+	])('Save Search button dispatches correct actions when mode is %s', async (mode, stateSlice) => {
+		// given
+		const tags = [mTag({ id: 123 })];
+		const eTags = [mTag({ id: 456 })];
+		const id = 12345;
+		const rating = 'explicit';
+		mockedDb.savedSearches.createAndSave.mockResolvedValueOnce(id);
+		const state = mState({
+			system: {
+				searchMode: mode as any,
+			},
+			[stateSlice]: {
+				rating,
+				selectedTags: tags,
+				excludedTags: eTags,
+			},
+		});
+		const store = mockStore(state);
+
+		// when
+		render(
+			<Provider store={store}>
+				<Thumbnails />
+			</Provider>
+		);
+		fireEvent.click(screen.getByRole('menuitem', { name: 'save Save Search' }));
+		fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
+
+		//then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({
+			type: thunks.savedSearches.saveSearch.pending.type,
+			meta: { arg: { tags, excludedTags: eTags, rating } },
+		});
 	});
 });

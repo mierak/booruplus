@@ -4,6 +4,24 @@ import { compareTagArrays } from '@util/utils';
 
 import { SavedSearch as DbSavedSearch } from './types';
 
+const transformDbSavedSearchToSavedSearch = (savedSearch: DbSavedSearch): SavedSearch => {
+	const previews = savedSearch.previews.map((preview) => {
+		return {
+			id: preview.id,
+			objectUrl: URL.createObjectURL(preview.blob),
+			post: preview.post,
+		};
+	});
+	return {
+		id: savedSearch.id as number,
+		rating: savedSearch.rating,
+		tags: savedSearch.tags,
+		excludedTags: savedSearch.excludedTags,
+		lastSearched: savedSearch.lastSearched,
+		previews: previews,
+	};
+};
+
 export const save = async (savedSearch: SavedSearch): Promise<number | undefined> => {
 	const dbSearch: DbSavedSearch = {
 		rating: savedSearch.rating,
@@ -20,20 +38,27 @@ export const save = async (savedSearch: SavedSearch): Promise<number | undefined
 	return db.savedSearches.put(dbSearch);
 };
 
-export const createAndSave = async (rating: Rating, tags: Tag[], excludedTags: Tag[]): Promise<number | 'already-exists'> => {
+/**
+ *
+ * @param rating Ratings of Saved Search
+ * @param tags Tags of Saved Search
+ * @param excludedTags Tags excluded from Saved Search
+ * @returns ID of newly created Saved Search or Saved Search instance if it already exists
+ */
+export const createAndSave = async (rating: Rating, tags: Tag[], excludedTags: Tag[]): Promise<number | SavedSearch> => {
 	// Check if SavedSearch with identical tags & excluded tags already exists
-	let found = false;
+	let foundSearch = undefined;
 	const allSearches = await db.savedSearches.toArray();
 	for (const search of allSearches) {
 		const everyTag = compareTagArrays(tags, search.tags);
 		const everyExcludedTag = compareTagArrays(excludedTags, search.excludedTags);
 		if (everyTag && everyExcludedTag) {
-			found = true;
+			foundSearch = search;
 			break;
 		}
 	}
-	if (found) {
-		return 'already-exists';
+	if (foundSearch) {
+		return transformDbSavedSearchToSavedSearch(foundSearch);
 	}
 
 	return db.savedSearches.put({
@@ -47,21 +72,7 @@ export const createAndSave = async (rating: Rating, tags: Tag[], excludedTags: T
 export const getAll = async (): Promise<SavedSearch[]> => {
 	const savedSearches = await db.savedSearches.toArray();
 	const returnSearches = savedSearches.map((savedSearch) => {
-		const previews = savedSearch.previews.map((preview) => {
-			return {
-				id: preview.id,
-				objectUrl: URL.createObjectURL(preview.blob),
-				post: preview.post,
-			};
-		});
-		return {
-			id: savedSearch.id as number,
-			rating: savedSearch.rating,
-			tags: savedSearch.tags,
-			excludedTags: savedSearch.excludedTags,
-			lastSearched: savedSearch.lastSearched,
-			previews: previews,
-		};
+		return transformDbSavedSearchToSavedSearch(savedSearch);
 	});
 	return returnSearches;
 };

@@ -31,6 +31,7 @@ module.exports = {
 				'@hooks/(.*)': '<rootDir>/src/hooks/$1',
 				'@components/(.*)': '<rootDir>/src/components/$1',
 				'@pages/(.*)': '<rootDir>/src/pages/$1',
+				'@errors/(.*)': '<rootDir>/src/errors/$1',
 			},
 		},
 		{
@@ -55,6 +56,7 @@ module.exports = {
 				'@hooks/(.*)': '<rootDir>/src/hooks/$1',
 				'@components/(.*)': '<rootDir>/src/components/$1',
 				'@pages/(.*)': '<rootDir>/src/pages/$1',
+				'@errors/(.*)': '<rootDir>/src/errors/$1',
 			},
 		},
 	],

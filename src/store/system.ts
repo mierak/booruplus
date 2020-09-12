@@ -104,6 +104,20 @@ const systemSlice = createSlice({
 			state.searchMode = 'saved-search-offline';
 			state.activeView = 'thumbnails';
 		});
+		builder.addCase(thunks.savedSearches.saveSearch.fulfilled, (state) => {
+			if (state.searchMode === 'online') {
+				state.searchMode = 'saved-search-online';
+			} else if (state.searchMode === 'offline') {
+				state.searchMode = 'saved-search-offline';
+			}
+		});
+		builder.addCase(thunks.savedSearches.saveSearch.rejected, (state) => {
+			if (state.searchMode === 'online') {
+				state.searchMode = 'saved-search-online';
+			} else if (state.searchMode === 'offline') {
+				state.searchMode = 'saved-search-offline';
+			}
+		});
 		// Posts
 		builder.addCase(thunks.posts.downloadPosts.pending, (state) => {
 			state.isTasksDrawerVisible = true;

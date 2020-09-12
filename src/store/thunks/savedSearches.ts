@@ -1,15 +1,15 @@
-import { notification } from 'antd';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import moment from 'moment';
 
 import { db } from '@db';
-import { ThunkApi } from '@store/types';
+import { ThunkApi, RejectWithValue } from '@store/types';
 import { Rating, SavedSearch, Tag, Post } from '@appTypes/gelbooruTypes';
 import { getThumbnailUrl } from '@service/webService';
 import { thunkLoggerFactory } from '@util/logger';
 
 import * as downloadedSearchFormThunk from './downloadedSearchForm';
 import * as onlineSearchFormThunk from './onlineSearchForm';
+import { NoActiveSavedSearchError, SavedSearchAlreadyExistsError } from '@errors/savedSearchError';
 
 const thunkLogger = thunkLoggerFactory();
 
@@ -39,28 +39,29 @@ export const searchOffline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi
 	}
 );
 
-export const saveSearch = createAsyncThunk<SavedSearch, { tags: Tag[]; excludedTags: Tag[]; rating: Rating }, ThunkApi>(
-	'savedSearches/save',
-	async (params): Promise<SavedSearch> => {
-		const logger = thunkLogger.getActionLogger(saveSearch);
-		const id = await db.savedSearches.createAndSave(params.rating, params.tags, params.excludedTags);
+interface NewSearchParams {
+	tags: Tag[];
+	excludedTags: Tag[];
+	rating: Rating;
+}
 
-		if (id === 'already-exists') {
-			notification.error({
-				message: 'Saved Search already exists',
-				description: 'Could not save search because it already exists in the database',
-				duration: 2,
-			});
+export const saveSearch = createAsyncThunk<SavedSearch, NewSearchParams, ThunkApi<SavedSearchAlreadyExistsError>>(
+	'savedSearches/save',
+	async (params, { rejectWithValue }): Promise<SavedSearch | RejectWithValue<SavedSearchAlreadyExistsError>> => {
+		const logger = thunkLogger.getActionLogger(saveSearch);
+		const result = await db.savedSearches.createAndSave(params.rating, params.tags, params.excludedTags);
+
+		if (typeof result !== 'number') {
 			logger.warn(
 				`Cannot save search with Rating: [${params.rating}] Tags: [${params.tags.join(' ')}] and Excluded Tags [${params.excludedTags.join(
 					' '
 				)}] because it already exists`
 			);
-			throw new Error('Saved search already exists');
+			return rejectWithValue(new SavedSearchAlreadyExistsError(result));
 		}
 
 		return {
-			id,
+			id: result,
 			tags: params.tags,
 			excludedTags: params.excludedTags,
 			rating: params.rating,
@@ -78,14 +79,13 @@ export const loadSavedSearchesFromDb = createAsyncThunk<SavedSearch[], void, Thu
 	}
 );
 
-export const addPreviewsToActiveSavedSearch = createAsyncThunk<SavedSearch, Post[], ThunkApi>(
+export const addPreviewsToActiveSavedSearch = createAsyncThunk<SavedSearch, Post[], ThunkApi<NoActiveSavedSearchError>>(
 	'savedSearches/addPreviewsToActiveSavedSearch',
-	async (posts, thunkApi): Promise<SavedSearch> => {
+	async (posts, { rejectWithValue, getState }): Promise<SavedSearch | RejectWithValue<NoActiveSavedSearchError>> => {
 		const logger = thunkLogger.getActionLogger(addPreviewsToActiveSavedSearch);
-		const savedSearch = thunkApi.getState().savedSearches.activeSavedSearch;
+		const savedSearch = getState().savedSearches.activeSavedSearch;
 		if (!savedSearch) {
-			const msg = 'Cannot add preview(s) to Saved Search. No Saved Search is set as active.';
-			throw new Error(msg);
+			return rejectWithValue(new NoActiveSavedSearchError());
 		}
 
 		const promises = posts.map(async (post) => {

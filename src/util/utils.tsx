@@ -120,6 +120,9 @@ export const compareTagArrays = (arr1: Tag[], arr2: Tag[]): boolean => {
 	if (arr1.length !== arr2.length) {
 		return false;
 	}
+	if (arr1.length === 0 && arr2.length === 0) {
+		return true;
+	}
 
 	const arr1Strings = arr1.map((tag) => tag.tag);
 	const arr2Strings = arr2.map((tag) => tag.tag);

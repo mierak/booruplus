@@ -23,6 +23,7 @@
 			"@hooks/*": ["src/hooks/*"],
 			"@components/*": ["src/components/*"],
 			"@pages/*": ["src/pages/*"],
+			"@errors/*": ["src/errors/*"],
 			"*": ["node_modules/*"]
 		},
 		"strict": true,
