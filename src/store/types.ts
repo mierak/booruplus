@@ -10,9 +10,14 @@ export type AppThunk<T = void> = ThunkAction<Promise<T>, RootState, unknown, Act
 
 export type AppDispatch = typeof store.dispatch;
 
-export interface ThunkApi {
+export interface RejectWithValue<V> {
+	value: V;
+}
+
+export interface ThunkApi<Rejected = void> {
 	dispatch: AppDispatch;
 	state: RootState;
+	rejectValue: Rejected;
 }
 
 export type View = 'thumbnails' | 'image' | 'dashboard' | 'saved-searches' | 'favorites' | 'tag-list';

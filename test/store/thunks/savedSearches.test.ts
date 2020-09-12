@@ -32,6 +32,7 @@ jest.mock('antd', () => {
 });
 import { notification } from 'antd';
 import { getThumbnailUrl } from '../../../src/service/webService';
+import { SavedSearchAlreadyExistsError } from '@errors/savedSearchError';
 
 describe('thunks/savedSearches', () => {
 	beforeEach(() => {
@@ -276,11 +277,12 @@ describe('thunks/savedSearches', () => {
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.saveSearch.pending.type, payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({ type: thunks.saveSearch.fulfilled.type, payload: mockSearch });
 		});
-		it('Shows notification and dispatches rejected with error when id already exists in db', async () => {
+		it('Returns SavedSearchAlreadyExistsError when Saved Search was already found in DB', async () => {
 			// given
 			const store = mockStore(initialState);
 			const rating = 'explicit';
-			mockedDb.savedSearches.createAndSave.mockResolvedValue('already-exists');
+			const savedSearch = mSavedSearch({ id: 123 });
+			mockedDb.savedSearches.createAndSave.mockResolvedValue(savedSearch);
 
 			// when
 			await store.dispatch(thunks.saveSearch({ tags: [], excludedTags: [], rating }));
@@ -289,11 +291,10 @@ describe('thunks/savedSearches', () => {
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.savedSearches.createAndSave).toBeCalledWith(rating, [], []);
 			// eslint-disable-next-line @typescript-eslint/unbound-method
-			expect(notification.error as jest.Mock).toBeCalledTimes(1);
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.saveSearch.pending.type, payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({
 				type: thunks.saveSearch.rejected.type,
-				error: { message: 'Saved search already exists' },
+				payload: new SavedSearchAlreadyExistsError(savedSearch),
 			});
 		});
 	});

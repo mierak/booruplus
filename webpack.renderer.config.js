@@ -44,6 +44,7 @@ module.exports = {
 			'@hooks': path.resolve(__dirname, 'src/hooks'),
 			'@components': path.resolve(__dirname, 'src/components'),
 			'@pages': path.resolve(__dirname, 'src/pages'),
+			'@errors': path.resolve(__dirname, 'src/errors'),
 		},
 	},
 };

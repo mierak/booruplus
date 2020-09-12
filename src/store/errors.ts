@@ -15,7 +15,7 @@ interface ThunkType {
 
 const registerErrorLogger = (builder: ActionReducerMapBuilder<{}>, action: MyThunk): void => {
 	builder.addCase(action.rejected, (_, result) => {
-		thunkLogger.getActionLogger(action, { logPending: false }).error(result?.error?.message);
+		thunkLogger.getActionLogger(action, { logPending: false }).error(result);
 	});
 };
 

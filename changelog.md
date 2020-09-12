@@ -1,6 +1,7 @@
 # Changelog
 
 ## 0.1.7 - TITLE - DATE
+- Saving Search now automatically sets search mode to saved-search to let you add previews right away
 - BUG FIX: Save Search button will not whos on thumbnails page when current search mode is saved-search
 - BUG FIX: Added confirmation for Saved Search delete
 - BUG FIX: No longer duplicate tags when drag and dropping selected tag on the Selected Tags field in search form. Same goes for excluded tags

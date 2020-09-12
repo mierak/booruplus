@@ -51,7 +51,6 @@ describe('DownloadedSearchForm', () => {
 		expect(screen.getByRole('button', { name: 'Search' })).not.toBeNull();
 		expect(screen.getByRole('button', { name: 'Clear' })).not.toBeNull();
 		expect(screen.getByRole('button', { name: 'Close' })).not.toBeNull();
-		expect(screen.getByRole('button', { name: 'Save Search' })).not.toBeNull();
 		expect(screen.getByRole('radio', { name: 'Asc' })).toBeChecked();
 		expect(screen.getByRole('radio', { name: 'Desc' })).not.toBeChecked();
 		expect(screen.getByRole('checkbox', { name: 'Non-Blacklisted' })).not.toBeNull();

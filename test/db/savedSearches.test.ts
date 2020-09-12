@@ -300,8 +300,8 @@ describe('db/savedSearches', () => {
 			const result3 = await createAndSave('explicit', tags, [mTag({ tag: 'tag123' })]);
 
 			// then
-			expect(result1).toBe('already-exists');
-			expect(result2).toBe('already-exists');
+			expect(result1).toMatchObject(savedSearches[0]);
+			expect(result2).toMatchObject(savedSearches[1]);
 			expect(result3).toBe(123);
 			putSpy.mockClear();
 			getAllSpy.mockClear();

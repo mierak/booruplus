@@ -24,6 +24,15 @@ const savedSearchesSlice = createSlice({
 			state.savedSearches.splice(index, 1);
 			db.savedSearches.remove(action.payload); // TODO the fuck is this doing here
 		},
+		setActiveSavedSearch: (state, action: PayloadAction<SavedSearch | number>): void => {
+			const payload = action.payload;
+			if (typeof payload === 'number') {
+				const savedSearch = state.savedSearches.find((ss) => (ss.id = payload));
+				state.activeSavedSearch = savedSearch;
+			} else {
+				state.activeSavedSearch = payload;
+			}
+		},
 	},
 	extraReducers: (builder) => {
 		builder.addCase(thunks.savedSearches.searchOnline.fulfilled, (state, action) => {
@@ -31,8 +40,21 @@ const savedSearchesSlice = createSlice({
 			state.savedSearches[index] = action.payload;
 			state.activeSavedSearch = action.payload;
 		});
+		builder.addCase(thunks.savedSearches.searchOffline.fulfilled, (state, action) => {
+			const index = state.savedSearches.findIndex((savedSearch) => savedSearch.id === action.payload.id);
+			state.savedSearches[index] = action.payload;
+			state.activeSavedSearch = action.payload;
+		});
+		// Save Search
 		builder.addCase(thunks.savedSearches.saveSearch.fulfilled, (state, action) => {
 			state.savedSearches.push(action.payload);
+			state.activeSavedSearch = action.payload;
+		});
+		builder.addCase(thunks.savedSearches.saveSearch.rejected, (state, action) => {
+			if (action.payload) {
+				action.payload.showNotification();
+				state.activeSavedSearch = action.payload.savedSearch;
+			}
 		});
 		builder.addCase(thunks.savedSearches.loadSavedSearchesFromDb.fulfilled, (state, action) => {
 			state.savedSearches = action.payload;
@@ -44,6 +66,9 @@ const savedSearchesSlice = createSlice({
 				search.previews = search.previews.filter((preview) => preview.id !== action.payload.previewId);
 				state.savedSearches[index] = search;
 			}
+		});
+		builder.addCase(thunks.savedSearches.addPreviewsToActiveSavedSearch.rejected, (_, action) => {
+			action.payload?.showNotification();
 		});
 	},
 });
