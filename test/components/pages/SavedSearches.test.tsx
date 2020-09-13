@@ -135,8 +135,8 @@ describe('pages/SavedSearches', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.savedSearches.removeSavedSearch.type,
-			payload: savedSearches[2],
+			type: thunks.savedSearches.remove.pending.type,
+			meta: { arg: savedSearches[2] },
 		});
 	});
 	it('Renders previews when expand button is clicked', () => {

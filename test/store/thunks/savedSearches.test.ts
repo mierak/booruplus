@@ -30,7 +30,6 @@ jest.mock('antd', () => {
 		},
 	};
 });
-import { notification } from 'antd';
 import { getThumbnailUrl } from '../../../src/service/webService';
 import { SavedSearchAlreadyExistsError } from '@errors/savedSearchError';
 
@@ -296,6 +295,19 @@ describe('thunks/savedSearches', () => {
 				type: thunks.saveSearch.rejected.type,
 				payload: new SavedSearchAlreadyExistsError(savedSearch),
 			});
+		});
+	});
+	describe('remove()', () => {
+		it('Calls db with corrent params', async () => {
+			// given
+			const store = mockStore(initialState);
+			const savedSearch = mSavedSearch({ id: 1234 });
+
+			// when
+			await store.dispatch(thunks.remove(savedSearch));
+
+			// then
+			expect(mockedDb.savedSearches.remove).toHaveBeenCalledWith(savedSearch);
 		});
 	});
 });
