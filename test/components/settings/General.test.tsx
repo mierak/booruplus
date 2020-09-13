@@ -53,7 +53,6 @@ describe('settings/General', () => {
 			})
 		);
 		const ipcSendSpy = jest.fn();
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(global as any).api = {
 			send: ipcSendSpy,
 		};
@@ -144,7 +143,7 @@ describe('settings/General', () => {
 		const dispatchedActions = store.getActions();
 		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.settings.exportImages.pending.type }));
 	});
-	it('Sends open select folder dialog message to IPC and then dispatches updateImagePath()', async () => {
+	it('Sends open select folder dialog message to IPC and then dispatches setImagesFolderPath', async () => {
 		// given
 		const newPath = 'new/path/-to/images';
 		const store = mockStore(
@@ -159,7 +158,6 @@ describe('settings/General', () => {
 			filePaths: [newPath],
 			canceled: false,
 		});
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(global as any).api = {
 			invoke: ipcSendSpy,
 		};
@@ -176,7 +174,7 @@ describe('settings/General', () => {
 		const dispatchedActions = store.getActions();
 		expect(ipcSendSpy).toBeCalledWith(IpcChannels.OPEN_SELECT_IMAGES_FOLDER_DIALOG);
 		await waitFor(() =>
-			expect(dispatchedActions).toContainMatchingAction({ type: thunks.settings.updateImagePath.fulfilled.type, payload: newPath })
+			expect(dispatchedActions).toContainMatchingAction({ type: actions.settings.setImagesFolderPath.type, payload: newPath })
 		);
 	});
 	it('Sends open select folder dialog message to IPC and does not dispatch anything when it is canceled', async () => {
@@ -194,7 +192,6 @@ describe('settings/General', () => {
 			filePaths: [newPath],
 			canceled: true,
 		});
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(global as any).api = {
 			invoke: ipcSendSpy,
 		};
@@ -210,9 +207,7 @@ describe('settings/General', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		await waitFor(() => expect(ipcSendSpy).toBeCalledWith(IpcChannels.OPEN_SELECT_IMAGES_FOLDER_DIALOG));
-		await waitFor(() =>
-			expect(dispatchedActions).not.toContainMatchingAction({ type: thunks.settings.updateImagePath.fulfilled.type, payload: newPath })
-		);
+		await waitFor(() => expect(dispatchedActions).not.toContainMatchingAction({ type: actions.settings.setImagesFolderPath.type }));
 	});
 	it('Sends open open path dialog message to IPC with correct parameter', async () => {
 		// given
@@ -225,7 +220,6 @@ describe('settings/General', () => {
 			})
 		);
 		const ipcSendSpy = jest.fn();
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(global as any).api = {
 			send: ipcSendSpy,
 		};

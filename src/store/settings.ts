@@ -35,6 +35,9 @@ const settingsSlice = createSlice({
 		setApiKey: (state, action: PayloadAction<string>): void => {
 			state.apiKey = action.payload;
 		},
+		setImagesFolderPath: (state, action: PayloadAction<string>): void => {
+			state.imagesFolderPath = action.payload;
+		},
 		setMostViewedCount: (state, action: PayloadAction<number>): void => {
 			state.dashboard.mostViewedCount = action.payload;
 		},
@@ -79,9 +82,6 @@ const settingsSlice = createSlice({
 				settings.favorites = initialState.favorites;
 			}
 			return settings;
-		});
-		builder.addCase(thunks.settings.updateImagePath.fulfilled, (state, action) => {
-			state.imagesFolderPath = action.payload;
 		});
 		builder.addCase(thunks.settings.updateTheme.fulfilled, (state, action) => {
 			state.theme = action.payload;

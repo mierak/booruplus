@@ -2,7 +2,7 @@ import { doDatabaseMock, mockedDb } from '../../helpers/database.mock';
 doDatabaseMock();
 jest.mock('antd');
 
-import { AppDispatch } from '@store/types';
+import { AppDispatch, Settings } from '@store/types';
 import { RootState } from '../../../src/store/types';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
@@ -45,7 +45,7 @@ describe('thunks/settings', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(ipcSendSpy).toHaveBeenCalledWith(IpcChannels.SETTINGS_LOADED, settings);
+			expect(ipcSendSpy).toHaveBeenCalledWith(IpcChannels.SETTINGS_CHANGED, settings);
 			expect(mockedDb.settings.loadSettings).toBeCalledTimes(1);
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.loadSettings.pending.type, payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({ type: thunks.loadSettings.fulfilled.type, payload: settings });
@@ -75,11 +75,14 @@ describe('thunks/settings', () => {
 				imagesFolderPath: 'null',
 			});
 			const returnedPath = 'somepath';
+			const expectedSettings: Settings = { ...settings, imagesFolderPath: returnedPath };
 			const store = mockStore(initialState);
 			mockedDb.settings.loadSettings.mockResolvedValue(settings);
 			const ipcInvokeSpy = jest.fn().mockResolvedValue(returnedPath);
+			const ipcSendSpy = jest.fn();
 			(global as any).api = {
 				invoke: ipcInvokeSpy,
+				send: ipcSendSpy,
 			};
 
 			// when
@@ -90,7 +93,12 @@ describe('thunks/settings', () => {
 			expect(mockedDb.settings.loadSettings).toHaveBeenCalledWith('user');
 			expect(mockedModal.info).toHaveBeenCalledTimes(1);
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.loadSettings.pending.type, payload: undefined });
-			await expect(dispatchedActions).toContainMatchingAction({ type: thunks.updateImagePath.pending.type, meta: { arg: returnedPath } });
+			expect(dispatchedActions[1]).toMatchObject({
+				type: thunks.loadSettings.fulfilled.type,
+				payload: expectedSettings,
+			});
+			expect(ipcSendSpy).toHaveBeenCalledWith(IpcChannels.SETTINGS_CHANGED, expectedSettings);
+			expect(mockedDb.settings.saveSettings).toHaveBeenCalledWith({ name: 'user', values: expectedSettings });
 		});
 	});
 	describe('saveSettings()', () => {
@@ -99,6 +107,10 @@ describe('thunks/settings', () => {
 			const settings = mSettings();
 			const store = mockStore({ ...initialState, settings });
 			mockedDb.settings.saveSettings.mockResolvedValue('user');
+			const ipcSendSpy = jest.fn();
+			(global as any).api = {
+				send: ipcSendSpy,
+			};
 
 			// when
 			await store.dispatch(thunks.saveSettings());
@@ -108,6 +120,7 @@ describe('thunks/settings', () => {
 			expect(mockedDb.settings.saveSettings).toHaveBeenCalledWith({ name: 'user', values: settings });
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.saveSettings.pending.type, payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({ type: thunks.saveSettings.fulfilled.type, payload: undefined });
+			expect(ipcSendSpy).toHaveBeenCalledWith(IpcChannels.SETTINGS_CHANGED, settings);
 		});
 	});
 	describe('updateTheme()', () => {
@@ -126,24 +139,6 @@ describe('thunks/settings', () => {
 			expect(mockedDb.settings.saveSettings).toHaveBeenCalledWith({ name: 'user', values: { ...settings, theme } });
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.updateTheme.pending.type, payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({ type: thunks.updateTheme.fulfilled.type, payload: theme });
-		});
-	});
-	describe('updateImagesPath()', () => {
-		it('Updates images path properly', async () => {
-			// given
-			const settings = mSettings();
-			const store = mockStore({ ...initialState, settings });
-			const path = '/new/images/path';
-			mockedDb.settings.saveSettings.mockResolvedValue('user');
-
-			// when
-			await store.dispatch(thunks.updateImagePath(path));
-
-			// then
-			const dispatchedActions = store.getActions();
-			expect(mockedDb.settings.saveSettings).toHaveBeenCalledWith({ name: 'user', values: { ...settings, imagesFolderPath: path } });
-			expect(dispatchedActions[0]).toMatchObject({ type: thunks.updateImagePath.pending.type, payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({ type: thunks.updateImagePath.fulfilled.type, payload: path });
 		});
 	});
 	describe('exportDatabase()', () => {
