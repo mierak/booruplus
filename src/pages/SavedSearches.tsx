@@ -9,6 +9,7 @@ import { RootState, AppDispatch } from '@store/types';
 import { SavedSearch, Tag as GelbooruTag } from '@appTypes/gelbooruTypes';
 import { getTagColor } from '@util/utils';
 import moment from 'moment';
+import { openNotificationWithIcon } from '@appTypes/components';
 
 const { Column } = Table;
 
@@ -76,8 +77,9 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 		dispatch(thunks.savedSearches.searchOffline(savedSearch));
 	};
 
-	const handleDelete = (savedSearch: SavedSearch): void => {
-		dispatch(actions.savedSearches.removeSavedSearch(savedSearch));
+	const handleDelete = async (savedSearch: SavedSearch): Promise<void> => {
+		await dispatch(thunks.savedSearches.remove(savedSearch));
+		openNotificationWithIcon('success', 'Saved Search deleted', 'Saved Search was successfuly deleted from the database.');
 	};
 
 	const handlePreviewDelete = (record: SavedSearch, previewId: number): void => {
@@ -114,7 +116,9 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 						cancelText='Delete'
 						okType='default'
 						cancelButtonProps={{ type: 'primary' }}
-						onCancel={(): void => handleDelete(record)}
+						onCancel={(): void => {
+							handleDelete(record);
+						}}
 					>
 						<Button type='link'>Delete</Button>
 					</Popconfirm>

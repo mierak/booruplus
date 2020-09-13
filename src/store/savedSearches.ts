@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { db } from '@db';
 import { SavedSearch } from '@appTypes/gelbooruTypes';
 
 import * as thunks from './thunks';
@@ -19,11 +18,6 @@ const savedSearchesSlice = createSlice({
 	name: 'savedSearches',
 	initialState: initialState,
 	reducers: {
-		removeSavedSearch: (state, action: PayloadAction<SavedSearch>): void => {
-			const index = state.savedSearches.findIndex((s) => s.id === action.payload.id);
-			state.savedSearches.splice(index, 1);
-			db.savedSearches.remove(action.payload); // TODO the fuck is this doing here
-		},
 		setActiveSavedSearch: (state, action: PayloadAction<SavedSearch | number>): void => {
 			const payload = action.payload;
 			if (typeof payload === 'number') {
@@ -55,6 +49,10 @@ const savedSearchesSlice = createSlice({
 				action.payload.showNotification();
 				state.activeSavedSearch = action.payload.savedSearch;
 			}
+		});
+		builder.addCase(thunks.savedSearches.remove.fulfilled, (state, action) => {
+			const index = state.savedSearches.findIndex((s) => s.id === action.payload);
+			state.savedSearches.splice(index, 1);
 		});
 		builder.addCase(thunks.savedSearches.loadSavedSearchesFromDb.fulfilled, (state, action) => {
 			state.savedSearches = action.payload;

@@ -71,6 +71,15 @@ export const saveSearch = createAsyncThunk<SavedSearch, NewSearchParams, ThunkAp
 	}
 );
 
+export const remove = createAsyncThunk<number, SavedSearch, ThunkApi>(
+	'savedSearches/remove',
+	async (savedSearch): Promise<number> => {
+		thunkLogger.getActionLogger(remove, { initialMessage: 'Deleting Saved Search' });
+		await db.savedSearches.remove(savedSearch);
+		return savedSearch.id;
+	}
+);
+
 export const loadSavedSearchesFromDb = createAsyncThunk<SavedSearch[], void, ThunkApi>(
 	'savedSearches/loadFromDb',
 	async (): Promise<SavedSearch[]> => {
