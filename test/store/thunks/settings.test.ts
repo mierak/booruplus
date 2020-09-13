@@ -30,17 +30,22 @@ describe('thunks/settings', () => {
 		savedSearches: [],
 	};
 	describe('loadSettings()', () => {
-		it('Loads settings properly', async () => {
+		it('Loads settings properly and sends them through IPC', async () => {
 			// given
 			const settings = mSettings();
 			const store = mockStore(initialState);
 			mockedDb.settings.loadSettings.mockResolvedValue(settings);
+			const ipcSendSpy = jest.fn();
+			(global as any).api = {
+				send: ipcSendSpy,
+			};
 
 			// when
 			await store.dispatch(thunks.loadSettings());
 
 			// then
 			const dispatchedActions = store.getActions();
+			expect(ipcSendSpy).toHaveBeenCalledWith(IpcChannels.SETTINGS_LOADED, settings);
 			expect(mockedDb.settings.loadSettings).toBeCalledTimes(1);
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.loadSettings.pending.type, payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({ type: thunks.loadSettings.fulfilled.type, payload: settings });

@@ -46,6 +46,7 @@ export const loadSettings = createAsyncThunk<Settings, string | undefined, Thunk
 			});
 			thunkApi.dispatch(updateImagePath(await window.api.invoke(IpcChannels.GET_PICTURES_PATH)));
 		}
+		window.api.send(IpcChannels.SETTINGS_LOADED, settings);
 
 		return settings;
 	}
