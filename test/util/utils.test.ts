@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import {
 	capitalize,
 	isExtensionVideo,
@@ -13,9 +14,12 @@ import {
 	isFilenameVideo,
 	getIndexFromRowCol,
 	getRowColFromIndex,
-} from '../src/util/utils';
-import { mTag } from './helpers/test.helper';
-import { Rating } from '../src/types/gelbooruTypes';
+	addThousandsSeparator,
+	formatPercentProgress,
+	postParser,
+} from '@util/utils';
+import { mTag } from '../helpers/test.helper';
+import { Post, PostDto, Rating, Tag } from '@appTypes/gelbooruTypes';
 
 describe('utils/utils', () => {
 	describe('capitalize()', () => {
@@ -187,7 +191,6 @@ describe('utils/utils', () => {
 			const metadata = 'metadata';
 			const tag = 'tag';
 			const copyright = 'copyright';
-			const undef = 'asdf';
 
 			// when
 			const artistResult = getTagColor(artist);
@@ -195,7 +198,6 @@ describe('utils/utils', () => {
 			const metadataResult = getTagColor(metadata);
 			const tagResult = getTagColor(tag);
 			const copyrightResult = getTagColor(copyright);
-			const undefResult = getTagColor(undef);
 
 			// then
 			expect(artistResult).toBe('volcano');
@@ -203,7 +205,6 @@ describe('utils/utils', () => {
 			expect(metadataResult).toBe('orange');
 			expect(tagResult).toBe('blue');
 			expect(copyrightResult).toBe('magenta');
-			expect(undefResult).toBe(undefined);
 		});
 	});
 	describe('getImageExtensionFromFilename()', () => {
@@ -276,6 +277,17 @@ describe('utils/utils', () => {
 			// given
 			const arr1 = [mTag({ tag: 'tag1' }), mTag({ tag: 'tag2' })];
 			const arr2 = [mTag({ tag: 'tag1' }), mTag({ tag: 'tag2' })];
+
+			// when
+			const result = compareTagArrays(arr1, arr2);
+
+			// then
+			expect(result).toBe(true);
+		});
+		it('Returns true when both arrays are empty', () => {
+			// given
+			const arr1: Tag[] = [];
+			const arr2: Tag[] = [];
 
 			// when
 			const result = compareTagArrays(arr1, arr2);
@@ -378,6 +390,116 @@ describe('utils/utils', () => {
 
 			// then
 			expect(result).toEqual({ rowIndex: 15, columnIndex: 4 });
+		});
+	});
+	describe('addThousandsSeparator', () => {
+		it('Separates thousands with space', () => {
+			// given
+			const number = 1000000000;
+
+			// when
+			const result = addThousandsSeparator(number);
+
+			// then
+			expect(result).toBe('1 000 000 000');
+		});
+		it('Separates thousands with provided separator', () => {
+			// given
+			const number = 1000000000;
+
+			// when
+			const result = addThousandsSeparator(number, ',');
+
+			// then
+			expect(result).toBe('1,000,000,000');
+		});
+	});
+	describe('formatPercentProgress()', () => {
+		it('Returns correct result', () => {
+			// given
+			const done = 40000000;
+			const total = 123456465156;
+
+			// when
+			const result = formatPercentProgress(done, total);
+
+			// then
+			expect(result).toBe('38 MB / 117 737 MB');
+		});
+	});
+	describe('postParser()', () => {
+		it('Parses post correctly', () => {
+			// given
+			const directory = 'af/dc';
+			const file_url = 'http://some.url/image.jpg';
+			const hash = 'somehashasdasd';
+			const height = 600;
+			const width = 800;
+			const id = 123;
+			const image = 'somefilename.jpg';
+			const owner = 'someowner';
+			const parent_id = 111;
+			const rating = 'e';
+			const sample = true;
+			const sample_height = 240;
+			const sample_width = 300;
+			const score = 500;
+			const tags = 'girl boy something whatever';
+			const favorite = 1;
+			const blacklisted = 1;
+			const downloaded = 1;
+			const source = 'pixiv';
+			const dto: PostDto = {
+				created_at: 'Mon Sep 14 17:13:37 -0500 2020',
+				directory,
+				file_url,
+				hash,
+				height,
+				width,
+				id,
+				image,
+				owner,
+				parent_id,
+				rating,
+				sample,
+				sample_height,
+				sample_width,
+				score,
+				source,
+				tags,
+				blacklisted,
+				downloaded,
+				favorite,
+			};
+
+			// when
+			const result = postParser()(dto);
+
+			// then
+			expect(result).toMatchObject({
+				source,
+				directory,
+				hash,
+				height,
+				width,
+				id,
+				owner,
+				parentId: parent_id,
+				rating,
+				sample,
+				sampleHeight: sample_height,
+				sampleWidth: sample_width,
+				score,
+				fileUrl: file_url,
+				image,
+				blacklisted,
+				downloaded,
+				selected: false,
+				tags: tags.split(' '),
+				extension: 'jpg',
+				viewCount: 0,
+				createdAt: 1600121617000,
+			} as Post);
 		});
 	});
 });
