@@ -111,7 +111,8 @@ let settings: Settings;
 let fileService: FileService;
 let archiveService: ArchiveService;
 
-ipcMain.on(IpcChannels.SETTINGS_LOADED, (_: IpcMainEvent, value: Settings) => {
+ipcMain.on(IpcChannels.SETTINGS_CHANGED, (_: IpcMainEvent, value: Settings) => {
+	log.debug('Settings changed. Recreating services.');
 	settings = value;
 	fileService = getFileService(value);
 	archiveService = getArchiveService(value);

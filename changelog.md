@@ -7,6 +7,8 @@
 - BUG FIX: No longer duplicate tags when drag and dropping selected tag on the Selected Tags field in search form. Same goes for excluded tags
 - BUG FIX: Preview for videos without explicit preview file now shows Preview not available instead of infinite loader
 - BUG FIX: Tags popover on fullsize image no longer refetches tags when image was not changed
+- BUG FIX: Images Folder Path now does not save right away, but with the rest of the settings when Save button is pressed.
+- BUG FIX: Editing API Key input won't rerender the whole app anymore
 
 ## 0.1.6 - Image caching and Image hover - 4.9.2020
 - Hovering over thumbnail in thumbnails list now shows a pop up preview after a short while. There is a new toggle that lets you disable this in the options.

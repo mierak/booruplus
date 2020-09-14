@@ -14,21 +14,9 @@ import { setFullscreenLoadingMaskState } from '../commonActions';
 
 const thunkLogger = thunkLoggerFactory();
 
-export const updateImagePath = createAsyncThunk<string, string, ThunkApi>(
-	'settings/update-image-path',
-	async (path, thunkApi): Promise<string> => {
-		const logger = thunkLogger.getActionLogger(updateImagePath);
-		const settings = { ...thunkApi.getState().settings };
-		settings.imagesFolderPath = path;
-		logger.debug('Saving settins with name user', settings);
-		await db.settings.saveSettings({ name: 'user', values: settings });
-		return path;
-	}
-);
-
 export const loadSettings = createAsyncThunk<Settings, string | undefined, ThunkApi>(
 	'settings/load',
-	async (name, thunkApi): Promise<Settings> => {
+	async (name): Promise<Settings> => {
 		const logger = thunkLogger.getActionLogger(loadSettings);
 		logger.debug(`Loading settings with name: ${name}`);
 		const settings = await db.settings.loadSettings(name);
@@ -38,26 +26,29 @@ export const loadSettings = createAsyncThunk<Settings, string | undefined, Thunk
 			throw new Error(msg);
 		}
 
+		const newSettings = { ...settings };
 		if (settings.imagesFolderPath === 'null') {
 			Modal.info({
 				title: 'Hi there!',
 				content:
 					'It looks like this is your first time. Before you do anything you should consider changing path to application data in settings. Happy fapping!',
 			});
-			thunkApi.dispatch(updateImagePath(await window.api.invoke(IpcChannels.GET_PICTURES_PATH)));
+			newSettings.imagesFolderPath = await window.api.invoke<string>(IpcChannels.GET_PICTURES_PATH);
+			db.settings.saveSettings({ name: 'user', values: newSettings });
 		}
+		window.api.send(IpcChannels.SETTINGS_CHANGED, newSettings);
 
-		return settings;
+		return newSettings;
 	}
 );
 
 export const updateTheme = createAsyncThunk<'dark' | 'light', 'dark' | 'light', ThunkApi>(
 	'settings/update-theme',
-	async (theme, thunkApi): Promise<'dark' | 'light'> => {
+	async (theme, { getState }): Promise<'dark' | 'light'> => {
 		const logger = thunkLogger.getActionLogger(updateTheme);
-		const settings = { ...thunkApi.getState().settings };
+		const settings = { ...getState().settings };
 		settings.theme = theme;
-		logger.debug('Saving settins with name user', settings);
+		logger.debug('Saving settings with name user', settings);
 		await db.settings.saveSettings({ name: 'user', values: settings });
 		return theme;
 	}
@@ -68,14 +59,15 @@ export const saveSettings = createAsyncThunk<void, void, ThunkApi>(
 	async (_, thunkApi): Promise<void> => {
 		const logger = thunkLogger.getActionLogger(saveSettings);
 		const settings = thunkApi.getState().settings;
-		logger.debug('Saving settins with name user', settings);
+		logger.debug('Saving settings with name user', settings);
+		window.api.send(IpcChannels.SETTINGS_CHANGED, settings);
 		await db.settings.saveSettings({ name: 'user', values: settings });
 	}
 );
 
 export const exportDatabase = createAsyncThunk<boolean, void, ThunkApi>(
 	'settings/export-data',
-	async (_, thunkApi): Promise<boolean> => {
+	async (_, { dispatch }): Promise<boolean> => {
 		const logger = thunkLogger.getActionLogger(exportDatabase);
 		logger.debug('Opening data export dialog');
 		const filePath = await window.api.invoke<string>(IpcChannels.OPEN_SELECT_EXPORT_FILE_LOCATION_DIALOG, 'data');
@@ -85,12 +77,12 @@ export const exportDatabase = createAsyncThunk<boolean, void, ThunkApi>(
 			const exportedData = await db.common.exportDb(
 				Comlink.proxy((message: string) => {
 					logger.debug(message);
-					thunkApi.dispatch(setFullscreenLoadingMaskState(message));
+					dispatch(setFullscreenLoadingMaskState(message));
 				})
 			);
 
 			logger.debug('Sending exported data to main process to be saved');
-			thunkApi.dispatch(setFullscreenLoadingMaskState('Saving file'));
+			dispatch(setFullscreenLoadingMaskState('Saving file'));
 			await window.api.invoke<ExportDataDto>(IpcChannels.SAVE_EXPORTED_DATA, { data: JSON.stringify(exportedData), filePath });
 			return true;
 		} else {
@@ -102,7 +94,7 @@ export const exportDatabase = createAsyncThunk<boolean, void, ThunkApi>(
 
 export const exportImages = createAsyncThunk<boolean, void, ThunkApi>(
 	'settings/exportImages',
-	async (_, thunkApi): Promise<boolean> => {
+	async (_, { dispatch }): Promise<boolean> => {
 		const logger = thunkLogger.getActionLogger(exportImages);
 		logger.debug('Opening data export dialog');
 		const filePath = await window.api.invoke<string>(IpcChannels.OPEN_SELECT_EXPORT_FILE_LOCATION_DIALOG, 'images');
@@ -114,7 +106,7 @@ export const exportImages = createAsyncThunk<boolean, void, ThunkApi>(
 
 		const progressUpdate = (_: unknown, { done, total }: { done: number; total: number }): void => {
 			const percent = Math.floor((done / total) * 100);
-			thunkApi.dispatch(
+			dispatch(
 				setFullscreenLoadingMaskState({
 					message: `Exporting images - ${formatPercentProgress(done, total)}`,
 					progressPercent: percent,
@@ -135,12 +127,12 @@ export const exportImages = createAsyncThunk<boolean, void, ThunkApi>(
 
 export const importImages = createAsyncThunk<boolean, void, ThunkApi>(
 	'settings/importImages',
-	async (_, thunkApi): Promise<boolean> => {
+	async (_, { dispatch }): Promise<boolean> => {
 		const logger = thunkLogger.getActionLogger(importImages);
 
 		const progressUpdate = (_: unknown, { done, total }: { done: number; total: number }): void => {
 			const percent = Math.floor((done / total) * 100);
-			thunkApi.dispatch(
+			dispatch(
 				setFullscreenLoadingMaskState({
 					message: `Importing images - ${formatPercentProgress(done, total)}`,
 					progressPercent: percent,
@@ -160,10 +152,10 @@ export const importImages = createAsyncThunk<boolean, void, ThunkApi>(
 
 export const importDatabase = createAsyncThunk<boolean, void, ThunkApi>(
 	'settings/import-data',
-	async (_, thunkApi): Promise<boolean> => {
+	async (_, { dispatch }): Promise<boolean> => {
 		const logger = thunkLogger.getActionLogger(importDatabase);
 		logger.debug('Opening data import dialog');
-		thunkApi.dispatch(setFullscreenLoadingMaskState('Reading data from disk'));
+		dispatch(setFullscreenLoadingMaskState('Reading data from disk'));
 		const loadedData = await window.api.invoke<string>(IpcChannels.OPEN_IMPORT_DATA_DIALOG);
 		if (!loadedData) {
 			logger.debug('Data import dialog closed without selecting a file');
@@ -171,7 +163,7 @@ export const importDatabase = createAsyncThunk<boolean, void, ThunkApi>(
 		}
 
 		logger.debug('Parsing and checking data');
-		thunkApi.dispatch(setFullscreenLoadingMaskState('Validating data'));
+		dispatch(setFullscreenLoadingMaskState('Validating data'));
 		const dataObj: ExportedData = JSON.parse(loadedData);
 		const keys = Object.keys(dataObj);
 		if (
@@ -190,13 +182,13 @@ export const importDatabase = createAsyncThunk<boolean, void, ThunkApi>(
 		}
 
 		logger.debug('Parsing and checking finished. Transforming base64 images to blobs.');
-		thunkApi.dispatch(setFullscreenLoadingMaskState('Reconstructing preview images'));
+		dispatch(setFullscreenLoadingMaskState('Reconstructing preview images'));
 
 		await db.common.clearAndRestoreDb(
 			dataObj,
 			Comlink.proxy((message: string) => {
 				logger.debug(message);
-				thunkApi.dispatch(setFullscreenLoadingMaskState(message));
+				dispatch(setFullscreenLoadingMaskState(message));
 			})
 		);
 		return true;

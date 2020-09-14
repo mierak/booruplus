@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState, AppDispatch } from '@store/types';
 import { thunks } from '@store';
-import { IpcChannels } from '@appTypes/processDto';
 import LoadingMask from '@components/LoadingMask';
 import AppLayout from '@components/layout/Layout';
 
@@ -23,7 +22,7 @@ const Page: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
 
 	const activeView = useSelector((state: RootState) => state.system.activeView);
-	const settings = useSelector((state: RootState) => state.settings);
+	const theme = useSelector((state: RootState) => state.settings.theme);
 	const loadingMaskVisible = useSelector((state: RootState) => state.loadingStates.isFullscreenLoadingMaskVisible);
 
 	useEffect(() => {
@@ -38,7 +37,7 @@ const Page: React.FunctionComponent = () => {
 
 	useEffect(() => {
 		if (hydrated) {
-			if (settings.theme === 'dark') {
+			if (theme === 'dark') {
 				require('../css/scrollbar.dark.css');
 				require('antd/dist/antd.dark.css');
 			} else {
@@ -47,11 +46,7 @@ const Page: React.FunctionComponent = () => {
 			}
 			setStylesLoaded(true);
 		}
-	}, [hydrated, settings.theme]);
-
-	useEffect(() => {
-		hydrated && window.api.send(IpcChannels.SETTINGS_LOADED, settings);
-	}, [hydrated, settings]);
+	}, [hydrated, theme]);
 
 	const renderView = (): React.ReactNode => {
 		switch (activeView) {

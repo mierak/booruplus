@@ -26,6 +26,17 @@ describe('store/settings', () => {
 		// then
 		expect(result.apiKey).toStrictEqual(key);
 	});
+	it('Sets imagesFolderPath', () => {
+		// given
+		const path = '/some/new/path';
+		const action = createAction(actions.setImagesFolderPath.type, path);
+
+		// when
+		const result = reducer(undefined, action);
+
+		// then
+		expect(result.imagesFolderPath).toStrictEqual(path);
+	});
 	it('Sets mostViewedCount', () => {
 		// given
 		const count = 123;
@@ -137,17 +148,6 @@ describe('store/settings', () => {
 
 		// then
 		expect(result.imageHover).toEqual(true);
-	});
-	it('Updates imagesPath when updateImagePath is fulfilled', () => {
-		// given
-		const path = 'img_path';
-		const action = createAction(thunks.settings.updateImagePath.fulfilled.type, path);
-
-		// when
-		const result = reducer(undefined, action);
-
-		// then
-		expect(result.imagesFolderPath).toStrictEqual(path);
 	});
 	it('Updates theme when updateTheme is fulfilled', () => {
 		// given

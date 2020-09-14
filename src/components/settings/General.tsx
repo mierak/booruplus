@@ -49,7 +49,7 @@ const General: React.FunctionComponent = () => {
 	const handleSelectDirectory = (): void => {
 		window.api.invoke<SelectFolderDialogResponse>(IpcChannels.OPEN_SELECT_IMAGES_FOLDER_DIALOG).then((response) => {
 			if (!response.canceled) {
-				dispatch(thunks.settings.updateImagePath(response.filePaths[0]));
+				dispatch(actions.settings.setImagesFolderPath(response.filePaths[0]));
 			}
 		});
 	};
