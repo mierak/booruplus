@@ -6,13 +6,14 @@ import { FixedSizeGrid } from 'react-window';
 
 import { ContextMenu, CardAction } from '@appTypes/components';
 import { getRowColFromIndex } from '@util/utils';
-import { AppDispatch } from '@store/types';
+import { AppDispatch, defaultCtx, PostsContext } from '@store/types';
 import { Post } from '@appTypes/gelbooruTypes';
 import { actions } from '@store/';
 
 import CellRenderer from './CellRenderer';
 
 interface Props {
+	context: PostsContext;
 	itemCount: number;
 	isSingleColumn?: boolean;
 	activeIndex?: number;
@@ -40,7 +41,7 @@ const innerElementType = forwardRef<HTMLDivElement, { style: CSSProperties; rest
 	const dispatch = useDispatch<AppDispatch>();
 	const onClick = (event: React.MouseEvent): void => {
 		if (!event.ctrlKey && !event.shiftKey) {
-			dispatch(actions.posts.unselectAllPosts());
+			dispatch(actions.posts.unselectAllPosts({ context: defaultCtx }));
 		}
 	};
 	return (
@@ -142,6 +143,7 @@ const Grid: React.FunctionComponent<Props> = (props) => {
 		return {
 			rowCount,
 			columns,
+			context: props.context,
 			renderLoadMore: props.renderLoadMore,
 			itemCount: props.itemCount,
 			contextMenu: props.contextMenu,
@@ -153,6 +155,7 @@ const Grid: React.FunctionComponent<Props> = (props) => {
 	}, [
 		columns,
 		props.actions,
+		props.context,
 		props.contextMenu,
 		props.itemCount,
 		props.onCellMouseEnter,

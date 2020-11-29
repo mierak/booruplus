@@ -4,7 +4,7 @@ import { Post } from '@appTypes/gelbooruTypes';
 import { IpcChannels } from '@appTypes/processDto';
 import { thunkLoggerFactory } from '@util/logger';
 
-import { ThunkApi } from '@store/types';
+import { defaultCtx, ThunkApi } from '@store/types';
 
 const thunkLogger = thunkLoggerFactory();
 
@@ -29,11 +29,11 @@ export const exportPostsToDirectory = createAsyncThunk<Post[], 'all' | 'selected
 		let posts: Post[];
 		switch (param) {
 			case 'all': {
-				posts = state.posts.posts;
+				posts = state.posts.posts[defaultCtx];
 				break;
 			}
 			case 'selected': {
-				posts = state.posts.posts.filter((post) => post.selected);
+				posts = state.posts.posts[defaultCtx].filter((post) => post.selected);
 				break;
 			}
 			default: {

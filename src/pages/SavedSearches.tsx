@@ -5,7 +5,7 @@ import { Table, Tag, Row, Col, Card, Popconfirm, Tooltip, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
 import { actions, thunks } from '@store';
-import { RootState, AppDispatch } from '@store/types';
+import { RootState, AppDispatch, defaultCtx } from '@store/types';
 import { SavedSearch, Tag as GelbooruTag } from '@appTypes/gelbooruTypes';
 import { getTagColor } from '@util/utils';
 import moment from 'moment';
@@ -166,9 +166,9 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 		const posts = record.previews.map((preview) => preview.post);
 		const index = posts.findIndex((post) => post.id === postId);
 		if (index >= 0) {
-			dispatch(actions.posts.setPosts(posts));
-			dispatch(actions.posts.setActivePostIndex(index));
-			dispatch(actions.system.setActiveView('image'));
+			dispatch(actions.posts.setPosts({ data: posts, context: defaultCtx }));
+			dispatch(actions.posts.setActivePostIndex({ data: index, context: defaultCtx }));
+			dispatch(actions.system.setActiveView({ view: 'image', context: defaultCtx }));
 		}
 	};
 

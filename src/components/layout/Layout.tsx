@@ -4,7 +4,6 @@ import { Layout, Menu, Affix } from 'antd';
 import {
 	DashboardOutlined,
 	UnorderedListOutlined,
-	FileImageOutlined,
 	HeartOutlined,
 	TagsOutlined,
 	FormOutlined,
@@ -59,10 +58,6 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 							<Menu.Item key='thumbnails' onClick={(): void => handleMenuClick('thumbnails')}>
 								<UnorderedListOutlined />
 								<span>Thumbnails</span>
-							</Menu.Item>
-							<Menu.Item key='image' onClick={(): void => handleMenuClick('image')}>
-								<FileImageOutlined />
-								<span>Image View</span>
 							</Menu.Item>
 							<Menu.Item key='saved-searches' onClick={(): void => handleMenuClick('saved-searches')}>
 								<SaveOutlined />

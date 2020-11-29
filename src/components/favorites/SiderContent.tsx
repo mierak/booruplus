@@ -54,7 +54,9 @@ const SiderContent: React.FunctionComponent = () => {
 	const rootNode = useSelector((state: RootState) => state.favorites.rootNode);
 	const activeNodeKey = useSelector((state: RootState) => state.favorites.activeNodeKey);
 	const isCollapsed = useSelector((state: RootState) => state.system.isFavoritesDirectoryTreeCollapsed);
-	const selectedPostIds = useSelector((state: RootState) => state.posts.posts.filter((post) => post.selected).map((post) => post.id));
+	const selectedPostIds = useSelector((state: RootState) =>
+		state.posts.posts['favorites'].filter((post) => post.selected).map((post) => post.id)
+	);
 
 	const [align, setAlign] = useState<[number, number]>([0, 0]);
 	const [visible, setVisible] = useState(false);

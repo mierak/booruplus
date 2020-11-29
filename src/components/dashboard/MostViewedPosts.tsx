@@ -5,7 +5,7 @@ import { Card, Empty, Tooltip } from 'antd';
 import { CheckCircleTwoTone, ReloadOutlined } from '@ant-design/icons';
 
 import { actions, thunks } from '@store';
-import { AppDispatch, RootState } from '@store/types';
+import { AppDispatch, defaultCtx, RootState } from '@store/types';
 
 import { Post } from '@appTypes/gelbooruTypes';
 import { mostViewedLoader } from '@util/componentUtils';
@@ -88,9 +88,11 @@ const MostViewedPosts: React.FunctionComponent = () => {
 	const handleMostViewedImageClick = useCallback(
 		(post: Post): void => {
 			dispatch(actions.system.setSearchMode('most-viewed'));
-			dispatch(actions.posts.setPosts(mostViewedPosts));
-			dispatch(actions.posts.setActivePostIndex(mostViewedPosts.findIndex((p) => p.id === post.id)));
-			dispatch(actions.system.setActiveView('image'));
+			dispatch(actions.posts.setPosts({ data: mostViewedPosts, context: defaultCtx }));
+			dispatch(
+				actions.posts.setActivePostIndex({ data: mostViewedPosts.findIndex((p) => p.id === post.id), context: defaultCtx })
+			);
+			dispatch(actions.system.setActiveView({ view: 'image', context: defaultCtx }));
 		},
 		[dispatch, mostViewedPosts]
 	);

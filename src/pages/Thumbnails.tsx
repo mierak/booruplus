@@ -165,7 +165,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 		if (isFetchingPosts) {
 			return <StyledSpin indicator={<LoadingOutlined style={{ fontSize: '64px' }} />} />;
 		} else {
-			return <StyledThumbnailsList hasHeader emptyDataLogoCentered={true} actions={thumbnailActions} />;
+			return <StyledThumbnailsList context={'posts'} hasHeader emptyDataLogoCentered={true} actions={thumbnailActions} />;
 		}
 	};
 

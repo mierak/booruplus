@@ -3,60 +3,76 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Post } from '@appTypes/gelbooruTypes';
 
 import * as thunks from './thunks';
+import { PostsContext, RootState } from './types';
 
 interface HoveredPost {
 	visible: boolean;
 	post: Post | undefined;
 }
 
+type WithContext<T = null> = {
+	context: PostsContext;
+} & (T extends null ? {} : {
+	data: T;
+})
+
 export interface PostsState {
-	activePostIndex: number | undefined;
-	posts: Post[];
+	selectedIndices: { favorites?: number; posts?: number };
+	posts: { posts: Post[]; favorites: Post[] };
 	hoveredPost: HoveredPost;
 }
 
 export const initialState: PostsState = {
-	activePostIndex: undefined,
-	posts: [],
+	selectedIndices: {},
+	posts: {
+		posts: [],
+		favorites: [],
+	},
 	hoveredPost: {
 		visible: false,
 		post: undefined,
 	},
 };
+
+export const postsSelector = (state: RootState, context?: PostsContext): Post[] => {
+	if (!context || context === 'posts') {
+		return state.posts.posts.posts;
+	} else {
+		return state.posts.posts.favorites;
+	}
+};
+
 const postsSlice = createSlice({
 	name: 'posts',
 	initialState: initialState,
 	reducers: {
-		setActivePostIndex: (state, action: PayloadAction<number | undefined>): void => {
-			state.activePostIndex = action.payload;
+		setActivePostIndex: (state, action: PayloadAction<WithContext<number | undefined>>): void => {
+			state.selectedIndices[action.payload.context] = action.payload.data;
 		},
-		setPosts: (state, action: PayloadAction<Post[]>): void => {
-			state.posts = action.payload;
+		setPosts: (state, action: PayloadAction<WithContext<Post[]>>): void => {
+			state.posts[action.payload.context] = action.payload.data;
 		},
-		setPostSelected: (state, action: PayloadAction<{ post: Post; selected: boolean }>): void => {
-			const post = state.posts.find((p) => p.id === action.payload.post.id);
-			post && (post.selected = action.payload.selected);
+		setPostSelected: (state, action: PayloadAction<WithContext<{ post: Post; selected: boolean }>>): void => {
+			const post = state.posts[action.payload.context].find((p) => p.id === action.payload.data.post.id);
+			post && (post.selected = action.payload.data.selected);
 		},
-		unselectAllPosts: (state): void => {
-			state.posts.forEach((post) => (post.selected = false));
+		unselectAllPosts: (state, action: PayloadAction<WithContext>): void => {
+			state.posts[action.payload.context].forEach((post) => (post.selected = false));
 		},
-		selectMultiplePosts: (state, action: PayloadAction<number>): void => {
-			const index = action.payload;
-			if (index < 0 || index >= state.posts.length) {
+		selectMultiplePosts: (state, action: PayloadAction<WithContext<number>>): void => {
+			const index = action.payload.data;
+			const ctx = action.payload.context;
+			if (index < 0 || index >= state.posts[ctx].length) {
 				return;
 			}
 
-			const isSelected = state.posts[index].selected;
-			const selectedIndexes = state.posts.reduce<number[]>((acc, post, index): number[] => {
-				if (post.selected) {
-					return [...acc, index];
-				} else {
-					return acc;
-				}
+			const isSelected = state.posts[ctx][index].selected;
+			const selectedIndexes = state.posts[ctx].reduce<number[]>((acc, post, index): number[] => {
+				return post.selected ? [...acc, index] : acc;
 			}, []);
 
 			if (selectedIndexes.length === 0) {
-				state.posts[index].selected = !isSelected;
+				state.posts[ctx][index].selected = !isSelected;
 				return;
 			}
 
@@ -65,11 +81,11 @@ const postsSlice = createSlice({
 
 			if (index > maxIndex) {
 				for (let i = maxIndex; i <= index; i++) {
-					state.posts[i].selected = !isSelected;
+					state.posts[ctx][i].selected = !isSelected;
 				}
 			} else if (index < minIndex) {
 				for (let i = index; i <= minIndex; i++) {
-					state.posts[i].selected = !isSelected;
+					state.posts[ctx][i].selected = !isSelected;
 				}
 			} else {
 				const distanceFromMin = index - minIndex;
@@ -77,25 +93,29 @@ const postsSlice = createSlice({
 
 				if (distanceFromMin < distanceFromMax) {
 					for (let i = minIndex; i <= index; i++) {
-						state.posts[i].selected = !isSelected;
+						state.posts[ctx][i].selected = !isSelected;
 					}
 				} else {
 					for (let i = index; i <= maxIndex; i++) {
-						state.posts[i].selected = !isSelected;
+						state.posts[ctx][i].selected = !isSelected;
 					}
 				}
 			}
 		},
-		nextPost: (state): void => {
-			if (state.activePostIndex !== undefined) {
-				const index = state.activePostIndex === state.posts.length - 1 ? 0 : state.activePostIndex + 1;
-				state.activePostIndex = index;
+		nextPost: (state, action: PayloadAction<WithContext>): void => {
+			const ctx = action.payload.context;
+			if (state.selectedIndices[ctx] !== undefined) {
+				const index = state.selectedIndices[ctx] === state.posts[ctx].length - 1 ? 0 : state.selectedIndices[ctx] ?? 0 + 1;
+				state.selectedIndices[ctx] = index;
 			}
 		},
-		previousPost: (state): void => {
-			if (state.activePostIndex !== undefined) {
-				const index = state.activePostIndex === 0 ? state.posts.length - 1 : state.activePostIndex - 1;
-				state.activePostIndex = index;
+		previousPost: (state, action: PayloadAction<WithContext>): void => {
+			const ctx = action.payload.context;
+			if (state.selectedIndices[ctx] !== undefined) {
+				const index = state.selectedIndices[ctx] === 0 ?
+					state.posts.posts.length - 1 :
+					state.selectedIndices[ctx] ?? state.posts[ctx].length - 1;
+				state.selectedIndices[ctx] = index;
 			}
 		},
 		setHoveredPost: (state, action: PayloadAction<Partial<HoveredPost>>): void => {
@@ -105,65 +125,65 @@ const postsSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder.addCase(thunks.onlineSearchForm.fetchPosts.pending, (state, _) => {
-			state.posts = [];
-			state.activePostIndex = undefined;
+			state.posts.posts = [];
+			state.selectedIndices.posts = undefined;
 		});
 		builder.addCase(thunks.downloadedSearchForm.fetchPosts.pending, (state) => {
-			state.posts = [];
-			state.activePostIndex = undefined;
+			state.posts.posts = [];
+			state.selectedIndices.posts = undefined;
 		});
 		builder.addCase(thunks.onlineSearchForm.fetchMorePosts.fulfilled, (state, action) => {
-			const index = state.posts.length - action.payload.length;
-			if (index < state.posts.length && index >= 0) {
-				state.activePostIndex = index;
+			const index = state.posts.posts.length - action.payload.length;
+			if (index < state.posts.posts.length && index >= 0) {
+				state.selectedIndices.posts = index;
 			} else if (index < 0) {
-				state.activePostIndex = 0;
-			} else if (index >= state.posts.length) {
-				state.activePostIndex = state.posts.length - 1;
+				state.selectedIndices.posts = 0;
+			} else if (index >= state.posts.posts.length) {
+				state.selectedIndices.posts = state.posts.posts.length - 1;
 			}
 		});
 		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state) => {
-			state.posts = [];
-			state.activePostIndex = undefined;
+			state.posts.posts = [];
+			state.selectedIndices.posts = undefined;
 		});
 		builder.addCase(thunks.posts.fetchPostsByIds.fulfilled, (state, action) => {
 			for (const post of action.payload) {
-				state.posts.push(post);
+				state.posts.posts.push(post);
 			}
 		});
 		builder.addCase(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled, (state, action) => {
 			for (const post of action.payload) {
-				post.blacklisted !== 1 && state.posts.push(post);
+				post.blacklisted !== 1 && state.posts.posts.push(post);
 			}
 		});
 		builder.addCase(thunks.favorites.fetchPostsInDirectory.pending, (state) => {
-			state.posts = [];
-			state.activePostIndex = undefined;
+			state.posts.favorites = [];
+			state.selectedIndices.favorites = undefined;
 		});
 		builder.addCase(thunks.favorites.fetchPostsInDirectory.fulfilled, (state, action) => {
-			state.posts = action.payload;
+			state.posts.favorites = action.payload;
 		});
 		builder.addCase(thunks.downloadedSearchForm.fetchPosts.fulfilled, (state, action) => {
 			for (const post of action.payload) {
-				state.posts.push(post);
+				state.posts.posts.push(post);
 			}
 		});
 		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.fulfilled, (state, action) => {
 			for (const post of action.payload) {
-				state.posts.push(post);
+				state.posts.posts.push(post);
 			}
-			const index = state.posts.length - action.payload.length;
-			if (index < state.posts.length && index >= 0) {
-				state.activePostIndex = index;
+			const index = state.posts.posts.length - action.payload.length;
+			if (index < state.posts.posts.length && index >= 0) {
+				state.selectedIndices.posts = index;
 			} else if (index < 0) {
-				state.activePostIndex = 0;
-			} else if (index >= state.posts.length) {
-				state.activePostIndex = state.posts.length - 1;
+				state.selectedIndices.posts = 0;
+			} else if (index >= state.posts.posts.length) {
+				state.selectedIndices.posts = state.posts.posts.length - 1;
 			}
 		});
 		builder.addCase(thunks.posts.blacklistPosts.fulfilled, (state, action) => {
 			const idsToRemove = action.payload.map((post) => post.id);
-			state.posts = state.posts.filter((post) => !idsToRemove.includes(post.id));
+			state.posts.posts = state.posts.posts.filter((post) => !idsToRemove.includes(post.id));
 		});
 	},
 });

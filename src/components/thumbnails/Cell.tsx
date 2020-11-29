@@ -5,8 +5,10 @@ import { getIndexFromRowCol } from '@util/utils';
 import { Post } from '@appTypes/gelbooruTypes';
 
 import Thumbnail from './Thumbnail';
+import { PostsContext } from '@store/types';
 
 interface CellProps {
+	context: PostsContext;
 	columnIndex: number;
 	rowIndex: number;
 	style: React.CSSProperties;
@@ -28,6 +30,7 @@ const Cell: React.FunctionComponent<CellProps> = (props) => {
 	return (
 		<div style={{ ...props.style, width: '100%' }}>
 			<Thumbnail
+				context={props.context}
 				isScrolling={props.isScrolling}
 				index={index}
 				contextMenu={props.contextMenu}

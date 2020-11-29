@@ -73,8 +73,11 @@ describe('MostviewedPosts', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions[0]).toMatchObject({ type: actions.system.setSearchMode.type, payload: 'most-viewed' });
-		expect(dispatchedActions[1]).toMatchObject({ type: actions.posts.setPosts.type, payload: posts });
-		expect(dispatchedActions[2]).toMatchObject({ type: actions.posts.setActivePostIndex.type, payload: postsIndexToClick });
+		expect(dispatchedActions[1]).toMatchObject({ type: actions.posts.setPosts.type, payload: { data: { ...posts } } });
+		expect(dispatchedActions[2]).toMatchObject({
+			type: actions.posts.setActivePostIndex.type,
+			payload: { data: postsIndexToClick },
+		});
 		expect(dispatchedActions[3]).toMatchObject({ type: actions.system.setActiveView.type, payload: 'image' });
 		await waitFor(() =>
 			expect(

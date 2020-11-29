@@ -66,7 +66,7 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 
 	useEffect(() => {
 		return (): void => {
-			dispatch(thunks.settings.saveSettings());
+			dispatch(thunks.settings.saveSettings()); // TODO call only when sider width changes
 		};
 	}, [dispatch]);
 
@@ -144,7 +144,14 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const onResizeEnd = (event: React.MouseEvent<HTMLDivElement>): void => {
-		if (isSiderCollapsed || !dragging.current.value || !containerRef.current || !dividerRef.current || !dividerDummyRef.current) return;
+		if (
+			isSiderCollapsed ||
+			!dragging.current.value ||
+			!containerRef.current ||
+			!dividerRef.current ||
+			!dividerDummyRef.current
+		)
+			return;
 
 		const containerOffsetX = containerRef.current.getBoundingClientRect().left;
 		let newWidth = minGridWidth;
@@ -181,10 +188,16 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	return (
-		<Container ref={containerRef} className={props.className} onMouseUp={onResizeEnd} onMouseLeave={onResizeEnd} onMouseMove={onResizeMove}>
+		<Container
+			ref={containerRef}
+			className={props.className}
+			onMouseUp={onResizeEnd}
+			onMouseLeave={onResizeEnd}
+			onMouseMove={onResizeMove}
+		>
 			<Layout>
 				<StyledContent>
-					<ThumbnailsList emptyDataLogoCentered={true} actions={cardActions} hasHeader={false} />
+					<ThumbnailsList context={'favorites'} emptyDataLogoCentered={true} actions={cardActions} hasHeader={false} />
 				</StyledContent>
 				<Divider ref={dividerRef} $active={!isSiderCollapsed} onMouseDown={onResizeStart} />
 				<DividerDummy ref={dividerDummyRef} />

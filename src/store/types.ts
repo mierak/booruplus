@@ -144,3 +144,7 @@ export interface NotFoundTags {
 	tag: string;
 	count: number;
 }
+
+export type PostsContext = 'posts' | 'favorites';
+
+export const defaultCtx = 'posts';

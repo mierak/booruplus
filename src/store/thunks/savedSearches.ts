@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import moment from 'moment';
 
 import { db } from '@db';
-import { ThunkApi, RejectWithValue } from '@store/types';
+import { ThunkApi, RejectWithValue, defaultCtx } from '@store/types';
 import { Rating, SavedSearch, Tag, Post } from '@appTypes/gelbooruTypes';
 import { getThumbnailUrl } from '@service/webService';
 import { thunkLoggerFactory } from '@util/logger';
@@ -126,7 +126,7 @@ export const addSelectedPreviewsToActiveSavedSearch = createAsyncThunk<SavedSear
 	async (_, thunkApi): Promise<SavedSearch | undefined> => {
 		thunkLogger.getActionLogger(addSelectedPreviewsToActiveSavedSearch);
 		const savedSearch = thunkApi.getState().savedSearches.activeSavedSearch;
-		const posts = thunkApi.getState().posts.posts.filter((post) => post.selected);
+		const posts = thunkApi.getState().posts.posts[defaultCtx].filter((post) => post.selected);
 		await thunkApi.dispatch(addPreviewsToActiveSavedSearch(posts));
 		return savedSearch;
 	}
@@ -137,7 +137,7 @@ export const addAllPreviewsToActiveSavedSearch = createAsyncThunk<SavedSearch | 
 	async (_, thunkApi): Promise<SavedSearch | undefined> => {
 		thunkLogger.getActionLogger(addAllPreviewsToActiveSavedSearch);
 		const savedSearch = thunkApi.getState().savedSearches.activeSavedSearch;
-		const posts = thunkApi.getState().posts.posts;
+		const posts = thunkApi.getState().posts.posts[defaultCtx];
 		await thunkApi.dispatch(addPreviewsToActiveSavedSearch(posts));
 		return savedSearch;
 	}

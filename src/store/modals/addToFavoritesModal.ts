@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { AppThunk } from '@store/types';
+import { AppThunk, defaultCtx } from '@store/types';
 
 const log = window.log;
 
@@ -24,7 +24,7 @@ const addToFavoritesModalSlice = createSlice({
 
 const setPostIdsToFavorite = (type: 'selected' | 'all'): AppThunk => async (dispatch, getState): Promise<void> => {
 	try {
-		const posts = getState().posts.posts;
+		const posts = getState().posts.posts[defaultCtx];
 		switch (type) {
 			case 'all':
 				dispatch(addToFavoritesModalSlice.actions.setPostIds(posts.map((post) => post.id)));
