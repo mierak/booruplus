@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-import { actions } from '@store';
+import { actions, postsSelector } from '@store';
 import { PostsContext, RootState } from '@store/types';
 import { CardAction, ContextMenu } from '@appTypes/components';
 import { Post } from '@appTypes/gelbooruTypes';
@@ -11,7 +11,6 @@ import EmptyThumbnails from '@components/EmptyThumbnails';
 
 import Grid from './Grid';
 import PreviewImage from './PreviewImage';
-import { postsSelector } from '@store/posts';
 
 interface Props {
 	className?: string;

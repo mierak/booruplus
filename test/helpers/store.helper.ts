@@ -22,11 +22,17 @@ type DeepPartial<T> = {
 
 const mPostsState = (ps?: Partial<PostsState>): PostsState => {
 	return {
-		activePostIndex: ps?.activePostIndex ?? initialState.posts.activePostIndex,
-		posts: ps?.posts ?? initialState.posts.posts,
+		selectedIndices: ps?.selectedIndices ?? {
+			posts: ps?.selectedIndices?.posts ?? initialState.posts.selectedIndices.posts,
+			favorites: ps?.selectedIndices?.favorites ?? initialState.posts.selectedIndices.favorites,
+		},
+		posts: ps?.posts ?? {
+			favorites: ps?.posts?.favorites ?? initialState.posts.posts.posts,
+			posts: ps?.posts?.posts ?? initialState.posts.posts.favorites,
+		},
 		hoveredPost: ps?.hoveredPost ?? {
-			post: ps?.hoveredPost?.post ?? undefined,
-			visible: ps?.hoveredPost?.visible ?? false,
+			post: ps?.hoveredPost?.post ?? initialState.posts.hoveredPost.post,
+			visible: ps?.hoveredPost?.visible ?? initialState.posts.hoveredPost.visible,
 		},
 	};
 };
@@ -112,9 +118,13 @@ const mTasksState = (ts?: Partial<TasksState>): TasksState => {
 const mSystemState = (ss?: Partial<SystemState>): SystemState => {
 	return {
 		activeView: ss?.activeView ?? initialState.system.activeView,
-		isDownloadedSearchFormDrawerVisible: ss?.isDownloadedSearchFormDrawerVisible ?? initialState.system.isDownloadedSearchFormDrawerVisible,
-		isImageViewThumbnailsCollapsed: ss?.isImageViewThumbnailsCollapsed ?? initialState.system.isImageViewThumbnailsCollapsed,
-		isFavoritesDirectoryTreeCollapsed: ss?.isFavoritesDirectoryTreeCollapsed ?? initialState.system.isFavoritesDirectoryTreeCollapsed,
+		imageViewContext: ss?.imageViewContext ?? initialState.system.imageViewContext,
+		isDownloadedSearchFormDrawerVisible:
+			ss?.isDownloadedSearchFormDrawerVisible ?? initialState.system.isDownloadedSearchFormDrawerVisible,
+		isImageViewThumbnailsCollapsed:
+			ss?.isImageViewThumbnailsCollapsed ?? initialState.system.isImageViewThumbnailsCollapsed,
+		isFavoritesDirectoryTreeCollapsed:
+			ss?.isFavoritesDirectoryTreeCollapsed ?? initialState.system.isFavoritesDirectoryTreeCollapsed,
 		isSearchFormDrawerVsibile: ss?.isSearchFormDrawerVsibile ?? initialState.system.isSearchFormDrawerVsibile,
 		isTagOptionsLoading: ss?.isTagOptionsLoading ?? initialState.system.isTagOptionsLoading,
 		isTagTableLoading: ss?.isTagTableLoading ?? initialState.system.isTagTableLoading,

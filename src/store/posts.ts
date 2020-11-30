@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Post } from '@appTypes/gelbooruTypes';
 
 import * as thunks from './thunks';
-import { PostsContext, RootState } from './types';
+import { PostsContext } from './types';
 
 interface HoveredPost {
 	visible: boolean;
@@ -32,14 +32,6 @@ export const initialState: PostsState = {
 		visible: false,
 		post: undefined,
 	},
-};
-
-export const postsSelector = (state: RootState, context?: PostsContext): Post[] => {
-	if (!context || context === 'posts') {
-		return state.posts.posts.posts;
-	} else {
-		return state.posts.posts.favorites;
-	}
 };
 
 const postsSlice = createSlice({
@@ -105,16 +97,18 @@ const postsSlice = createSlice({
 		nextPost: (state, action: PayloadAction<WithContext>): void => {
 			const ctx = action.payload.context;
 			if (state.selectedIndices[ctx] !== undefined) {
-				const index = state.selectedIndices[ctx] === state.posts[ctx].length - 1 ? 0 : state.selectedIndices[ctx] ?? 0 + 1;
+				const index =
+					state.selectedIndices[ctx] === state.posts[ctx].length - 1 ? 0 : (state.selectedIndices[ctx] ?? 0) + 1;
 				state.selectedIndices[ctx] = index;
 			}
 		},
 		previousPost: (state, action: PayloadAction<WithContext>): void => {
 			const ctx = action.payload.context;
 			if (state.selectedIndices[ctx] !== undefined) {
-				const index = state.selectedIndices[ctx] === 0 ?
-					state.posts.posts.length - 1 :
-					state.selectedIndices[ctx] ?? state.posts[ctx].length - 1;
+				const index =
+					state.selectedIndices[ctx] === 0
+						? state.posts.posts.length - 1
+						: (state.selectedIndices[ctx] ?? state.posts[ctx].length) - 1;
 				state.selectedIndices[ctx] = index;
 			}
 		},

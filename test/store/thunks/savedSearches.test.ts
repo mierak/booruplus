@@ -135,8 +135,8 @@ describe('thunks/savedSearches', () => {
 					activeSavedSearch: savedSearch,
 				},
 				posts: {
-					posts,
-					activePostIndex: 0,
+					posts: { posts, favorites: [] },
+					selectedIndices: { posts: 0 },
 					hoveredPost: {
 						post: undefined,
 						visible: false,
@@ -169,8 +169,8 @@ describe('thunks/savedSearches', () => {
 					activeSavedSearch: savedSearch,
 				},
 				posts: {
-					posts,
-					activePostIndex: 0,
+					posts: { posts, favorites: [] },
+					selectedIndices: { posts: 0 },
 					hoveredPost: {
 						post: undefined,
 						visible: false,

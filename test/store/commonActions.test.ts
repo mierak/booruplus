@@ -32,7 +32,7 @@ describe('store/commonActions', () => {
 			const store = mockStore(
 				mState({
 					posts: {
-						posts,
+						posts: { posts, favorites: [] },
 					},
 				})
 			);
@@ -52,7 +52,7 @@ describe('store/commonActions', () => {
 			const store = mockStore(
 				mState({
 					posts: {
-						posts,
+						posts: { posts, favorites: [] },
 					},
 				})
 			);

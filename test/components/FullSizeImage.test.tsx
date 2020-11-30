@@ -32,8 +32,10 @@ describe('FullSizeImage', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
-					activePostIndex: 2,
+					posts: { posts, favorites: [] },
+					selectedIndices: {
+						posts: 2,
+					},
 				},
 			})
 		);
@@ -41,7 +43,7 @@ describe('FullSizeImage', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<FullSizeImage />
+				<FullSizeImage context='posts' />
 			</Provider>
 		);
 
@@ -53,8 +55,8 @@ describe('FullSizeImage', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
-					activePostIndex: 0,
+					posts: { posts, favorites: [] },
+					selectedIndices: { posts: 0 },
 				},
 			})
 		);
@@ -62,7 +64,7 @@ describe('FullSizeImage', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<FullSizeImage />
+				<FullSizeImage context='posts' />
 			</Provider>
 		);
 
@@ -74,8 +76,8 @@ describe('FullSizeImage', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
-					activePostIndex: 1,
+					posts: { posts, favorites: [] },
+					selectedIndices: { posts: 1 },
 				},
 			})
 		);
@@ -83,7 +85,7 @@ describe('FullSizeImage', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<FullSizeImage />
+				<FullSizeImage context='posts' />
 			</Provider>
 		);
 
@@ -96,8 +98,8 @@ describe('FullSizeImage', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
-					activePostIndex,
+					posts: { posts, favorites: [] },
+					selectedIndices: { posts: activePostIndex },
 				},
 			})
 		);
@@ -105,7 +107,7 @@ describe('FullSizeImage', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<FullSizeImage />
+				<FullSizeImage context='posts' />
 			</Provider>
 		);
 

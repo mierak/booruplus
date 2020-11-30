@@ -4,9 +4,10 @@ import { Post } from '@appTypes/gelbooruTypes';
 import { IpcChannels } from '@appTypes/processDto';
 import { thunkLoggerFactory } from '@util/logger';
 
-import { defaultCtx, ThunkApi } from '@store/types';
+import { ThunkApi } from '@store/types';
 
 const thunkLogger = thunkLoggerFactory();
+const defaultCtx = 'posts'; //! TODO
 
 export const setFullscreenLoadingMaskState = createAction<string | { message: string; progressPercent: number }>(
 	'loadingState/setFullscreenLoadingMaskMessage'

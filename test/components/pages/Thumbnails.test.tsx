@@ -133,7 +133,7 @@ describe('pages/Thumbnails', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -166,7 +166,7 @@ describe('pages/Thumbnails', () => {
 					searchMode: 'saved-search-online',
 				},
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -196,7 +196,7 @@ describe('pages/Thumbnails', () => {
 					searchMode: 'saved-search-offline',
 				},
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -223,7 +223,7 @@ describe('pages/Thumbnails', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -252,7 +252,7 @@ describe('pages/Thumbnails', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -288,7 +288,7 @@ describe('pages/Thumbnails', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -321,7 +321,7 @@ describe('pages/Thumbnails', () => {
 					searchMode: 'saved-search-online',
 				},
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);

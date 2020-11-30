@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import moment from 'moment';
 
 import { db } from '@db';
-import { ThunkApi, RejectWithValue, defaultCtx } from '@store/types';
+import { ThunkApi, RejectWithValue } from '@store/types';
 import { Rating, SavedSearch, Tag, Post } from '@appTypes/gelbooruTypes';
 import { getThumbnailUrl } from '@service/webService';
 import { thunkLoggerFactory } from '@util/logger';
@@ -12,6 +12,7 @@ import * as onlineSearchFormThunk from './onlineSearchForm';
 import { NoActiveSavedSearchError, SavedSearchAlreadyExistsError } from '@errors/savedSearchError';
 
 const thunkLogger = thunkLoggerFactory();
+const defaultCtx = 'posts'; //! TODO
 
 export const searchOnline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi>(
 	'savedSearches/searchOnline',

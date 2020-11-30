@@ -68,7 +68,7 @@ describe('pages/Dashboard', () => {
 					activeView: 'image',
 				},
 				posts: {
-					posts: [],
+					posts: { posts: [], favorites: [] },
 				},
 			})
 		);

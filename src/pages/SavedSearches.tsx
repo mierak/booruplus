@@ -5,13 +5,14 @@ import { Table, Tag, Row, Col, Card, Popconfirm, Tooltip, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
 import { actions, thunks } from '@store';
-import { RootState, AppDispatch, defaultCtx } from '@store/types';
+import { RootState, AppDispatch } from '@store/types';
 import { SavedSearch, Tag as GelbooruTag } from '@appTypes/gelbooruTypes';
 import { getTagColor } from '@util/utils';
 import moment from 'moment';
 import { openNotificationWithIcon } from '@appTypes/components';
 
 const { Column } = Table;
+const defaultCtx = 'posts'; //! TODO
 
 interface Props {
 	className?: string;
@@ -79,7 +80,11 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 
 	const handleDelete = async (savedSearch: SavedSearch): Promise<void> => {
 		await dispatch(thunks.savedSearches.remove(savedSearch));
-		openNotificationWithIcon('success', 'Saved Search deleted', 'Saved Search was successfuly deleted from the database.');
+		openNotificationWithIcon(
+			'success',
+			'Saved Search deleted',
+			'Saved Search was successfuly deleted from the database.'
+		);
 	};
 
 	const handlePreviewDelete = (record: SavedSearch, previewId: number): void => {
@@ -207,7 +212,13 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 				style={{ overflowX: 'hidden' }}
 			>
 				<Column title='Tags' dataIndex='tags' key='tagsCol' render={renderTags} filterDropdownVisible={true} />
-				<Column title='Excluded Tags' dataIndex='excludedTags' key='excludedTagsCol' render={renderTags} filterDropdownVisible={true} />
+				<Column
+					title='Excluded Tags'
+					dataIndex='excludedTags'
+					key='excludedTagsCol'
+					render={renderTags}
+					filterDropdownVisible={true}
+				/>
 				<Column title='Rating' dataIndex='rating' key='ratingCol' />
 				<Column title='Last Searched' dataIndex='lastSearched' key='lastSearchedCol' render={renderLastSearched} />
 				<Column title='Actions' dataIndex='' key='action' width={220} render={renderActions} />

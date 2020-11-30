@@ -88,3 +88,5 @@ export const actions = {
 export const thunks = {
 	...allThunks,
 };
+
+export * from './selectors';

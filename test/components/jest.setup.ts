@@ -1,3 +1,8 @@
+
+jest.mock('../../src/store/selectors', () => {
+	return jest.requireActual('../../src/store/selectors');
+});
+
 class Image {
 	constructor() {
 		setTimeout(() => {
@@ -86,30 +91,30 @@ jest.mock('../../src/util/componentUtils', () => {
 
 Object.defineProperties((global as any).HTMLElement.prototype, {
 	clientWidth: {
-		get: function(): number {
+		get: function (): number {
 			return this._jsdomMockClientWidth || 0;
 		},
 	},
 	clientHeight: {
-		get: function(): number {
+		get: function (): number {
 			return this._jsdomMockClientHeight || 0;
 		},
 	},
 	scrollHeight: {
-		get: function(): number {
+		get: function (): number {
 			return this._jsdomMockScrollHeight || 0;
 		},
 	},
 	scrollTop: {
-		get: function(): number {
+		get: function (): number {
 			return this._jsdomMockScrollTop || 0;
 		},
-		set: function(value: number): void {
+		set: function (value: number): void {
 			this._scrollTop = value;
 		},
 	},
 	getBoundingClientRect: {
-		value: function(): { top: number; right: number; bottom: number; left: number } {
+		value: function (): { top: number; right: number; bottom: number; left: number } {
 			return (
 				this._jsdomMockClientBoundingRect || {
 					top: 0,
@@ -121,7 +126,7 @@ Object.defineProperties((global as any).HTMLElement.prototype, {
 		},
 	},
 	onload: {
-		set: function(cb: any): void {
+		set: function (cb: any): void {
 			setTimeout(() => {
 				cb();
 			}, 100);

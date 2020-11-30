@@ -33,7 +33,7 @@ describe('ThumbnailsList', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -41,7 +41,7 @@ describe('ThumbnailsList', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ThumbnailsList />
+				<ThumbnailsList context='posts' />
 			</Provider>
 		);
 
@@ -56,7 +56,7 @@ describe('ThumbnailsList', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -74,7 +74,7 @@ describe('ThumbnailsList', () => {
 		// when
 		const { unmount } = render(
 			<Provider store={store}>
-				<ThumbnailsList />
+				<ThumbnailsList context='posts' />
 			</Provider>
 		);
 		addMap.keydown({ keyCode: arrowRightKeyCode });
@@ -93,7 +93,7 @@ describe('ThumbnailsList', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts: [],
+					posts: { posts: [], favorites: [] },
 				},
 			})
 		);
@@ -101,7 +101,7 @@ describe('ThumbnailsList', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ThumbnailsList />
+				<ThumbnailsList context='posts' />
 			</Provider>
 		);
 
@@ -114,7 +114,7 @@ describe('ThumbnailsList', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts: [],
+					posts: { posts: [], favorites: [] },
 				},
 			})
 		);
@@ -122,7 +122,7 @@ describe('ThumbnailsList', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ThumbnailsList />
+				<ThumbnailsList context='posts' />
 			</Provider>
 		);
 
@@ -134,7 +134,7 @@ describe('ThumbnailsList', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 				system: {
 					searchMode: 'favorites',
@@ -145,7 +145,7 @@ describe('ThumbnailsList', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ThumbnailsList />
+				<ThumbnailsList context='posts' />
 			</Provider>
 		);
 
@@ -157,7 +157,7 @@ describe('ThumbnailsList', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 				system: {
 					searchMode: 'open-download',
@@ -168,7 +168,7 @@ describe('ThumbnailsList', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ThumbnailsList />
+				<ThumbnailsList context='posts' />
 			</Provider>
 		);
 
@@ -180,7 +180,7 @@ describe('ThumbnailsList', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -188,7 +188,7 @@ describe('ThumbnailsList', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ThumbnailsList />
+				<ThumbnailsList context='posts' />
 			</Provider>
 		);
 		userEvent.hover(screen.getAllByTestId('thumbnail-image')[0]);
@@ -205,7 +205,7 @@ describe('ThumbnailsList', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -213,7 +213,7 @@ describe('ThumbnailsList', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ThumbnailsList />
+				<ThumbnailsList context='posts' />
 			</Provider>
 		);
 		userEvent.hover(screen.getAllByTestId('thumbnail-image')[0]);

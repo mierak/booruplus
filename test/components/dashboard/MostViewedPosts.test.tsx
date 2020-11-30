@@ -78,7 +78,7 @@ describe('MostviewedPosts', () => {
 			type: actions.posts.setActivePostIndex.type,
 			payload: { data: postsIndexToClick },
 		});
-		expect(dispatchedActions[3]).toMatchObject({ type: actions.system.setActiveView.type, payload: 'image' });
+		expect(dispatchedActions[3]).toMatchObject({ type: actions.system.setActiveView.type, payload: { view: 'image' } });
 		await waitFor(() =>
 			expect(
 				screen.getAllByRole('img', {

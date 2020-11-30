@@ -297,7 +297,7 @@ describe('thunks/posts', () => {
 				mPost({ id: 3, selected: true }),
 				mPost({ id: 4, selected: false }),
 			];
-			const store = mockStore({ ...initialState, posts: { ...initialState.posts, posts } });
+			const store = mockStore({ ...initialState, posts: { ...initialState.posts, posts: { posts, favorites: [] } } });
 
 			// when
 			await store.dispatch(thunks.downloadSelectedPosts());
@@ -312,7 +312,7 @@ describe('thunks/posts', () => {
 		it('Throws error when there are no selected posts', async () => {
 			// given
 			const posts = [mPost({ id: 0, selected: false }), mPost({ id: 1, selected: false })];
-			const store = mockStore({ ...initialState, posts: { ...initialState.posts, posts } });
+			const store = mockStore({ ...initialState, posts: { ...initialState.posts, posts: { posts, favorites: [] } } });
 
 			// when
 			await store.dispatch(thunks.downloadSelectedPosts());
@@ -329,7 +329,7 @@ describe('thunks/posts', () => {
 		it('Gets all posts from state and dispatches downloadPost()', async () => {
 			// given
 			const posts = [mPost({ id: 0 }), mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
-			const store = mockStore({ ...initialState, posts: { ...initialState.posts, posts } });
+			const store = mockStore({ ...initialState, posts: { ...initialState.posts, posts: { posts, favorites: [] } } });
 
 			// when
 			await store.dispatch(thunks.downloadAllPosts());
@@ -344,7 +344,7 @@ describe('thunks/posts', () => {
 		it('Throws error when there are no posts in state', async () => {
 			// given
 			const posts: Post[] = [];
-			const store = mockStore({ ...initialState, posts: { ...initialState.posts, posts } });
+			const store = mockStore({ ...initialState, posts: { ...initialState.posts, posts: { posts, favorites: [] } } });
 
 			// when
 			await store.dispatch(thunks.downloadAllPosts());
@@ -386,7 +386,7 @@ describe('thunks/posts', () => {
 				mPost({ id: 3, selected: true }),
 				mPost({ id: 4, selected: false }),
 			];
-			const store = mockStore({ ...initialState, posts: { ...initialState.posts, posts } });
+			const store = mockStore({ ...initialState, posts: { ...initialState.posts, posts: { posts, favorites: [] } } });
 
 			// when
 			await store.dispatch(thunks.blacklistSelectedPosts());
@@ -403,7 +403,7 @@ describe('thunks/posts', () => {
 		it('Gets all posts from state and dispatches blacklistPosts()', async () => {
 			// given
 			const posts = [mPost({ id: 0 }), mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
-			const store = mockStore({ ...initialState, posts: { ...initialState.posts, posts } });
+			const store = mockStore({ ...initialState, posts: { ...initialState.posts, posts: { posts, favorites: [] } } });
 
 			// when
 			await store.dispatch(thunks.blacklistAllPosts());

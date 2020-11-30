@@ -1,4 +1,5 @@
 import React from 'react';
+import Favorites from '../../../src/pages/Favorites';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { thunks, actions } from '../../../src/store';
@@ -7,7 +8,6 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mState } from '../../helpers/store.helper';
 
-import Favorites from '../../../src/pages/Favorites';
 import '@testing-library/jest-dom';
 import { mTreeNode, mPost } from '../../helpers/test.helper';
 import { mockedDb } from '../../helpers/database.mock';
@@ -45,61 +45,7 @@ describe('pages/Favorites', () => {
 		],
 	});
 	const expandedKeys = ['0', '11', '111', '12'];
-	it('Renders correctly with no posts', () => {
-		// given
-		const store = mockStore(
-			mState({
-				favorites: {
-					rootNode,
-					expandedKeys,
-				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<Favorites />
-			</Provider>
-		);
-
-		// then
-		expect(screen.getByText('node11')).not.toBeNull();
-		expect(screen.getByText('No Posts To Show')).not.toBeNull();
-	});
-	it('Renders posts correctly', () => {
-		// given
-		const posts = [
-			mPost({ id: 1, directory: 'dir1', hash: 'hash1' }),
-			mPost({ id: 2, directory: 'dir2', hash: 'hash2' }),
-			mPost({ id: 3, directory: 'dir3', hash: 'hash3' }),
-			mPost({ id: 4, directory: 'dir4', hash: 'hash4' }),
-			mPost({ id: 5, directory: 'dir5', hash: 'hash5' }),
-		];
-		const store = mockStore(
-			mState({
-				favorites: {
-					rootNode,
-					expandedKeys,
-				},
-				posts: {
-					posts,
-				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<Favorites />
-			</Provider>
-		);
-
-		// then
-		expect(screen.getByText('node11')).not.toBeNull();
-		expect(screen.getAllByTestId('thumbnail-image')).toHaveLength(5);
-	});
-	it('Fetches posts in default directory and sets search mode to favorites on mount', () => {
+	it('Renders correctly with no posts', async () => {
 		// given
 		const store = mockStore(
 			mState({
@@ -119,10 +65,79 @@ describe('pages/Favorites', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchPostsInDirectory.pending.type, meta: { arg: 1 } });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setSearchMode.type, payload: 'favorites' });
+		expect(screen.getByText('node11')).not.toBeNull();
+		expect(screen.getByText('No Posts To Show')).not.toBeNull();
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.favorites.fetchPostsInDirectory.fulfilled.type,
+			})
+		);
 	});
-	it('Fetches posts on directory click', () => {
+	it('Renders posts correctly', async () => {
+		// given
+		const posts = [
+			mPost({ id: 5, directory: 'dir5', hash: 'hash5' }),
+			mPost({ id: 1, directory: 'dir1', hash: 'hash1' }),
+			mPost({ id: 2, directory: 'dir2', hash: 'hash2' }),
+			mPost({ id: 3, directory: 'dir3', hash: 'hash3' }),
+			mPost({ id: 4, directory: 'dir4', hash: 'hash4' }),
+		];
+		const store = mockStore(
+			mState({
+				favorites: {
+					rootNode,
+					expandedKeys,
+				},
+				posts: {
+					posts: { posts: [], favorites: posts },
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<Favorites />
+			</Provider>
+		);
+
+		// then
+		expect(screen.getByText('node11')).not.toBeNull();
+		expect(screen.getAllByTestId('thumbnail-image')).toHaveLength(5);
+		expect((await screen.findAllByTestId('thumbnail-image'))[0]).toHaveAttribute('src', 'test.png');
+	});
+	it('Fetches posts in default directory and sets search mode to favorites on mount', async () => {
+		// given
+		const store = mockStore(
+			mState({
+				favorites: {
+					rootNode,
+					expandedKeys,
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<Favorites />
+			</Provider>
+		);
+
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({
+			type: thunks.favorites.fetchPostsInDirectory.pending.type,
+			meta: { arg: 1 },
+		});
+		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setSearchMode.type, payload: 'favorites' });
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.favorites.fetchPostsInDirectory.fulfilled.type,
+			})
+		);
+	});
+	it('Fetches posts on directory click', async () => {
 		// given
 		const store = mockStore(
 			mState({
@@ -143,7 +158,15 @@ describe('pages/Favorites', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchPostsInDirectory.pending.type, meta: { arg: 12 } });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: thunks.favorites.fetchPostsInDirectory.pending.type,
+			meta: { arg: 12 },
+		});
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.favorites.fetchPostsInDirectory.fulfilled.type,
+			})
+		);
 	});
 	it('Renders posts with correct actions', async () => {
 		// given
@@ -161,7 +184,7 @@ describe('pages/Favorites', () => {
 					expandedKeys,
 				},
 				posts: {
-					posts,
+					posts: { posts: [], favorites: posts },
 				},
 			})
 		);
@@ -196,7 +219,7 @@ describe('pages/Favorites', () => {
 					expandedKeys,
 				},
 				posts: {
-					posts,
+					posts: { favorites: posts, posts: [] },
 				},
 			})
 		);
@@ -212,8 +235,16 @@ describe('pages/Favorites', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.posts.downloadPost.pending.type, meta: { arg: { post: posts[1] } } });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: thunks.posts.downloadPost.pending.type,
+			meta: { arg: { post: posts[1] } },
+		});
 		expect(notificationMock).toBeCalledWith('success', 'Post downloaded', 'Image was successfuly saved to disk.');
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.posts.downloadPost.fulfilled.type,
+			})
+		);
 	});
 	it('Dispatches showModal() and setPostIds() for correct post when Move button is pressed', async () => {
 		// given
@@ -231,7 +262,7 @@ describe('pages/Favorites', () => {
 					expandedKeys,
 				},
 				posts: {
-					posts,
+					posts: { posts: [], favorites: posts },
 				},
 			})
 		);
@@ -247,7 +278,11 @@ describe('pages/Favorites', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.showModal.type, payload: 'move-to-directory' });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.addToFavoritesModal.setPostIds.type, payload: [posts[2].id] });
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.favorites.fetchPostsInDirectory.fulfilled.type,
+			})
+		);
 	});
 	it('Dispatches blacklistPosts() for correct post when Blacklist button is pressed', async () => {
 		// given
@@ -265,7 +300,7 @@ describe('pages/Favorites', () => {
 					expandedKeys,
 				},
 				posts: {
-					posts,
+					posts: { posts: [], favorites: posts },
 				},
 			})
 		);
@@ -283,7 +318,10 @@ describe('pages/Favorites', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.posts.blacklistPosts.pending.type, meta: { arg: [posts[3]] } });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: thunks.posts.blacklistPosts.pending.type,
+			meta: { arg: [posts[3]] },
+		});
 		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.posts.blacklistPosts.fulfilled.type }));
 		expect(deleteImageMock).toBeCalledWith(posts[3]);
 		expect(notificationMock).toBeCalledWith('success', 'Post deleted', 'Image was successfuly deleted from disk.');
@@ -306,7 +344,7 @@ describe('pages/Favorites', () => {
 					activeNodeKey: 0,
 				},
 				posts: {
-					posts,
+					posts: { posts: [], favorites: posts },
 				},
 			})
 		);
@@ -331,7 +369,10 @@ describe('pages/Favorites', () => {
 			})
 		);
 		await waitFor(() =>
-			expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchPostsInDirectory.pending.type, meta: { arg: 0 } })
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.favorites.fetchPostsInDirectory.pending.type,
+				meta: { arg: 0 },
+			})
 		);
 		expect(notificationMock).toBeCalledWith('success', 'Success', 'Successfuly removed post from directory');
 	});

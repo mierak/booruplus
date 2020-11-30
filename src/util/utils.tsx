@@ -2,6 +2,7 @@ import moment from 'moment';
 
 import { Tag, Rating, PostDto, Post, TagType } from '@appTypes/gelbooruTypes';
 import { Entity } from '@db/types';
+import { PostsContext, RootState } from '@store/types';
 
 export const getTagColor = (tag: Tag | TagType): string => {
 	const type = typeof tag === 'string' ? tag : tag.type;
@@ -232,5 +233,7 @@ export const addThousandsSeparator = (number: number, separator?: string): strin
 };
 
 export const formatPercentProgress = (done: number, total: number): string => {
-	return `${addThousandsSeparator(Math.round(done / 1024 / 1024))} MB / ${addThousandsSeparator(Math.round(total / 1024 / 1024))} MB`;
+	return `${addThousandsSeparator(Math.round(done / 1024 / 1024))} MB / ${addThousandsSeparator(
+		Math.round(total / 1024 / 1024)
+	)} MB`;
 };
