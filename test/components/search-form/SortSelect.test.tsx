@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { actions } from '../../../src/store';
 import { RootState, AppDispatch } from '../../../src/store/types';
@@ -19,7 +19,7 @@ describe('search-form/SortSelect', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SortSelect mode="online" />
+				<SortSelect mode='online' />
 			</Provider>
 		);
 
@@ -33,21 +33,21 @@ describe('search-form/SortSelect', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SortSelect mode="offline" />
+				<SortSelect mode='offline' />
 			</Provider>
 		);
 
 		// then
 		expect(screen.getByText('Date Downloaded')).not.toBeNull();
 	});
-	it('Renders all options for online mode when select box is opened', () => {
+	it('Renders all options for online mode when select box is opened', async () => {
 		// given
 		const store = mockStore(mState());
 
 		// when
-		const { unmount } = render(
+		render(
 			<Provider store={store}>
-				<SortSelect mode="online" open />
+				<SortSelect mode='online' open />
 			</Provider>
 		);
 
@@ -57,16 +57,16 @@ describe('search-form/SortSelect', () => {
 		expect(anyOption).toHaveLength(2);
 		expect(screen.getByText('Date Updated')).not.toBeNull();
 		expect(screen.getByText('Rating')).not.toBeNull();
-		unmount();
+		await waitFor(() => undefined);
 	});
-	it('Renders all options for offline mode when select box is opened', () => {
+	it('Renders all options for offline mode when select box is opened', async () => {
 		// given
 		const store = mockStore(mState());
 
 		// when
-		const { unmount } = render(
+		render(
 			<Provider store={store}>
-				<SortSelect mode="offline" open />
+				<SortSelect mode='offline' open />
 			</Provider>
 		);
 
@@ -76,14 +76,14 @@ describe('search-form/SortSelect', () => {
 		expect(anyOption).toHaveLength(2);
 		expect(screen.getByText('Date Updated')).not.toBeNull();
 		expect(screen.getByText('Rating')).not.toBeNull();
-		unmount();
+		await waitFor(() => undefined);
 	});
-	it('Dispatches setSort() for onlineSearchForm', () => {
+	it('Dispatches setSort() for onlineSearchForm', async () => {
 		// given
 		const store = mockStore(mState());
 
 		// when
-		const { unmount } = render(
+		render(
 			<Provider store={store}>
 				<SortSelect mode="online" open />
 			</Provider>
@@ -93,14 +93,14 @@ describe('search-form/SortSelect', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.setSort.type, payload: 'rating' });
-		unmount();
+		await waitFor(() => undefined);
 	});
-	it('Dispatches setSort() for downloadedSearchForm', () => {
+	it('Dispatches setSort() for downloadedSearchForm', async () => {
 		// given
 		const store = mockStore(mState());
 
 		// when
-		const { unmount } = render(
+		render(
 			<Provider store={store}>
 				<SortSelect mode="offline" open />
 			</Provider>
@@ -110,6 +110,6 @@ describe('search-form/SortSelect', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.setSort.type, payload: 'rating' });
-		unmount();
+		await waitFor(() => undefined);
 	});
 });

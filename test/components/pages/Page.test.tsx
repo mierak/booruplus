@@ -191,15 +191,24 @@ describe('pages/Dashboard', () => {
 		// then
 		await waitFor(() => expect(screen.getByText('Downloaded Posts')).not.toBeNull());
 		const dispatchedActions = store.getActions();
-		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.settings.loadSettings.pending.type }));
-		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.tasks.rehydrateFromDb.pending.type }));
-		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchTreeData.pending.type }));
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({ type: thunks.settings.loadSettings.pending.type })
+		);
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({ type: thunks.tasks.rehydrateFromDb.pending.type })
+		);
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchTreeData.pending.type })
+		);
 	});
-	it('Renders loading mask with correct message', () => {
+	it('Renders loading mask with correct message', async () => {
 		// given
 		const message = 'test message';
 		const store = mockStore(
 			mState({
+				system: {
+					activeView: 'dashboard',
+				},
 				loadingStates: {
 					isFullscreenLoadingMaskVisible: true,
 					fullscreenLoadingMaskMessage: message,
@@ -216,5 +225,6 @@ describe('pages/Dashboard', () => {
 
 		// then
 		expect(screen.findAllByText(message)).not.toBeNull();
+		expect(await screen.findByText('Downloaded Posts')).not.toBeNull();
 	});
 });

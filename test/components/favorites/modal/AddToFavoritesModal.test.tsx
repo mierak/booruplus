@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, wait } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { thunks, actions } from '../../../../src/store';
 import { RootState, AppDispatch } from '../../../../src/store/types';
@@ -38,7 +38,7 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
-	it('Renders correctly', () => {
+	it('Renders correctly', async () => {
 		// given
 		const store = mockStore(
 			mState({
@@ -66,6 +66,9 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 		expect(cancelButton).not.toBeNull();
 		expect(screen.queryByText('node1')).toBeNull();
 		expect(screen.getByText('node11')).not.toBeNull();
+		expect(screen.getByText('node111')).not.toBeNull();
+		expect(screen.getByText('node12')).not.toBeNull();
+		await waitFor(() => undefined, { timeout: 0 });
 	});
 	it('Closes modal when Close button is pressed', () => {
 		// given
@@ -124,6 +127,9 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 			meta: { arg: { ids: postIdsToFavorite, key: selectedNodeKey.toString() } },
 		});
 		await waitFor(() => expect(notificationSpy).toHaveBeenCalledWith('success', 'Success', expect.anything()));
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchTreeData.fulfilled.type })
+		);
 	});
 	it('Shows error notification when Add button is pressed but no posts to favorite are defined in state', async () => {
 		// given
@@ -161,7 +167,7 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 			)
 		);
 	});
-	it('When no node is selected it dispatches with default node key', () => {
+	it('When no node is selected it dispatches with default node key', async () => {
 		const postIdsToFavorite = [1, 2, 3, 4, 5];
 		const store = mockStore(
 			mState({
@@ -191,5 +197,6 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 			type: thunks.favorites.addPostsToDirectory.pending.type,
 			meta: { arg: { ids: postIdsToFavorite, key: 1 } },
 		});
+		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchTreeData.fulfilled.type }));
 	});
 });

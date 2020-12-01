@@ -39,7 +39,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		jest.clearAllMocks();
 	});
 
-	it('Renders correctly', () => {
+	it('Renders correctly', async () => {
 		// given
 		const store = mockStore(
 			mState({
@@ -67,6 +67,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		expect(cancelButton).not.toBeNull();
 		expect(screen.queryByText('node1')).toBeNull();
 		expect(screen.getByText('node11')).not.toBeNull();
+		await waitFor(() => undefined, { timeout: 0 });
 	});
 	it('Closes modal when Cancel button is pressed', () => {
 		// given
