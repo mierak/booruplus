@@ -1,5 +1,5 @@
 import { initialState } from '../../src/store';
-import { RootState, Settings } from '@store/types';
+import { PostsContext, RootState, Settings } from '@store/types';
 import { PostsState } from '@store/posts';
 import { DashboardState } from '@store/dashboard';
 import { DownloadedSearchFormState } from '@store/types';
@@ -11,29 +11,37 @@ import { SystemState } from '@store/system';
 import { SavedSearchesState } from '@store/savedSearches';
 import { TagsState } from '@store/tags';
 import Modals from '@store/modals';
+import { Post } from '@appTypes/gelbooruTypes';
 
 type DeepPartial<T> = {
-	[P in keyof T]?: T[P] extends Array<infer U>
-		? Array<DeepPartial<U>>
-		: T[P] extends ReadonlyArray<infer U>
-		? ReadonlyArray<DeepPartial<U>>
-		: DeepPartial<T[P]>;
+	[P in keyof T]?: DeepPartial<T[P]>;
 };
 
-const mPostsState = (ps?: Partial<PostsState>): PostsState => {
+const mPostsPostsState = (ps?: DeepPartial<{ [K in PostsContext]?: Post[] }>): { [K in PostsContext]: Post[] } => {
+	return {
+		posts: (ps?.posts as Post[]) ?? initialState.posts.posts.favorites,
+		favorites: (ps?.favorites as Post[]) ?? initialState.posts.posts.posts,
+		mostViewed: (ps?.mostViewed as Post[]) ?? initialState.posts.posts.mostViewed,
+	};
+};
+
+const mHoveredPostState = (
+	hp?: DeepPartial<{ post: Post | undefined; visible: boolean }>
+): { post: Post | undefined; visible: boolean } => {
+	return {
+		post: (hp?.post as Post) ?? initialState.posts.hoveredPost.post,
+		visible: hp?.visible ?? initialState.posts.hoveredPost.visible,
+	};
+};
+
+const mPostsState = (ps?: DeepPartial<PostsState>): PostsState => {
 	return {
 		selectedIndices: ps?.selectedIndices ?? {
 			posts: ps?.selectedIndices?.posts ?? initialState.posts.selectedIndices.posts,
 			favorites: ps?.selectedIndices?.favorites ?? initialState.posts.selectedIndices.favorites,
 		},
-		posts: ps?.posts ?? {
-			favorites: ps?.posts?.favorites ?? initialState.posts.posts.posts,
-			posts: ps?.posts?.posts ?? initialState.posts.posts.favorites,
-		},
-		hoveredPost: ps?.hoveredPost ?? {
-			post: ps?.hoveredPost?.post ?? initialState.posts.hoveredPost.post,
-			visible: ps?.hoveredPost?.visible ?? initialState.posts.hoveredPost.visible,
-		},
+		posts: mPostsPostsState(ps?.posts),
+		hoveredPost: mHoveredPostState(ps?.hoveredPost),
 	};
 };
 
@@ -42,7 +50,6 @@ const mDashboardState = (ds?: Partial<DashboardState>): DashboardState => {
 		mostDownloadedTag: ds?.mostDownloadedTag ?? initialState.dashboard.mostDownloadedTag,
 		mostFavoritedTags: ds?.mostFavoritedTags ?? initialState.dashboard.mostFavoritedTags,
 		mostSearchedTags: ds?.mostSearchedTags ?? initialState.dashboard.mostSearchedTags,
-		mostViewedPosts: ds?.mostViewedPosts ?? initialState.dashboard.mostViewedPosts,
 		ratingCounts: ds?.ratingCounts ?? initialState.dashboard.ratingCounts,
 		totalBlacklistedPosts: ds?.totalBlacklistedPosts ?? initialState.dashboard.totalBlacklistedPosts,
 		totalDownloadedPosts: ds?.totalDownloadedPosts ?? initialState.dashboard.totalDownloadedPosts,
@@ -88,7 +95,6 @@ const mFavoritesState = (fs?: Partial<FavoritesState>): FavoritesState => {
 		activeNodeKey: fs?.activeNodeKey ?? initialState.favorites.activeNodeKey,
 		expandedKeys: fs?.expandedKeys ?? initialState.favorites.expandedKeys,
 		rootNode: fs?.rootNode ?? initialState.favorites.rootNode,
-		selectedNodeKey: fs?.selectedNodeKey ?? initialState.favorites.selectedNodeKey,
 	};
 };
 
@@ -157,7 +163,7 @@ const mSettingsState = (ss?: DeepPartial<Settings>): Settings => {
 		dashboard: mDashboardSettingsState(ss?.dashboard) ?? initialState.settings.dashboard,
 		favorites: {
 			siderWidth: ss?.favorites?.siderWidth ?? initialState.settings.favorites.siderWidth,
-			expandedKeys: ss?.favorites?.expandedKeys ?? initialState.settings.favorites.expandedKeys,
+			expandedKeys: (ss?.favorites?.expandedKeys as string[] | undefined) ?? initialState.settings.favorites.expandedKeys,
 		},
 	};
 };
@@ -178,14 +184,17 @@ const mTagsState = (ts?: Partial<TagsState>): TagsState => {
 const mModalsState = (ms?: Partial<ReturnType<typeof Modals>>): ReturnType<typeof Modals> => {
 	return {
 		addToFavoritesModal: ms?.addToFavoritesModal ?? {
-			postIdsToFavorite: ms?.addToFavoritesModal?.postIdsToFavorite ?? initialState.modals.addToFavoritesModal.postIdsToFavorite,
+			postIdsToFavorite:
+				ms?.addToFavoritesModal?.postIdsToFavorite ?? initialState.modals.addToFavoritesModal.postIdsToFavorite,
 		},
 		common: ms?.common ?? {
 			activeModal: ms?.common?.activeModal ?? initialState.modals.common.activeModal,
 			addToFavorites: ms?.common?.addToFavorites ?? {
-				postIdsToFavorite: ms?.common?.addToFavorites.postIdsToFavorite ?? initialState.modals.common.addToFavorites.postIdsToFavorite,
+				postIdsToFavorite:
+					ms?.common?.addToFavorites.postIdsToFavorite ?? initialState.modals.common.addToFavorites.postIdsToFavorite,
 			},
 			isVisible: ms?.common?.isVisible ?? initialState.modals.common.isVisible,
+			modalProps: ms?.common?.modalProps ?? initialState.modals.common.modalProps,
 		},
 	};
 };
@@ -197,7 +206,7 @@ interface PartialRootState {
 	favorites?: Partial<FavoritesState>;
 	loadingStates?: Partial<LoadingStates>;
 	tasks?: Partial<TasksState>;
-	posts?: Partial<PostsState>;
+	posts?: DeepPartial<PostsState>;
 	settings?: DeepPartial<Settings>;
 	system?: Partial<SystemState>;
 	savedSearches?: Partial<SavedSearchesState>;

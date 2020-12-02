@@ -1,24 +1,18 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Modal } from 'antd';
 
 import { actions, thunks } from '@store';
-import { AppDispatch, RootState } from '@store/types';
+import { AppDispatch } from '@store/types';
 import { openNotificationWithIcon } from '@appTypes/components';
 
 import ModalFooter from './common/ModalFooter';
+import { DeleteDirectoryModalProps } from '@appTypes/modalTypes';
 
-const DeleteDirectoryModal: React.FunctionComponent = () => {
+const DeleteDirectoryModal: React.FunctionComponent<DeleteDirectoryModalProps> = ({ selectedNodeKey }) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const selectedNodeKey = useSelector((state: RootState) => state.favorites.selectedNodeKey);
-
 	const handleDelete = async (): Promise<void> => {
-		if (!selectedNodeKey) {
-			openNotificationWithIcon('error', 'Failed to delete folder', 'Failed to delete folder because no node was selected');
-			dispatch(actions.modals.setVisible(false));
-			return;
-		}
 		if (selectedNodeKey === 1) {
 			openNotificationWithIcon('error', 'Failed to delete folder', 'The default folder cannot be deleted! You can rename it if you want.');
 			dispatch(actions.modals.setVisible(false));

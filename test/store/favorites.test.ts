@@ -50,17 +50,6 @@ describe('store/favorites', () => {
 		// then
 		expect(result.expandedKeys).toStrictEqual([...keys, addedKey]);
 	});
-	it('Sets selected node key', () => {
-		// given
-		const key = 'qwe';
-		const action = createAction(actions.setSelectedNodeKey.type, key);
-
-		// when
-		const result = reducer(undefined, action);
-
-		// then
-		expect(result.selectedNodeKey).toStrictEqual(key);
-	});
 	it('Sets key of directory currently being fetched as active', () => {
 		// given
 		const key = 123;

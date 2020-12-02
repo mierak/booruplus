@@ -22,6 +22,7 @@ import { RootState, AppDispatch } from '@store/types';
 import ThumbnailsList from '@components/thumbnails/ThumbnailsList';
 import { CardAction, openNotificationWithIcon } from '@appTypes/components';
 import { Post } from '@appTypes/gelbooruTypes';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 interface Props {
 	className?: string;
@@ -103,7 +104,12 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	);
 
 	const handleFavorite = (post: Post): void => {
-		dispatch(actions.modals.showModal('add-to-favorites'));
+		dispatch(
+			actions.modals.showModal({
+				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
+				modalState: { [ActiveModal.ADD_POSTS_TO_FAVORITES]: { postIdsToFavorite: [post.id] } },
+			})
+		);
 		dispatch(actions.modals.addToFavoritesModal.setPostIds([post.id]));
 	};
 
@@ -209,13 +215,31 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleAddAllToFavorites = (): void => {
-		dispatch(actions.modals.addToFavoritesModal.setPostIdsToFavorite('all'));
-		dispatch(actions.modals.showModal('add-to-favorites'));
+		dispatch(
+			actions.modals.showModal({
+				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
+				modalState: {
+					[ActiveModal.ADD_POSTS_TO_FAVORITES]: {
+						context: 'posts',
+						type: 'all',
+					},
+				},
+			})
+		);
 	};
 
 	const handleAddSelectedToFavorites = (): void => {
-		dispatch(actions.modals.addToFavoritesModal.setPostIdsToFavorite('selected'));
-		dispatch(actions.modals.showModal('add-to-favorites'));
+		dispatch(
+			actions.modals.showModal({
+				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
+				modalState: {
+					[ActiveModal.ADD_POSTS_TO_FAVORITES]: {
+						context: 'posts',
+						type: 'selected',
+					},
+				},
+			})
+		);
 	};
 
 	const handleDownloadAll = async (): Promise<void> => {

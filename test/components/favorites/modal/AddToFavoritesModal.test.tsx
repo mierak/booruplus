@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, wait } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { thunks, actions } from '../../../../src/store';
 import { RootState, AppDispatch } from '../../../../src/store/types';
@@ -8,7 +8,7 @@ import thunk from 'redux-thunk';
 import { mState } from '../../../helpers/store.helper';
 
 import AddToFavoritesModal from '../../../../src/components/favorites/modal/AddToFavoritesModal';
-import { mTreeNode } from '../../../helpers/test.helper';
+import { mPost, mTreeNode } from '../../../helpers/test.helper';
 import * as componentTypes from '../../../../src/types/components';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
@@ -40,19 +40,12 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 	});
 	it('Renders correctly', async () => {
 		// given
-		const store = mockStore(
-			mState({
-				favorites: {
-					rootNode,
-					expandedKeys,
-				},
-			})
-		);
+		const store = mockStore(mState());
 
 		// when
 		render(
 			<Provider store={store}>
-				<AddToFavoritesModal />
+				<AddToFavoritesModal data={{ postIdsToFavorite: [] }} expandedKeys={expandedKeys} treeData={rootNode.children} />
 			</Provider>
 		);
 
@@ -72,18 +65,12 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 	});
 	it('Closes modal when Close button is pressed', () => {
 		// given
-		const store = mockStore(
-			mState({
-				favorites: {
-					selectedNodeKey: 123,
-				},
-			})
-		);
+		const store = mockStore(mState());
 
 		// when
 		render(
 			<Provider store={store}>
-				<AddToFavoritesModal />
+				<AddToFavoritesModal data={{ postIdsToFavorite: [] }} expandedKeys={expandedKeys} treeData={rootNode.children} />
 			</Provider>
 		);
 		fireEvent.click(screen.getAllByRole('button', { name: 'Close' })[1]);
@@ -95,26 +82,13 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 	it('Dispatches addPostsToDirectory() when node is selected and Add button clicked', async () => {
 		const postIdsToFavorite = [1, 2, 3, 4, 5];
 		const selectedNodeKey = 11;
-		const store = mockStore(
-			mState({
-				favorites: {
-					rootNode,
-					expandedKeys,
-					selectedNodeKey,
-				},
-				modals: {
-					addToFavoritesModal: {
-						postIdsToFavorite,
-					},
-				},
-			})
-		);
+		const store = mockStore(mState());
 		const notificationSpy = jest.spyOn(componentTypes, 'openNotificationWithIcon').mockImplementation();
 
 		// when
 		render(
 			<Provider store={store}>
-				<AddToFavoritesModal />
+				<AddToFavoritesModal data={{ postIdsToFavorite }} expandedKeys={expandedKeys} treeData={rootNode.children} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('node11'));
@@ -133,25 +107,13 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 	});
 	it('Shows error notification when Add button is pressed but no posts to favorite are defined in state', async () => {
 		// given
-		const store = mockStore(
-			mState({
-				favorites: {
-					rootNode,
-					expandedKeys,
-				},
-				modals: {
-					addToFavoritesModal: {
-						postIdsToFavorite: [],
-					},
-				},
-			})
-		);
+		const store = mockStore(mState());
 		const notificationSpy = jest.spyOn(componentTypes, 'openNotificationWithIcon').mockImplementation();
 
 		// when
 		render(
 			<Provider store={store}>
-				<AddToFavoritesModal />
+				<AddToFavoritesModal data={{ postIdsToFavorite: [] }} expandedKeys={expandedKeys} treeData={rootNode.children} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('node11'));
@@ -169,24 +131,16 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 	});
 	it('When no node is selected it dispatches with default node key', async () => {
 		const postIdsToFavorite = [1, 2, 3, 4, 5];
-		const store = mockStore(
-			mState({
-				favorites: {
-					rootNode,
-					expandedKeys,
-				},
-				modals: {
-					addToFavoritesModal: {
-						postIdsToFavorite,
-					},
-				},
-			})
-		);
+		const store = mockStore(mState());
 
 		// when
 		render(
 			<Provider store={store}>
-				<AddToFavoritesModal />
+				<AddToFavoritesModal
+					data={{ postIdsToFavorite: postIdsToFavorite }}
+					expandedKeys={expandedKeys}
+					treeData={rootNode.children}
+				/>
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Add' }));
@@ -197,6 +151,43 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 			type: thunks.favorites.addPostsToDirectory.pending.type,
 			meta: { arg: { ids: postIdsToFavorite, key: 1 } },
 		});
-		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchTreeData.fulfilled.type }));
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchTreeData.fulfilled.type })
+		);
+	});
+	it('Works with context data', async () => {
+		// given
+		const postIdsToFavorite = [1, 2, 3, 4, 5];
+		const store = mockStore(
+			mState({
+				posts: {
+					posts: {
+						favorites: postIdsToFavorite.map((id) => mPost({ id })),
+					},
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<AddToFavoritesModal
+					data={{ context: 'favorites', type: 'all' }}
+					expandedKeys={expandedKeys}
+					treeData={rootNode.children}
+				/>
+			</Provider>
+		);
+		fireEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions[0]).toMatchObject({
+			type: thunks.favorites.addPostsToDirectory.pending.type,
+			meta: { arg: { ids: postIdsToFavorite, key: 1 } },
+		});
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchTreeData.fulfilled.type })
+		);
 	});
 });

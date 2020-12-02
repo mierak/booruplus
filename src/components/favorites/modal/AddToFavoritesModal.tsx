@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Modal, Tree } from 'antd';
 import { EventDataNode, DataNode } from 'rc-tree/lib/interface';
 
 import { actions, thunks } from '@store';
-import { RootState, AppDispatch, TreeNode } from '@store/types';
+import { AppDispatch, RootState, TreeNode } from '@store/types';
 import { openNotificationWithIcon } from '@appTypes/components';
+import { AddToFavoritesModalContextProps, AddToFavoritesModalProps } from '@appTypes/modalTypes';
 
 import ModalFooter from './common/ModalFooter';
 
@@ -18,19 +19,29 @@ interface Info {
 	nativeEvent: MouseEvent;
 }
 
+interface Props {
+	treeData: TreeNode[] | undefined;
+	expandedKeys: string[];
+	data: AddToFavoritesModalProps | AddToFavoritesModalContextProps;
+}
+
 const StyledDirectoryTree = styled(Tree.DirectoryTree)`
 	overflow: auto;
 	max-height: calc(100vh - 300px);
 `;
 
-const AddtoFavoritesModal: React.FunctionComponent = () => {
+const AddtoFavoritesModal: React.FunctionComponent<Props> = (props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const treeData = useSelector((state: RootState) => state.favorites.rootNode?.children);
-	const expandedKeys = useSelector((state: RootState) => state.favorites.expandedKeys);
-	const postIdsToFavorite = useSelector((state: RootState) => state.modals.addToFavoritesModal.postIdsToFavorite);
-
 	const [selectedNode, setSelectedNode] = useState<EventDataNode | TreeNode>();
+	const postIdsToFavorite = useSelector((state: RootState) => {
+		if ('postIdsToFavorite' in props.data) {
+			return props.data.postIdsToFavorite;
+		} else {
+			const posts = state.posts.posts[props.data.context];
+			return props.data.type === 'all' ? posts.map((p) => p.id) : posts.filter((p) => p.selected).map((p) => p.id);
+		}
+	});
 
 	const onSelect = (_: React.ReactText[], info: Info): void => {
 		setSelectedNode(info.node);
@@ -71,9 +82,9 @@ const AddtoFavoritesModal: React.FunctionComponent = () => {
 					multiple
 					draggable
 					blockNode
-					treeData={treeData}
+					treeData={props.treeData}
 					defaultExpandAll
-					expandedKeys={expandedKeys}
+					expandedKeys={props.expandedKeys}
 					onSelect={onSelect}
 				/>
 			</div>

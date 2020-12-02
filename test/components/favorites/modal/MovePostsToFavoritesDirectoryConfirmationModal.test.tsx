@@ -7,12 +7,12 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mState } from '../../../helpers/store.helper';
 
-import MoveSelectedToDirectoryModal from '../../../../src/components/favorites/modal/MoveSelectedToDirectoryModal';
+import MovePostsToSuppliedFavoritesDirectoryModal from '../../../../src/components/favorites/modal/MovePostsToSuppliedFavoritesDirectoryModal';
 import * as componentTypes from '../../../../src/types/components';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
-describe('favorites/modal/MoveSelectedToDirectoryModal', () => {
+describe('favorites/modal/MovePostsToFavoritesDirectory', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
@@ -23,7 +23,7 @@ describe('favorites/modal/MoveSelectedToDirectoryModal', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<MoveSelectedToDirectoryModal />
+				<MovePostsToSuppliedFavoritesDirectoryModal postIdsToMove={[]} targetDirectoryKey={1} />
 			</Provider>
 		);
 
@@ -39,7 +39,7 @@ describe('favorites/modal/MoveSelectedToDirectoryModal', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<MoveSelectedToDirectoryModal />
+				<MovePostsToSuppliedFavoritesDirectoryModal postIdsToMove={[]} targetDirectoryKey={1} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('Close'));
@@ -51,27 +51,14 @@ describe('favorites/modal/MoveSelectedToDirectoryModal', () => {
 	it('Closes modal and dispatches correct actions when Move button is pressed', async () => {
 		// given
 		const postIds = [1, 3, 5, 7, 9];
-		const activeKey = 123;
 		const selectedKey = 123456;
-		const store = mockStore(
-			mState({
-				modals: {
-					addToFavoritesModal: {
-						postIdsToFavorite: postIds,
-					},
-				},
-				favorites: {
-					activeNodeKey: activeKey,
-					selectedNodeKey: selectedKey,
-				},
-			})
-		);
+		const store = mockStore(mState());
 		const notificationSpy = jest.spyOn(componentTypes, 'openNotificationWithIcon').mockImplementation();
 
 		// when
 		render(
 			<Provider store={store}>
-				<MoveSelectedToDirectoryModal />
+				<MovePostsToSuppliedFavoritesDirectoryModal postIdsToMove={postIds} targetDirectoryKey={selectedKey} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('Move'));
@@ -88,27 +75,23 @@ describe('favorites/modal/MoveSelectedToDirectoryModal', () => {
 				meta: { arg: { ids: postIds, key: selectedKey } },
 			})
 		);
-		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchPostsInDirectory.pending.type }));
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchPostsInDirectory.pending.type })
+		);
 		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.setVisible.type }));
-		await waitFor(() => expect(notificationSpy).toHaveBeenCalledWith('success', 'Success', 'Successfuly moved post to folder'));
+		await waitFor(() =>
+			expect(notificationSpy).toHaveBeenCalledWith('success', 'Success', 'Successfuly moved post to folder')
+		);
 	});
 	it('Shows error notification when confirm is pressed and no posts are selected', () => {
 		// given
-		const store = mockStore(
-			mState({
-				modals: {
-					addToFavoritesModal: {
-						postIdsToFavorite: [],
-					},
-				},
-			})
-		);
+		const store = mockStore(mState());
 		const notificationSpy = jest.spyOn(componentTypes, 'openNotificationWithIcon').mockImplementation();
 
 		// when
 		render(
 			<Provider store={store}>
-				<MoveSelectedToDirectoryModal />
+				<MovePostsToSuppliedFavoritesDirectoryModal postIdsToMove={[]} targetDirectoryKey={1} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('Move'));

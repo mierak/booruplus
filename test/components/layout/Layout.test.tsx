@@ -8,6 +8,7 @@ import thunk from 'redux-thunk';
 import { mState } from '../../helpers/store.helper';
 
 import Layout from '../../../src/components/layout/Layout';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -176,6 +177,9 @@ describe('layout/Layout', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.showModal.type, payload: 'settings' });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.modals.showModal.type,
+			payload: { modal: ActiveModal.SETTINGS, modalState: {} },
+		});
 	});
 });

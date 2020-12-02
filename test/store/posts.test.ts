@@ -28,7 +28,7 @@ describe('store/posts', () => {
 		const action = createAction(actions.setPosts.type, { data: posts, context });
 		const state: PostsState = {
 			...initialState,
-			posts: { posts, favorites: [] },
+			posts: { posts, favorites: [], mostViewed: [] },
 		};
 
 		// when
@@ -43,7 +43,7 @@ describe('store/posts', () => {
 		const action = createAction(actions.setPostSelected.type, { data: { post: posts[1], selected: true }, context });
 		const state: PostsState = {
 			...initialState,
-			posts: { posts, favorites: [] },
+			posts: { posts, favorites: [], mostViewed: [] },
 		};
 
 		// when
@@ -58,7 +58,7 @@ describe('store/posts', () => {
 		const action = createAction(actions.nextPost.type, { context });
 		const state: PostsState = {
 			...initialState,
-			posts: { posts, favorites: [] },
+			posts: { posts, favorites: [], mostViewed: [] },
 			selectedIndices: { posts: 0 },
 		};
 
@@ -74,7 +74,7 @@ describe('store/posts', () => {
 		const action = createAction(actions.nextPost.type, { context });
 		const state: PostsState = {
 			...initialState,
-			posts: { posts, favorites: [] },
+			posts: { posts, favorites: [], mostViewed: [] },
 			selectedIndices: { posts: 2 },
 		};
 
@@ -90,7 +90,7 @@ describe('store/posts', () => {
 		const action = createAction(actions.previousPost.type, { context });
 		const state: PostsState = {
 			...initialState,
-			posts: { posts, favorites: [] },
+			posts: { posts, favorites: [], mostViewed: [] },
 			selectedIndices: { posts: 2 },
 		};
 
@@ -106,7 +106,7 @@ describe('store/posts', () => {
 		const action = createAction(actions.previousPost.type, { context });
 		const state: PostsState = {
 			...initialState,
-			posts: { posts, favorites: [] },
+			posts: { posts, favorites: [], mostViewed: [] },
 			selectedIndices: { posts: 0 },
 		};
 
@@ -122,7 +122,7 @@ describe('store/posts', () => {
 		const action = createAction(actions.unselectAllPosts.type, { context });
 		const state: PostsState = {
 			...initialState,
-			posts: { posts, favorites: [] },
+			posts: { posts, favorites: [], mostViewed: [] },
 		};
 
 		// when
@@ -141,7 +141,7 @@ describe('store/posts', () => {
 			const action = createAction(actions.selectMultiplePosts.type, { data: index, context });
 			const state: PostsState = {
 				...initialState,
-				posts: { posts, favorites: [] },
+				posts: { posts, favorites: [], mostViewed: [] },
 			};
 
 			// when
@@ -157,7 +157,7 @@ describe('store/posts', () => {
 			const action = createAction(actions.selectMultiplePosts.type, { data: index, context });
 			const state: PostsState = {
 				...initialState,
-				posts: { posts, favorites: [] },
+				posts: { posts, favorites: [], mostViewed: [] },
 			};
 
 			// when
@@ -175,7 +175,7 @@ describe('store/posts', () => {
 			const action = createAction(actions.selectMultiplePosts.type, { data: index, context });
 			const state: PostsState = {
 				...initialState,
-				posts: { posts, favorites: [] },
+				posts: { posts, favorites: [], mostViewed: [] },
 			};
 
 			// when
@@ -205,7 +205,7 @@ describe('store/posts', () => {
 			const action = createAction(actions.selectMultiplePosts.type, { data: index, context });
 			const state: PostsState = {
 				...initialState,
-				posts: { posts, favorites: [] },
+				posts: { posts, favorites: [], mostViewed: [] },
 			};
 
 			// when
@@ -237,7 +237,7 @@ describe('store/posts', () => {
 			const action = createAction(actions.selectMultiplePosts.type, { data: index, context });
 			const state: PostsState = {
 				...initialState,
-				posts: { posts, favorites: [] },
+				posts: { posts, favorites: [], mostViewed: [] },
 			};
 
 			// when
@@ -271,7 +271,7 @@ describe('store/posts', () => {
 			const action = createAction(actions.selectMultiplePosts.type, { data: index, context });
 			const state: PostsState = {
 				...initialState,
-				posts: { posts, favorites: [] },
+				posts: { posts, favorites: [], mostViewed: [] },
 			};
 
 			// when
@@ -305,7 +305,7 @@ describe('store/posts', () => {
 			const action = createAction(actions.selectMultiplePosts.type, { data: index, context });
 			const state: PostsState = {
 				...initialState,
-				posts: { posts, favorites: [] },
+				posts: { posts, favorites: [], mostViewed: [] },
 			};
 
 			// when
@@ -347,7 +347,7 @@ describe('store/posts', () => {
 		const action = createPendingAction(thunks.onlineSearchForm.fetchPosts.pending.type);
 		const state: PostsState = {
 			...initialState,
-			posts: { posts, favorites: [] },
+			posts: { posts, favorites: [], mostViewed: [] },
 			selectedIndices: { posts: 123 },
 		};
 
@@ -364,7 +364,7 @@ describe('store/posts', () => {
 		const action = createPendingAction(thunks.downloadedSearchForm.fetchPosts.pending.type);
 		const state: PostsState = {
 			...initialState,
-			posts: { posts, favorites: [] },
+			posts: { posts, favorites: [], mostViewed: [] },
 			selectedIndices: { posts: 123 },
 		};
 
@@ -381,7 +381,7 @@ describe('store/posts', () => {
 		const action = createPendingAction(thunks.posts.fetchPostsByIds.pending.type);
 		const state: PostsState = {
 			...initialState,
-			posts: { posts, favorites: [] },
+			posts: { posts, favorites: [], mostViewed: [] },
 			selectedIndices: { posts: 123 },
 		};
 
@@ -398,7 +398,7 @@ describe('store/posts', () => {
 		const action = createPendingAction(thunks.favorites.fetchPostsInDirectory.pending.type);
 		const state: PostsState = {
 			...initialState,
-			posts: { posts, favorites: [] },
+			posts: { posts, favorites: [], mostViewed: [] },
 			selectedIndices: { favorites: 123 },
 		};
 
@@ -415,7 +415,7 @@ describe('store/posts', () => {
 		const action = createAction(thunks.posts.fetchPostsByIds.fulfilled.type, posts);
 		const state: PostsState = {
 			...initialState,
-			posts: { posts: [], favorites: [] },
+			posts: { posts: [], favorites: [], mostViewed: [] },
 			selectedIndices: { posts: 123 },
 		};
 
@@ -431,7 +431,7 @@ describe('store/posts', () => {
 		const action = createAction(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled.type, posts);
 		const state: PostsState = {
 			...initialState,
-			posts: { posts: [], favorites: [] },
+			posts: { posts: [], favorites: [], mostViewed: [] },
 			selectedIndices: { posts: 123 },
 		};
 
@@ -447,7 +447,7 @@ describe('store/posts', () => {
 		const action = createAction(thunks.downloadedSearchForm.fetchPosts.fulfilled.type, posts);
 		const state: PostsState = {
 			...initialState,
-			posts: { posts: [], favorites: [] },
+			posts: { posts: [], favorites: [], mostViewed: [] },
 			selectedIndices: { posts: 123 },
 		};
 
@@ -464,7 +464,7 @@ describe('store/posts', () => {
 			const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts);
 			const state: PostsState = {
 				...initialState,
-				posts: { posts: [], favorites: [] },
+				posts: { posts: [], favorites: [], mostViewed: [] },
 				selectedIndices: { posts: 123 },
 			};
 
@@ -481,7 +481,7 @@ describe('store/posts', () => {
 			const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts);
 			const state: PostsState = {
 				...initialState,
-				posts: { posts: currentPosts, favorites: [] },
+				posts: { posts: currentPosts, favorites: [], mostViewed: [] },
 				selectedIndices: { posts: undefined },
 			};
 
@@ -498,7 +498,7 @@ describe('store/posts', () => {
 			const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts);
 			const state: PostsState = {
 				...initialState,
-				posts: { posts: currentPosts, favorites: [] },
+				posts: { posts: currentPosts, favorites: [], mostViewed: [] },
 				selectedIndices: { posts: undefined },
 			};
 
@@ -515,7 +515,7 @@ describe('store/posts', () => {
 			const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts);
 			const state: PostsState = {
 				...initialState,
-				posts: { posts: currentPosts, favorites: [] },
+				posts: { posts: currentPosts, favorites: [], mostViewed: [] },
 				selectedIndices: { posts: undefined },
 			};
 
@@ -535,7 +535,7 @@ describe('store/posts', () => {
 			const action = createAction(thunks.onlineSearchForm.fetchMorePosts.fulfilled.type, posts);
 			const state: PostsState = {
 				...initialState,
-				posts: { posts: currentPosts, favorites: [] },
+				posts: { posts: currentPosts, favorites: [], mostViewed: [] },
 				selectedIndices: { posts: undefined },
 			};
 
@@ -552,7 +552,7 @@ describe('store/posts', () => {
 			const action = createAction(thunks.onlineSearchForm.fetchMorePosts.fulfilled.type, posts);
 			const state: PostsState = {
 				...initialState,
-				posts: { posts: currentPosts, favorites: [] },
+				posts: { posts: currentPosts, favorites: [], mostViewed: [] },
 				selectedIndices: { posts: undefined },
 			};
 
@@ -569,7 +569,7 @@ describe('store/posts', () => {
 			const action = createAction(thunks.onlineSearchForm.fetchMorePosts.fulfilled.type, posts);
 			const state: PostsState = {
 				...initialState,
-				posts: { posts: currentPosts, favorites: [] },
+				posts: { posts: currentPosts, favorites: [], mostViewed: [] },
 				selectedIndices: { posts: undefined },
 			};
 
@@ -586,7 +586,7 @@ describe('store/posts', () => {
 		const action = createAction(thunks.favorites.fetchPostsInDirectory.fulfilled.type, posts);
 		const state: PostsState = {
 			...initialState,
-			posts: { posts: [], favorites: [] },
+			posts: { posts: [], favorites: [], mostViewed: [] },
 			selectedIndices: { posts: 123 },
 		};
 
@@ -602,7 +602,7 @@ describe('store/posts', () => {
 		const action = createAction(thunks.posts.blacklistPosts.fulfilled.type, [posts[0], posts[1]]);
 		const state: PostsState = {
 			...initialState,
-			posts: { posts, favorites: [] },
+			posts: { posts, favorites: [], mostViewed: [] },
 			selectedIndices: { posts: 123 },
 		};
 
@@ -612,5 +612,16 @@ describe('store/posts', () => {
 		// then
 		expect(result.posts.posts).toHaveLength(1);
 		expect(result.posts.posts[0].id).toBe(3);
+	});
+	it('Sets most viewed posts when fetchMostViewedPosts() is fulfiled', () => {
+		//given
+		const mostviewedPosts = [mPost({ id: 1 }), mPost({ id: 2 })];
+		const action = createAction(thunks.dashboard.fetchMostViewedPosts.fulfilled.type, mostviewedPosts);
+
+		// when
+		const result = reducer(undefined, action);
+
+		// then
+		expect(result.posts.mostViewed).toStrictEqual(mostviewedPosts);
 	});
 });

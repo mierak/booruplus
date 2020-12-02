@@ -15,6 +15,7 @@ import {
 import { actions } from '@store';
 import { RootState, View } from '@store/types';
 import Modals from '@components/Modals';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 import Drawers from './Drawers';
 
@@ -86,7 +87,7 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 							<Menu.Item
 								key='settings'
 								onClick={(): void => {
-									dispatch(actions.modals.showModal('settings'));
+									dispatch(actions.modals.showModal({ modal: ActiveModal.SETTINGS, modalState: {} }));
 								}}
 							>
 								<SettingOutlined />

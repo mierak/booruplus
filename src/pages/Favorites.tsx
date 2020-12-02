@@ -9,6 +9,7 @@ import SiderContent from '@components/favorites/SiderContent';
 import { Post } from '@appTypes/gelbooruTypes';
 import { RootState, AppDispatch } from '@store/types';
 import { CardAction, openNotificationWithIcon } from '@appTypes/components';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 interface Props {
 	className?: string;
@@ -87,7 +88,16 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleMoveToDirectory = (post: Post): void => {
-		dispatch(actions.modals.showModal('move-to-directory'));
+		dispatch(
+			actions.modals.showModal({
+				modal: ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION,
+				modalState: {
+					[ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION]: {
+						postIdsToMove: [post.id],
+					},
+				},
+			})
+		);
 		dispatch(actions.modals.addToFavoritesModal.setPostIds([post.id]));
 	};
 

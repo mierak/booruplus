@@ -6,7 +6,7 @@ import { FixedSizeGrid } from 'react-window';
 
 import { ContextMenu, CardAction } from '@appTypes/components';
 import { getRowColFromIndex } from '@util/utils';
-import { AppDispatch, defaultCtx, PostsContext } from '@store/types';
+import { AppDispatch, PostsContext } from '@store/types';
 import { Post } from '@appTypes/gelbooruTypes';
 import { actions } from '@store/';
 
@@ -39,9 +39,15 @@ const Container = styled.div<ContainerProps>`
 
 const innerElementType = forwardRef<HTMLDivElement, { style: CSSProperties; rest: unknown }>(({ style, ...rest }, ref) => {
 	const dispatch = useDispatch<AppDispatch>();
+
+	// Hack to get context out of itemData
+	const children: { props: { data: { context: PostsContext } } }[] =
+		(rest.children as { props: { data: { context: PostsContext } } }[]) ?? [];
+	const context = children[0]?.props?.data?.context ?? 'posts';
+
 	const onClick = (event: React.MouseEvent): void => {
 		if (!event.ctrlKey && !event.shiftKey) {
-			dispatch(actions.posts.unselectAllPosts({ context: defaultCtx }));
+			dispatch(actions.posts.unselectAllPosts({ context: context }));
 		}
 	};
 	return (

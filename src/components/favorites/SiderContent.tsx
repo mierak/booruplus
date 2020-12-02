@@ -6,6 +6,7 @@ import { Dropdown, Menu, Tree } from 'antd';
 
 import { actions, thunks } from '@store';
 import { AppDispatch, RootState } from '@store/types';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 interface PProps {
 	x: number;
@@ -54,10 +55,9 @@ const SiderContent: React.FunctionComponent = () => {
 	const rootNode = useSelector((state: RootState) => state.favorites.rootNode);
 	const activeNodeKey = useSelector((state: RootState) => state.favorites.activeNodeKey);
 	const isCollapsed = useSelector((state: RootState) => state.system.isFavoritesDirectoryTreeCollapsed);
-	const selectedPostIds = useSelector((state: RootState) =>
-		state.posts.posts['favorites'].filter((post) => post.selected).map((post) => post.id)
-	);
+	const posts = useSelector((state: RootState) => state.posts.posts.favorites);
 
+	const [selectedNodeKey, setSelectedNodeKey] = useState(0);
 	const [align, setAlign] = useState<[number, number]>([0, 0]);
 	const [visible, setVisible] = useState(false);
 	const [contextMenuActions, setContextMenuActions] = useState<Actions[]>([]);
@@ -78,7 +78,16 @@ const SiderContent: React.FunctionComponent = () => {
 				key='1'
 				onClick={(): void => {
 					setVisible(false);
-					dispatch(actions.modals.showModal('add-favorites-directory'));
+					dispatch(
+						actions.modals.showModal({
+							modal: ActiveModal.ADD_FAVORITES_DIRECTORY,
+							modalState: {
+								[ActiveModal.ADD_FAVORITES_DIRECTORY]: {
+									selectedNodeKey,
+								},
+							},
+						})
+					);
 				}}
 			>
 				Add Sub-Folder
@@ -88,7 +97,14 @@ const SiderContent: React.FunctionComponent = () => {
 			<Menu.Item
 				onClick={(): void => {
 					setVisible(false);
-					dispatch(actions.modals.showModal('delete-favorites-directory'));
+					dispatch(
+						actions.modals.showModal({
+							modal: ActiveModal.DELETE_FAVORITES_DIRECTORY,
+							modalState: {
+								[ActiveModal.DELETE_FAVORITES_DIRECTORY]: { selectedNodeKey },
+							},
+						})
+					);
 				}}
 				key='2'
 			>
@@ -99,7 +115,14 @@ const SiderContent: React.FunctionComponent = () => {
 			<Menu.Item
 				onClick={(): void => {
 					setVisible(false);
-					dispatch(actions.modals.showModal('rename-favorites-directory'));
+					dispatch(
+						actions.modals.showModal({
+							modal: ActiveModal.RENAME_FAVORITES_DIRECTORY,
+							modalState: {
+								[ActiveModal.RENAME_FAVORITES_DIRECTORY]: { targetDirectoryKey: selectedNodeKey },
+							},
+						})
+					);
 				}}
 				key='3'
 			>
@@ -110,8 +133,17 @@ const SiderContent: React.FunctionComponent = () => {
 			<Menu.Item
 				onClick={async (): Promise<void> => {
 					setVisible(false);
-					dispatch(actions.modals.addToFavoritesModal.setPostIdsToFavorite('selected'));
-					dispatch(actions.modals.showModal('move-selected-to-directory-confirmation'));
+					dispatch(
+						actions.modals.showModal({
+							modal: ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION,
+							modalState: {
+								[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]: {
+									targetDirectoryKey: selectedNodeKey,
+									postIdsToMove: posts.filter((p) => p.selected).map((p) => p.id),
+								},
+							},
+						})
+					);
 				}}
 				key='4'
 			>
@@ -122,8 +154,17 @@ const SiderContent: React.FunctionComponent = () => {
 			<Menu.Item
 				onClick={async (): Promise<void> => {
 					setVisible(false);
-					dispatch(actions.modals.addToFavoritesModal.setPostIdsToFavorite('all'));
-					dispatch(actions.modals.showModal('move-selected-to-directory-confirmation'));
+					dispatch(
+						actions.modals.showModal({
+							modal: ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION,
+							modalState: {
+								[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]: {
+									targetDirectoryKey: selectedNodeKey,
+									postIdsToMove: posts.map((p) => p.id),
+								},
+							},
+						})
+					);
 				}}
 				key='5'
 			>
@@ -134,7 +175,7 @@ const SiderContent: React.FunctionComponent = () => {
 			<Menu.Item
 				onClick={async (): Promise<void> => {
 					setVisible(false);
-					dispatch(thunks.favorites.exportDirectory());
+					dispatch(thunks.favorites.exportDirectory({ targetDirectoryKey: selectedNodeKey }));
 				}}
 				key='6'
 			>
@@ -161,7 +202,7 @@ const SiderContent: React.FunctionComponent = () => {
 		if (treeContainerRef.current && event.button === 2) {
 			setContextMenuActions(['add']);
 			setAlign([event.clientX - treeContainerRef.current.getBoundingClientRect().x, event.clientY]);
-			rootNode && dispatch(actions.favorites.setSelectedNodeKey(parseInt(rootNode.key)));
+			rootNode && setSelectedNodeKey(Number(rootNode.key));
 
 			setTimeout(() => {
 				setVisible(true);
@@ -176,10 +217,10 @@ const SiderContent: React.FunctionComponent = () => {
 
 		if (treeContainerRef.current) {
 			const contextMenuActions: Actions[] = ['add', 'delete', 'rename', 'move-all', 'export-directory'];
-			if (selectedPostIds.length > 0) contextMenuActions.push('move-selected');
+			if (posts.some((p) => p.selected)) contextMenuActions.push('move-selected');
 			setContextMenuActions(contextMenuActions);
 			setAlign([info.event.clientX - treeContainerRef.current.getBoundingClientRect().x, info.event.clientY]);
-			info.node && dispatch(actions.favorites.setSelectedNodeKey(parseInt(info.node.key.toString())));
+			info.node && setSelectedNodeKey(Number(info.node.key));
 		}
 
 		setTimeout(() => {

@@ -14,6 +14,7 @@ import { mockedDb } from '../../helpers/database.mock';
 import { deleteImageMock } from '../../helpers/imageBus.mock';
 import * as utils from '../../../src/types/components';
 import { thumbnailLoaderMock } from '../../helpers/imageBus.mock';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -277,7 +278,17 @@ describe('pages/Favorites', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.showModal.type, payload: 'move-to-directory' });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.modals.showModal.type,
+			payload: {
+				modal: ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION,
+				modalState: {
+					[ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION]: {
+						postIdsToMove: [3],
+					},
+				},
+			},
+		});
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({
 				type: thunks.favorites.fetchPostsInDirectory.fulfilled.type,

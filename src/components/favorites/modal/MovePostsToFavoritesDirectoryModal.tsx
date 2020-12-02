@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { Modal, Tree } from 'antd';
 import { EventDataNode, DataNode } from 'rc-tree/lib/interface';
 
 import { actions, thunks } from '@store';
-import { RootState, AppDispatch, TreeNode } from '@store/types';
+import { AppDispatch, TreeNode } from '@store/types';
 import { openNotificationWithIcon } from '@appTypes/components';
 
 import ModalFooter from './common/ModalFooter';
+import { MovePostsToFavoritesDirectoryModalProps } from '@appTypes/modalTypes';
 
 interface Info {
 	event: string;
@@ -23,17 +24,15 @@ const StyledDirectoryTree = styled(Tree.DirectoryTree)`
 	max-height: 100vh;
 `;
 
-const MoveDirectoryModal: React.FunctionComponent = () => {
+const MovePostsToFavoritesDirectoryModal: React.FunctionComponent<
+	MovePostsToFavoritesDirectoryModalProps & { treeData: TreeNode[] | undefined; expandedKeys: string[] }
+> = ({ treeData, expandedKeys, postIdsToMove }) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const treeData = useSelector((state: RootState) => state.favorites.rootNode?.children);
-	const expandedKeys = useSelector((state: RootState) => state.favorites.expandedKeys);
-	const postIdsToFavorite = useSelector((state: RootState) => state.modals.addToFavoritesModal.postIdsToFavorite);
-
-	const [selectedNode, setSelectedNode] = useState<EventDataNode | TreeNode>();
+	const [selectedNodeKey, setSelectedNodeKey] = useState(1);
 
 	const onSelect = (_: React.ReactText[], info: Info): void => {
-		setSelectedNode(info.node);
+		setSelectedNodeKey(Number(info.node.key));
 	};
 
 	const handleClose = (): void => {
@@ -41,7 +40,7 @@ const MoveDirectoryModal: React.FunctionComponent = () => {
 	};
 
 	const handleConfirm = async (): Promise<void> => {
-		if (postIdsToFavorite.length === 0) {
+		if (postIdsToMove.length === 0) {
 			openNotificationWithIcon(
 				'error',
 				'Failed to add post to directory',
@@ -51,9 +50,8 @@ const MoveDirectoryModal: React.FunctionComponent = () => {
 			dispatch(actions.modals.setVisible(false));
 			return;
 		}
-		dispatch(actions.favorites.setSelectedNodeKey(selectedNode ? parseInt(selectedNode.key.toString()) : 1));
-		await dispatch(thunks.favorites.removePostsFromActiveDirectory(postIdsToFavorite));
-		await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToFavorite, key: !selectedNode ? 1 : selectedNode.key }));
+		await dispatch(thunks.favorites.removePostsFromActiveDirectory(postIdsToMove));
+		await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToMove, key: selectedNodeKey }));
 		await dispatch(thunks.favorites.fetchPostsInDirectory());
 		openNotificationWithIcon('success', 'Success', 'Successfuly moved post to folder');
 		dispatch(actions.modals.setVisible(false));
@@ -81,4 +79,4 @@ const MoveDirectoryModal: React.FunctionComponent = () => {
 	);
 };
 
-export default MoveDirectoryModal;
+export default MovePostsToFavoritesDirectoryModal;

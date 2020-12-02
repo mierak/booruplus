@@ -14,6 +14,7 @@ const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('MostviewedPosts', () => {
 	const testUrl = '123testurl.jpg';
+	const context = 'mostViewed';
 	beforeEach(() => {
 		thumbnailLoaderMock.mockResolvedValue(testUrl);
 	});
@@ -26,7 +27,7 @@ describe('MostviewedPosts', () => {
 			mPost({ id: 3, viewCount: 3 }),
 			mPost({ id: 4, viewCount: 4 }),
 		];
-		const store = mockStore(mState({ dashboard: { mostViewedPosts: posts } }));
+		const store = mockStore(mState({ posts: { posts: { mostViewed: posts } } }));
 
 		// when
 		render(
@@ -53,7 +54,7 @@ describe('MostviewedPosts', () => {
 	it('Opens full size image when clicked and updates store', async () => {
 		// given
 		const posts = [mPost({ id: 0 }), mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
-		const store = mockStore(mState({ dashboard: { mostViewedPosts: posts } }));
+		const store = mockStore(mState({ posts: { posts: { mostViewed: posts } } }));
 		const postsIndexToClick = 2;
 
 		// when
@@ -72,13 +73,18 @@ describe('MostviewedPosts', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions[0]).toMatchObject({ type: actions.system.setSearchMode.type, payload: 'most-viewed' });
-		expect(dispatchedActions[1]).toMatchObject({ type: actions.posts.setPosts.type, payload: { data: { ...posts } } });
-		expect(dispatchedActions[2]).toMatchObject({
-			type: actions.posts.setActivePostIndex.type,
-			payload: { data: postsIndexToClick },
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.system.setSearchMode.type,
+			payload: 'most-viewed',
 		});
-		expect(dispatchedActions[3]).toMatchObject({ type: actions.system.setActiveView.type, payload: { view: 'image' } });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.system.setActiveView.type,
+			payload: { view: 'image', context },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.posts.setActivePostIndex.type,
+			payload: { data: postsIndexToClick, context },
+		});
 		await waitFor(() =>
 			expect(
 				screen.getAllByRole('img', {
@@ -120,7 +126,7 @@ describe('MostviewedPosts', () => {
 	it('Renders downloaded icon', async () => {
 		// given
 		const posts = [mPost({ id: 0 }), mPost({ id: 1, downloaded: 1 }), mPost({ id: 2, downloaded: 1 }), mPost({ id: 3 }), mPost({ id: 4 })];
-		const store = mockStore(mState({ dashboard: { mostViewedPosts: posts } }));
+		const store = mockStore(mState({ posts: { posts: { mostViewed: posts } } }));
 
 		// when
 		render(

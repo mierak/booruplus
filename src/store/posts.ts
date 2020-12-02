@@ -17,8 +17,8 @@ type WithContext<T = null> = {
 })
 
 export interface PostsState {
-	selectedIndices: { favorites?: number; posts?: number };
-	posts: { posts: Post[]; favorites: Post[] };
+	selectedIndices: { [K in PostsContext]?: number };
+	posts: { [K in PostsContext]: Post[] };
 	hoveredPost: HoveredPost;
 }
 
@@ -27,6 +27,7 @@ export const initialState: PostsState = {
 	posts: {
 		posts: [],
 		favorites: [],
+		mostViewed: [],
 	},
 	hoveredPost: {
 		visible: false,
@@ -178,6 +179,9 @@ const postsSlice = createSlice({
 		builder.addCase(thunks.posts.blacklistPosts.fulfilled, (state, action) => {
 			const idsToRemove = action.payload.map((post) => post.id);
 			state.posts.posts = state.posts.posts.filter((post) => !idsToRemove.includes(post.id));
+		});
+		builder.addCase(thunks.dashboard.fetchMostViewedPosts.fulfilled, (state, action) => {
+			state.posts.mostViewed = action.payload;
 		});
 	},
 });

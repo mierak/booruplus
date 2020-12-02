@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Modal, Input, Form } from 'antd';
 
 import { actions, thunks } from '@store';
-import { AppDispatch, RootState } from '@store/types';
+import { AppDispatch } from '@store/types';
 import { openNotificationWithIcon } from '@appTypes/components';
 
 import ModalFooter from './common/ModalFooter';
+import { RenameDirectoryModalProps } from '@appTypes/modalTypes';
 
 interface ValidationStatus {
 	validateStatus: 'error' | 'success' | '';
 	message: string;
 }
 
-const RenameDirectoryModal: React.FunctionComponent = () => {
+const RenameDirectoryModal: React.FunctionComponent<RenameDirectoryModalProps> = ({ targetDirectoryKey }) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const [text, setText] = useState('');
 	const [validationStatus, setValidationStatus] = useState<ValidationStatus>({
 		validateStatus: '',
 		message: '',
 	});
-	const selectedNodeKey = useSelector((state: RootState) => state.favorites.selectedNodeKey);
 
 	const validateName = (name?: string): boolean => {
 		if (!name || name.length === 0) {
@@ -31,14 +31,8 @@ const RenameDirectoryModal: React.FunctionComponent = () => {
 	};
 
 	const handleRenameSubFolder = async (): Promise<void> => {
-		if (selectedNodeKey === undefined) {
-			openNotificationWithIcon('error', 'Failed to rename folder', 'Failed to rename folder because no node was selected');
-			dispatch(actions.modals.setVisible(false));
-			return;
-		}
-
 		if (validateName(text)) {
-			await dispatch(thunks.favorites.renameDirectory({ key: selectedNodeKey, title: text }));
+			await dispatch(thunks.favorites.renameDirectory({ key: targetDirectoryKey, title: text }));
 			openNotificationWithIcon('success', 'Success', 'Successfuly renamed sub folder');
 			dispatch(actions.modals.setVisible(false));
 		} else {
