@@ -12,7 +12,6 @@ import moment from 'moment';
 import { openNotificationWithIcon } from '@appTypes/components';
 
 const { Column } = Table;
-const defaultCtx = 'posts'; //! TODO
 
 interface Props {
 	className?: string;
@@ -171,9 +170,9 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 		const posts = record.previews.map((preview) => preview.post);
 		const index = posts.findIndex((post) => post.id === postId);
 		if (index >= 0) {
-			dispatch(actions.posts.setPosts({ data: posts, context: defaultCtx }));
-			dispatch(actions.posts.setActivePostIndex({ data: index, context: defaultCtx }));
-			dispatch(actions.system.setActiveView({ view: 'image', context: defaultCtx }));
+			dispatch(actions.posts.setPosts({ data: posts, context: 'posts' }));
+			dispatch(actions.posts.setActivePostIndex({ data: index, context: 'posts' }));
+			dispatch(actions.system.setActiveView({ view: 'image', context: 'posts' }));
 		}
 	};
 

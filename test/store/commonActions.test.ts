@@ -39,7 +39,7 @@ describe('store/commonActions', () => {
 			ipcInvokeSpy.mockResolvedValue(path);
 
 			// when
-			await store.dispatch(exportPostsToDirectory('all'));
+			await store.dispatch(exportPostsToDirectory({ type: 'all', context: 'posts' }));
 
 			// then
 			expect(ipcInvokeSpy).toBeCalledTimes(1);
@@ -59,7 +59,7 @@ describe('store/commonActions', () => {
 			ipcInvokeSpy.mockResolvedValue(path);
 
 			// when
-			await store.dispatch(exportPostsToDirectory('selected'));
+			await store.dispatch(exportPostsToDirectory({ type: 'selected', context: 'posts' }));
 
 			// then
 			expect(ipcInvokeSpy).toBeCalledTimes(1);

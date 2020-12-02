@@ -303,7 +303,7 @@ describe('thunks/posts', () => {
 			});
 
 			// when
-			await store.dispatch(thunks.downloadSelectedPosts());
+			await store.dispatch(thunks.downloadSelectedPosts({ context: 'posts' }));
 
 			// then
 			const dispatchedActions = store.getActions();
@@ -321,7 +321,7 @@ describe('thunks/posts', () => {
 			});
 
 			// when
-			await store.dispatch(thunks.downloadSelectedPosts());
+			await store.dispatch(thunks.downloadSelectedPosts({ context: 'posts' }));
 
 			// then
 			const dispatchedActions = store.getActions();
@@ -341,7 +341,7 @@ describe('thunks/posts', () => {
 			});
 
 			// when
-			await store.dispatch(thunks.downloadAllPosts());
+			await store.dispatch(thunks.downloadAllPosts({ context: 'posts' }));
 
 			// then
 			const dispatchedActions = store.getActions();
@@ -359,7 +359,7 @@ describe('thunks/posts', () => {
 			});
 
 			// when
-			await store.dispatch(thunks.downloadAllPosts());
+			await store.dispatch(thunks.downloadAllPosts({ context: 'posts' }));
 
 			// then
 			const dispatchedActions = store.getActions();
@@ -404,7 +404,7 @@ describe('thunks/posts', () => {
 			});
 
 			// when
-			await store.dispatch(thunks.blacklistSelectedPosts());
+			await store.dispatch(thunks.blacklistSelectedPosts({ context: 'posts' }));
 
 			// then
 			const dispatchedActions = store.getActions();
@@ -424,7 +424,7 @@ describe('thunks/posts', () => {
 			});
 
 			// when
-			await store.dispatch(thunks.blacklistAllPosts());
+			await store.dispatch(thunks.blacklistAllPosts({ context: 'posts' }));
 
 			// then
 			const dispatchedActions = store.getActions();

@@ -4,19 +4,22 @@ import { Post } from '@appTypes/gelbooruTypes';
 import { IpcChannels } from '@appTypes/processDto';
 import { thunkLoggerFactory } from '@util/logger';
 
-import { ThunkApi } from '@store/types';
+import { PostsContext, ThunkApi } from '@store/types';
 
 const thunkLogger = thunkLoggerFactory();
-const defaultCtx = 'posts'; //! TODO
 
 export const setFullscreenLoadingMaskState = createAction<string | { message: string; progressPercent: number }>(
 	'loadingState/setFullscreenLoadingMaskMessage'
 );
 
-export const exportPostsToDirectory = createAsyncThunk<Post[], 'all' | 'selected' | Post[], ThunkApi>(
+export const exportPostsToDirectory = createAsyncThunk<
+	Post[],
+	{ type: 'all' | 'selected'; context: PostsContext } | Post[],
+	ThunkApi
+>(
 	'posts/exportPostsToDirectory',
 	async (param, thunkApi): Promise<Post[]> => {
-		const initialMessage = ` - exporting ${typeof param === 'string' ? param : 'Post[]'}`;
+		const initialMessage = ` - exporting ${'context' in param ? param : 'Post[]'}`;
 		const logger = thunkLogger.getActionLogger(exportPostsToDirectory, { initialMessage });
 		const folder = await window.api.invoke<string>(IpcChannels.OPEN_SELECT_FOLDER_DIALOG);
 		if (!folder) {
@@ -28,18 +31,17 @@ export const exportPostsToDirectory = createAsyncThunk<Post[], 'all' | 'selected
 		const state = thunkApi.getState();
 
 		let posts: Post[];
-		switch (param) {
-			case 'all': {
-				posts = state.posts.posts[defaultCtx];
-				break;
+		if ('context' in param) {
+			switch (param.type) {
+				case 'all':
+					posts = state.posts.posts[param.context];
+					break;
+				case 'selected':
+					posts = state.posts.posts[param.context].filter((p) => p.selected);
+					break;
 			}
-			case 'selected': {
-				posts = state.posts.posts[defaultCtx].filter((post) => post.selected);
-				break;
-			}
-			default: {
-				posts = param;
-			}
+		} else {
+			posts = param;
 		}
 		logger.debug(`Exporting ${posts.length} posts.`);
 

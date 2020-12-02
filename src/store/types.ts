@@ -136,5 +136,3 @@ export interface NotFoundTags {
 }
 
 export type PostsContext = 'posts' | 'favorites' | 'mostViewed';
-
-export const defaultCtx = 'posts';

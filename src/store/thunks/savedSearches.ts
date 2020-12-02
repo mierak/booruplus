@@ -12,7 +12,6 @@ import * as onlineSearchFormThunk from './onlineSearchForm';
 import { NoActiveSavedSearchError, SavedSearchAlreadyExistsError } from '@errors/savedSearchError';
 
 const thunkLogger = thunkLoggerFactory();
-const defaultCtx = 'posts'; //! TODO
 
 export const searchOnline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi>(
 	'savedSearches/searchOnline',
@@ -127,7 +126,7 @@ export const addSelectedPreviewsToActiveSavedSearch = createAsyncThunk<SavedSear
 	async (_, thunkApi): Promise<SavedSearch | undefined> => {
 		thunkLogger.getActionLogger(addSelectedPreviewsToActiveSavedSearch);
 		const savedSearch = thunkApi.getState().savedSearches.activeSavedSearch;
-		const posts = thunkApi.getState().posts.posts[defaultCtx].filter((post) => post.selected);
+		const posts = thunkApi.getState().posts.posts.posts.filter((post) => post.selected);
 		await thunkApi.dispatch(addPreviewsToActiveSavedSearch(posts));
 		return savedSearch;
 	}
@@ -138,7 +137,7 @@ export const addAllPreviewsToActiveSavedSearch = createAsyncThunk<SavedSearch | 
 	async (_, thunkApi): Promise<SavedSearch | undefined> => {
 		thunkLogger.getActionLogger(addAllPreviewsToActiveSavedSearch);
 		const savedSearch = thunkApi.getState().savedSearches.activeSavedSearch;
-		const posts = thunkApi.getState().posts.posts[defaultCtx];
+		const posts = thunkApi.getState().posts.posts.posts;
 		await thunkApi.dispatch(addPreviewsToActiveSavedSearch(posts));
 		return savedSearch;
 	}

@@ -195,7 +195,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			cancelText: 'Cancel',
 			okText: 'Blacklist',
 			onOk: () => {
-				dispatch(thunks.posts.blacklistAllPosts());
+				dispatch(thunks.posts.blacklistAllPosts({ context: 'posts' }));
 			},
 		});
 		m.destroy();
@@ -208,7 +208,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			cancelText: 'Cancel',
 			okText: 'Blacklist',
 			onOk: () => {
-				dispatch(thunks.posts.blacklistSelectedPosts());
+				dispatch(thunks.posts.blacklistSelectedPosts({ context: 'posts' }));
 			},
 		});
 		m.destroy();
@@ -249,7 +249,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			cancelText: 'Cancel',
 			okText: 'Download',
 			onOk: () => {
-				dispatch(thunks.posts.downloadAllPosts());
+				dispatch(thunks.posts.downloadAllPosts({ context: 'posts' }));
 			},
 		});
 		m.destroy();
@@ -262,7 +262,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			cancelText: 'Cancel',
 			okText: 'Download',
 			onOk: () => {
-				dispatch(thunks.posts.downloadSelectedPosts());
+				dispatch(thunks.posts.downloadSelectedPosts({ context: 'posts' }));
 			},
 		});
 		m.destroy();
@@ -308,11 +308,11 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleExportAll = (): void => {
-		dispatch(exportPostsToDirectory('all'));
+		dispatch(exportPostsToDirectory({ type: 'all', context: 'posts' }));
 	};
 
 	const handleExportSelected = (): void => {
-		dispatch(exportPostsToDirectory('selected'));
+		dispatch(exportPostsToDirectory({ type: 'selected', context: 'posts' }));
 	};
 
 	const renderMenu = (): React.ReactNode => {
