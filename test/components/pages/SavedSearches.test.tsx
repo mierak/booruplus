@@ -258,9 +258,18 @@ describe('pages/SavedSearches', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.posts.setPosts.type, payload: posts });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.posts.setActivePostIndex.type, payload: 1 });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setActiveView.type, payload: 'image' });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.posts.setPosts.type,
+			payload: { data: posts, context: 'posts' },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.posts.setActivePostIndex.type,
+			payload: { data: 1, context: 'posts' },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.system.setActiveView.type,
+			payload: { view: 'image', context: 'posts' },
+		});
 		unmount();
 	});
 });

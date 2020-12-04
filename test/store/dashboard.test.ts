@@ -3,7 +3,7 @@ doDatabaseMock();
 import reducer, { actions } from '../../src/store/dashboard';
 import { thunks } from '../../src/store/';
 import { RatingCounts, TagHistory } from '../../src/store/types';
-import { createAction, mTag, mPost } from '../helpers/test.helper';
+import { createAction, mTag } from '../helpers/test.helper';
 
 describe('store/dashboard', () => {
 	it('Sets total downloaded posts', () => {
@@ -82,17 +82,6 @@ describe('store/dashboard', () => {
 
 		// then
 		expect(result.mostSearchedTags).toStrictEqual(mostSearchedTags);
-	});
-	it('Sets most viewed posts', () => {
-		//given
-		const mostviewedPosts = [mPost({ id: 1 }), mPost({ id: 2 })];
-		const action = createAction(actions.setMostViewedPosts.type, mostviewedPosts);
-
-		// when
-		const result = reducer(undefined, action);
-
-		// then
-		expect(result.mostViewedPosts).toStrictEqual(mostviewedPosts);
 	});
 	it('Sets most favorited tags', () => {
 		//given
@@ -230,16 +219,5 @@ describe('store/dashboard', () => {
 
 		// then
 		expect(result.mostFavoritedTags).toStrictEqual(mosFavoritedTags);
-	});
-	it('Sets most viewed posts when fetchMostViewedPosts() is fulfiled', () => {
-		//given
-		const mostviewedPosts = [mPost({ id: 1 }), mPost({ id: 2 })];
-		const action = createAction(thunks.dashboard.fetchMostViewedPosts.fulfilled.type, mostviewedPosts);
-
-		// when
-		const result = reducer(undefined, action);
-
-		// then
-		expect(result.mostViewedPosts).toStrictEqual(mostviewedPosts);
 	});
 });

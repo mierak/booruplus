@@ -7,7 +7,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mState } from '../../../helpers/store.helper';
 
-import MoveDirectoryModal from '../../../../src/components/favorites/modal/MoveDirectoryModal';
+import MovePostsToFavoritesDirectoryModal from '../../../../src/components/favorites/modal/MovePostsToFavoritesDirectoryModal';
 import { mTreeNode } from '../../../helpers/test.helper';
 import * as componentTypes from '../../../../src/types/components';
 
@@ -39,7 +39,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		jest.clearAllMocks();
 	});
 
-	it('Renders correctly', () => {
+	it('Renders correctly', async () => {
 		// given
 		const store = mockStore(
 			mState({
@@ -53,7 +53,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<MoveDirectoryModal />
+				<MovePostsToFavoritesDirectoryModal treeData={rootNode.children} expandedKeys={expandedKeys} postIdsToMove={[]} />
 			</Provider>
 		);
 
@@ -67,6 +67,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		expect(cancelButton).not.toBeNull();
 		expect(screen.queryByText('node1')).toBeNull();
 		expect(screen.getByText('node11')).not.toBeNull();
+		await waitFor(() => undefined, { timeout: 0 });
 	});
 	it('Closes modal when Cancel button is pressed', () => {
 		// given
@@ -75,39 +76,30 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<MoveDirectoryModal />
+				<MovePostsToFavoritesDirectoryModal treeData={rootNode.children} expandedKeys={expandedKeys} postIdsToMove={[]} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
 		// then
 		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toHaveLength(1);
 		expect(dispatchedActions[0]).toMatchObject({ type: actions.modals.setVisible.type, payload: false });
 	});
 	it('Dispatches addPostsToDirectory() when node is selected and Add button clicked', async () => {
 		const postIdsToFavorite = [1, 2, 3, 4, 5];
 		const selectedNodeKey = 11;
-		const store = mockStore(
-			mState({
-				favorites: {
-					rootNode,
-					expandedKeys,
-					selectedNodeKey: undefined,
-					activeNodeKey: 11,
-				},
-				modals: {
-					addToFavoritesModal: {
-						postIdsToFavorite,
-					},
-				},
-			})
-		);
+		const store = mockStore(mState());
 		const notificationSpy = jest.spyOn(componentTypes, 'openNotificationWithIcon').mockImplementation();
 
 		// when
 		render(
 			<Provider store={store}>
-				<MoveDirectoryModal />
+				<MovePostsToFavoritesDirectoryModal
+					treeData={rootNode.children}
+					expandedKeys={expandedKeys}
+					postIdsToMove={postIdsToFavorite}
+				/>
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('node11'));
@@ -116,14 +108,13 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		// then
 		await waitFor(() => store.getActions().length === 6);
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.favorites.setSelectedNodeKey.type, payload: 11 });
 		expect(dispatchedActions).toContainMatchingAction({
 			type: thunks.favorites.removePostsFromActiveDirectory.pending.type,
 			meta: { arg: postIdsToFavorite },
 		});
 		expect(dispatchedActions).toContainMatchingAction({
 			type: thunks.favorites.addPostsToDirectory.pending.type,
-			meta: { arg: { ids: postIdsToFavorite, key: selectedNodeKey.toString() } },
+			meta: { arg: { ids: postIdsToFavorite, key: selectedNodeKey } },
 		});
 		expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchPostsInDirectory.pending.type });
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.setVisible.type, payload: false });
@@ -149,7 +140,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<MoveDirectoryModal />
+				<MovePostsToFavoritesDirectoryModal treeData={rootNode.children} expandedKeys={expandedKeys} postIdsToMove={[]} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('node11'));
@@ -169,25 +160,16 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 	});
 	it('When no node is selected it dispatches with default node key', async () => {
 		const postIdsToFavorite = [1, 2, 3, 4, 5];
-		const store = mockStore(
-			mState({
-				favorites: {
-					rootNode,
-					expandedKeys,
-					selectedNodeKey: undefined,
-				},
-				modals: {
-					addToFavoritesModal: {
-						postIdsToFavorite,
-					},
-				},
-			})
-		);
+		const store = mockStore(mState());
 
 		// when
 		render(
 			<Provider store={store}>
-				<MoveDirectoryModal />
+				<MovePostsToFavoritesDirectoryModal
+					treeData={rootNode.children}
+					expandedKeys={expandedKeys}
+					postIdsToMove={postIdsToFavorite}
+				/>
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Move' }));

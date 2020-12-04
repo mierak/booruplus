@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { actions } from '../../../src/store';
 import { RootState, AppDispatch } from '../../../src/store/types';
@@ -12,7 +12,7 @@ import RatingSelect from '../../../src/components/search-form/RatingSelect';
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('search-form/RatingSelect', () => {
-	it('Renders correctly', () => {
+	it('Renders correctly', async () => {
 		// given
 		const store = mockStore(mState());
 
@@ -26,12 +26,12 @@ describe('search-form/RatingSelect', () => {
 		// then
 		expect(screen.getByText('Any')).not.toBeNull();
 	});
-	it('Renders all Ratings when select box is opened', () => {
+	it('Renders all Ratings when select box is opened', async () => {
 		// given
 		const store = mockStore(mState());
 
 		// when
-		const { unmount } = render(
+		render(
 			<Provider store={store}>
 				<RatingSelect mode="online" open />
 			</Provider>
@@ -44,40 +44,46 @@ describe('search-form/RatingSelect', () => {
 		expect(screen.getByText('Safe')).not.toBeNull();
 		expect(screen.getByText('Questionable')).not.toBeNull();
 		expect(screen.getByText('Explicit')).not.toBeNull();
-		unmount();
+		await waitFor(() => undefined);
 	});
-	it('Dispatches setRating() for onlineSearchForm', () => {
+	it('Dispatches setRating() for onlineSearchForm', async () => {
 		// given
 		const store = mockStore(mState());
 
 		// when
-		const { unmount } = render(
+		render(
 			<Provider store={store}>
-				<RatingSelect mode="online" open />
+				<RatingSelect mode='online' open />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('Explicit'));
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.setRating.type, payload: 'explicit' });
-		unmount();
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.onlineSearchForm.setRating.type,
+			payload: 'explicit',
+		});
+		await waitFor(() => undefined);
 	});
-	it('Dispatches setRating() for downloadedSearchForm', () => {
+	it('Dispatches setRating() for downloadedSearchForm', async () => {
 		// given
 		const store = mockStore(mState());
 
 		// when
-		const { unmount } = render(
+		render(
 			<Provider store={store}>
-				<RatingSelect mode="offline" open />
+				<RatingSelect mode='offline' open />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('Explicit'));
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.setRating.type, payload: 'explicit' });
-		unmount();
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.downloadedSearchForm.setRating.type,
+			payload: 'explicit',
+		});
+		await waitFor(() => undefined);
 	});
 });

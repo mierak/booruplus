@@ -5,12 +5,13 @@ import { CheckCircleTwoTone } from '@ant-design/icons';
 import { Card, Popconfirm, Menu, Dropdown } from 'antd';
 
 import { actions } from '@store';
-import { RootState, AppDispatch } from '@store/types';
+import { RootState, AppDispatch, PostsContext } from '@store/types';
 import { Post } from '@appTypes/gelbooruTypes';
 import { CardAction, ContextMenu, openNotificationWithIcon } from '@appTypes/components';
 import { renderPostCardAction, getThumbnailBorder, thumbnailLoader } from '@util/componentUtils';
 
 interface Props {
+	context: PostsContext;
 	index: number;
 	contextMenu?: ContextMenu[];
 	actions?: CardAction[];
@@ -76,9 +77,11 @@ const Thumbnail = (props: Props): React.ReactElement => {
 
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 	const post = useSelector((state: RootState) =>
-		props.index >= 0 && props.index < state.posts.posts.length ? state.posts.posts[props.index] : undefined
+		props.index >= 0 && props.index < state.posts.posts[props.context].length
+			? state.posts.posts[props.context][props.index]
+			: undefined
 	);
-	const isActive = useSelector((state: RootState) => props.index === state.posts.activePostIndex);
+	const isActive = useSelector((state: RootState) => props.index === state.posts.selectedIndices[props.context]);
 	const theme = useSelector((state: RootState) => state.settings.theme);
 	const downloadMissingImage = useSelector((state: RootState) => state.settings.downloadMissingImages);
 
@@ -103,13 +106,13 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		event.stopPropagation();
 		if (event.ctrlKey) {
 			if (post) {
-				dispatch(actions.posts.setPostSelected({ post: post, selected: !post.selected }));
+				dispatch(actions.posts.setPostSelected({ data: { post: post, selected: !post.selected }, context: props.context }));
 			}
 		} else if (event.shiftKey) {
-			dispatch(actions.posts.selectMultiplePosts(props.index));
+			dispatch(actions.posts.selectMultiplePosts({ data: props.index, context: props.context }));
 		} else {
-			dispatch(actions.posts.setActivePostIndex(props.index));
-			activeView !== 'image' && dispatch(actions.system.setActiveView('image'));
+			dispatch(actions.posts.setActivePostIndex({ data: props.index, context: props.context }));
+			activeView !== 'image' && dispatch(actions.system.setActiveView({ view: 'image', context: props.context }));
 		}
 	};
 

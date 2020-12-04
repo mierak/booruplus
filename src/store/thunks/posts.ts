@@ -4,7 +4,7 @@ import moment from 'moment';
 import { db } from '@db';
 import * as api from '@service/apiService';
 import { deleteImage, saveImage } from '@util/imageIpcUtils';
-import { ThunkApi, Task, DownloadTaskState } from '@store/types';
+import { ThunkApi, Task, DownloadTaskState, PostsContext } from '@store/types';
 import { Post, PostSearchOptions, Tag } from '@appTypes/gelbooruTypes';
 import { delay } from '@util/utils';
 import { thunkLoggerFactory } from '@util/logger';
@@ -39,12 +39,13 @@ export const copyAndBlacklistPost = (p: Post): Post => {
  */
 export const downloadTags = createAsyncThunk<Tag[], string[], ThunkApi>(
 	'tags/download',
-	async (tags, thunkApi): Promise<Tag[]> => {
+	async (tags, { getState }): Promise<Tag[]> => {
 		const logger = thunkLogger.getActionLogger(downloadTags);
+		const apiKey = getState().settings.apiKey;
 		logger.debug(`Deduplicating and checking ${tags.length} tags against DB`);
 		const filteredTags = await deduplicateAndCheckTagsAgainstDb(tags);
 		logger.debug(`Getting ${filteredTags.length} tags from API`);
-		const tagsFromApi = await api.getTagsByNames(filteredTags, thunkApi.getState().settings.apiKey);
+		const tagsFromApi = await api.getTagsByNames(filteredTags, apiKey);
 		logger.debug(`Saving ${tagsFromApi.length} tags from API`);
 		db.tags.bulkPut(tagsFromApi);
 		return tagsFromApi;
@@ -188,11 +189,11 @@ export const downloadPosts = createAsyncThunk<
 	}
 );
 
-export const downloadSelectedPosts = createAsyncThunk<void, void, ThunkApi>(
+export const downloadSelectedPosts = createAsyncThunk<void, { context: PostsContext }, ThunkApi>(
 	'posts/downloadSelectedPosts',
-	async (_, thunkApi): Promise<void> => {
+	async ({ context }, thunkApi): Promise<void> => {
 		const logger = thunkLogger.getActionLogger(downloadSelectedPosts);
-		const posts = thunkApi.getState().posts.posts.filter((p) => p.selected);
+		const posts = thunkApi.getState().posts.posts[context].filter((p) => p.selected);
 		if (posts.length === 0) {
 			logger.error('No posts selected');
 			throw new Error('No posts selected');
@@ -204,11 +205,11 @@ export const downloadSelectedPosts = createAsyncThunk<void, void, ThunkApi>(
 	}
 );
 
-export const downloadAllPosts = createAsyncThunk<void, void, ThunkApi>(
+export const downloadAllPosts = createAsyncThunk<void, { context: PostsContext }, ThunkApi>(
 	'posts/downloadAllPosts',
-	async (_, thunkApi): Promise<void> => {
+	async ({ context }, thunkApi): Promise<void> => {
 		const logger = thunkLogger.getActionLogger(downloadAllPosts);
-		const posts = thunkApi.getState().posts.posts;
+		const posts = thunkApi.getState().posts.posts[context];
 		if (posts.length === 0) {
 			logger.error('No posts to download');
 			throw new Error('No posts to download');
@@ -285,19 +286,19 @@ export const blacklistPosts = createAsyncThunk<Post[], Post[], ThunkApi>(
 	}
 );
 
-export const blacklistAllPosts = createAsyncThunk<void, void, ThunkApi>(
+export const blacklistAllPosts = createAsyncThunk<void, { context: PostsContext }, ThunkApi>(
 	'posts/blacklistAllPosts',
-	async (_, thunkApi): Promise<void> => {
+	async ({ context }, thunkApi): Promise<void> => {
 		thunkLogger.getActionLogger(blacklistAllPosts);
-		thunkApi.dispatch(blacklistPosts(thunkApi.getState().posts.posts)); // TODO throw when no posts
+		thunkApi.dispatch(blacklistPosts(thunkApi.getState().posts.posts[context])); // TODO throw when no posts
 	}
 );
 
-export const blacklistSelectedPosts = createAsyncThunk<void, void, ThunkApi>(
+export const blacklistSelectedPosts = createAsyncThunk<void, { context: PostsContext }, ThunkApi>(
 	'posts/blacklistSelectedPosts',
-	async (_, thunkApi): Promise<void> => {
+	async ({ context }, thunkApi): Promise<void> => {
 		thunkLogger.getActionLogger(blacklistSelectedPosts);
-		const posts = thunkApi.getState().posts.posts.filter((post) => post.selected); // TODO throw when no posts
+		const posts = thunkApi.getState().posts.posts[context].filter((post) => post.selected); // TODO throw when no posts
 		thunkApi.dispatch(blacklistPosts(posts));
 	}
 );

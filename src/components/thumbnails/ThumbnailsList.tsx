@@ -3,8 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-import { actions } from '@store';
-import { RootState } from '@store/types';
+import { actions, postsSelector } from '@store';
+import { PostsContext, RootState } from '@store/types';
 import { CardAction, ContextMenu } from '@appTypes/components';
 import { Post } from '@appTypes/gelbooruTypes';
 import EmptyThumbnails from '@components/EmptyThumbnails';
@@ -14,6 +14,7 @@ import PreviewImage from './PreviewImage';
 
 interface Props {
 	className?: string;
+	context: PostsContext;
 	emptyDataLogoCentered?: boolean;
 	contextMenu?: ContextMenu[];
 	actions?: CardAction[];
@@ -41,9 +42,8 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const hoverImageRef = React.useRef<HTMLImageElement>(null);
 	const containerRef = React.useRef<HTMLDivElement>(null);
 	const mousePosition = React.useRef({ x: 0, y: 0 });
-
-	const postCount = useSelector((state: RootState) => state.posts.posts.length);
-	const activePostIndex = useSelector((state: RootState) => state.posts.activePostIndex);
+	const postCount = useSelector((state: RootState) => postsSelector(state, props.context).length);
+	const activePostIndex = useSelector((state: RootState) => state.posts.selectedIndices[props.context]);
 	const searchMode = useSelector((state: RootState) => state.system.searchMode);
 	const useImageHover = useSelector((state: RootState) => state.settings.imageHover);
 
@@ -51,10 +51,10 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 		const handleKeyPress = (event: KeyboardEvent): void => {
 			switch (event.keyCode) {
 				case 39:
-					dispatch(actions.posts.nextPost());
+					dispatch(actions.posts.nextPost({ context: props.context }));
 					break;
 				case 37:
-					dispatch(actions.posts.previousPost());
+					dispatch(actions.posts.previousPost({ context: props.context }));
 					break;
 				case 8:
 					dispatch(actions.system.setActiveView('thumbnails'));
@@ -64,8 +64,9 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 
 		return (): void => {
 			window.removeEventListener('keydown', handleKeyPress, true);
+			dispatch(actions.posts.setHoveredPost({ post: undefined, visible: false }));
 		};
-	}, [dispatch]);
+	}, [dispatch, props.context]);
 
 	const positionHoverImage = (): void => {
 		const hoverContainer = hoverImageRef.current;
@@ -123,6 +124,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 		<Container ref={containerRef} onMouseMove={setMouse}>
 			<PreviewImage ref={hoverImageRef} setImagePosition={positionHoverImage} />
 			<Grid
+				context={props.context}
 				itemCount={postCount}
 				activeIndex={activePostIndex}
 				actions={props.actions}

@@ -20,7 +20,7 @@ describe('favorites/modal/DeleteDirectoryModal', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<DeleteDirectoryModal />
+				<DeleteDirectoryModal selectedNodeKey={1} />
 			</Provider>
 		);
 		const title = screen.getByText('Delete Directory');
@@ -39,89 +39,56 @@ describe('favorites/modal/DeleteDirectoryModal', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<DeleteDirectoryModal />
+				<DeleteDirectoryModal selectedNodeKey={1} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('Close'));
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions[0]).toMatchObject({ type: actions.modals.setVisible.type, payload: false });
+		expect(dispatchedActions).toHaveLength(1);
+		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.setVisible.type, payload: false });
 	});
 	it('Closes modal and dispatches addSubFolder when Add button is pressed', () => {
 		// given
-		const store = mockStore(
-			mState({
-				favorites: {
-					selectedNodeKey: 123,
-				},
-			})
-		);
+		const store = mockStore(mState());
 		const notificationSpy = jest.spyOn(componentTypes, 'openNotificationWithIcon').mockImplementation();
 
 		// when
 		render(
 			<Provider store={store}>
-				<DeleteDirectoryModal />
+				<DeleteDirectoryModal selectedNodeKey={123} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('Delete'));
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions[0]).toMatchObject({
+		expect(dispatchedActions).toContainMatchingAction({
 			type: thunks.favorites.deleteDirectoryAndChildren.pending.type,
 			meta: { arg: 123 },
 		});
-		waitFor(() => expect(dispatchedActions[1]).toMatchObject({ type: actions.modals.setVisible.type, payload: false }));
+		waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.setVisible.type, payload: false })
+		);
 		waitFor(() => expect(notificationSpy).toHaveBeenCalledWith('success', expect.anything(), expect.anything()));
-	});
-	it('Shows error notification when Delete button is pressed but no node is selected', () => {
-		// given
-		const store = mockStore(
-			mState({
-				favorites: {
-					selectedNodeKey: undefined,
-				},
-			})
-		);
-		const notificationSpy = jest.spyOn(componentTypes, 'openNotificationWithIcon').mockImplementation();
-
-		// when
-		render(
-			<Provider store={store}>
-				<DeleteDirectoryModal />
-			</Provider>
-		);
-		fireEvent.click(screen.getByText('Delete'));
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions[0]).toMatchObject({ type: actions.modals.setVisible.type, payload: false });
-		waitFor(() => expect(notificationSpy).toHaveBeenCalledWith('error', expect.anything(), expect.anything()));
 	});
 	it('Shows error notification when trying to delete default directory', () => {
 		// given
-		const store = mockStore(
-			mState({
-				favorites: {
-					selectedNodeKey: 1,
-				},
-			})
-		);
+		const store = mockStore(mState());
 		const notificationSpy = jest.spyOn(componentTypes, 'openNotificationWithIcon').mockImplementation();
 
 		// when
 		render(
 			<Provider store={store}>
-				<DeleteDirectoryModal />
+				<DeleteDirectoryModal selectedNodeKey={1} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('Delete'));
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions[0]).toMatchObject({ type: actions.modals.setVisible.type, payload: false });
+		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.setVisible.type, payload: false });
 		waitFor(() =>
 			expect(notificationSpy).toHaveBeenCalledWith(
 				'error',

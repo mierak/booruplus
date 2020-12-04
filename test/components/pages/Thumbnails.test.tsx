@@ -15,6 +15,7 @@ import { mPost, mTag } from '../../helpers/test.helper';
 import { deleteImageMock } from '../../helpers/imageBus.mock';
 import * as utils from '../../../src/types/components';
 import { thumbnailLoaderMock } from '../../helpers/imageBus.mock';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -133,7 +134,7 @@ describe('pages/Thumbnails', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -166,7 +167,7 @@ describe('pages/Thumbnails', () => {
 					searchMode: 'saved-search-online',
 				},
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -196,7 +197,7 @@ describe('pages/Thumbnails', () => {
 					searchMode: 'saved-search-offline',
 				},
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -223,7 +224,7 @@ describe('pages/Thumbnails', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -252,7 +253,7 @@ describe('pages/Thumbnails', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -288,7 +289,7 @@ describe('pages/Thumbnails', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -303,8 +304,13 @@ describe('pages/Thumbnails', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.showModal.type, payload: 'add-to-favorites' });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.addToFavoritesModal.setPostIds.type, payload: [posts[2].id] });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.modals.showModal.type,
+			payload: {
+				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
+				modalState: { [ActiveModal.ADD_POSTS_TO_FAVORITES]: { postIdsToFavorite: [posts[2].id] } },
+			},
+		});
 	});
 	it('Dispatches addPreviewToActiveSavedSearch() for correct post when Add Preview button is pressed', async () => {
 		// given
@@ -321,7 +327,7 @@ describe('pages/Thumbnails', () => {
 					searchMode: 'saved-search-online',
 				},
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);

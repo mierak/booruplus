@@ -18,7 +18,7 @@ describe('settings/SettingsModal', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
-	it('Renders correctly for online mode', () => {
+	it('Renders correctly for online mode', async () => {
 		// given
 		const tagOptions = [
 			mTag({ id: 1, tag: 'opt1', type: 'artist' }),
@@ -34,9 +34,9 @@ describe('settings/SettingsModal', () => {
 		);
 
 		// when
-		const { unmount } = render(
+		render(
 			<Provider store={store}>
-				<TagSearch mode="online" open />
+				<TagSearch mode='online' open />
 			</Provider>
 		);
 
@@ -47,9 +47,9 @@ describe('settings/SettingsModal', () => {
 		expect(screen.getByText('opt1 | Count: 123')).not.toBeNull();
 		expect(screen.getByText('opt2 | Count: 123')).not.toBeNull();
 		expect(screen.getByText('opt3 | Count: 123')).not.toBeNull();
-		unmount();
+		await waitFor(() => undefined);
 	});
-	it('Renders correctly for offline mode', () => {
+	it('Renders correctly for offline mode', async () => {
 		// given
 		const tagOptions = [
 			mTag({ id: 1, tag: 'opt1', type: 'artist' }),
@@ -65,9 +65,9 @@ describe('settings/SettingsModal', () => {
 		);
 
 		// when
-		const { unmount } = render(
+		render(
 			<Provider store={store}>
-				<TagSearch mode="offline" open />
+				<TagSearch mode='offline' open />
 			</Provider>
 		);
 
@@ -78,9 +78,9 @@ describe('settings/SettingsModal', () => {
 		expect(screen.getByText('opt1 | Count: 123')).not.toBeNull();
 		expect(screen.getByText('opt2 | Count: 123')).not.toBeNull();
 		expect(screen.getByText('opt3 | Count: 123')).not.toBeNull();
-		unmount();
+		await waitFor(() => undefined);
 	});
-	it('Dispatches addTag for online mode', () => {
+	it('Dispatches addTag for online mode', async () => {
 		// given
 		const tagOptions = [
 			mTag({ id: 1, tag: 'opt1', type: 'artist' }),
@@ -96,19 +96,22 @@ describe('settings/SettingsModal', () => {
 		);
 
 		// when
-		const { unmount } = render(
+		render(
 			<Provider store={store}>
-				<TagSearch mode="online" open />
+				<TagSearch mode='online' open />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('opt2 | Count: 123'));
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.addTag.type, payload: tagOptions[1] });
-		unmount();
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.onlineSearchForm.addTag.type,
+			payload: tagOptions[1],
+		});
+		await waitFor(() => undefined);
 	});
-	it('Dispatches addTag for offline mode', () => {
+	it('Dispatches addTag for offline mode', async () => {
 		// given
 		const tagOptions = [
 			mTag({ id: 1, tag: 'opt1', type: 'artist' }),
@@ -124,17 +127,20 @@ describe('settings/SettingsModal', () => {
 		);
 
 		// when
-		const { unmount } = render(
+		render(
 			<Provider store={store}>
-				<TagSearch mode="offline" open />
+				<TagSearch mode='offline' open />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('opt2 | Count: 123'));
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.addTag.type, payload: tagOptions[1] });
-		unmount();
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.downloadedSearchForm.addTag.type,
+			payload: tagOptions[1],
+		});
+		await waitFor(() => undefined);
 	});
 
 	it('Calls useDebounce correct amount of times and dispatches search for online mode', async () => {
@@ -149,9 +155,9 @@ describe('settings/SettingsModal', () => {
 		const debounceSpy = jest.spyOn(debouce, 'useDebounce');
 
 		// when
-		const { unmount } = render(
+		render(
 			<Provider store={store}>
-				<TagSearch mode="online" />
+				<TagSearch mode='online' />
 			</Provider>
 		);
 		act(() => {
@@ -178,7 +184,6 @@ describe('settings/SettingsModal', () => {
 			})
 		);
 		expect(debounceSpy).toBeCalledTimes(3);
-		unmount();
 	});
 	it('Calls useDebounce correct amount of times and dispatches search for offline mode', async () => {
 		// given
@@ -192,9 +197,9 @@ describe('settings/SettingsModal', () => {
 		const debounceSpy = jest.spyOn(debouce, 'useDebounce');
 
 		// when
-		const { unmount } = render(
+		render(
 			<Provider store={store}>
-				<TagSearch mode="offline" />
+				<TagSearch mode='offline' />
 			</Provider>
 		);
 		act(() => {
@@ -221,7 +226,6 @@ describe('settings/SettingsModal', () => {
 			})
 		);
 		expect(debounceSpy).toBeCalledTimes(3);
-		unmount();
 	});
 	it('Shows loading state properly', async () => {
 		// given
@@ -234,14 +238,13 @@ describe('settings/SettingsModal', () => {
 		);
 
 		// when
-		const { unmount } = render(
+		render(
 			<Provider store={store}>
-				<TagSearch mode="offline" open />
+				<TagSearch mode='offline' open />
 			</Provider>
 		);
 
 		// then
 		expect(screen.getByText('Fetching tags...')).not.toBeNull();
-		unmount();
 	});
 });

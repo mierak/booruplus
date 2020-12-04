@@ -35,7 +35,7 @@ describe('Thumbnail', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -43,7 +43,7 @@ describe('Thumbnail', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnail index={index} />
+				<Thumbnail context='posts' index={index} />
 			</Provider>
 		);
 
@@ -56,7 +56,7 @@ describe('Thumbnail', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -64,15 +64,21 @@ describe('Thumbnail', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnail index={index} />
+				<Thumbnail context='posts' index={index} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByTestId('thumbnail-image'));
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.posts.setActivePostIndex.type, payload: index });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setActiveView.type, payload: 'image' });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.posts.setActivePostIndex.type,
+			payload: { data: index, context: 'posts' },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.system.setActiveView.type,
+			payload: { view: 'image', context: 'posts' },
+		});
 	});
 	it('Dispatches setPostSelected() when thumbnail is ctrl clicked', () => {
 		// given
@@ -80,7 +86,7 @@ describe('Thumbnail', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -88,7 +94,7 @@ describe('Thumbnail', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnail index={index} />
+				<Thumbnail context='posts' index={index} />
 			</Provider>
 		);
 		userEvent.click(screen.getByTestId('thumbnail-image'), { ctrlKey: true });
@@ -97,7 +103,7 @@ describe('Thumbnail', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
 			type: actions.posts.setPostSelected.type,
-			payload: { post: posts[index], selected: !posts[index].selected },
+			payload: { data: { post: posts[index], selected: !posts[index].selected }, context: 'posts' },
 		});
 	});
 	it('Dispatches selectMultiplePosts() when thumbnail is shift clicked', () => {
@@ -106,7 +112,7 @@ describe('Thumbnail', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -114,7 +120,7 @@ describe('Thumbnail', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnail index={index} />
+				<Thumbnail context='posts' index={index} />
 			</Provider>
 		);
 		userEvent.click(screen.getByTestId('thumbnail-image'), { shiftKey: true });
@@ -123,7 +129,7 @@ describe('Thumbnail', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
 			type: actions.posts.selectMultiplePosts.type,
-			payload: index,
+			payload: { data: index, context: 'posts' },
 		});
 	});
 	it('Renders action without popconfirm', () => {
@@ -132,7 +138,7 @@ describe('Thumbnail', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -149,7 +155,7 @@ describe('Thumbnail', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnail index={index} actions={actions} />
+				<Thumbnail context='posts' index={index} actions={actions} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('img', { name: 'plus' }));
@@ -163,7 +169,7 @@ describe('Thumbnail', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -187,7 +193,7 @@ describe('Thumbnail', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnail index={index} actions={actions} />
+				<Thumbnail context='posts' index={index} actions={actions} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('img', { name: 'plus' }));
@@ -203,7 +209,7 @@ describe('Thumbnail', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -227,7 +233,7 @@ describe('Thumbnail', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnail index={index} actions={actions} />
+				<Thumbnail context='posts' index={index} actions={actions} />
 			</Provider>
 		);
 
@@ -240,7 +246,7 @@ describe('Thumbnail', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);
@@ -258,7 +264,7 @@ describe('Thumbnail', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnail index={index} actions={actions} />
+				<Thumbnail context='posts' index={index} actions={actions} />
 			</Provider>
 		);
 
@@ -273,7 +279,7 @@ describe('Thumbnail', () => {
 			const store = mockStore(
 				mState({
 					posts: {
-						posts,
+						posts: { posts, favorites: [] },
 					},
 				})
 			);
@@ -281,7 +287,7 @@ describe('Thumbnail', () => {
 			// when
 			render(
 				<Provider store={store}>
-					<Thumbnail index={0} onMouseEnter={onMouseEnter} />
+					<Thumbnail context='posts' index={0} onMouseEnter={onMouseEnter} />
 				</Provider>
 			);
 			userEvent.hover(screen.getAllByTestId('thumbnail-image')[0]);
@@ -295,7 +301,7 @@ describe('Thumbnail', () => {
 			const store = mockStore(
 				mState({
 					posts: {
-						posts,
+						posts: { posts, favorites: [] },
 					},
 				})
 			);
@@ -303,7 +309,7 @@ describe('Thumbnail', () => {
 			// when
 			render(
 				<Provider store={store}>
-					<Thumbnail index={0} onMouseLeave={onMouseLeave} />
+					<Thumbnail context='posts' index={0} onMouseLeave={onMouseLeave} />
 				</Provider>
 			);
 			userEvent.hover(screen.getAllByTestId('thumbnail-image')[0]);
@@ -318,7 +324,7 @@ describe('Thumbnail', () => {
 			const store = mockStore(
 				mState({
 					posts: {
-						posts,
+						posts: { posts, favorites: [] },
 					},
 				})
 			);
@@ -326,7 +332,7 @@ describe('Thumbnail', () => {
 			// when
 			render(
 				<Provider store={store}>
-					<Thumbnail index={0} onMouseMove={onMouseMove} />
+					<Thumbnail context='posts' index={0} onMouseMove={onMouseMove} />
 				</Provider>
 			);
 			userEvent.hover(screen.getAllByTestId('thumbnail-image')[0]);

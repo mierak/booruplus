@@ -7,14 +7,12 @@ export interface FavoritesState {
 	rootNode: TreeNode | undefined;
 	activeNodeKey: number; // node key that is displayed
 	expandedKeys: string[];
-	selectedNodeKey: number | undefined; // node key to work with (delete, create, move posts to)
 }
 
 export const initialState: FavoritesState = {
 	rootNode: undefined,
 	activeNodeKey: 1,
 	expandedKeys: [],
-	selectedNodeKey: undefined,
 };
 
 const favoritesSlice = createSlice({
@@ -32,9 +30,6 @@ const favoritesSlice = createSlice({
 		},
 		addExpandedKey: (state, action: PayloadAction<string>): void => {
 			state.expandedKeys.push(action.payload);
-		},
-		setSelectedNodeKey: (state, action: PayloadAction<number | undefined>): void => {
-			state.selectedNodeKey = action.payload;
 		},
 	},
 	extraReducers: (builder) => {

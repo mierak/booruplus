@@ -177,41 +177,21 @@ describe('thunks/favorites', () => {
 			const selectedKey = 12345;
 			const postIds = [12, 13, 5, 6, 8, 6565];
 			const posts = [mPost({ id: 123 }), mPost({ id: 456 })];
-			const store = mockStore(
-				mState({
-					favorites: {
-						selectedNodeKey: selectedKey,
-					},
-				})
-			);
+			const store = mockStore(mState());
 			mockedDb.favorites.getNodeWithoutChildren.mockResolvedValue(mTreeNode({ postIds }));
 			mockedDb.posts.getBulk.mockResolvedValue(posts);
 
 			// when
-			await store.dispatch(thunks.exportDirectory());
+			await store.dispatch(thunks.exportDirectory({  targetDirectoryKey: selectedKey  }));
 
 			// then
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.favorites.getNodeWithoutChildren).toBeCalledWith(selectedKey);
 			expect(mockedDb.posts.getBulk).toBeCalledWith(postIds);
-			expect(dispatchedActions).toContainMatchingAction({ type: exportPostsToDirectory.pending.type, meta: { arg: posts } });
-		});
-		it('Does not call anything when selectedKey is undefined', async () => {
-			// given
-			const selectedKey = undefined;
-			const store = mockStore(
-				mState({
-					favorites: {
-						selectedNodeKey: selectedKey,
-					},
-				})
-			);
-
-			// when
-			await store.dispatch(thunks.exportDirectory());
-
-			// then
-			expect(mockedDb.favorites.getNodeWithoutChildren).toBeCalledTimes(0);
+			expect(dispatchedActions).toContainMatchingAction({
+				type: exportPostsToDirectory.pending.type,
+				meta: { arg: posts },
+			});
 		});
 	});
 });

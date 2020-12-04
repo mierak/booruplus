@@ -35,16 +35,6 @@ export type SearchMode =
 	| 'most-viewed'
 	| 'open-download';
 
-export type ActiveModal =
-	| 'none'
-	| 'add-to-favorites'
-	| 'add-favorites-directory'
-	| 'rename-favorites-directory'
-	| 'delete-favorites-directory'
-	| 'move-to-directory'
-	| 'move-selected-to-directory-confirmation'
-	| 'settings';
-
 export interface OfflineOptions {
 	blacklisted: boolean;
 	favorite: boolean;
@@ -144,3 +134,5 @@ export interface NotFoundTags {
 	tag: string;
 	count: number;
 }
+
+export type PostsContext = 'posts' | 'favorites' | 'mostViewed';

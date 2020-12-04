@@ -4,7 +4,6 @@ import { Layout, Menu, Affix } from 'antd';
 import {
 	DashboardOutlined,
 	UnorderedListOutlined,
-	FileImageOutlined,
 	HeartOutlined,
 	TagsOutlined,
 	FormOutlined,
@@ -16,6 +15,7 @@ import {
 import { actions } from '@store';
 import { RootState, View } from '@store/types';
 import Modals from '@components/Modals';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 import Drawers from './Drawers';
 
@@ -60,10 +60,6 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 								<UnorderedListOutlined />
 								<span>Thumbnails</span>
 							</Menu.Item>
-							<Menu.Item key='image' onClick={(): void => handleMenuClick('image')}>
-								<FileImageOutlined />
-								<span>Image View</span>
-							</Menu.Item>
 							<Menu.Item key='saved-searches' onClick={(): void => handleMenuClick('saved-searches')}>
 								<SaveOutlined />
 								<span>Saved Searches</span>
@@ -91,7 +87,7 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 							<Menu.Item
 								key='settings'
 								onClick={(): void => {
-									dispatch(actions.modals.showModal('settings'));
+									dispatch(actions.modals.showModal({ modal: ActiveModal.SETTINGS, modalState: {} }));
 								}}
 							>
 								<SettingOutlined />

@@ -22,6 +22,7 @@ import { RootState, AppDispatch } from '@store/types';
 import ThumbnailsList from '@components/thumbnails/ThumbnailsList';
 import { CardAction, openNotificationWithIcon } from '@appTypes/components';
 import { Post } from '@appTypes/gelbooruTypes';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 interface Props {
 	className?: string;
@@ -103,7 +104,12 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	);
 
 	const handleFavorite = (post: Post): void => {
-		dispatch(actions.modals.showModal('add-to-favorites'));
+		dispatch(
+			actions.modals.showModal({
+				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
+				modalState: { [ActiveModal.ADD_POSTS_TO_FAVORITES]: { postIdsToFavorite: [post.id] } },
+			})
+		);
 		dispatch(actions.modals.addToFavoritesModal.setPostIds([post.id]));
 	};
 
@@ -165,7 +171,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 		if (isFetchingPosts) {
 			return <StyledSpin indicator={<LoadingOutlined style={{ fontSize: '64px' }} />} />;
 		} else {
-			return <StyledThumbnailsList hasHeader emptyDataLogoCentered={true} actions={thumbnailActions} />;
+			return <StyledThumbnailsList context={'posts'} hasHeader emptyDataLogoCentered={true} actions={thumbnailActions} />;
 		}
 	};
 
@@ -189,7 +195,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			cancelText: 'Cancel',
 			okText: 'Blacklist',
 			onOk: () => {
-				dispatch(thunks.posts.blacklistAllPosts());
+				dispatch(thunks.posts.blacklistAllPosts({ context: 'posts' }));
 			},
 		});
 		m.destroy();
@@ -202,20 +208,38 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			cancelText: 'Cancel',
 			okText: 'Blacklist',
 			onOk: () => {
-				dispatch(thunks.posts.blacklistSelectedPosts());
+				dispatch(thunks.posts.blacklistSelectedPosts({ context: 'posts' }));
 			},
 		});
 		m.destroy();
 	};
 
 	const handleAddAllToFavorites = (): void => {
-		dispatch(actions.modals.addToFavoritesModal.setPostIdsToFavorite('all'));
-		dispatch(actions.modals.showModal('add-to-favorites'));
+		dispatch(
+			actions.modals.showModal({
+				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
+				modalState: {
+					[ActiveModal.ADD_POSTS_TO_FAVORITES]: {
+						context: 'posts',
+						type: 'all',
+					},
+				},
+			})
+		);
 	};
 
 	const handleAddSelectedToFavorites = (): void => {
-		dispatch(actions.modals.addToFavoritesModal.setPostIdsToFavorite('selected'));
-		dispatch(actions.modals.showModal('add-to-favorites'));
+		dispatch(
+			actions.modals.showModal({
+				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
+				modalState: {
+					[ActiveModal.ADD_POSTS_TO_FAVORITES]: {
+						context: 'posts',
+						type: 'selected',
+					},
+				},
+			})
+		);
 	};
 
 	const handleDownloadAll = async (): Promise<void> => {
@@ -225,7 +249,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			cancelText: 'Cancel',
 			okText: 'Download',
 			onOk: () => {
-				dispatch(thunks.posts.downloadAllPosts());
+				dispatch(thunks.posts.downloadAllPosts({ context: 'posts' }));
 			},
 		});
 		m.destroy();
@@ -238,7 +262,7 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 			cancelText: 'Cancel',
 			okText: 'Download',
 			onOk: () => {
-				dispatch(thunks.posts.downloadSelectedPosts());
+				dispatch(thunks.posts.downloadSelectedPosts({ context: 'posts' }));
 			},
 		});
 		m.destroy();
@@ -284,11 +308,11 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleExportAll = (): void => {
-		dispatch(exportPostsToDirectory('all'));
+		dispatch(exportPostsToDirectory({ type: 'all', context: 'posts' }));
 	};
 
 	const handleExportSelected = (): void => {
-		dispatch(exportPostsToDirectory('selected'));
+		dispatch(exportPostsToDirectory({ type: 'selected', context: 'posts' }));
 	};
 
 	const renderMenu = (): React.ReactNode => {

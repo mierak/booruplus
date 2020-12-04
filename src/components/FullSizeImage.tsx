@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
-import { RootState } from '@store/types';
+import { PostsContext, RootState } from '@store/types';
 import { thunks } from '@store';
 
 import { isFilenameVideo, getImageExtensionFromFilename } from '@util/utils';
@@ -14,6 +14,7 @@ import Gif from './full-size-image/Gif';
 
 interface Props {
 	className?: string;
+	context: PostsContext;
 }
 
 const Container = styled.div`
@@ -61,8 +62,10 @@ const StyledEmptyThumbnails = styled(EmptyThumbnails)`
 const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 
-	const index = useSelector((state: RootState) => state.posts.activePostIndex);
-	const post = useSelector((state: RootState) => (index !== undefined && state.posts.posts[index]) || undefined);
+	const index = useSelector((state: RootState) => state.posts.selectedIndices[props.context]);
+	const post = useSelector(
+		(state: RootState) => (index !== undefined && state.posts.posts[props.context][index]) || undefined
+	);
 
 	const renderImage = (): JSX.Element => {
 		if (post) {

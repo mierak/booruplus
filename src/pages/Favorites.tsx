@@ -9,6 +9,7 @@ import SiderContent from '@components/favorites/SiderContent';
 import { Post } from '@appTypes/gelbooruTypes';
 import { RootState, AppDispatch } from '@store/types';
 import { CardAction, openNotificationWithIcon } from '@appTypes/components';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 interface Props {
 	className?: string;
@@ -66,7 +67,7 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 
 	useEffect(() => {
 		return (): void => {
-			dispatch(thunks.settings.saveSettings());
+			dispatch(thunks.settings.saveSettings()); // TODO call only when sider width changes
 		};
 	}, [dispatch]);
 
@@ -87,7 +88,16 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleMoveToDirectory = (post: Post): void => {
-		dispatch(actions.modals.showModal('move-to-directory'));
+		dispatch(
+			actions.modals.showModal({
+				modal: ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION,
+				modalState: {
+					[ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION]: {
+						postIdsToMove: [post.id],
+					},
+				},
+			})
+		);
 		dispatch(actions.modals.addToFavoritesModal.setPostIds([post.id]));
 	};
 
@@ -144,7 +154,14 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const onResizeEnd = (event: React.MouseEvent<HTMLDivElement>): void => {
-		if (isSiderCollapsed || !dragging.current.value || !containerRef.current || !dividerRef.current || !dividerDummyRef.current) return;
+		if (
+			isSiderCollapsed ||
+			!dragging.current.value ||
+			!containerRef.current ||
+			!dividerRef.current ||
+			!dividerDummyRef.current
+		)
+			return;
 
 		const containerOffsetX = containerRef.current.getBoundingClientRect().left;
 		let newWidth = minGridWidth;
@@ -181,10 +198,16 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	return (
-		<Container ref={containerRef} className={props.className} onMouseUp={onResizeEnd} onMouseLeave={onResizeEnd} onMouseMove={onResizeMove}>
+		<Container
+			ref={containerRef}
+			className={props.className}
+			onMouseUp={onResizeEnd}
+			onMouseLeave={onResizeEnd}
+			onMouseMove={onResizeMove}
+		>
 			<Layout>
 				<StyledContent>
-					<ThumbnailsList emptyDataLogoCentered={true} actions={cardActions} hasHeader={false} />
+					<ThumbnailsList context={'favorites'} emptyDataLogoCentered={true} actions={cardActions} hasHeader={false} />
 				</StyledContent>
 				<Divider ref={dividerRef} $active={!isSiderCollapsed} onMouseDown={onResizeStart} />
 				<DividerDummy ref={dividerDummyRef} />

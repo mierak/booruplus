@@ -2,6 +2,7 @@
 
 ## 0.1.7 - TITLE - DATE
 - Saving Search now automatically sets search mode to saved-search to let you add previews right away
+- Favorites, Most Viewed Posts and the rest are now separated. This means that clicking on Favorites page or opening any posts there while having active search wont override it.
 - BUG FIX: Save Search button will not whos on thumbnails page when current search mode is saved-search
 - BUG FIX: Added confirmation for Saved Search delete
 - BUG FIX: No longer duplicate tags when drag and dropping selected tag on the Selected Tags field in search form. Same goes for excluded tags

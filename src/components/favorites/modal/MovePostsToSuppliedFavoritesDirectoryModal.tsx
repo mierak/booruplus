@@ -1,24 +1,26 @@
 import React from 'react';
 import { Modal } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import { AppDispatch, RootState } from '@store/types';
+import { AppDispatch } from '@store/types';
 import { actions, thunks } from '@store';
 import { openNotificationWithIcon } from '@appTypes/components';
 
 import ModalFooter from './common/ModalFooter';
+import { MovePostsToDirectoryConfirmationModalProps as MovePostsToSuppliedFavoritesDirectoryModalProps } from '@appTypes/modalTypes';
 
-const MoveSelectedToDirectoryModal: React.FunctionComponent = () => {
+const MovePostsToSuppliedFavoritesDirectoryModal: React.FunctionComponent<MovePostsToSuppliedFavoritesDirectoryModalProps> = ({
+	targetDirectoryKey,
+	postIdsToMove,
+}) => {
 	const dispatch = useDispatch<AppDispatch>();
-	const postIdsToFavorite = useSelector((state: RootState) => state.modals.addToFavoritesModal.postIdsToFavorite);
-	const selectedNodeKey = useSelector((state: RootState) => state.favorites.selectedNodeKey);
 
 	const handleClose = (): void => {
 		dispatch(actions.modals.setVisible(false));
 	};
 
 	const handleConfirm = async (): Promise<void> => {
-		if (postIdsToFavorite.length === 0) {
+		if (postIdsToMove.length === 0) {
 			openNotificationWithIcon(
 				'error',
 				'Failed to add post to directory',
@@ -28,8 +30,8 @@ const MoveSelectedToDirectoryModal: React.FunctionComponent = () => {
 			dispatch(actions.modals.setVisible(false));
 			return;
 		}
-		await dispatch(thunks.favorites.removePostsFromActiveDirectory(postIdsToFavorite));
-		await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToFavorite, key: !selectedNodeKey ? 1 : selectedNodeKey }));
+		await dispatch(thunks.favorites.removePostsFromActiveDirectory(postIdsToMove));
+		await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToMove, key: targetDirectoryKey }));
 		await dispatch(thunks.favorites.fetchPostsInDirectory());
 		openNotificationWithIcon('success', 'Success', 'Successfuly moved post to folder');
 		dispatch(actions.modals.setVisible(false));
@@ -49,4 +51,4 @@ const MoveSelectedToDirectoryModal: React.FunctionComponent = () => {
 	);
 };
 
-export default MoveSelectedToDirectoryModal;
+export default MovePostsToSuppliedFavoritesDirectoryModal;

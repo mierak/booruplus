@@ -3,7 +3,8 @@ import styled from 'styled-components';
 
 import { CardAction, ContextMenu } from '@appTypes/components';
 import LoadMoreButton from '@components/search-form/LoadMoreButton';
-import { Post } from '@appTypes//gelbooruTypes';
+import { Post } from '@appTypes/gelbooruTypes';
+import { PostsContext } from '@store/types';
 
 import Cell from './Cell';
 
@@ -12,6 +13,7 @@ interface CellRendererProps {
 	rowIndex: number;
 	style: React.CSSProperties;
 	data: {
+		context: PostsContext;
 		renderLoadMore?: boolean;
 		rowCount: number;
 		columns: number;
@@ -36,6 +38,7 @@ const CellRenderer = (cellProps: CellRendererProps): React.ReactElement => {
 		return (
 			<Cell
 				{...cellProps}
+				context={cellProps.data.context}
 				columns={cellProps.data.columns}
 				itemCount={cellProps.data.itemCount}
 				contextMenu={cellProps.data.contextMenu}

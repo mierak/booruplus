@@ -34,13 +34,14 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 
 	const thumbnailsListvisible = useSelector((state: RootState) => state.system.isImageViewThumbnailsCollapsed);
+	const context = useSelector((state: RootState) => state.system.imageViewContext);
 	const theme = useSelector((state: RootState) => state.settings.theme);
 
 	return (
 		<Container className={props.className}>
 			<StyledLayout>
 				<Layout.Content>
-					<FullSizeImage />
+					<FullSizeImage context={context} />
 				</Layout.Content>
 			</StyledLayout>
 			<Layout.Sider
@@ -55,7 +56,7 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 				width={225}
 				style={{ height: '100vh' }}
 			>
-				<StyledThumbnailsList hasHeader={false} singleColumn />
+				<StyledThumbnailsList context={context} hasHeader={false} singleColumn />
 			</Layout.Sider>
 		</Container>
 	);

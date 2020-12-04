@@ -95,17 +95,12 @@ export const removePostsFromActiveDirectory = createAsyncThunk<void, number[], T
 	}
 );
 
-export const exportDirectory = createAsyncThunk<Post[], void, ThunkApi>(
+export const exportDirectory = createAsyncThunk<Post[], {  targetDirectoryKey: number  }, ThunkApi>(
 	'favorites/exportDirectory',
-	async (_, thunkApi): Promise<Post[]> => {
+	async ({  targetDirectoryKey  }, thunkApi): Promise<Post[]> => {
 		const logger = thunkLogger.getActionLogger(exportDirectory);
-		const key = thunkApi.getState().favorites.selectedNodeKey;
-		if (key === undefined) {
-			logger.error('No key was selected. Cannot export directory');
-			return [];
-		}
 
-		const directory = await db.favorites.getNodeWithoutChildren(key);
+		const directory = await db.favorites.getNodeWithoutChildren(targetDirectoryKey);
 		logger.debug(`Retrieved directory containing ${directory.postIds.length} posts`);
 		const posts = await db.posts.getBulk(directory.postIds);
 		logger.debug(`Retrieved ${posts.length} posts`);

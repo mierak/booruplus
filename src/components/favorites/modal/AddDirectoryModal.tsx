@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Modal, Input, Form } from 'antd';
 
 import { actions, thunks } from '@store';
-import { AppDispatch, RootState } from '@store/types';
+import { AppDispatch } from '@store/types';
 import { openNotificationWithIcon } from '@appTypes/components';
 
 import ModalFooter from './common/ModalFooter';
+import { AddDirectoryModalProps } from '@appTypes/modalTypes';
 
 interface ValidationStatus {
 	validateStatus: 'error' | 'success' | '';
 	message: string;
 }
 
-const AddDirectoryModal: React.FunctionComponent = () => {
+const AddDirectoryModal: React.FunctionComponent<AddDirectoryModalProps> = ({ selectedNodeKey }) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const [text, setText] = useState('');
 	const [validationStatus, setValidationStatus] = useState<ValidationStatus>({
 		validateStatus: 'error',
 		message: '',
 	});
-	const selectedNodeKey = useSelector((state: RootState) => state.favorites.selectedNodeKey);
 
 	const validateName = (name?: string): boolean => {
 		if (!name || name.length === 0) {
@@ -31,11 +31,6 @@ const AddDirectoryModal: React.FunctionComponent = () => {
 	};
 
 	const handleAddSubFolder = async (): Promise<void> => {
-		if (selectedNodeKey === undefined) {
-			openNotificationWithIcon('error', 'Failed to add subfolder', 'Failed to add subfolder because no node was selected');
-			dispatch(actions.modals.setVisible(false));
-			return;
-		}
 		if (validateName(text)) {
 			await dispatch(thunks.favorites.addDirectory({ parentKey: selectedNodeKey, title: text }));
 			openNotificationWithIcon('success', 'Success', 'Successfuly added sub folder');

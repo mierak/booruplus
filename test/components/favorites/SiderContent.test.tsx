@@ -1,5 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { doDatabaseMock, mockedDb } from '../../helpers/database.mock';
+doDatabaseMock();
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { thunks, actions } from '../../../src/store';
 import { RootState, AppDispatch } from '../../../src/store/types';
@@ -33,7 +35,7 @@ describe('favorites/SiderContent', () => {
 		],
 	});
 	const expandedKeys = ['0', '11', '111', '12'];
-	it('Renders data correctly', () => {
+	it('Renders data correctly', async () => {
 		// given
 		const store = mockStore(
 			mState({
@@ -60,6 +62,7 @@ describe('favorites/SiderContent', () => {
 		expect(screen.getByText('node11')).not.toBeNull();
 		expect(screen.getByText('node111')).not.toBeNull();
 		expect(screen.getByText('node12')).not.toBeNull();
+		await waitFor(() => undefined, {  timeout: 0  });
 	});
 	it('Loads data on mount', () => {
 		// given
@@ -77,7 +80,7 @@ describe('favorites/SiderContent', () => {
 		expect(dispatchedActions[0]).toMatchObject({ type: thunks.favorites.fetchAllKeys.pending.type });
 		expect(dispatchedActions[1]).toMatchObject({ type: thunks.favorites.fetchTreeData.pending.type });
 	});
-	it('Fetches posts on directory click', () => {
+	it('Fetches posts on directory click', async () => {
 		// given
 		const store = mockStore(
 			mState({
@@ -87,6 +90,12 @@ describe('favorites/SiderContent', () => {
 				},
 			})
 		);
+		mockedDb.favorites.getNodeWithoutChildren.mockResolvedValueOnce({
+			key: '1',
+			title: 'title',
+			children: [],
+			postIds: []
+		});
 
 		// when
 		render(
@@ -100,5 +109,6 @@ describe('favorites/SiderContent', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions[2]).toMatchObject({ type: thunks.favorites.fetchPostsInDirectory.pending.type, meta: { arg: 11 } });
 		expect(dispatchedActions[3]).toMatchObject({ type: actions.favorites.setActiveNodeKey.type, payload: 11 });
+		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchPostsInDirectory.fulfilled.type }));
 	});
 });

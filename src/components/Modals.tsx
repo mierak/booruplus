@@ -6,33 +6,52 @@ import { RootState } from '@store/types';
 import AddDirectoryModal from './favorites/modal/AddDirectoryModal';
 import AddtoFavoritesModal from './favorites/modal/AddToFavoritesModal';
 import DeleteDirectoryModal from './favorites/modal/DeleteDirectoryModal';
-import MoveDirectoryModal from './favorites/modal/MoveDirectoryModal';
+import MovePostsToFavoritesDirectoryModal from './favorites/modal/MovePostsToFavoritesDirectoryModal';
 import SettingsModal from './settings/SettingsModal';
 import RenameDirectoryModal from './favorites/modal/RenameDirectoryModal';
-import MoveSelectedToDirectoryModal from './favorites/modal/MoveSelectedToDirectoryModal';
+import MovePostsToSuppliedFavoritesDirectoryModal from './favorites/modal/MovePostsToSuppliedFavoritesDirectoryModal';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 const Modals: React.FunctionComponent = () => {
 	const activeModal = useSelector((state: RootState) => state.modals.common.activeModal);
 	const visible = useSelector((state: RootState) => state.modals.common.isVisible);
+	const props = useSelector((state: RootState) => state.modals.common.modalProps);
+	const favoritesTreeData = useSelector((state: RootState) => state.favorites.rootNode);
+	const favoritesTreeExpandedKeys = useSelector((state: RootState) => state.favorites.expandedKeys);
 
 	const renderModal = (): React.ReactElement => {
 		switch (activeModal) {
-			case 'none':
+			case ActiveModal.NONE:
 				return <></>;
-			case 'add-favorites-directory':
-				return <AddDirectoryModal />;
-			case 'add-to-favorites':
-				return <AddtoFavoritesModal />;
-			case 'delete-favorites-directory':
-				return <DeleteDirectoryModal />;
-			case 'move-to-directory':
-				return <MoveDirectoryModal />;
-			case 'settings':
+			case ActiveModal.ADD_FAVORITES_DIRECTORY:
+				return <AddDirectoryModal {...props[ActiveModal.ADD_FAVORITES_DIRECTORY]} />;
+			case ActiveModal.ADD_POSTS_TO_FAVORITES:
+				return (
+					<AddtoFavoritesModal
+						expandedKeys={favoritesTreeExpandedKeys}
+						treeData={favoritesTreeData?.children}
+						data={props[ActiveModal.ADD_POSTS_TO_FAVORITES]}
+					/>
+				);
+			case ActiveModal.DELETE_FAVORITES_DIRECTORY:
+				return <DeleteDirectoryModal {...props[ActiveModal.DELETE_FAVORITES_DIRECTORY]} />;
+			case ActiveModal.RENAME_FAVORITES_DIRECTORY:
+				return <RenameDirectoryModal {...props[ActiveModal.RENAME_FAVORITES_DIRECTORY]} />;
+			case ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION:
+				return (
+					<MovePostsToSuppliedFavoritesDirectoryModal {...props[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]} />
+				);
+			case ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION: {
+				return (
+					<MovePostsToFavoritesDirectoryModal
+						expandedKeys={favoritesTreeExpandedKeys}
+						treeData={favoritesTreeData?.children}
+						{...props[ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION]}
+					/>
+				);
+			}
+			case ActiveModal.SETTINGS:
 				return <SettingsModal />;
-			case 'rename-favorites-directory':
-				return <RenameDirectoryModal />;
-			case 'move-selected-to-directory-confirmation':
-				return <MoveSelectedToDirectoryModal />;
 		}
 	};
 

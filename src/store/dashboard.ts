@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Tag, Post } from '@appTypes/gelbooruTypes';
+import { Tag } from '@appTypes/gelbooruTypes';
 
 import * as thunks from './thunks';
 import { TagHistory, RatingCounts } from './types';
@@ -11,7 +11,6 @@ export interface DashboardState {
 	totalDownloadedPosts: number;
 	totalFavoritesPosts: number;
 	totalBlacklistedPosts: number;
-	mostViewedPosts: Post[];
 	totalTags: number;
 	mostSearchedTags: TagHistory[];
 	mostDownloadedTag: number;
@@ -23,7 +22,6 @@ export const initialState: DashboardState = {
 	totalDownloadedPosts: -1,
 	totalFavoritesPosts: -1,
 	totalBlacklistedPosts: -1,
-	mostViewedPosts: [],
 	totalTags: -1,
 	mostDownloadedTag: -1,
 	mostSearchedTags: [],
@@ -52,9 +50,6 @@ const dashboardSlice = createSlice({
 		},
 		setMostsearchedTags: (state, action: PayloadAction<TagHistory[]>): void => {
 			state.mostSearchedTags = action.payload;
-		},
-		setMostViewedPosts: (state, action: PayloadAction<Post[]>): void => {
-			state.mostViewedPosts = action.payload;
 		},
 		setMostFavoritedTags: (state, action: PayloadAction<{ tag: Tag | undefined; count: number }[]>): void => {
 			state.mostFavoritedTags = action.payload;
@@ -87,9 +82,6 @@ const dashboardSlice = createSlice({
 		});
 		builder.addCase(thunks.dashboard.fetchMostFavoritedTags.fulfilled, (state, action) => {
 			state.mostFavoritedTags = action.payload;
-		});
-		builder.addCase(thunks.dashboard.fetchMostViewedPosts.fulfilled, (state, action) => {
-			state.mostViewedPosts = action.payload;
 		});
 	},
 });

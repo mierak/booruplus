@@ -126,7 +126,7 @@ export const addSelectedPreviewsToActiveSavedSearch = createAsyncThunk<SavedSear
 	async (_, thunkApi): Promise<SavedSearch | undefined> => {
 		thunkLogger.getActionLogger(addSelectedPreviewsToActiveSavedSearch);
 		const savedSearch = thunkApi.getState().savedSearches.activeSavedSearch;
-		const posts = thunkApi.getState().posts.posts.filter((post) => post.selected);
+		const posts = thunkApi.getState().posts.posts.posts.filter((post) => post.selected);
 		await thunkApi.dispatch(addPreviewsToActiveSavedSearch(posts));
 		return savedSearch;
 	}
@@ -137,7 +137,7 @@ export const addAllPreviewsToActiveSavedSearch = createAsyncThunk<SavedSearch | 
 	async (_, thunkApi): Promise<SavedSearch | undefined> => {
 		thunkLogger.getActionLogger(addAllPreviewsToActiveSavedSearch);
 		const savedSearch = thunkApi.getState().savedSearches.activeSavedSearch;
-		const posts = thunkApi.getState().posts.posts;
+		const posts = thunkApi.getState().posts.posts.posts;
 		await thunkApi.dispatch(addPreviewsToActiveSavedSearch(posts));
 		return savedSearch;
 	}

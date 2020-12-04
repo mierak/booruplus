@@ -31,7 +31,7 @@ describe('pages/ImageView', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts,
+					posts: { posts, favorites: [] },
 				},
 			})
 		);

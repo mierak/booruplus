@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { View, SearchMode } from './types';
+import { View, SearchMode, PostsContext } from './types';
 import * as thunks from './thunks';
 
 export interface SystemState {
 	activeView: View;
+	imageViewContext: PostsContext;
 	searchMode: SearchMode;
 	isSearchFormDrawerVsibile: boolean;
 	isDownloadedSearchFormDrawerVisible: boolean;
@@ -19,6 +20,7 @@ export interface SystemState {
 export const initialState: SystemState = {
 	activeView: 'dashboard',
 	searchMode: 'online',
+	imageViewContext: 'posts',
 	isSearchFormDrawerVsibile: false,
 	isDownloadedSearchFormDrawerVisible: false,
 	isTasksDrawerVisible: false,
@@ -33,8 +35,13 @@ const systemSlice = createSlice({
 	name: 'system',
 	initialState: initialState,
 	reducers: {
-		setActiveView: (state, action: PayloadAction<View>): void => {
-			state.activeView = action.payload;
+		setActiveView: (state, action: PayloadAction<View | { view: View; context: PostsContext }>): void => {
+			if (typeof action.payload === 'string') {
+				state.activeView = action.payload;
+			} else {
+				state.activeView = action.payload.view;
+				state.imageViewContext = action.payload.context;
+			}
 		},
 		setSearchMode: (state, action: PayloadAction<SearchMode>): void => {
 			state.searchMode = action.payload;

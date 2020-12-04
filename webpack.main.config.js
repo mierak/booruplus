@@ -6,7 +6,7 @@ module.exports = {
 	 * that runs in the main process.
 	 */
 	entry: './electron/index.ts',
-	plugins: [new CopyPlugin([{ from: './src/splash_screen.html', to: '.' }])],
+	plugins: [new CopyPlugin({patterns: [{ from: './src/splash_screen.html', to: '.' }]})],
 	// Put your normal webpack config below here
 	// plugins: [new CopyPlugin([{ from: './electron/preload.js', to: './' }])],
 	module: {
