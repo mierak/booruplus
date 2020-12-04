@@ -2,7 +2,6 @@ import moment from 'moment';
 
 import { Tag, Rating, PostDto, Post, TagType } from '@appTypes/gelbooruTypes';
 import { Entity } from '@db/types';
-import { PostsContext, RootState } from '@store/types';
 
 export const getTagColor = (tag: Tag | TagType): string => {
 	const type = typeof tag === 'string' ? tag : tag.type;

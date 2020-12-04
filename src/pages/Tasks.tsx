@@ -6,7 +6,6 @@ import { CloseOutlined } from '@ant-design/icons';
 
 import { RootState } from '@store/types';
 import TaskProgress from '@components/TaskProgress';
-import { Tasks } from '@store/tasks';
 import { thunks } from '@store';
 
 interface Props {

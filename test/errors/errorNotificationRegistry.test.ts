@@ -1,7 +1,6 @@
 import { clearRegistry, registerErrorNotification } from '@errors/errorNotificationRegistry';
 import { ErrorWithNotification } from '@errors/types';
 import * as utils from '@appTypes/components';
-import log from 'electron-log';
 
 describe('errors/errorNotificationRegistry', () => {
 	class TestError extends ErrorWithNotification {
