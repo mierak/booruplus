@@ -183,10 +183,10 @@ describe('TagStatistic', () => {
 		const dispatchedActions = mStore.getActions();
 		expect(dispatchedActions[0]).toMatchObject({ type: actions.onlineSearchForm.setSelectedTags.type });
 		expect(dispatchedActions[1]).toMatchObject({ type: thunks.onlineSearchForm.fetchPosts.pending.type });
-		expect(dispatchedActions[2]).toMatchObject({ type: actions.system.setActiveView.type, payload: 'thumbnails' });
+		expect(dispatchedActions[2]).toMatchObject({ type: actions.system.setActiveView.type, payload: 'search-results' });
 		expect(dispatchedActions[3]).toMatchObject({ type: actions.downloadedSearchForm.setSelectedTags.type });
 		expect(dispatchedActions[4]).toMatchObject({ type: thunks.downloadedSearchForm.fetchPosts.pending.type });
-		expect(dispatchedActions[5]).toMatchObject({ type: actions.system.setActiveView.type, payload: 'thumbnails' });
+		expect(dispatchedActions[5]).toMatchObject({ type: actions.system.setActiveView.type, payload: 'search-results' });
 	});
 	it('Puts ellipsis at the end of tags longer than 25 characters', () => {
 		// given

@@ -68,7 +68,7 @@ const systemSlice = createSlice({
 	extraReducers: (builder) => {
 		// Online Search Form
 		builder.addCase(thunks.onlineSearchForm.fetchPosts.pending, (state) => {
-			state.activeView = 'thumbnails';
+			state.activeView = 'search-results';
 			state.isSearchFormDrawerVsibile = false;
 			state.isDownloadedSearchFormDrawerVisible = false;
 		});
@@ -83,7 +83,7 @@ const systemSlice = createSlice({
 		});
 		// Downloaded Search Form
 		builder.addCase(thunks.downloadedSearchForm.fetchPosts.pending, (state) => {
-			state.activeView = 'thumbnails';
+			state.activeView = 'search-results';
 			state.isSearchFormDrawerVsibile = false;
 			state.isDownloadedSearchFormDrawerVisible = false;
 		});
@@ -96,20 +96,20 @@ const systemSlice = createSlice({
 		});
 		builder.addCase(thunks.tags.searchTagOnline.pending, (state) => {
 			state.searchMode = 'online';
-			state.activeView = 'thumbnails';
+			state.activeView = 'search-results';
 		});
 		builder.addCase(thunks.tags.searchTagOffline.pending, (state) => {
 			state.searchMode = 'online';
-			state.activeView = 'thumbnails';
+			state.activeView = 'search-results';
 		});
 		// Saved Searches
 		builder.addCase(thunks.savedSearches.searchOnline.pending, (state) => {
 			state.searchMode = 'saved-search-online';
-			state.activeView = 'thumbnails';
+			state.activeView = 'search-results';
 		});
 		builder.addCase(thunks.savedSearches.searchOffline.pending, (state) => {
 			state.searchMode = 'saved-search-offline';
-			state.activeView = 'thumbnails';
+			state.activeView = 'search-results';
 		});
 		builder.addCase(thunks.savedSearches.saveSearch.fulfilled, (state) => {
 			if (state.searchMode === 'online') {
@@ -131,7 +131,7 @@ const systemSlice = createSlice({
 		});
 		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state) => {
 			state.isTasksDrawerVisible = false;
-			state.activeView = 'thumbnails';
+			state.activeView = 'search-results';
 			state.searchMode = 'open-download';
 		});
 	},

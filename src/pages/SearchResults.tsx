@@ -58,7 +58,7 @@ const StyledSpin = styled(Spin)`
 	}
 `;
 
-const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
+const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const [modal, contextHolder] = useModal();
 	const showModal = ({
@@ -94,10 +94,12 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	const mode = useSelector((state: RootState) => state.system.searchMode);
 
 	const selectedTags = useSelector(
-		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.selectedTags) || state.onlineSearchForm.selectedTags
+		(state: RootState) =>
+			(mode === 'offline' && state.downloadedSearchForm.selectedTags) || state.onlineSearchForm.selectedTags
 	);
 	const excludedTags = useSelector(
-		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.excludedTags) || state.onlineSearchForm.excludedTags
+		(state: RootState) =>
+			(mode === 'offline' && state.downloadedSearchForm.excludedTags) || state.onlineSearchForm.excludedTags
 	);
 	const rating = useSelector(
 		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.rating) || state.onlineSearchForm.rating
@@ -178,7 +180,8 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	const handleDownloadWholeSearch = async (): Promise<void> => {
 		const m = showModal({
 			title: 'Download?',
-			message: 'This will search for all posts with current parameters and then download them. This could take a while. Are you sure?',
+			message:
+				'This will search for all posts with current parameters and then download them. This could take a while. Are you sure?',
 			cancelText: 'Cancel',
 			okText: 'Download',
 			onOk: () => {
@@ -381,4 +384,4 @@ const Thumbnails: React.FunctionComponent<Props> = (props: Props) => {
 	);
 };
 
-export default Thumbnails;
+export default SearchResults;

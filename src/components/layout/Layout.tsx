@@ -51,14 +51,14 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 			<Layout style={{ minHeight: '100vh' }} className={props.className}>
 				<Affix offsetTop={0}>
 					<Sider collapsible style={{ height: '100vh' }}>
-						<Menu theme='dark' defaultSelectedKeys={['thumbnails']} mode='inline' selectedKeys={[activeView]}>
+						<Menu theme='dark' mode='inline' selectedKeys={[activeView]}>
 							<Menu.Item key='dashboard' onClick={(): void => handleMenuClick('dashboard')}>
 								<DashboardOutlined />
 								<span>Dashboard</span>
 							</Menu.Item>
-							<Menu.Item key='thumbnails' onClick={(): void => handleMenuClick('thumbnails')}>
+							<Menu.Item key='search-results' onClick={(): void => handleMenuClick('search-results')}>
 								<UnorderedListOutlined />
-								<span>Thumbnails</span>
+								<span>Search Results</span>
 							</Menu.Item>
 							<Menu.Item key='saved-searches' onClick={(): void => handleMenuClick('saved-searches')}>
 								<SaveOutlined />

@@ -45,7 +45,7 @@ describe('pages/Dashboard', () => {
 		const store = mockStore(
 			mState({
 				system: {
-					activeView: 'thumbnails',
+					activeView: 'search-results',
 				},
 			})
 		);

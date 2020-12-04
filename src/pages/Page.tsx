@@ -11,7 +11,7 @@ import SavedSearches from './SavedSearches';
 import Favorites from './Favorites';
 import Tags from './Tags';
 import Dashboard from './Dashboard';
-import Thumbnails from './Thumbnails';
+import SearchResults from './SearchResults';
 
 import 'ant-design-pro/dist/ant-design-pro.css';
 import '../css/index.css';
@@ -52,8 +52,8 @@ const Page: React.FunctionComponent = () => {
 		switch (activeView) {
 			case 'dashboard':
 				return <Dashboard />;
-			case 'thumbnails':
-				return <Thumbnails />;
+			case 'search-results':
+				return <SearchResults />;
 			case 'image':
 				return <ImageView />;
 			case 'saved-searches':

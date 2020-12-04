@@ -113,7 +113,7 @@ describe('store/system', () => {
 						const result = reducer(state, action);
 
 						// then
-						expect(result.activeView).toBe('thumbnails');
+						expect(result.activeView).toBe('search-results');
 						expect(result.isSearchFormDrawerVsibile).toBe(false);
 						expect(result.isDownloadedSearchFormDrawerVisible).toBe(false);
 					});
@@ -179,7 +179,7 @@ describe('store/system', () => {
 						const result = reducer(state, action);
 
 						// then
-						expect(result.activeView).toBe('thumbnails');
+						expect(result.activeView).toBe('search-results');
 						expect(result.isSearchFormDrawerVsibile).toBe(false);
 						expect(result.isDownloadedSearchFormDrawerVisible).toBe(false);
 					});
@@ -231,7 +231,7 @@ describe('store/system', () => {
 
 						// then
 						expect(result.searchMode).toBe('online');
-						expect(result.activeView).toBe('thumbnails');
+						expect(result.activeView).toBe('search-results');
 					});
 				});
 				describe('searchOffline', () => {
@@ -249,7 +249,7 @@ describe('store/system', () => {
 
 						// then
 						expect(result.searchMode).toBe('online');
-						expect(result.activeView).toBe('thumbnails');
+						expect(result.activeView).toBe('search-results');
 					});
 				});
 			});
@@ -269,7 +269,7 @@ describe('store/system', () => {
 
 						// then
 						expect(result.searchMode).toBe('saved-search-online');
-						expect(result.activeView).toBe('thumbnails');
+						expect(result.activeView).toBe('search-results');
 					});
 				});
 				describe('searchOffline()', () => {
@@ -287,7 +287,7 @@ describe('store/system', () => {
 
 						// then
 						expect(result.searchMode).toBe('saved-search-offline');
-						expect(result.activeView).toBe('thumbnails');
+						expect(result.activeView).toBe('search-results');
 					});
 				});
 				describe('saveSearch()', () => {
@@ -354,7 +354,7 @@ describe('store/system', () => {
 
 						// then
 						expect(result.isTasksDrawerVisible).toBe(false);
-						expect(result.activeView).toBe('thumbnails');
+						expect(result.activeView).toBe('search-results');
 						expect(result.searchMode).toBe('open-download');
 					});
 				});

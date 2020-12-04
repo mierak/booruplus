@@ -9,7 +9,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mState } from '../../helpers/store.helper';
 
-import Thumbnails from '../../../src/pages/Thumbnails';
+import SearchResults from '../../../src/pages/SearchResults';
 import '@testing-library/jest-dom';
 import { mPost, mTag } from '../../helpers/test.helper';
 import { deleteImageMock } from '../../helpers/imageBus.mock';
@@ -32,7 +32,7 @@ describe('pages/Thumbnails', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnails />
+				<SearchResults />
 			</Provider>
 		);
 
@@ -55,7 +55,7 @@ describe('pages/Thumbnails', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnails />
+				<SearchResults />
 			</Provider>
 		);
 
@@ -75,7 +75,7 @@ describe('pages/Thumbnails', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnails />
+				<SearchResults />
 			</Provider>
 		);
 
@@ -95,7 +95,7 @@ describe('pages/Thumbnails', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnails />
+				<SearchResults />
 			</Provider>
 		);
 
@@ -115,7 +115,7 @@ describe('pages/Thumbnails', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnails />
+				<SearchResults />
 			</Provider>
 		);
 
@@ -142,7 +142,7 @@ describe('pages/Thumbnails', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnails />
+				<SearchResults />
 			</Provider>
 		);
 
@@ -175,7 +175,7 @@ describe('pages/Thumbnails', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnails />
+				<SearchResults />
 			</Provider>
 		);
 
@@ -205,7 +205,7 @@ describe('pages/Thumbnails', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnails />
+				<SearchResults />
 			</Provider>
 		);
 
@@ -232,7 +232,7 @@ describe('pages/Thumbnails', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnails />
+				<SearchResults />
 			</Provider>
 		);
 		fireEvent.click(screen.getAllByRole('img', { name: 'download' })[2]);
@@ -262,7 +262,7 @@ describe('pages/Thumbnails', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnails />
+				<SearchResults />
 			</Provider>
 		);
 		fireEvent.click(screen.getAllByRole('img', { name: 'delete' })[4]);
@@ -297,7 +297,7 @@ describe('pages/Thumbnails', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnails />
+				<SearchResults />
 			</Provider>
 		);
 		fireEvent.click(screen.getAllByRole('img', { name: 'heart' })[3]);
@@ -336,7 +336,7 @@ describe('pages/Thumbnails', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnails />
+				<SearchResults />
 			</Provider>
 		);
 		fireEvent.click(screen.getAllByRole('img', { name: 'plus' })[3]);
@@ -365,7 +365,7 @@ describe('pages/Thumbnails', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnails />
+				<SearchResults />
 			</Provider>
 		);
 
@@ -397,7 +397,7 @@ describe('pages/Thumbnails', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnails />
+				<SearchResults />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('menuitem', { name: 'save Save Search' }));

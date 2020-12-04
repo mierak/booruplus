@@ -68,7 +68,7 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 					onClick={(): void => {
 						dispatch(actions.onlineSearchForm.setSelectedTags([record.tag]));
 						dispatch(thunks.onlineSearchForm.fetchPosts());
-						dispatch(actions.system.setActiveView('thumbnails'));
+						dispatch(actions.system.setActiveView('search-results'));
 					}}
 				>
 					Online
@@ -78,7 +78,7 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 					onClick={(): void => {
 						dispatch(actions.downloadedSearchForm.setSelectedTags([record.tag]));
 						dispatch(thunks.downloadedSearchForm.fetchPosts());
-						dispatch(actions.system.setActiveView('thumbnails'));
+						dispatch(actions.system.setActiveView('search-results'));
 					}}
 					style={{ float: 'right' }}
 				>

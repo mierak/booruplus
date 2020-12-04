@@ -26,7 +26,7 @@ describe('layout/Layout', () => {
 
 		// then
 		expect(screen.getByText('Dashboard')).not.toBeNull();
-		expect(screen.getByText('Thumbnails')).not.toBeNull();
+		expect(screen.getByText('Search Results')).not.toBeNull();
 		expect(screen.getByText('Saved Searches')).not.toBeNull();
 		expect(screen.getByText('Favorites')).not.toBeNull();
 		expect(screen.getByText('Tag List')).not.toBeNull();
@@ -61,11 +61,14 @@ describe('layout/Layout', () => {
 				<Layout />
 			</Provider>
 		);
-		fireEvent.click(screen.getByText('Thumbnails'));
+		fireEvent.click(screen.getByText('Search Results'));
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setActiveView.type, payload: 'thumbnails' });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.system.setActiveView.type,
+			payload: 'search-results',
+		});
 	});
 	it('Switches to Saved Searches', () => {
 		// given
