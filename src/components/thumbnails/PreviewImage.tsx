@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
-import { debounce } from 'lodash';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin, Empty } from 'antd';
 
@@ -60,7 +59,7 @@ const PreviewImage = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
 	const imageRef = React.useRef<HTMLImageElement>(null);
 	const hoveredPost = useSelector((state: RootState) => state.posts.hoveredPost);
 	const [isLoaded, setLoaded] = React.useState(false);
-	const [isLoading, setLoading] = React.useState(false);
+	const [isLoading, setLoading] = React.useState(true);
 	const [windowSize, setWindowSize] = React.useState({ width: 0, height: 0 });
 	const [isEmpty, setEmpty] = React.useState(false);
 
@@ -81,8 +80,7 @@ const PreviewImage = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
 		}
 
 		let isCanceled = false;
-		const cleanup = (db?: ReturnType<typeof debounce>): void => {
-			db && db.cancel();
+		const cleanup = (): void => {
 			image.src = '';
 			isCanceled = true;
 			setLoaded(false);
@@ -108,7 +106,7 @@ const PreviewImage = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
 			return cleanup;
 		}
 
-		const db = debounce(async () => {
+		(async (): Promise<void> => {
 			setLoading(true);
 			const url = await previewLoader(post);
 			if (url) {
@@ -122,10 +120,9 @@ const PreviewImage = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
 				setEmpty(true);
 				setLoaded(true);
 			}
-		}, 500);
-		db();
+		})();
 
-		return (): void => cleanup(db);
+		return cleanup;
 	}, [hoveredPost.post, hoveredPost.visible, props, ref, windowSize]);
 
 	return hoveredPost.visible ? (

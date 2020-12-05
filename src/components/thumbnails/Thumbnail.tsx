@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { CheckCircleTwoTone } from '@ant-design/icons';
-import { Card, Popconfirm, Menu, Dropdown } from 'antd';
+import { Card, Popconfirm, Menu, Dropdown, Empty } from 'antd';
 
 import { actions } from '@store';
 import { RootState, AppDispatch, PostsContext } from '@store/types';
 import { Post } from '@appTypes/gelbooruTypes';
-import { CardAction, ContextMenu, openNotificationWithIcon } from '@appTypes/components';
+import { CardAction, ContextMenu } from '@appTypes/components';
 import { renderPostCardAction, getThumbnailBorder, thumbnailLoader } from '@util/componentUtils';
 
 interface Props {
@@ -102,12 +102,12 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		}
 	}, [dispatch, downloadMissingImage, post]);
 
+	if (!post) return <Empty />;
+
 	const handleThumbnailClick = (event: React.MouseEvent): void => {
 		event.stopPropagation();
 		if (event.ctrlKey) {
-			if (post) {
-				dispatch(actions.posts.setPostSelected({ data: { post: post, selected: !post.selected }, context: props.context }));
-			}
+			dispatch(actions.posts.setPostSelected({ data: { post: post, selected: !post.selected }, context: props.context }));
 		} else if (event.shiftKey) {
 			dispatch(actions.posts.selectMultiplePosts({ data: props.index, context: props.context }));
 		} else {
@@ -134,10 +134,6 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	};
 
 	const renderActions = (): React.ReactNode[] => {
-		if (!post) {
-			openNotificationWithIcon('error', 'Cannot find post', 'Cannot render post actions because post is undefined', 5);
-			return [];
-		}
 		if (props.actions === undefined) {
 			return [];
 		}
@@ -154,12 +150,11 @@ const Thumbnail = (props: Props): React.ReactElement => {
 			if (!action.popConfirm) {
 				actions.push(renderPostCardAction(action.icon, action.key, action.tooltip, action.onClick, post));
 			} else {
-				const handler = (): void => action.onClick(post);
 				const popConfirmProps: PopConfirmProps = {
 					title: action.popConfirm.title,
 					okText: action.popConfirm.okText,
 					cancelText: action.popConfirm.cancelText,
-					action: handler,
+					action: (): void => action.onClick(post),
 					children: renderPostCardAction(action.icon, action.key, action.tooltip),
 				};
 				actions.push(renderWithPopconfirm(popConfirmProps));
@@ -182,39 +177,36 @@ const Thumbnail = (props: Props): React.ReactElement => {
 				bodyStyle={{ height: '195px', width: '195px', padding: '0' }}
 				$isActive={isActive.toString()}
 				$theme={theme}
-				$selected={post?.selected ?? false}
+				$selected={post.selected}
 				actions={!props.isScrolling ? renderActions() : renderDummyActions()}
 				$height={props.actions !== undefined ? '225px' : '197px'}
 			>
 				<StyledImageContainer onClick={(event: React.MouseEvent): void => handleThumbnailClick(event)}>
-					{post && post.selected && <CheckCircleTwoTone style={{ fontSize: '20px', position: 'absolute', top: '5px', right: '5px' }} />}
-					{post && (
-						<StyledThumbnailImage
-							ref={imageRef}
-							data-testid='thumbnail-image'
-							onMouseEnter={(e): void => post && props.onMouseEnter && props.onMouseEnter(e, post)}
-							onMouseLeave={(e): void => post && props.onMouseLeave && props.onMouseLeave(e, post)}
-							onMouseMove={(e): void => post && props.onMouseMove && props.onMouseMove(e, post)}
-						></StyledThumbnailImage>
+					{post.selected && (
+						<CheckCircleTwoTone style={{ fontSize: '20px', position: 'absolute', top: '5px', right: '5px' }} />
 					)}
+					<StyledThumbnailImage
+						ref={imageRef}
+						data-testid='thumbnail-image'
+						onMouseEnter={(e): void => props.onMouseEnter?.(e, post)}
+						onMouseLeave={(e): void => props.onMouseLeave?.(e, post)}
+						onMouseMove={(e): void => props.onMouseMove?.(e, post)}
+					></StyledThumbnailImage>
 				</StyledImageContainer>
 			</StyledCard>
 		);
 	};
 
-	const renderWithContextMenu = (): React.ReactNode => {
-		let actions = [<></>];
-		if (props.contextMenu && post) {
-			actions = props.contextMenu.map((action) => {
-				return (
+	const renderWithContextMenu = (menuItems: ContextMenu[]): React.ReactNode => {
+		const menu = (
+			<Menu>
+				{menuItems.map((action) => (
 					<Menu.Item key={action.key} onClick={(): void => action.action(post)}>
 						{action.title}
 					</Menu.Item>
-				);
-			});
-		}
-		const menu = <Menu>{actions}</Menu>;
-
+				))}
+			</Menu>
+		);
 		return (
 			<Dropdown overlay={menu} trigger={['contextMenu']}>
 				{renderThumbNail()}
@@ -222,7 +214,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		);
 	};
 
-	return <>{props.contextMenu !== undefined ? renderWithContextMenu() : renderThumbNail()}</>;
+	return <>{props.contextMenu !== undefined ? renderWithContextMenu(props.contextMenu) : renderThumbNail()}</>;
 };
 
 export default Thumbnail;

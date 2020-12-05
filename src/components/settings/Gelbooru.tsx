@@ -52,9 +52,11 @@ const Gelbooru: React.FunctionComponent = () => {
 				<Item wrapperCol={{ offset: 4, span: 16 }}>
 					<Descriptions>
 						<Descriptions.Item key='api-key-description'>
-							This is generally not needed. But if you use this app excesivelly, Gelbooru might start limiting requests from you and you
-							need to authenticate. You can find your API key on the bottom of Settings on Gelbooru under
-							<a onClick={handleOpenGelbooruSettings}> Options</a>.
+							<p>
+								This is generally not needed. But if you use this app excesivelly, Gelbooru might start limiting requests from
+								you and you need to authenticate. You can find your API key on the bottom of Settings on Gelbooru under{' '}
+								<a onClick={handleOpenGelbooruSettings}>Options</a>.
+							</p>
 						</Descriptions.Item>
 					</Descriptions>
 				</Item>

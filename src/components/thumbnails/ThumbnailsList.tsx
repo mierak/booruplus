@@ -42,6 +42,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const hoverImageRef = React.useRef<HTMLImageElement>(null);
 	const containerRef = React.useRef<HTMLDivElement>(null);
 	const mousePosition = React.useRef({ x: 0, y: 0 });
+	const isMouseOver = React.useRef<{ value: boolean; timeout?: number }>({ value: false });
 	const postCount = useSelector((state: RootState) => postsSelector(state, props.context).length);
 	const activePostIndex = useSelector((state: RootState) => state.posts.selectedIndices[props.context]);
 	const searchMode = useSelector((state: RootState) => state.system.searchMode);
@@ -102,11 +103,18 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const onMouseEnter = (_: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post): void => {
-		dispatch(actions.posts.setHoveredPost({ post: post, visible: true }));
+		isMouseOver.current.timeout = setTimeout(() => {
+			isMouseOver.current.value = true;
+			dispatch(actions.posts.setHoveredPost({ post: post, visible: true }));
+		}, 500);
 	};
 
 	const onMouseLeave = (_: React.MouseEvent<HTMLDivElement, MouseEvent>, __: Post): void => {
-		dispatch(actions.posts.setHoveredPost({ post: undefined, visible: false }));
+		isMouseOver.current.timeout && clearTimeout(isMouseOver.current.timeout);
+		if (isMouseOver.current.value) {
+			dispatch(actions.posts.setHoveredPost({ post: undefined, visible: false }));
+			isMouseOver.current.value = false;
+		}
 	};
 
 	const onMouseMove = (_: React.MouseEvent<HTMLDivElement, MouseEvent>, __: Post): void => {
