@@ -34,7 +34,7 @@ jest.mock('../../../src/util/imageIpcUtils', () => {
 	};
 });
 import { deleteImage } from '../../../src/util/imageIpcUtils';
-import { mState } from '../../helpers/store.helper';
+import { mPostsPostsState, mState } from '../../helpers/store.helper';
 jest.mock('../../../src/util/utils', () => {
 	const originalModule = jest.requireActual('../../../src/util/utils');
 	return {
@@ -175,7 +175,10 @@ describe('thunks/posts', () => {
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.downloadPost.pending.type, payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({ type: thunks.downloadTags.pending.type, meta: { arg: post.tags } });
 			expect(dispatchedActions[2]).toMatchObject({ type: thunks.downloadTags.fulfilled.type });
-			expect(dispatchedActions[3]).toMatchObject({ type: thunks.downloadPost.fulfilled.type, payload: { blacklisted: 0, downloaded: 1 } });
+			expect(dispatchedActions[3]).toMatchObject({
+				type: thunks.downloadPost.fulfilled.type,
+				payload: { blacklisted: 0, downloaded: 1 },
+			});
 			expect(mockedDb.posts.update).toBeCalledWith(result.payload);
 		});
 	});
@@ -193,7 +196,10 @@ describe('thunks/posts', () => {
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.downloadPost.pending.type, payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({ type: thunks.downloadTags.pending.type, meta: { arg: post.tags } });
 			expect(dispatchedActions[2]).toMatchObject({ type: thunks.downloadTags.fulfilled.type });
-			expect(dispatchedActions[3]).toMatchObject({ type: thunks.downloadPost.fulfilled.type, payload: { blacklisted: 0, downloaded: 1 } });
+			expect(dispatchedActions[3]).toMatchObject({
+				type: thunks.downloadPost.fulfilled.type,
+				payload: { blacklisted: 0, downloaded: 1 },
+			});
 			expect(mockedDb.posts.update).toBeCalledWith(result.payload);
 		});
 	});
@@ -231,10 +237,22 @@ describe('thunks/posts', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(dispatchedActions[1]).toMatchObject({ type: thunks.downloadPost.pending.type, meta: { arg: { post: posts[0] } } });
-			expect(dispatchedActions[2]).toMatchObject({ type: thunks.downloadPost.pending.type, meta: { arg: { post: posts[1] } } });
-			expect(dispatchedActions[4]).toMatchObject({ type: thunks.downloadPost.pending.type, meta: { arg: { post: posts[2] } } });
-			expect(dispatchedActions[6]).toMatchObject({ type: thunks.downloadPost.pending.type, meta: { arg: { post: posts[3] } } });
+			expect(dispatchedActions[1]).toMatchObject({
+				type: thunks.downloadPost.pending.type,
+				meta: { arg: { post: posts[0] } },
+			});
+			expect(dispatchedActions[2]).toMatchObject({
+				type: thunks.downloadPost.pending.type,
+				meta: { arg: { post: posts[1] } },
+			});
+			expect(dispatchedActions[4]).toMatchObject({
+				type: thunks.downloadPost.pending.type,
+				meta: { arg: { post: posts[2] } },
+			});
+			expect(dispatchedActions[6]).toMatchObject({
+				type: thunks.downloadPost.pending.type,
+				meta: { arg: { post: posts[3] } },
+			});
 		});
 		it('Skips post when it is already downloaded', async () => {
 			// given
@@ -250,8 +268,14 @@ describe('thunks/posts', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(dispatchedActions[1]).toMatchObject({ type: thunks.downloadPost.pending.type, meta: { arg: { post: posts[0] } } });
-			expect(dispatchedActions[3]).toMatchObject({ type: thunks.downloadPost.pending.type, meta: { arg: { post: posts[3] } } });
+			expect(dispatchedActions[1]).toMatchObject({
+				type: thunks.downloadPost.pending.type,
+				meta: { arg: { post: posts[0] } },
+			});
+			expect(dispatchedActions[3]).toMatchObject({
+				type: thunks.downloadPost.pending.type,
+				meta: { arg: { post: posts[3] } },
+			});
 		});
 		it('Dispatches cancelPostDownload with appropriate posts when task state is set to cancelled', async () => {
 			// given
@@ -284,7 +308,10 @@ describe('thunks/posts', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(dispatchedActions[3]).toMatchObject({ type: thunks.cancelPostsDownload.pending.type, meta: { arg: [posts[0]] } });
+			expect(dispatchedActions[3]).toMatchObject({
+				type: thunks.cancelPostsDownload.pending.type,
+				meta: { arg: [posts[0]] },
+			});
 		});
 	});
 	describe('downloadSelectedPosts()', () => {
@@ -299,7 +326,7 @@ describe('thunks/posts', () => {
 			];
 			const store = mockStore({
 				...initialState,
-				posts: { ...initialState.posts, posts: { posts, favorites: [], mostViewed: [] } },
+				posts: { ...initialState.posts, posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }) },
 			});
 
 			// when
@@ -317,7 +344,7 @@ describe('thunks/posts', () => {
 			const posts = [mPost({ id: 0, selected: false }), mPost({ id: 1, selected: false })];
 			const store = mockStore({
 				...initialState,
-				posts: { ...initialState.posts, posts: { posts, favorites: [], mostViewed: [] } },
+				posts: { ...initialState.posts, posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }) },
 			});
 
 			// when
@@ -337,7 +364,7 @@ describe('thunks/posts', () => {
 			const posts = [mPost({ id: 0 }), mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
 			const store = mockStore({
 				...initialState,
-				posts: { ...initialState.posts, posts: { posts, favorites: [], mostViewed: [] } },
+				posts: { ...initialState.posts, posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }) },
 			});
 
 			// when
@@ -355,7 +382,7 @@ describe('thunks/posts', () => {
 			const posts: Post[] = [];
 			const store = mockStore({
 				...initialState,
-				posts: { ...initialState.posts, posts: { posts, favorites: [], mostViewed: [] } },
+				posts: { ...initialState.posts, posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }) },
 			});
 
 			// when
@@ -400,7 +427,7 @@ describe('thunks/posts', () => {
 			];
 			const store = mockStore({
 				...initialState,
-				posts: { ...initialState.posts, posts: { posts, favorites: [], mostViewed: [] } },
+				posts: { ...initialState.posts, posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }) },
 			});
 
 			// when
@@ -420,7 +447,7 @@ describe('thunks/posts', () => {
 			const posts = [mPost({ id: 0 }), mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
 			const store = mockStore({
 				...initialState,
-				posts: { ...initialState.posts, posts: { posts, favorites: [], mostViewed: [] } },
+				posts: { ...initialState.posts, posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }) },
 			});
 
 			// when
@@ -543,7 +570,12 @@ describe('thunks/posts', () => {
 			await store.dispatch(thunks.persistTask(taskState));
 
 			// then
-			expect(mockedDb.tasks.save).toBeCalledWith({ ...task, state: 'completed', itemsDone: 100, timestampDone: expect.anything() });
+			expect(mockedDb.tasks.save).toBeCalledWith({
+				...task,
+				state: 'completed',
+				itemsDone: 100,
+				timestampDone: expect.anything(),
+			});
 		});
 		it('Saves correct task when no posts were downloaded and all skipped', async () => {
 			// given
@@ -576,7 +608,12 @@ describe('thunks/posts', () => {
 			await store.dispatch(thunks.persistTask(taskState));
 
 			// then
-			expect(mockedDb.tasks.save).toBeCalledWith({ ...task, state: 'completed', itemsDone: 100, timestampDone: expect.anything() });
+			expect(mockedDb.tasks.save).toBeCalledWith({
+				...task,
+				state: 'completed',
+				itemsDone: 100,
+				timestampDone: expect.anything(),
+			});
 		});
 		it('Saves correct task when some posts were downloaded and some skipped and they add up to task items', async () => {
 			// given
@@ -609,7 +646,12 @@ describe('thunks/posts', () => {
 			await store.dispatch(thunks.persistTask(taskState));
 
 			// then
-			expect(mockedDb.tasks.save).toBeCalledWith({ ...task, state: 'completed', itemsDone: 100, timestampDone: expect.anything() });
+			expect(mockedDb.tasks.save).toBeCalledWith({
+				...task,
+				state: 'completed',
+				itemsDone: 100,
+				timestampDone: expect.anything(),
+			});
 		});
 		it('Saves correct task when some posts were downloaded and some skipped and they dont add up to task items', async () => {
 			// given

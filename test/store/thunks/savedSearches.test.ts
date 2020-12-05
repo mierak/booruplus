@@ -32,6 +32,7 @@ jest.mock('antd', () => {
 });
 import { getThumbnailUrl } from '../../../src/service/webService';
 import { SavedSearchAlreadyExistsError } from '@errors/savedSearchError';
+import { mPostsPostsState } from '../../helpers/store.helper';
 
 describe('thunks/savedSearches', () => {
 	beforeEach(() => {
@@ -41,7 +42,12 @@ describe('thunks/savedSearches', () => {
 		it('Calls db correctly', async () => {
 			// given
 			const store = mockStore(initialState);
-			const savedSearches = [mSavedSearch({ id: 1 }), mSavedSearch({ id: 2 }), mSavedSearch({ id: 3 }), mSavedSearch({ id: 4 })];
+			const savedSearches = [
+				mSavedSearch({ id: 1 }),
+				mSavedSearch({ id: 2 }),
+				mSavedSearch({ id: 3 }),
+				mSavedSearch({ id: 4 }),
+			];
 			mockedDb.savedSearches.getAll.mockResolvedValue(savedSearches);
 
 			// when
@@ -50,8 +56,14 @@ describe('thunks/savedSearches', () => {
 			// then
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.savedSearches.getAll).toBeCalledTimes(1);
-			expect(dispatchedActions[0]).toMatchObject({ type: thunks.loadSavedSearchesFromDb.pending.type, payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({ type: thunks.loadSavedSearchesFromDb.fulfilled.type, payload: savedSearches });
+			expect(dispatchedActions[0]).toMatchObject({
+				type: thunks.loadSavedSearchesFromDb.pending.type,
+				payload: undefined,
+			});
+			expect(dispatchedActions[1]).toMatchObject({
+				type: thunks.loadSavedSearchesFromDb.fulfilled.type,
+				payload: savedSearches,
+			});
 		});
 	});
 	describe('addPreviewsToActiveSavedSearch()', () => {
@@ -63,7 +75,10 @@ describe('thunks/savedSearches', () => {
 			const url = getThumbnailUrl(post.directory, post.hash);
 			const url2 = getThumbnailUrl(post2.directory, post2.hash);
 			const savedSearch = mSavedSearch({ id: 123 });
-			const store = mockStore({ ...initialState, savedSearches: { ...initialState.savedSearches, activeSavedSearch: savedSearch } });
+			const store = mockStore({
+				...initialState,
+				savedSearches: { ...initialState.savedSearches, activeSavedSearch: savedSearch },
+			});
 			const blob = await (await fetch(url)).blob();
 
 			// when
@@ -78,14 +93,23 @@ describe('thunks/savedSearches', () => {
 			expect(fetchMock.mock.calls.length).toBe(3);
 			expect(fetchMock.mock.calls[1][0]).toEqual(url);
 			expect(fetchMock.mock.calls[2][0]).toEqual(url2);
-			expect(dispatchedActions[0]).toMatchObject({ type: thunks.addPreviewsToActiveSavedSearch.pending.type, payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({ type: thunks.addPreviewsToActiveSavedSearch.fulfilled.type, payload: savedSearch });
+			expect(dispatchedActions[0]).toMatchObject({
+				type: thunks.addPreviewsToActiveSavedSearch.pending.type,
+				payload: undefined,
+			});
+			expect(dispatchedActions[1]).toMatchObject({
+				type: thunks.addPreviewsToActiveSavedSearch.fulfilled.type,
+				payload: savedSearch,
+			});
 		});
 		it('Dispatches rejected actions when no saved search is set as active', async () => {
 			// given
 			jest.clearAllMocks();
 			const post = mPost({ id: 123456, hash: 'posthash', directory: 'postdirectory' });
-			const store = mockStore({ ...initialState, savedSearches: { ...initialState.savedSearches, activeSavedSearch: undefined } });
+			const store = mockStore({
+				...initialState,
+				savedSearches: { ...initialState.savedSearches, activeSavedSearch: undefined },
+			});
 
 			// when
 			await store.dispatch(thunks.addPreviewsToActiveSavedSearch([post]));
@@ -94,7 +118,10 @@ describe('thunks/savedSearches', () => {
 			const dispatchedActions = store.getActions();
 			expect(fetchMock.mock.calls.length).toBe(0);
 			expect(mockedDb.savedSearches.addPreviews).toBeCalledTimes(0);
-			expect(dispatchedActions).toContainMatchingAction({ type: thunks.addPreviewsToActiveSavedSearch.pending.type, payload: undefined });
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.addPreviewsToActiveSavedSearch.pending.type,
+				payload: undefined,
+			});
 			expect(dispatchedActions).toContainMatchingAction({ type: thunks.addPreviewsToActiveSavedSearch.rejected.type });
 		});
 	});
@@ -135,7 +162,7 @@ describe('thunks/savedSearches', () => {
 					activeSavedSearch: savedSearch,
 				},
 				posts: {
-					posts: { posts, favorites: [], mostViewed: [] },
+					posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
 					selectedIndices: { posts: 0 },
 					hoveredPost: {
 						post: undefined,
@@ -169,7 +196,7 @@ describe('thunks/savedSearches', () => {
 					activeSavedSearch: savedSearch,
 				},
 				posts: {
-					posts: { posts, favorites: [], mostViewed: [] },
+					posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
 					selectedIndices: { posts: 0 },
 					hoveredPost: {
 						post: undefined,

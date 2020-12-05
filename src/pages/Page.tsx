@@ -15,6 +15,7 @@ import SearchResults from './SearchResults';
 
 import 'ant-design-pro/dist/ant-design-pro.css';
 import '../css/index.css';
+import CheckLaterQueue from './CheckLaterQueue';
 
 const Page: React.FunctionComponent = () => {
 	const [hydrated, setHydrated] = useState(false);
@@ -62,6 +63,8 @@ const Page: React.FunctionComponent = () => {
 				return <Favorites />;
 			case 'tag-list':
 				return <Tags />;
+			case 'check-later':
+				return <CheckLaterQueue />;
 		}
 	};
 

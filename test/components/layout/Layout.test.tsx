@@ -9,6 +9,7 @@ import { mState } from '../../helpers/store.helper';
 
 import Layout from '../../../src/components/layout/Layout';
 import { ActiveModal } from '@appTypes/modalTypes';
+import { mPost } from '../../helpers/test.helper';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -34,6 +35,27 @@ describe('layout/Layout', () => {
 		expect(screen.getByText('Offline Search')).not.toBeNull();
 		expect(screen.getByText('Downloads')).not.toBeNull();
 		expect(screen.getByText('Settings')).not.toBeNull();
+		expect(screen.queryByText('Check Later')).toBeNull();
+	});
+	it('Renders Check Later queue', () => {
+		// given
+		const store = mockStore(mState({
+			posts: {
+				posts: {
+					checkLaterQueue: [mPost()]
+				}
+			}
+		}));
+
+		// when
+		render(
+			<Provider store={store}>
+				<Layout />
+			</Provider>
+		);
+
+		// then
+		expect(screen.getByText('Check Later')).not.toBeNull();
 	});
 	it('Switches to Dashboard', () => {
 		// given
@@ -184,5 +206,27 @@ describe('layout/Layout', () => {
 			type: actions.modals.showModal.type,
 			payload: { modal: ActiveModal.SETTINGS, modalState: {} },
 		});
+	});
+	it('Switches to Tag List', () => {
+		// given
+		const store = mockStore(mState({
+			posts: {
+				posts: {
+					checkLaterQueue: [mPost()]
+				}
+			}
+		}));
+
+		// when
+		render(
+			<Provider store={store}>
+				<Layout />
+			</Provider>
+		);
+		fireEvent.click(screen.getByText('Check Later'));
+
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setActiveView.type, payload: 'check-later' });
 	});
 });

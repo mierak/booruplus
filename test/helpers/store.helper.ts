@@ -17,11 +17,12 @@ type DeepPartial<T> = {
 	[P in keyof T]?: DeepPartial<T[P]>;
 };
 
-const mPostsPostsState = (ps?: DeepPartial<{ [K in PostsContext]?: Post[] }>): { [K in PostsContext]: Post[] } => {
+export const mPostsPostsState = (ps?: DeepPartial<{ [K in PostsContext]?: Post[] }>): { [K in PostsContext]: Post[] } => {
 	return {
 		posts: (ps?.posts as Post[]) ?? initialState.posts.posts.favorites,
 		favorites: (ps?.favorites as Post[]) ?? initialState.posts.posts.posts,
 		mostViewed: (ps?.mostViewed as Post[]) ?? initialState.posts.posts.mostViewed,
+		checkLaterQueue: ( ps?.checkLaterQueue as Post[]) ?? initialState.posts.posts.checkLaterQueue,
 	};
 };
 

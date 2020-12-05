@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { PageHeader, Spin, Menu } from 'antd';
+import { Spin, Menu } from 'antd';
 import {
 	LoadingOutlined,
 	DownloadOutlined,
@@ -23,6 +23,7 @@ import ThumbnailsList from '@components/thumbnails/ThumbnailsList';
 import { CardAction, openNotificationWithIcon } from '@appTypes/components';
 import { Post } from '@appTypes/gelbooruTypes';
 import { ActiveModal } from '@appTypes/modalTypes';
+import PageMenuHeader from '@components/common/PageMenuHeader';
 
 interface Props {
 	className?: string;
@@ -31,17 +32,6 @@ interface Props {
 const Container = styled.div`
 	overflow-y: hidden;
 	height: 100vh;
-`;
-
-const StyledPageHeader = styled(PageHeader)`
-	.ant-page-header-heading {
-		justify-content: flex-start;
-	}
-	.ant-page-header-heading-extra {
-		height: 32px;
-		margin-top: 0px;
-		margin-left: 50px;
-	}
 `;
 
 const StyledThumbnailsList = styled(ThumbnailsList)`
@@ -167,13 +157,29 @@ const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 				title: 'Add preview to Saved Search?',
 			},
 		},
+		{
+			key: 'card-action-add-to-queue',
+			tooltip: 'Check Later',
+			icon: 'clock-circle-outlined',
+			onClick: (post: Post): void => {
+				dispatch(actions.posts.addPosts({ data: post, context: 'checkLaterQueue' }));
+			},
+		},
 	];
 
 	const renderThumbnailList = (): JSX.Element => {
 		if (isFetchingPosts) {
 			return <StyledSpin indicator={<LoadingOutlined style={{ fontSize: '64px' }} />} />;
 		} else {
-			return <StyledThumbnailsList context={'posts'} hasHeader emptyDataLogoCentered={true} actions={thumbnailActions} />;
+			return (
+				<StyledThumbnailsList
+					shouldShowLoadMoreButton
+					context={'posts'}
+					hasHeader
+					emptyDataLogoCentered={true}
+					actions={thumbnailActions}
+				/>
+			);
 		}
 	};
 
@@ -320,7 +326,7 @@ const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 
 	const renderMenu = (): React.ReactNode => {
 		return (
-			<Menu mode='horizontal' forceSubMenuRender>
+			<Menu mode='horizontal' forceSubMenuRender selectedKeys={[]}>
 				<Menu.SubMenu title='Download' icon={<DownloadOutlined />}>
 					<Menu.Item onClick={handleDownloadAll} icon={<EyeOutlined />}>
 						All
@@ -377,7 +383,7 @@ const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 
 	return (
 		<Container className={props.className}>
-			<StyledPageHeader ghost={false} title='Image List' extra={renderMenu()} />
+			<PageMenuHeader menu={renderMenu()} title='Image List' />
 			{renderThumbnailList()}
 			{contextHolder}
 		</Container>
