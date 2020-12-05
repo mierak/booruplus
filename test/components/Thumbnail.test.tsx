@@ -240,7 +240,7 @@ describe('Thumbnail', () => {
 		// then
 		expect(screen.queryByRole('img', { name: 'plus' })).toBeNull();
 	});
-	it('Does not render action and shows error notification when post is null', () => {
+	it('Renders No Data when post is undefined', async () => {
 		// given
 		const index = 123;
 		const store = mockStore(
@@ -259,7 +259,7 @@ describe('Thumbnail', () => {
 				tooltip: 'tooltip',
 			},
 		];
-		const notificationSpy = jest.spyOn(utils, 'openNotificationWithIcon').mockImplementation();
+		// const notificationSpy = jest.spyOn(utils, 'openNotificationWithIcon').mockImplementation();
 
 		// when
 		render(
@@ -270,7 +270,7 @@ describe('Thumbnail', () => {
 
 		// then
 		expect(screen.queryByRole('img', { name: 'plus' })).toBeNull();
-		expect(notificationSpy).toBeCalledWith('error', 'Cannot find post', 'Cannot render post actions because post is undefined', 5);
+		expect(await screen.findByText('No Data')).not.toBeNull();
 	});
 	describe('calls mouse listeners', () => {
 		it('onMouseEnter()', () => {

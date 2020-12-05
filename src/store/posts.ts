@@ -12,9 +12,11 @@ interface HoveredPost {
 
 type WithContext<T = null> = {
 	context: PostsContext;
-} & (T extends null ? {} : {
-	data: T;
-})
+} & (T extends null
+	? {}
+	: {
+			data: T;
+	  });
 
 export interface PostsState {
 	selectedIndices: { [K in PostsContext]?: number };
@@ -28,6 +30,7 @@ export const initialState: PostsState = {
 		posts: [],
 		favorites: [],
 		mostViewed: [],
+		checkLaterQueue: [],
 	},
 	hoveredPost: {
 		visible: false,
@@ -44,6 +47,22 @@ const postsSlice = createSlice({
 		},
 		setPosts: (state, action: PayloadAction<WithContext<Post[]>>): void => {
 			state.posts[action.payload.context] = action.payload.data;
+		},
+		addPosts: (state, action: PayloadAction<WithContext<Post[] | Post>>): void => {
+			if (Array.isArray(action.payload.data)) {
+				state.posts[action.payload.context].push(...action.payload.data);
+			} else {
+				state.posts[action.payload.context].push(action.payload.data);
+			}
+		},
+		removePosts: (state, action: PayloadAction<WithContext<Post[] | Post>>): void => {
+			const data = action.payload.data;
+			if (Array.isArray(data)) {
+				const ids = data.map((p) => p.id);
+				state.posts[action.payload.context] = state.posts[action.payload.context].filter((p) => !ids.includes(p.id));
+			} else {
+				state.posts[action.payload.context] = state.posts[action.payload.context].filter((p) => p.id !== data.id);
+			}
 		},
 		setPostSelected: (state, action: PayloadAction<WithContext<{ post: Post; selected: boolean }>>): void => {
 			const post = state.posts[action.payload.context].find((p) => p.id === action.payload.data.post.id);

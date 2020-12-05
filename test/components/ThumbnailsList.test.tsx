@@ -41,7 +41,7 @@ describe('ThumbnailsList', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ThumbnailsList context='posts' />
+				<ThumbnailsList shouldShowLoadMoreButton context='posts' />
 			</Provider>
 		);
 
@@ -175,7 +175,7 @@ describe('ThumbnailsList', () => {
 		// then
 		expect(screen.queryByText('Load More')).toBeNull();
 	});
-	it('Dispatches setHoveredPost on mouseEnter on thumbnail', async () => {
+	it('Hovering and waiting over thumbnail and leaving hover dispatches setHoveredPost', async () => {
 		//given
 		const store = mockStore(
 			mState({
@@ -192,38 +192,21 @@ describe('ThumbnailsList', () => {
 			</Provider>
 		);
 		userEvent.hover(screen.getAllByTestId('thumbnail-image')[0]);
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.posts.setHoveredPost.type,
-			payload: { post: posts[0], visible: true },
-		});
-	});
-	it('Dispatches setHoveredPost on mouseLeave on thumbnail', async () => {
-		//given
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts, favorites: [] },
-				},
+		await waitFor(() =>
+			expect(store.getActions()).toContainMatchingAction({
+				type: actions.posts.setHoveredPost.type,
+				payload: { post: posts[0], visible: true },
 			})
 		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<ThumbnailsList context='posts' />
-			</Provider>
-		);
-		userEvent.hover(screen.getAllByTestId('thumbnail-image')[0]);
 		userEvent.unhover(screen.getAllByTestId('thumbnail-image')[0]);
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.posts.setHoveredPost.type,
-			payload: { post: undefined, visible: false },
-		});
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({
+				type: actions.posts.setHoveredPost.type,
+				payload: { post: undefined, visible: false },
+			})
+		);
 	});
 });

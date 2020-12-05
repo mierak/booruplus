@@ -10,6 +10,7 @@ import {
 	SaveOutlined,
 	SettingOutlined,
 	DownloadOutlined,
+	ClockCircleOutlined,
 } from '@ant-design/icons';
 
 import { actions } from '@store';
@@ -26,9 +27,10 @@ interface Props {
 	className?: string;
 }
 
-const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
+const NavigationMenu: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const activeView = useSelector((state: RootState) => state.system.activeView);
+	const isQueueEmpty = useSelector((state: RootState) => !state.posts.posts.checkLaterQueue.length);
 
 	const handleMenuClick = (view: View): void => {
 		dispatch(actions.system.setActiveView(view));
@@ -47,53 +49,65 @@ const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	return (
+		<Menu theme='dark' mode='inline' selectedKeys={[activeView]}>
+			<Menu.Item key='dashboard' onClick={(): void => handleMenuClick('dashboard')}>
+				<DashboardOutlined />
+				<span>Dashboard</span>
+			</Menu.Item>
+			<Menu.Item key='search-results' onClick={(): void => handleMenuClick('search-results')}>
+				<UnorderedListOutlined />
+				<span>Search Results</span>
+			</Menu.Item>
+			<Menu.Item key='saved-searches' onClick={(): void => handleMenuClick('saved-searches')}>
+				<SaveOutlined />
+				<span>Saved Searches</span>
+			</Menu.Item>
+			<Menu.Item key='favorites' onClick={(): void => handleMenuClick('favorites')}>
+				<HeartOutlined />
+				<span>Favorites</span>
+			</Menu.Item>
+			<Menu.Item key='tag-list' onClick={(): void => handleMenuClick('tag-list')}>
+				<TagsOutlined />
+				<span>Tag List</span>
+			</Menu.Item>
+			<Menu.Item key='online-search-drawer' onClick={handleSearchFormDrawerOpen}>
+				<FormOutlined />
+				<span>Online Search</span>
+			</Menu.Item>
+			<Menu.Item key='offline-search-drawer' onClick={handleDownloadedSearchFormDrawerOpen}>
+				<FormOutlined />
+				<span>Offline Search</span>
+			</Menu.Item>
+			<Menu.Item key='tasks' onClick={handleTasksDrawerOpen}>
+				<DownloadOutlined />
+				<span>Downloads</span>
+			</Menu.Item>
+			<Menu.Item
+				key='settings'
+				onClick={(): void => {
+					dispatch(actions.modals.showModal({ modal: ActiveModal.SETTINGS, modalState: {} }));
+				}}
+			>
+				<SettingOutlined />
+				<span>Settings</span>
+			</Menu.Item>
+			{!isQueueEmpty && (
+				<Menu.Item key='check-later' onClick={(): void => handleMenuClick('check-later')}>
+					<ClockCircleOutlined />
+					<span>Check Later</span>
+				</Menu.Item>
+			)}
+		</Menu>
+	);
+};
+
+const AppLayout: React.FunctionComponent<Props> = (props: Props) => {
+	return (
 		<>
 			<Layout style={{ minHeight: '100vh' }} className={props.className}>
 				<Affix offsetTop={0}>
 					<Sider collapsible style={{ height: '100vh' }}>
-						<Menu theme='dark' mode='inline' selectedKeys={[activeView]}>
-							<Menu.Item key='dashboard' onClick={(): void => handleMenuClick('dashboard')}>
-								<DashboardOutlined />
-								<span>Dashboard</span>
-							</Menu.Item>
-							<Menu.Item key='search-results' onClick={(): void => handleMenuClick('search-results')}>
-								<UnorderedListOutlined />
-								<span>Search Results</span>
-							</Menu.Item>
-							<Menu.Item key='saved-searches' onClick={(): void => handleMenuClick('saved-searches')}>
-								<SaveOutlined />
-								<span>Saved Searches</span>
-							</Menu.Item>
-							<Menu.Item key='favorites' onClick={(): void => handleMenuClick('favorites')}>
-								<HeartOutlined />
-								<span>Favorites</span>
-							</Menu.Item>
-							<Menu.Item key='tag-list' onClick={(): void => handleMenuClick('tag-list')}>
-								<TagsOutlined />
-								<span>Tag List</span>
-							</Menu.Item>
-							<Menu.Item key='online-search-drawer' onClick={handleSearchFormDrawerOpen}>
-								<FormOutlined />
-								<span>Online Search</span>
-							</Menu.Item>
-							<Menu.Item key='offline-search-drawer' onClick={handleDownloadedSearchFormDrawerOpen}>
-								<FormOutlined />
-								<span>Offline Search</span>
-							</Menu.Item>
-							<Menu.Item key='tasks' onClick={handleTasksDrawerOpen}>
-								<DownloadOutlined />
-								<span>Downloads</span>
-							</Menu.Item>
-							<Menu.Item
-								key='settings'
-								onClick={(): void => {
-									dispatch(actions.modals.showModal({ modal: ActiveModal.SETTINGS, modalState: {} }));
-								}}
-							>
-								<SettingOutlined />
-								<span>Settings</span>
-							</Menu.Item>
-						</Menu>
+						<NavigationMenu />
 					</Sider>
 				</Affix>
 				<Layout>
