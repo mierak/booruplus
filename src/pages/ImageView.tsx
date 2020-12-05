@@ -56,7 +56,12 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 				width={225}
 				style={{ height: '100vh' }}
 			>
-				<StyledThumbnailsList context={context} hasHeader={false} singleColumn />
+				<StyledThumbnailsList
+					shouldShowLoadMoreButton={context !== 'checkLaterQueue'}
+					context={context}
+					hasHeader={false}
+					singleColumn
+				/>
 			</Layout.Sider>
 		</Container>
 	);

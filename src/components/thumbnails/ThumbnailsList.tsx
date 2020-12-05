@@ -15,6 +15,7 @@ import PreviewImage from './PreviewImage';
 interface Props {
 	className?: string;
 	context: PostsContext;
+	shouldShowLoadMoreButton?: boolean;
 	emptyDataLogoCentered?: boolean;
 	contextMenu?: ContextMenu[];
 	actions?: CardAction[];
@@ -78,7 +79,9 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 		const x = mousePosition.current.x;
 		const y = mousePosition.current.y;
 		hoverContainer.style.top = y - hoverContainer.clientHeight / 2 + 'px';
-		hoverContainer.style.left = `${x + (window.innerWidth / 2 < x ? -30 - hoverContainer.getBoundingClientRect().width : 30)}px`;
+		hoverContainer.style.left = `${
+			x + (window.innerWidth / 2 < x ? -30 - hoverContainer.getBoundingClientRect().width : 30)
+		}px`;
 
 		const windowRect = {
 			left: 0,
@@ -137,7 +140,9 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 				activeIndex={activePostIndex}
 				actions={props.actions}
 				isSingleColumn={props.singleColumn}
-				renderLoadMore={postCount > 0 && searchMode !== 'favorites' && searchMode !== 'open-download'}
+				renderLoadMore={
+					props.shouldShowLoadMoreButton && postCount > 0 && searchMode !== 'favorites' && searchMode !== 'open-download'
+				}
 				headerHeight={props.hasHeader ? 72 : 0}
 				contextMenu={props.contextMenu}
 				onCellMouseEnter={!props.singleColumn && useImageHover ? onMouseEnter : undefined}

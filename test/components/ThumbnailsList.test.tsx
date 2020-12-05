@@ -41,7 +41,7 @@ describe('ThumbnailsList', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ThumbnailsList context='posts' />
+				<ThumbnailsList shouldShowLoadMoreButton context='posts' />
 			</Provider>
 		);
 

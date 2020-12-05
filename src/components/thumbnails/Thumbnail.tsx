@@ -138,7 +138,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 			return [];
 		}
 
-		const actions: React.ReactNode[] = [];
+		const resultActions: React.ReactNode[] = [];
 
 		props.actions.forEach((action) => {
 			if (action.condition) {
@@ -148,7 +148,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 			}
 
 			if (!action.popConfirm) {
-				actions.push(renderPostCardAction(action.icon, action.key, action.tooltip, action.onClick, post));
+				resultActions.push(renderPostCardAction(action.icon, action.key, action.tooltip, action.onClick, post));
 			} else {
 				const popConfirmProps: PopConfirmProps = {
 					title: action.popConfirm.title,
@@ -157,11 +157,10 @@ const Thumbnail = (props: Props): React.ReactElement => {
 					action: (): void => action.onClick(post),
 					children: renderPostCardAction(action.icon, action.key, action.tooltip),
 				};
-				actions.push(renderWithPopconfirm(popConfirmProps));
+				resultActions.push(renderWithPopconfirm(popConfirmProps));
 			}
 		});
-
-		return actions;
+		return resultActions;
 	};
 
 	const renderDummyActions = (): React.ReactNode[] => {

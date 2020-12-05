@@ -7,7 +7,7 @@ import { actions, thunks } from '@store';
 import ThumbnailsList from '@components/thumbnails/ThumbnailsList';
 import SiderContent from '@components/favorites/SiderContent';
 import { Post } from '@appTypes/gelbooruTypes';
-import { RootState, AppDispatch } from '@store/types';
+import { RootState, AppDispatch, PostsContext } from '@store/types';
 import { CardAction, openNotificationWithIcon } from '@appTypes/components';
 import { ActiveModal } from '@appTypes/modalTypes';
 
@@ -207,7 +207,13 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 		>
 			<Layout>
 				<StyledContent>
-					<ThumbnailsList context={'favorites'} emptyDataLogoCentered={true} actions={cardActions} hasHeader={false} />
+					<ThumbnailsList
+						shouldShowLoadMoreButton
+						context={'favorites'}
+						emptyDataLogoCentered={true}
+						actions={cardActions}
+						hasHeader={false}
+					/>
 				</StyledContent>
 				<Divider ref={dividerRef} $active={!isSiderCollapsed} onMouseDown={onResizeStart} />
 				<DividerDummy ref={dividerDummyRef} />
