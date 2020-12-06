@@ -42,7 +42,10 @@ describe('thunks/dashboard', () => {
 			// then
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.posts.getDownloadedCount).toBeCalledTimes(1);
-			expect(dispatchedActions[0]).toMatchObject({ type: 'dashboard/fetchDownloadedPostCount/pending', payload: undefined });
+			expect(dispatchedActions[0]).toMatchObject({
+				type: 'dashboard/fetchDownloadedPostCount/pending',
+				payload: undefined,
+			});
 			expect(dispatchedActions[1]).toMatchObject({ type: 'dashboard/fetchDownloadedPostCount/fulfilled', payload: 456 });
 		});
 	});
@@ -58,7 +61,10 @@ describe('thunks/dashboard', () => {
 			// then
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.posts.getBlacklistedCount).toBeCalledTimes(1);
-			expect(dispatchedActions[0]).toMatchObject({ type: 'dashboard/fetchBlacklistedPostCount/pending', payload: undefined });
+			expect(dispatchedActions[0]).toMatchObject({
+				type: 'dashboard/fetchBlacklistedPostCount/pending',
+				payload: undefined,
+			});
 			expect(dispatchedActions[1]).toMatchObject({ type: 'dashboard/fetchBlacklistedPostCount/fulfilled', payload: 456 });
 		});
 	});
@@ -76,7 +82,10 @@ describe('thunks/dashboard', () => {
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.favorites.getlAllPostIds).toBeCalledTimes(1);
 			expect(dispatchedActions[0]).toMatchObject({ type: 'dashboard/fetchFavoritePostCount/pending', payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({ type: 'dashboard/fetchFavoritePostCount/fulfilled', payload: postIds.length });
+			expect(dispatchedActions[1]).toMatchObject({
+				type: 'dashboard/fetchFavoritePostCount/fulfilled',
+				payload: postIds.length,
+			});
 		});
 	});
 	describe('fetchTagCount()', () => {
@@ -144,7 +153,10 @@ describe('thunks/dashboard', () => {
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.tags.getCount).toBeCalledTimes(1);
 			expect(dispatchedActions[0]).toMatchObject({ type: 'dashboard/fetchMostSearchedTags/pending', payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({ type: 'dashboard/fetchMostSearchedTags/fulfilled', payload: tagHistories });
+			expect(dispatchedActions[1]).toMatchObject({
+				type: 'dashboard/fetchMostSearchedTags/fulfilled',
+				payload: tagHistories,
+			});
 		});
 	});
 	describe('fetchMostViewedPosts()', () => {
@@ -169,14 +181,12 @@ describe('thunks/dashboard', () => {
 			// given
 			const store = mockStore({
 				...initialState,
-				settings: { ...initialState.settings, dashboard: { ...initialState.settings.dashboard, saveTagsNotFoundInDb: true } },
+				settings: {
+					...initialState.settings,
+					dashboard: { ...initialState.settings.dashboard, saveTagsNotFoundInDb: true },
+				},
 			});
-			const tagsWithCount = [
-				{ tag: 'tag1', count: 1 },
-				{ tag: 'tag2', count: 2 },
-				{ tag: 'tag3', count: 3 },
-				{ tag: 'tag4', count: 0 },
-			];
+			const tagsWithCount = { tag1: 1, tag2: 2, tag3: 3, tag4: 0 };
 			const tagNotInDb = mTag({ tag: 'tag4', id: 4 });
 			mockedDb.favorites.getAllFavoriteTagsWithCounts.mockResolvedValue(tagsWithCount);
 			(getTagsByNames as jest.Mock).mockResolvedValueOnce([tagNotInDb]);
@@ -189,10 +199,10 @@ describe('thunks/dashboard', () => {
 				return Promise.resolve(result);
 			});
 			const expected = [
-				{ tag: tagsInDb[2], count: tagsWithCount[2].count },
-				{ tag: tagsInDb[1], count: tagsWithCount[1].count },
-				{ tag: tagsInDb[0], count: tagsWithCount[0].count },
-				{ tag: tagNotInDb, count: tagsWithCount[3].count },
+				{ tag: tagsInDb[2], count: tagsWithCount.tag3 },
+				{ tag: tagsInDb[1], count: tagsWithCount.tag2 },
+				{ tag: tagsInDb[0], count: tagsWithCount.tag1 },
+				{ tag: tagNotInDb, count: tagsWithCount.tag4 },
 			];
 
 			// when
@@ -203,17 +213,15 @@ describe('thunks/dashboard', () => {
 			expect(mockedDb.posts.getMostViewed).toBeCalledTimes(1);
 			expect(mockedDb.tags.save).toBeCalledWith(tagNotInDb);
 			expect(dispatchedActions[0]).toMatchObject({ type: 'dashboard/fetchMostFavoritedTags/pending', payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({ type: 'dashboard/fetchMostFavoritedTags/fulfilled', payload: expected });
+			expect(dispatchedActions[1]).toMatchObject({
+				type: 'dashboard/fetchMostFavoritedTags/fulfilled',
+				payload: expected,
+			});
 		});
 		it('Returns rejected action if tag was not found in DB neither returned from API', async () => {
 			// given
 			const store = mockStore(initialState);
-			const tagsWithCount = [
-				{ tag: 'tag1', count: 1 },
-				{ tag: 'tag2', count: 2 },
-				{ tag: 'tag3', count: 3 },
-				{ tag: 'tag4', count: 0 },
-			];
+			const tagsWithCount = { tag1: 1, tag2: 2, tag3: 3, tag4: 0 };
 			const tagNotInDb = mTag({ tag: 'tag4', id: 4 });
 			mockedDb.favorites.getAllFavoriteTagsWithCounts.mockResolvedValue(tagsWithCount);
 			(getTagsByNames as jest.Mock).mockResolvedValueOnce([]);
@@ -236,9 +244,9 @@ describe('thunks/dashboard', () => {
 				type: 'dashboard/fetchMostFavoritedTags/rejected',
 				payload: undefined,
 				error: {
-					message: `Could not download tags not found in DB, because they were not returned from API. Tags in question: ${[tagNotInDb].join(
-						' '
-					)}`,
+					message: `Could not download tags not found in DB, because they were not returned from API. Tags in question: ${[
+						tagNotInDb,
+					].join(' ')}`,
 				},
 			});
 		});

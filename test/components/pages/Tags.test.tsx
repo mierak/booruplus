@@ -22,10 +22,10 @@ describe('pages/Tags', () => {
 	it('Renders correctly', async () => {
 		// given
 		const tags = [
-			mTag({ id: 1, tag: 'tag1', type: 'artist', count: 1, blacklistedCount: 1, favoriteCount: 1, downloadedCount: 1 }),
-			mTag({ id: 2, tag: 'tag2', type: 'character', count: 2, blacklistedCount: 2, favoriteCount: 2, downloadedCount: 2 }),
-			mTag({ id: 3, tag: 'tag3', type: 'copyright', count: 3, blacklistedCount: 3, favoriteCount: 3, downloadedCount: 3 }),
-			mTag({ id: 4, tag: 'tag4', type: 'metadata', count: 4, blacklistedCount: 4, favoriteCount: 4, downloadedCount: 4 }),
+			mTag({ id: 1, tag: 'tag1', type: 'artist', count: 1, blacklistedCount: 1, downloadedCount: 1 }),
+			mTag({ id: 2, tag: 'tag2', type: 'character', count: 2, blacklistedCount: 2, downloadedCount: 2 }),
+			mTag({ id: 3, tag: 'tag3', type: 'copyright', count: 3, blacklistedCount: 3, downloadedCount: 3 }),
+			mTag({ id: 4, tag: 'tag4', type: 'metadata', count: 4, blacklistedCount: 4, downloadedCount: 4 }),
 		];
 		const store = mockStore(
 			mState({
@@ -64,10 +64,10 @@ describe('pages/Tags', () => {
 	it('Dispatches Online and Offline Search correctly', async () => {
 		// given
 		const tags = [
-			mTag({ id: 1, tag: 'tag1', type: 'artist', count: 1, blacklistedCount: 1, favoriteCount: 1, downloadedCount: 1 }),
-			mTag({ id: 2, tag: 'tag2', type: 'character', count: 2, blacklistedCount: 2, favoriteCount: 2, downloadedCount: 2 }),
-			mTag({ id: 3, tag: 'tag3', type: 'copyright', count: 3, blacklistedCount: 3, favoriteCount: 3, downloadedCount: 3 }),
-			mTag({ id: 4, tag: 'tag4', type: 'metadata', count: 4, blacklistedCount: 4, favoriteCount: 4, downloadedCount: 4 }),
+			mTag({ id: 1, tag: 'tag1', type: 'artist', count: 1, blacklistedCount: 1, downloadedCount: 1 }),
+			mTag({ id: 2, tag: 'tag2', type: 'character', count: 2, blacklistedCount: 2, downloadedCount: 2 }),
+			mTag({ id: 3, tag: 'tag3', type: 'copyright', count: 3, blacklistedCount: 3, downloadedCount: 3 }),
+			mTag({ id: 4, tag: 'tag4', type: 'metadata', count: 4, blacklistedCount: 4, downloadedCount: 4 }),
 		];
 		const store = mockStore(
 			mState({
@@ -90,18 +90,24 @@ describe('pages/Tags', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		await waitFor(() => expect(screen.getByText('tag3')).not.toBeNull());
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.tags.searchTagOnline.pending.type, meta: { arg: tags[1] } });
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.tags.searchTagOffline.pending.type, meta: { arg: tags[1] } });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: thunks.tags.searchTagOnline.pending.type,
+			meta: { arg: tags[1] },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: thunks.tags.searchTagOffline.pending.type,
+			meta: { arg: tags[1] },
+		});
 	});
 	it('Inputs text into filter, unselects tag types and calls loadAllWithLimitAndOffset() with correct values', async () => {
 		// given
 		jest.setTimeout(10000);
 		const types: TagType[] = ['copyright', 'metadata', 'tag'];
 		const tags = [
-			mTag({ id: 1, tag: 'tag1', type: 'artist', count: 1, blacklistedCount: 1, favoriteCount: 1, downloadedCount: 1 }),
-			mTag({ id: 2, tag: 'tag2', type: 'character', count: 2, blacklistedCount: 2, favoriteCount: 2, downloadedCount: 2 }),
-			mTag({ id: 3, tag: 'tag3', type: 'copyright', count: 3, blacklistedCount: 3, favoriteCount: 3, downloadedCount: 3 }),
-			mTag({ id: 4, tag: 'tag4', type: 'metadata', count: 4, blacklistedCount: 4, favoriteCount: 4, downloadedCount: 4 }),
+			mTag({ id: 1, tag: 'tag1', type: 'artist', count: 1, blacklistedCount: 1, downloadedCount: 1 }),
+			mTag({ id: 2, tag: 'tag2', type: 'character', count: 2, blacklistedCount: 2, downloadedCount: 2 }),
+			mTag({ id: 3, tag: 'tag3', type: 'copyright', count: 3, blacklistedCount: 3, downloadedCount: 3 }),
+			mTag({ id: 4, tag: 'tag4', type: 'metadata', count: 4, blacklistedCount: 4, downloadedCount: 4 }),
 		];
 		const store = mockStore(
 			mState({

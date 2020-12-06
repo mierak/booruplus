@@ -49,18 +49,12 @@ export const getAllWithLimitAndOffset = async (options?: Options): Promise<Tag[]
 };
 
 export const checkIfExists = async (tag: string): Promise<boolean> => {
-	const result = await db.tags
-		.where('tag')
-		.equals(tag)
-		.first();
+	const result = await db.tags.where('tag').equals(tag).first();
 	return result !== undefined;
 };
 
 export const getTag = async (tag: string): Promise<Tag | undefined> => {
-	return db.tags
-		.where('tag')
-		.equals(tag)
-		.first();
+	return db.tags.where('tag').equals(tag).first();
 };
 
 export const getDownloadedCount = async (tag: string): Promise<number> => {
@@ -77,6 +71,27 @@ export const getBlacklistedCount = async (tag: string): Promise<number> => {
 		.equals(tag)
 		.filter((post) => post.blacklisted === 1)
 		.count();
+};
+
+interface BlacklistedAndDownloadedCounts {
+	downloadedCounts: { [key: string]: number };
+	blacklistedCounts: { [key: string]: number };
+}
+
+export const getBlacklistedAndDownloadedCounts = async (): Promise<BlacklistedAndDownloadedCounts> => {
+	const downloadedTags = (await db.posts.where('downloaded').equals(1).toArray()).flatMap((post) => post.tags);
+	const downloadedCounts = downloadedTags.reduce<{ [key: string]: number }>((acc, val) => {
+		acc[val] = val in acc ? acc[val] + 1 : 1;
+		return acc;
+	}, {});
+
+	const blacklistedTags = (await db.posts.where('blacklisted').equals(1).toArray()).flatMap((post) => post.tags);
+	const blacklistedCounts = blacklistedTags.reduce<{ [key: string]: number }>((acc, val) => {
+		acc[val] = val in acc ? acc[val] + 1 : 1;
+		return acc;
+	}, {});
+
+	return { downloadedCounts, blacklistedCounts };
 };
 
 export const getByPattern = async (pattern: string): Promise<Tag[]> => {

@@ -13,7 +13,6 @@ export const mTag = (tag?: Partial<Tag>): Tag => {
 		type: tag?.type ?? 'artist',
 		blacklistedCount: tag?.blacklistedCount ?? 0,
 		downloadedCount: tag?.downloadedCount ?? 0,
-		favoriteCount: tag?.favoriteCount ?? 0,
 	};
 };
 

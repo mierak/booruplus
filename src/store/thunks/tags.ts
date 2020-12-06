@@ -37,15 +37,17 @@ export const loadAllWithLimitAndOffset = createAsyncThunk<
 	async (params): Promise<Tag[]> => {
 		const logger = thunkLogger.getActionLogger(loadAllWithLimitAndOffset);
 		logger.debug('Getting tags with options', JSON.stringify(params));
+
 		const tags = await db.tags.getAllWithLimitAndOffset(params);
-		const tagsWithStats = await Promise.all(
-			tags.map(async (tag) => {
-				tag.blacklistedCount = await db.tags.getBlacklistedCount(tag.tag);
-				tag.downloadedCount = await db.tags.getDownloadedCount(tag.tag);
-				tag.favoriteCount = 0; //TODO
-				return tag;
-			})
-		);
+		const favoriteCounts = await db.favorites.getAllFavoriteTagsWithCounts();
+		const { blacklistedCounts, downloadedCounts } = await db.tags.getBlacklistedAndDownloadedCounts();
+		const tagsWithStats = tags.map((tag) => {
+			tag.blacklistedCount = blacklistedCounts[tag.tag] ?? 0;
+			tag.downloadedCount = downloadedCounts[tag.tag] ?? 0;
+			tag.favoriteCount = favoriteCounts[tag.tag] ?? 0;
+			return tag;
+		});
+
 		return tagsWithStats;
 	}
 );

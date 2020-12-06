@@ -70,7 +70,7 @@ export const fetchMostFavoritedTags = createAsyncThunk<{ tag: Tag; count: number
 		const logger = thunkLogger.getActionLogger(fetchMostFavoritedTags);
 		logger.debug('Fetching all favorite tags with counts');
 		const tags = await db.favorites.getAllFavoriteTagsWithCounts();
-		const sorted = tags.sort((a, b) => b.count - a.count).slice(0, limit < 100 ? limit : 100);
+		const sorted = Object.entries(tags).sort((a, b) => b[1] - a[1]).slice(0, limit < 100 ? limit : 100);
 
 		const notFoundTags: NotFoundTags[] = [];
 		const foundTags: FoundTags[] = [];
@@ -78,11 +78,11 @@ export const fetchMostFavoritedTags = createAsyncThunk<{ tag: Tag; count: number
 		logger.debug('Fetching tags from DB');
 		await Promise.all(
 			sorted.map(async (tag) => {
-				const tagFromDb = await db.tags.getTag(tag.tag);
+				const tagFromDb = await db.tags.getTag(tag[0]);
 				if (tagFromDb) {
-					foundTags.push({ tag: tagFromDb, count: tag.count });
+					foundTags.push({ tag: tagFromDb, count: tag[1] });
 				} else {
-					notFoundTags.push({ tag: tag.tag, count: tag.count });
+					notFoundTags.push({ tag: tag[0], count: tag[1] });
 				}
 			})
 		);

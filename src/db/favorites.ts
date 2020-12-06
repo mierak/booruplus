@@ -145,22 +145,19 @@ export const getAllKeys = async (): Promise<string[]> => {
 	return keys.map((val) => val.toString());
 };
 
-export const getAllFavoriteTagsWithCounts = async (): Promise<{ tag: string; count: number }[]> => {
+export const getAllFavoriteTagsWithCounts = async (): Promise<{ [key: string]: number }> => {
 	const allNodes = await db.favorites.toArray(); // get all tree nodes
 	const allPostIds = allNodes.flatMap((node) => node.postIds); // get all post ids in favorites tree
 	const deduplicatedPostIds = new Set(allPostIds); // deduplicate post ids
 	const posts = await db.posts.bulkGet([...deduplicatedPostIds]); // get all posts
 	const allTags = posts.flatMap((post) => post.tags); // get all tags of posts
 
-	const counts: Counts = {}; // object to count unique tags
-	allTags.forEach((tag) => {
-		// count unique tags
-		counts[tag] = counts[tag] !== undefined ? counts[tag] + 1 : 1;
-	});
+	const res = allTags.reduce<{ [key: string]: number }>((acc, val) => {
+		acc[val] = val in acc ? acc[val] + 1 : 1;
+		return acc;
+	}, {});
 
-	return Object.keys(counts).map((key) => {
-		return { tag: key, count: counts[key] };
-	});
+	return res;
 };
 
 export const getlAllPostIds = async (): Promise<number[]> => {
