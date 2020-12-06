@@ -222,7 +222,7 @@ describe('store/system', () => {
 						const action = createAction(thunks.tags.searchTagOnline.pending.type);
 						const state: SystemState = {
 							...initialState,
-							searchMode: 'most-viewed',
+							searchMode: 'offline',
 							activeView: 'dashboard',
 						};
 
@@ -240,7 +240,7 @@ describe('store/system', () => {
 						const action = createAction(thunks.tags.searchTagOffline.pending.type);
 						const state: SystemState = {
 							...initialState,
-							searchMode: 'most-viewed',
+							searchMode: 'offline',
 							activeView: 'dashboard',
 						};
 
@@ -260,7 +260,7 @@ describe('store/system', () => {
 						const action = createAction(thunks.savedSearches.searchOnline.pending.type);
 						const state: SystemState = {
 							...initialState,
-							searchMode: 'most-viewed',
+							searchMode: 'offline',
 							activeView: 'dashboard',
 						};
 
@@ -278,7 +278,7 @@ describe('store/system', () => {
 						const action = createAction(thunks.savedSearches.searchOffline.pending.type);
 						const state: SystemState = {
 							...initialState,
-							searchMode: 'most-viewed',
+							searchMode: 'online',
 							activeView: 'dashboard',
 						};
 
@@ -346,7 +346,6 @@ describe('store/system', () => {
 							...initialState,
 							isTasksDrawerVisible: true,
 							activeView: 'image',
-							searchMode: 'most-viewed',
 						};
 
 						// when
@@ -355,7 +354,6 @@ describe('store/system', () => {
 						// then
 						expect(result.isTasksDrawerVisible).toBe(false);
 						expect(result.activeView).toBe('search-results');
-						expect(result.searchMode).toBe('open-download');
 					});
 				});
 			});

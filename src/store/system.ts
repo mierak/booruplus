@@ -132,7 +132,6 @@ const systemSlice = createSlice({
 		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state) => {
 			state.isTasksDrawerVisible = false;
 			state.activeView = 'search-results';
-			state.searchMode = 'open-download';
 		});
 	},
 });

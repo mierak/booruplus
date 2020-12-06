@@ -144,30 +144,4 @@ describe('search-form/LoadMoreButton', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({ type: thunks.downloadedSearchForm.fetchMorePosts.pending.type });
 	});
-	it('Does not dispatch anything for other modes', () => {
-		// given
-		const store = mockStore(
-			mState({
-				system: {
-					searchMode: 'most-viewed',
-				},
-			})
-		);
-		const onlineSpy = jest.spyOn(thunks.onlineSearchForm, 'fetchMorePosts').mockImplementation();
-		const offlineSpy = jest.spyOn(thunks.downloadedSearchForm, 'fetchMorePosts').mockImplementation();
-
-		// when
-		render(
-			<Provider store={store}>
-				<LoadMoreButton />
-			</Provider>
-		);
-		fireEvent.click(screen.getByRole('button', { name: 'Load More' }));
-
-		// then
-		expect(onlineSpy).toBeCalledTimes(0);
-		expect(offlineSpy).toBeCalledTimes(0);
-		onlineSpy.mockReset();
-		offlineSpy.mockReset();
-	});
 });

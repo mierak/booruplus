@@ -16,7 +16,7 @@ const LoadMoreButton: React.FunctionComponent<Props> = ({ className }: Props) =>
 	const isSearchDisabled = useSelector((state: RootState) => state.loadingStates.isSearchDisabled);
 	const searchMode = useSelector((state: RootState) => state.system.searchMode);
 
-	const getLoadMore = (): (() => AsyncThunkAction<Post[], void, ThunkApi>) | undefined => {
+	const getLoadMore = (): (() => AsyncThunkAction<Post[], void, ThunkApi>) => {
 		switch (searchMode) {
 			case 'online':
 			case 'saved-search-online':
@@ -24,8 +24,6 @@ const LoadMoreButton: React.FunctionComponent<Props> = ({ className }: Props) =>
 			case 'offline':
 			case 'saved-search-offline':
 				return thunks.downloadedSearchForm.fetchMorePosts;
-			default:
-				break;
 		}
 	};
 

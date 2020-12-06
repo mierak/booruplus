@@ -74,10 +74,6 @@ describe('MostviewedPosts', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.system.setSearchMode.type,
-			payload: 'most-viewed',
-		});
-		expect(dispatchedActions).toContainMatchingAction({
 			type: actions.system.setActiveView.type,
 			payload: { view: 'image', context },
 		});

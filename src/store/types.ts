@@ -20,20 +20,20 @@ export interface ThunkApi<Rejected = void> {
 	rejectValue: Rejected;
 }
 
-export type View = 'search-results' | 'image' | 'dashboard' | 'saved-searches' | 'favorites' | 'tag-list' | 'check-later';
+export type View =
+	| 'search-results'
+	| 'image'
+	| 'dashboard'
+	| 'saved-searches'
+	| 'favorites'
+	| 'tag-list'
+	| 'check-later';
 
 export type Sort = 'date-downloaded' | 'date-uploaded' | 'rating' | 'resolution' | 'date-updated' | 'none';
 
 export type SortOrder = 'asc' | 'desc';
 
-export type SearchMode =
-	| 'online'
-	| 'offline'
-	| 'favorites'
-	| 'saved-search-offline'
-	| 'saved-search-online'
-	| 'most-viewed'
-	| 'open-download';
+export type SearchMode = 'online' | 'offline' | 'saved-search-offline' | 'saved-search-online';
 
 export interface OfflineOptions {
 	blacklisted: boolean;

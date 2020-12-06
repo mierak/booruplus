@@ -62,7 +62,6 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 			dispatch(thunks.favorites.fetchPostsInDirectory(activeDirectory));
 		};
 		renderThumbnailList();
-		dispatch(actions.system.setSearchMode('favorites'));
 	}, [activeDirectory, dispatch]);
 
 	useEffect(() => {

@@ -87,7 +87,6 @@ const MostViewedPosts: React.FunctionComponent = () => {
 
 	const handleMostViewedImageClick = useCallback(
 		(post: Post): void => {
-			dispatch(actions.system.setSearchMode('most-viewed'));
 			dispatch(
 				actions.posts.setActivePostIndex({
 					data: mostViewedPosts.findIndex((p) => p.id === post.id),

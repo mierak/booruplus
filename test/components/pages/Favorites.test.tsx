@@ -131,7 +131,6 @@ describe('pages/Favorites', () => {
 			type: thunks.favorites.fetchPostsInDirectory.pending.type,
 			meta: { arg: 1 },
 		});
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setSearchMode.type, payload: 'favorites' });
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({
 				type: thunks.favorites.fetchPostsInDirectory.fulfilled.type,

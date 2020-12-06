@@ -136,9 +136,6 @@ describe('ThumbnailsList', () => {
 				posts: {
 					posts: { posts, favorites: [] },
 				},
-				system: {
-					searchMode: 'favorites',
-				},
 			})
 		);
 
@@ -158,9 +155,6 @@ describe('ThumbnailsList', () => {
 			mState({
 				posts: {
 					posts: { posts, favorites: [] },
-				},
-				system: {
-					searchMode: 'open-download',
 				},
 			})
 		);
