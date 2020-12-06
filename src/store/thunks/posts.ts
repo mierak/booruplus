@@ -83,7 +83,7 @@ export const fetchPostsByIds = createAsyncThunk<Post[], number[], ThunkApi>(
  * @param taskId If this is a batch download, taskId should be provided for progress bar
  * @returns Instance of Post that have been downloaded with updated state
  */
-export const downloadPost = createAsyncThunk<Post, { post: Post; taskId?: number }, ThunkApi>(
+export const downloadPost = createAsyncThunk<Post, { post: Post; context: PostsContext; taskId?: number }, ThunkApi>(
 	'posts/downloadPost',
 	async (params, thunkApi): Promise<Post> => {
 		thunkLogger.getActionLogger(downloadPost, { initialMessage: `post id: ${params.post.id.toString()}` });
@@ -129,7 +129,7 @@ export const persistTask = createAsyncThunk<Task | undefined, DownloadTaskState,
 
 export const downloadPosts = createAsyncThunk<
 	{ taskId: number; skipped: number; downloaded: number; canceled: boolean },
-	{ posts: Post[] },
+	{ posts: Post[]; context: PostsContext },
 	ThunkApi
 >(
 	'posts/downloadPosts',
@@ -149,7 +149,7 @@ export const downloadPosts = createAsyncThunk<
 				skippedPostCount++;
 				continue;
 			}
-			thunkApi.dispatch(downloadPost({ post, taskId }));
+			thunkApi.dispatch(downloadPost({ post, taskId, context: params.context }));
 			downloadedPosts.push(post);
 
 			tagsToSave.push(...post.tags);
@@ -200,7 +200,7 @@ export const downloadSelectedPosts = createAsyncThunk<void, { context: PostsCont
 		}
 
 		logger.debug('Downloading', posts.length, 'selected posts');
-		await thunkApi.dispatch(downloadPosts({ posts }));
+		await thunkApi.dispatch(downloadPosts({ posts, context }));
 		return Promise.resolve();
 	}
 );
@@ -216,7 +216,7 @@ export const downloadAllPosts = createAsyncThunk<void, { context: PostsContext }
 		}
 
 		logger.debug('Downloading', posts.length, 'posts');
-		await thunkApi.dispatch(downloadPosts({ posts }));
+		await thunkApi.dispatch(downloadPosts({ posts, context }));
 		return Promise.resolve();
 	}
 );
@@ -265,14 +265,14 @@ export const downloadWholeSearch = createAsyncThunk<void, void, ThunkApi>(
 			totalPosts.push(...posts);
 			await delay(2000);
 		}
-		await thunkApi.dispatch(downloadPosts({ posts: totalPosts }));
+		await thunkApi.dispatch(downloadPosts({ posts: totalPosts, context: 'posts' }));
 		return Promise.resolve();
 	}
 );
 
-export const blacklistPosts = createAsyncThunk<Post[], Post[], ThunkApi>(
+export const blacklistPosts = createAsyncThunk<Post[], { context: PostsContext; posts: Post[] }, ThunkApi>(
 	'posts/blacklistPosts',
-	async (posts): Promise<Post[]> => {
+	async ({ posts }): Promise<Post[]> => {
 		const logger = thunkLogger.getActionLogger(blacklistPosts);
 		const resultPosts: Post[] = [];
 		for (const p of posts) {
@@ -290,7 +290,7 @@ export const blacklistAllPosts = createAsyncThunk<void, { context: PostsContext 
 	'posts/blacklistAllPosts',
 	async ({ context }, thunkApi): Promise<void> => {
 		thunkLogger.getActionLogger(blacklistAllPosts);
-		thunkApi.dispatch(blacklistPosts(thunkApi.getState().posts.posts[context])); // TODO throw when no posts
+		thunkApi.dispatch(blacklistPosts({ context, posts: thunkApi.getState().posts.posts[context] })); // TODO throw when no posts
 	}
 );
 
@@ -299,7 +299,7 @@ export const blacklistSelectedPosts = createAsyncThunk<void, { context: PostsCon
 	async ({ context }, thunkApi): Promise<void> => {
 		thunkLogger.getActionLogger(blacklistSelectedPosts);
 		const posts = thunkApi.getState().posts.posts[context].filter((post) => post.selected); // TODO throw when no posts
-		thunkApi.dispatch(blacklistPosts(posts));
+		thunkApi.dispatch(blacklistPosts({ posts, context }));
 	}
 );
 

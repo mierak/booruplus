@@ -56,6 +56,7 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const minGridWidth = 250;
 	const minSiderWidth = 100;
+	const context = 'favorites';
 
 	useEffect(() => {
 		const renderThumbnailList = async (): Promise<void> => {
@@ -70,19 +71,19 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 		};
 	}, [dispatch]);
 
-	const handleBlacklist = (post: Post): void => {
-		dispatch(thunks.posts.blacklistPosts([post]));
+	const handleBlacklist = async (post: Post): Promise<void> => {
+		await dispatch(thunks.posts.blacklistPosts({context, posts: [post]}));
+		await dispatch(thunks.favorites.removePostsFromActiveDirectory([post.id]));
 		openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
 	};
 
-	const handleDownload = (post: Post): void => {
-		dispatch(thunks.posts.downloadPost({ post }));
+	const handleDownload = async (post: Post): Promise<void> => {
+		await dispatch(thunks.posts.downloadPost({ context, post }));
 		openNotificationWithIcon('success', 'Post downloaded', 'Image was successfuly saved to disk.');
 	};
 
 	const handleRemoveFromDirectory = async (post: Post): Promise<void> => {
 		await dispatch(thunks.favorites.removePostsFromActiveDirectory([post.id]));
-		await dispatch(thunks.favorites.fetchPostsInDirectory(activeDirectory)); // TODO change to just remove from store/posts array
 		openNotificationWithIcon('success', 'Success', 'Successfuly removed post from directory');
 	};
 
@@ -208,7 +209,7 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 				<StyledContent>
 					<ThumbnailsList
 						shouldShowLoadMoreButton
-						context={'favorites'}
+						context={context}
 						emptyDataLogoCentered={true}
 						actions={cardActions}
 						hasHeader={false}

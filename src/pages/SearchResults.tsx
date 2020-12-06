@@ -95,6 +95,8 @@ const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.rating) || state.onlineSearchForm.rating
 	);
 
+	const context = 'posts';
+
 	const handleFavorite = (post: Post): void => {
 		dispatch(
 			actions.modals.showModal({
@@ -106,12 +108,12 @@ const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleBlacklist = (post: Post): void => {
-		dispatch(thunks.posts.blacklistPosts([post]));
+		dispatch(thunks.posts.blacklistPosts({ context, posts: [post] }));
 		openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
 	};
 
 	const handleDownload = async (post: Post): Promise<void> => {
-		await dispatch(thunks.posts.downloadPost({ post }));
+		await dispatch(thunks.posts.downloadPost({ context, post }));
 		openNotificationWithIcon('success', 'Post downloaded', 'Image was successfuly saved to disk.');
 	};
 
@@ -174,7 +176,7 @@ const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 			return (
 				<StyledThumbnailsList
 					shouldShowLoadMoreButton
-					context={'posts'}
+					context={context}
 					hasHeader
 					emptyDataLogoCentered={true}
 					actions={thumbnailActions}
@@ -204,7 +206,7 @@ const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 			cancelText: 'Cancel',
 			okText: 'Blacklist',
 			onOk: () => {
-				dispatch(thunks.posts.blacklistAllPosts({ context: 'posts' }));
+				dispatch(thunks.posts.blacklistAllPosts({ context }));
 			},
 		});
 		m.destroy();
@@ -217,7 +219,7 @@ const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 			cancelText: 'Cancel',
 			okText: 'Blacklist',
 			onOk: () => {
-				dispatch(thunks.posts.blacklistSelectedPosts({ context: 'posts' }));
+				dispatch(thunks.posts.blacklistSelectedPosts({ context }));
 			},
 		});
 		m.destroy();
@@ -258,7 +260,7 @@ const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 			cancelText: 'Cancel',
 			okText: 'Download',
 			onOk: () => {
-				dispatch(thunks.posts.downloadAllPosts({ context: 'posts' }));
+				dispatch(thunks.posts.downloadAllPosts({ context }));
 			},
 		});
 		m.destroy();
@@ -271,7 +273,7 @@ const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 			cancelText: 'Cancel',
 			okText: 'Download',
 			onOk: () => {
-				dispatch(thunks.posts.downloadSelectedPosts({ context: 'posts' }));
+				dispatch(thunks.posts.downloadSelectedPosts({ context }));
 			},
 		});
 		m.destroy();
@@ -317,11 +319,11 @@ const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleExportAll = (): void => {
-		dispatch(exportPostsToDirectory({ type: 'all', context: 'posts' }));
+		dispatch(exportPostsToDirectory({ type: 'all', context }));
 	};
 
 	const handleExportSelected = (): void => {
-		dispatch(exportPostsToDirectory({ type: 'selected', context: 'posts' }));
+		dispatch(exportPostsToDirectory({ type: 'selected', context }));
 	};
 
 	const renderMenu = (): React.ReactNode => {

@@ -197,7 +197,7 @@ export const getMostViewed = async (limit = 20): Promise<Post[]> => {
 export const incrementViewcount = async (post: Post): Promise<Post> => {
 	const clone = { ...post };
 	if (isNaN(clone.viewCount)) {
-		clone.viewCount = 0; //TODO remove check after db recreation as viewCount is set to 0 in parser
+		clone.viewCount = 0;
 	}
 	clone.viewCount = clone.viewCount + 1;
 	await db.posts.put(clone);

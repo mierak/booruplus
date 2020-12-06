@@ -168,7 +168,7 @@ describe('thunks/posts', () => {
 			const post = mPost({ blacklisted: 1, downloaded: 0, tags: ['tag1', 'tag2'] });
 
 			// when
-			const result = await store.dispatch(thunks.downloadPost({ post }));
+			const result = await store.dispatch(thunks.downloadPost({ context: 'posts', post }));
 
 			// then
 			const dispatchedActions = store.getActions();
@@ -189,7 +189,7 @@ describe('thunks/posts', () => {
 			const post = mPost({ blacklisted: 1, downloaded: 0, tags: ['tag1', 'tag2'] });
 
 			// when
-			const result = await store.dispatch(thunks.downloadPost({ post }));
+			const result = await store.dispatch(thunks.downloadPost({ context: 'posts', post }));
 
 			// then
 			const dispatchedActions = store.getActions();
@@ -233,7 +233,7 @@ describe('thunks/posts', () => {
 			];
 
 			// when
-			await store.dispatch(thunks.downloadPosts({ posts }));
+			await store.dispatch(thunks.downloadPosts({ context: 'posts', posts }));
 
 			// then
 			const dispatchedActions = store.getActions();
@@ -264,7 +264,7 @@ describe('thunks/posts', () => {
 			];
 
 			// when
-			await store.dispatch(thunks.downloadPosts({ posts }));
+			await store.dispatch(thunks.downloadPosts({ context: 'posts', posts }));
 
 			// then
 			const dispatchedActions = store.getActions();
@@ -304,7 +304,7 @@ describe('thunks/posts', () => {
 			store.dispatch(tasksActions.setState({ id: 1, value: 'canceled' }));
 
 			// when
-			await store.dispatch(thunks.downloadPosts({ posts }));
+			await store.dispatch(thunks.downloadPosts({ context: 'posts', posts }));
 
 			// then
 			const dispatchedActions = store.getActions();
@@ -404,7 +404,7 @@ describe('thunks/posts', () => {
 			const deletedPosts = posts.map((post) => thunks.copyAndBlacklistPost(post));
 
 			// when
-			await store.dispatch(thunks.blacklistPosts(posts));
+			await store.dispatch(thunks.blacklistPosts({ posts, context: 'posts' }));
 
 			// then
 			deletedPosts.forEach((post, index) => {
@@ -427,17 +427,17 @@ describe('thunks/posts', () => {
 			];
 			const store = mockStore({
 				...initialState,
-				posts: { ...initialState.posts, posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }) },
+				posts: { ...initialState.posts, posts: mPostsPostsState({ favorites: posts }) },
 			});
 
 			// when
-			await store.dispatch(thunks.blacklistSelectedPosts({ context: 'posts' }));
+			await store.dispatch(thunks.blacklistSelectedPosts({ context: 'favorites' }));
 
 			// then
 			const dispatchedActions = store.getActions();
 			expect(dispatchedActions[1]).toMatchObject({
 				type: thunks.blacklistPosts.pending.type,
-				meta: { arg: [posts[1], posts[3]] },
+				meta: { arg: { context: 'favorites', posts: [posts[1], posts[3]] } },
 			});
 		});
 	});
@@ -447,17 +447,17 @@ describe('thunks/posts', () => {
 			const posts = [mPost({ id: 0 }), mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
 			const store = mockStore({
 				...initialState,
-				posts: { ...initialState.posts, posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }) },
+				posts: { ...initialState.posts, posts: mPostsPostsState({ mostViewed: posts }) },
 			});
 
 			// when
-			await store.dispatch(thunks.blacklistAllPosts({ context: 'posts' }));
+			await store.dispatch(thunks.blacklistAllPosts({ context: 'mostViewed' }));
 
 			// then
 			const dispatchedActions = store.getActions();
 			expect(dispatchedActions[1]).toMatchObject({
 				type: thunks.blacklistPosts.pending.type,
-				meta: { arg: posts },
+				meta: { arg: { context: 'mostViewed', posts } },
 			});
 		});
 	});

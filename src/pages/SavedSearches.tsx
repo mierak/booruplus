@@ -66,7 +66,7 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 	const savedSearches = useSelector((state: RootState) => state.savedSearches.savedSearches);
 
 	useEffect(() => {
-		dispatch(thunks.savedSearches.loadSavedSearchesFromDb()); //TODO loading state
+		dispatch(thunks.savedSearches.loadSavedSearchesFromDb());
 	}, [dispatch]);
 
 	const handleOnlineSearch = (savedSearch: SavedSearch): void => {

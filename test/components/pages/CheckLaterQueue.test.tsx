@@ -134,7 +134,7 @@ describe('pages/CheckLaterQueue', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
 			type: thunks.posts.downloadPost.pending.type,
-			meta: { arg: { post: posts[1] } },
+			meta: { arg: { context: 'checkLaterQueue', post: posts[1] } },
 		});
 	});
 	it('Dispatches downloadAllPosts() when download All button is pressed', async () => {
@@ -301,7 +301,7 @@ describe('pages/CheckLaterQueue', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
 			type: thunks.posts.blacklistPosts.pending.type,
-			meta: { arg: [posts[3]] },
+			meta: { arg: { context: 'checkLaterQueue', posts: [posts[3]] } },
 		});
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({ type: thunks.posts.blacklistPosts.fulfilled.type })

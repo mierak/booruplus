@@ -2,7 +2,7 @@ import { doDatabaseMock } from '../helpers/database.mock';
 doDatabaseMock();
 import reducer, { actions, initialState, PostsState } from '../../src/store/posts';
 import { thunks } from '../../src/store/';
-import { createAction, mPost, createPendingAction } from '../helpers/test.helper';
+import { createAction, mPost, createPendingAction, createFulfilledAction } from '../helpers/test.helper';
 import { mPostsPostsState } from '../helpers/store.helper';
 import { Post } from '../../src/types/gelbooruTypes';
 
@@ -70,10 +70,10 @@ describe('store/posts', () => {
 
 		// then
 		expect(result.posts.posts).toHaveLength(posts.length - 1);
-		expect(result.posts.posts.find(p => p.id === 2)).toBeUndefined();
+		expect(result.posts.posts.find((p) => p.id === 2)).toBeUndefined();
 		expect(result2.posts.posts).toHaveLength(posts.length - 2);
-		expect(result2.posts.posts.find(p => p.id === 1)).toBeUndefined();
-		expect(result2.posts.posts.find(p => p.id === 3)).toBeUndefined();
+		expect(result2.posts.posts.find((p) => p.id === 1)).toBeUndefined();
+		expect(result2.posts.posts.find((p) => p.id === 3)).toBeUndefined();
 	});
 	it('Sets post selected', () => {
 		// given
@@ -648,11 +648,14 @@ describe('store/posts', () => {
 	});
 	it('Removes blacklisted posts when blacklistPosts is fulfilled', () => {
 		// given
+		const context = 'favorites';
 		const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-		const action = createAction(thunks.posts.blacklistPosts.fulfilled.type, [posts[0], posts[1]]);
+		const action = createFulfilledAction(thunks.posts.blacklistPosts.fulfilled.type, [posts[0], posts[1]], {
+			arg: { context },
+		});
 		const state: PostsState = {
 			...initialState,
-			posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
+			posts: mPostsPostsState({ favorites: posts }),
 			selectedIndices: { posts: 123 },
 		};
 
@@ -660,8 +663,8 @@ describe('store/posts', () => {
 		const result = reducer(state, action);
 
 		// then
-		expect(result.posts.posts).toHaveLength(1);
-		expect(result.posts.posts[0].id).toBe(3);
+		expect(result.posts[context]).toHaveLength(1);
+		expect(result.posts[context][0].id).toBe(3);
 	});
 	it('Sets most viewed posts when fetchMostViewedPosts() is fulfiled', () => {
 		//given

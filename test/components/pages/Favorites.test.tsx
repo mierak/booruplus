@@ -25,6 +25,7 @@ describe('pages/Favorites', () => {
 		mockedDb.favorites.getNodeWithoutChildren.mockResolvedValue(mTreeNode());
 		thumbnailLoaderMock.mockResolvedValue('test.png');
 	});
+	const context = 'favorites';
 	const rootNode = mTreeNode({
 		title: 'node1',
 		key: '0',
@@ -237,9 +238,11 @@ describe('pages/Favorites', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
 			type: thunks.posts.downloadPost.pending.type,
-			meta: { arg: { post: posts[1] } },
+			meta: { arg: { context: 'favorites', post: posts[1] } },
 		});
-		expect(notificationMock).toBeCalledWith('success', 'Post downloaded', 'Image was successfuly saved to disk.');
+		await waitFor(() =>
+			expect(notificationMock).toBeCalledWith('success', 'Post downloaded', 'Image was successfuly saved to disk.')
+		);
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({
 				type: thunks.posts.downloadPost.fulfilled.type,
@@ -330,9 +333,17 @@ describe('pages/Favorites', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
 			type: thunks.posts.blacklistPosts.pending.type,
-			meta: { arg: [posts[3]] },
+			meta: { arg: { context, posts: [posts[3]] } },
 		});
-		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.posts.blacklistPosts.fulfilled.type }));
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({ type: thunks.posts.blacklistPosts.fulfilled.type })
+		);
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.favorites.removePostsFromActiveDirectory.pending.type,
+				meta: { arg: [posts[3].id] },
+			})
+		);
 		expect(deleteImageMock).toBeCalledWith(posts[3]);
 		expect(notificationMock).toBeCalledWith('success', 'Post deleted', 'Image was successfuly deleted from disk.');
 		notificationMock.mockClear();

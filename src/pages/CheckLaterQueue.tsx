@@ -23,8 +23,8 @@ const Container = styled.div``;
 const context: PostsContext = 'checkLaterQueue';
 
 const HeaderMenu: React.FunctionComponent = () => {
-    const dispatch = useDispatch<AppDispatch>();
-    
+	const dispatch = useDispatch<AppDispatch>();
+
 	const downloadAll = (): void => {
 		dispatch(thunks.posts.downloadAllPosts({ context }));
 	};
@@ -114,12 +114,12 @@ const CheckLaterQueue: React.FunctionComponent = () => {
 	};
 
 	const handleBlacklist = (post: Post): void => {
-		dispatch(thunks.posts.blacklistPosts([post]));
+		dispatch(thunks.posts.blacklistPosts({ context, posts: [post] }));
 		openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
 	};
 
 	const handleDownload = async (post: Post): Promise<void> => {
-		await dispatch(thunks.posts.downloadPost({ post }));
+		await dispatch(thunks.posts.downloadPost({ context, post }));
 		openNotificationWithIcon('success', 'Post downloaded', 'Image was successfuly saved to disk.');
 	};
 

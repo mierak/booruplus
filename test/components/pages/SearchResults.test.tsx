@@ -239,7 +239,10 @@ describe('pages/Thumbnails', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.posts.downloadPost.pending.type, meta: { arg: { post: posts[1] } } });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: thunks.posts.downloadPost.pending.type,
+			meta: { arg: { context: 'posts', post: posts[1] } },
+		});
 	});
 	it('Dispatches blacklistPosts() for correct post when Move button is pressed', async () => {
 		// given
@@ -271,8 +274,13 @@ describe('pages/Thumbnails', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.posts.blacklistPosts.pending.type, meta: { arg: [posts[3]] } });
-		await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.posts.blacklistPosts.fulfilled.type }));
+		expect(dispatchedActions).toContainMatchingAction({
+			type: thunks.posts.blacklistPosts.pending.type,
+			meta: { arg: { context: 'posts', posts: [posts[3]] } },
+		});
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({ type: thunks.posts.blacklistPosts.fulfilled.type })
+		);
 		expect(deleteImageMock).toBeCalledWith(posts[3]);
 		expect(notificationMock).toBeCalledWith('success', 'Post deleted', 'Image was successfuly deleted from disk.');
 		notificationMock.mockClear();

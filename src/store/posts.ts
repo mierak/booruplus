@@ -4,6 +4,7 @@ import { Post } from '@appTypes/gelbooruTypes';
 
 import * as thunks from './thunks';
 import { PostsContext } from './types';
+import thunk from 'redux-thunk';
 
 interface HoveredPost {
 	visible: boolean;
@@ -177,6 +178,9 @@ const postsSlice = createSlice({
 		builder.addCase(thunks.favorites.fetchPostsInDirectory.fulfilled, (state, action) => {
 			state.posts.favorites = action.payload;
 		});
+		builder.addCase(thunks.favorites.removePostsFromActiveDirectory.fulfilled, (state, action) => {
+			state.posts.favorites = state.posts.favorites.filter(post => !action.meta.arg.includes(post.id));
+		});
 		builder.addCase(thunks.downloadedSearchForm.fetchPosts.fulfilled, (state, action) => {
 			for (const post of action.payload) {
 				state.posts.posts.push(post);
@@ -196,8 +200,16 @@ const postsSlice = createSlice({
 			}
 		});
 		builder.addCase(thunks.posts.blacklistPosts.fulfilled, (state, action) => {
+			const context = action.meta.arg.context;
 			const idsToRemove = action.payload.map((post) => post.id);
-			state.posts.posts = state.posts.posts.filter((post) => !idsToRemove.includes(post.id));
+			state.posts[context] = state.posts[context].filter((post) => !idsToRemove.includes(post.id));
+		});
+		builder.addCase(thunks.posts.downloadPost.fulfilled, (state, action) => {
+			const index = state.posts[action.meta.arg.context].findIndex((p) => p.id === action.payload.id);
+			const context = action.meta.arg.context;
+			if (index !== -1) {
+				state.posts[context][index] = { ...state.posts[context][index], downloaded: 1 };
+			}
 		});
 		builder.addCase(thunks.dashboard.fetchMostViewedPosts.fulfilled, (state, action) => {
 			state.posts.mostViewed = action.payload;
