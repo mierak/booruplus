@@ -100,37 +100,4 @@ describe('thumbnails/PreviewImage', () => {
 		// then
 		expect(await screen.findByText('Preview not available')).not.toBeNull();
 	});
-	it('Renders loading state', async () => {
-		// given
-		const post = mPost();
-		const store = mockStore(
-			mState({
-				posts: {
-					hoveredPost: {
-						post,
-						visible: true,
-					},
-				},
-			})
-		);
-		previewLoaderMock.mockImplementationOnce(async () => {
-			return new Promise((resolve) => {
-				setTimeout(() => {
-					resolve(undefined);
-				}, 300);
-			});
-		});
-		const ref = ({ current: {} } as unknown) as React.RefObject<HTMLDivElement>;
-
-		// when
-		render(
-			<Provider store={store}>
-				<PreviewImage setImagePosition={setImagePositionMock} ref={ref} />
-			</Provider>
-		);
-
-		// then
-		expect(await screen.findByRole('img', { name: 'loading' })).not.toBeNull();
-		expect(await screen.findByText('Preview not available')).not.toBeNull();
-	});
 });
