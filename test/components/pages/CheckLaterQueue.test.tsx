@@ -1,4 +1,4 @@
-import { doDatabaseMock, mockedDb } from '../../helpers/database.mock';
+import { doDatabaseMock } from '../../helpers/database.mock';
 doDatabaseMock();
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
@@ -11,7 +11,7 @@ import { mState } from '../../helpers/store.helper';
 
 import CheckLaterQueue from '../../../src/pages/CheckLaterQueue';
 import '@testing-library/jest-dom';
-import { mPost, mTag } from '../../helpers/test.helper';
+import { mPost } from '../../helpers/test.helper';
 import { deleteImageMock } from '../../helpers/imageBus.mock';
 import * as utils from '../../../src/types/components';
 import { thumbnailLoaderMock } from '../../helpers/imageBus.mock';

@@ -7,7 +7,7 @@ import { actions, thunks } from '@store';
 import ThumbnailsList from '@components/thumbnails/ThumbnailsList';
 import SiderContent from '@components/favorites/SiderContent';
 import { Post } from '@appTypes/gelbooruTypes';
-import { RootState, AppDispatch, PostsContext } from '@store/types';
+import { RootState, AppDispatch } from '@store/types';
 import { CardAction, openNotificationWithIcon } from '@appTypes/components';
 import { ActiveModal } from '@appTypes/modalTypes';
 
