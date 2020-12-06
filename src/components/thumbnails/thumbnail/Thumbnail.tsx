@@ -2,13 +2,14 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { CheckCircleTwoTone } from '@ant-design/icons';
-import { Card, Popconfirm, Menu, Dropdown, Empty } from 'antd';
+import { Card, Menu, Dropdown, Empty } from 'antd';
 
 import { actions } from '@store';
 import { RootState, AppDispatch, PostsContext } from '@store/types';
 import { Post } from '@appTypes/gelbooruTypes';
 import { CardAction, ContextMenu } from '@appTypes/components';
-import { renderPostCardAction, getThumbnailBorder, thumbnailLoader } from '@util/componentUtils';
+import { getThumbnailBorder, thumbnailLoader } from '@util/componentUtils';
+import { getActions, getDummyActions } from './util';
 
 interface Props {
 	context: PostsContext;
@@ -27,20 +28,6 @@ interface CardProps {
 	$height: string;
 	$selected: boolean;
 }
-
-interface PopConfirmProps {
-	children: React.ReactElement;
-	title: string;
-	okText: string;
-	cancelText: string;
-	action: () => void;
-}
-
-const StyledDummyActions = styled.div`
-	width: 100%;
-	height: 22px;
-	background-color: ${(props): string => (props.theme === 'dark' ? 'rgb(29,29,29)' : 'rgb(250,250,250)')};
-`;
 
 const StyledCard = styled(Card)<CardProps>`
 	cursor: pointer;
@@ -116,60 +103,6 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		}
 	};
 
-	const renderWithPopconfirm = (props: PopConfirmProps): React.ReactNode => {
-		return (
-			<Popconfirm
-				title={props.title}
-				cancelText={props.okText}
-				okText={props.cancelText}
-				onCancel={props.action}
-				okType='default'
-				cancelButtonProps={{
-					type: 'primary',
-				}}
-			>
-				{props.children}
-			</Popconfirm>
-		);
-	};
-
-	const renderActions = (): React.ReactNode[] => {
-		if (props.actions === undefined) {
-			return [];
-		}
-
-		const resultActions: React.ReactNode[] = [];
-
-		props.actions.forEach((action) => {
-			if (action.condition) {
-				if (!action.condition(post)) {
-					return;
-				}
-			}
-
-			if (!action.popConfirm) {
-				resultActions.push(renderPostCardAction(action.icon, action.key, action.tooltip, action.onClick, post));
-			} else {
-				const popConfirmProps: PopConfirmProps = {
-					title: action.popConfirm.title,
-					okText: action.popConfirm.okText,
-					cancelText: action.popConfirm.cancelText,
-					action: (): void => action.onClick(post),
-					children: renderPostCardAction(action.icon, action.key, action.tooltip),
-				};
-				resultActions.push(renderWithPopconfirm(popConfirmProps));
-			}
-		});
-		return resultActions;
-	};
-
-	const renderDummyActions = (): React.ReactNode[] => {
-		if (!props.actions) {
-			return [];
-		}
-		return [<StyledDummyActions key='dummy' theme={theme} />];
-	};
-
 	const renderThumbNail = (): React.ReactNode => {
 		return (
 			<StyledCard
@@ -177,7 +110,9 @@ const Thumbnail = (props: Props): React.ReactElement => {
 				$isActive={isActive.toString()}
 				$theme={theme}
 				$selected={post.selected}
-				actions={!props.isScrolling ? renderActions() : renderDummyActions()}
+				actions={
+					props.actions && !props.isScrolling ? getActions({ actions: props.actions, post }) : getDummyActions(theme)
+				}
 				$height={props.actions !== undefined ? '225px' : '197px'}
 			>
 				<StyledImageContainer onClick={(event: React.MouseEvent): void => handleThumbnailClick(event)}>
@@ -196,6 +131,8 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		);
 	};
 
+	if (!props.contextMenu) return <>{renderThumbNail()}</>;
+
 	const renderWithContextMenu = (menuItems: ContextMenu[]): React.ReactNode => {
 		const menu = (
 			<Menu>
@@ -213,7 +150,7 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		);
 	};
 
-	return <>{props.contextMenu !== undefined ? renderWithContextMenu(props.contextMenu) : renderThumbNail()}</>;
+	return <>{renderWithContextMenu(props.contextMenu)}</>;
 };
 
 export default Thumbnail;

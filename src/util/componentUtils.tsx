@@ -50,21 +50,6 @@ export const getIcon = (icon: Icon, onClick?: (() => void) | undefined): React.R
 	}
 };
 
-export const renderPostCardAction = (
-	icon: Icon,
-	key: string,
-	tooltip: string,
-	onClick?: (post: Post) => void,
-	post?: Post
-): React.ReactElement => {
-	const handler = onClick && post ? (): void => onClick(post) : undefined;
-	return (
-		<Tooltip destroyTooltipOnHide title={tooltip} key={key}>
-			{getIcon(icon, handler)}
-		</Tooltip>
-	);
-};
-
 export const getThumbnailBorder = (active: string, theme: 'dark' | 'light', selected: boolean): string | undefined => {
 	if (selected) {
 		if (active === 'false') return 'solid 1px #177ddc';

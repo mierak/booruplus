@@ -8,7 +8,7 @@ import thunk from 'redux-thunk';
 import { mState } from '../helpers/store.helper';
 import userEvent from '@testing-library/user-event';
 
-import Thumbnail from '../../src/components/thumbnails/Thumbnail';
+import Thumbnail from '../../src/components/thumbnails/thumbnail/Thumbnail';
 import '@testing-library/jest-dom';
 import { mPost } from '../helpers/test.helper';
 import * as utils from '../../src/types/components';

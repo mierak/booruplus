@@ -1,6 +1,7 @@
 # Changelog
 
 ## 0.1.7 - TITLE - DATE
+- NEW FEATURE: While browsing search results, you can now add images to a transient "Check Later" queue. A button will appear in the left menu where you can go through these images. This queue is cleared everytime you exit the application.
 - Thumbnails Page renamed to Search Results
 - Saving Search now automatically sets search mode to saved-search to let you add previews right away
 - Favorites, Most Viewed Posts and the rest are now separated. This means that clicking on Favorites page or opening any posts there while having active search wont override it

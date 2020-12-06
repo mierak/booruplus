@@ -4,7 +4,7 @@ import { CardAction, ContextMenu } from '@appTypes/components';
 import { getIndexFromRowCol } from '@util/utils';
 import { Post } from '@appTypes/gelbooruTypes';
 
-import Thumbnail from './Thumbnail';
+import Thumbnail from './thumbnail/Thumbnail';
 import { PostsContext } from '@store/types';
 
 interface CellProps {
