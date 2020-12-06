@@ -93,7 +93,10 @@ describe('thunks/tags', () => {
 			// then
 			const dispatchedActions = store.getActions();
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.searchTagOnline.pending.type, payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({ type: onlineSearchFormThunk.fetchPosts.pending.type, payload: undefined });
+			expect(dispatchedActions[1]).toMatchObject({
+				type: onlineSearchFormThunk.fetchPosts.pending.type,
+				payload: undefined,
+			});
 		});
 	});
 	describe('searchTagOffline()', () => {
@@ -108,7 +111,10 @@ describe('thunks/tags', () => {
 			// then
 			const dispatchedActions = store.getActions();
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.searchTagOffline.pending.type, payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({ type: downloadedSearchFormThunk.fetchPosts.pending.type, payload: undefined });
+			expect(dispatchedActions[1]).toMatchObject({
+				type: downloadedSearchFormThunk.fetchPosts.pending.type,
+				payload: undefined,
+			});
 			expect(dispatchedActions[2]).toMatchObject({ type: downloadedSearchFormThunk.fetchPosts.fulfilled.type });
 			expect(dispatchedActions[3]).toMatchObject({ type: thunks.searchTagOffline.fulfilled.type, payload: tag });
 		});
@@ -125,16 +131,38 @@ describe('thunks/tags', () => {
 				mTag({ tag: 'tag5' }),
 				mTag({ tag: 'tag6' }),
 			];
+			const downloadedCounts: { [key: string]: number } = {
+				tag1: 1,
+				tag2: 2,
+				tag3: 3,
+				tag4: 4,
+				tag5: 5,
+				tag6: 6,
+			};
+			const blacklistedCounts: { [key: string]: number } = {
+				tag1: 7,
+				tag2: 8,
+				tag3: 9,
+				tag4: 10,
+				tag5: 11,
+				tag6: 12,
+			};
+			const favoriteCounts: { [key: string]: number } = {
+				tag1: 13,
+				tag2: 14,
+				tag3: 15,
+				tag4: 16,
+				tag5: 17,
+				tag6: 18,
+			};
 			const searchParams = {
 				pattern: 'tag_pattern',
 				limit: 50,
 				offset: 10,
 			};
-			const downloadedCount = 5;
-			const blacklistedCount = 10;
 			mockedDb.tags.getAllWithLimitAndOffset.mockResolvedValue(tags);
-			mockedDb.tags.getDownloadedCount.mockResolvedValue(downloadedCount);
-			mockedDb.tags.getBlacklistedCount.mockResolvedValue(blacklistedCount);
+			mockedDb.favorites.getAllFavoriteTagsWithCounts.mockResolvedValueOnce(favoriteCounts);
+			mockedDb.tags.getBlacklistedAndDownloadedCounts.mockResolvedValueOnce({ blacklistedCounts, downloadedCounts });
 
 			// when
 			await store.dispatch(thunks.loadAllWithLimitAndOffset(searchParams));
@@ -142,13 +170,17 @@ describe('thunks/tags', () => {
 			// then
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.tags.getAllWithLimitAndOffset).toBeCalledWith(searchParams);
-			expect(dispatchedActions[0]).toMatchObject({ type: thunks.loadAllWithLimitAndOffset.pending.type, payload: undefined });
+			expect(dispatchedActions[0]).toMatchObject({
+				type: thunks.loadAllWithLimitAndOffset.pending.type,
+				payload: undefined,
+			});
 			expect(dispatchedActions[1]).toMatchObject({
 				type: thunks.loadAllWithLimitAndOffset.fulfilled.type,
 				payload: tags.map((tag) => ({
 					...tag,
-					downloadedCount,
-					blacklistedCount,
+					downloadedCount: downloadedCounts[tag.tag],
+					blacklistedCount: blacklistedCounts[tag.tag],
+					favoriteCount: favoriteCounts[tag.tag],
 				})),
 			});
 		});

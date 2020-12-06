@@ -22,10 +22,10 @@ describe('pages/Tags', () => {
 	it('Renders correctly', async () => {
 		// given
 		const tags = [
-			mTag({ id: 1, tag: 'tag1', type: 'artist', count: 1, blacklistedCount: 1, downloadedCount: 1 }),
-			mTag({ id: 2, tag: 'tag2', type: 'character', count: 2, blacklistedCount: 2, downloadedCount: 2 }),
-			mTag({ id: 3, tag: 'tag3', type: 'copyright', count: 3, blacklistedCount: 3, downloadedCount: 3 }),
-			mTag({ id: 4, tag: 'tag4', type: 'metadata', count: 4, blacklistedCount: 4, downloadedCount: 4 }),
+			mTag({ id: 1, tag: 'tag1', type: 'artist', count: 1, favoriteCount: 1, blacklistedCount: 1, downloadedCount: 1 }),
+			mTag({ id: 2, tag: 'tag2', type: 'character', count: 2, favoriteCount: 2,  blacklistedCount: 2, downloadedCount: 2 }),
+			mTag({ id: 3, tag: 'tag3', type: 'copyright', count: 3, favoriteCount: 3,  blacklistedCount: 3, downloadedCount: 3 }),
+			mTag({ id: 4, tag: 'tag4', type: 'metadata', count: 4, favoriteCount: 4,  blacklistedCount: 4, downloadedCount: 4 }),
 		];
 		const store = mockStore(
 			mState({
@@ -35,15 +35,18 @@ describe('pages/Tags', () => {
 			})
 		);
 		mockedDb.tags.getCount.mockResolvedValue(160);
+		mockedDb.favorites.getAllFavoriteTagsWithCounts.mockResolvedValue({});
+		mockedDb.tags.getBlacklistedAndDownloadedCounts.mockResolvedValueOnce({ blacklistedCounts: {}, downloadedCounts: {} });
 
 		// when
 		render(
 			<Provider store={store}>
-				<Tags />
+				<Tags tagsPerPage={10} />
 			</Provider>
 		);
 
 		// then
+		await waitFor(() => expect(screen.getByText('16')).not.toBeNull());
 		expect(screen.getByRole('columnheader', { name: 'Id' })).not.toBeNull();
 		expect(screen.getByRole('columnheader', { name: 'Tag' })).not.toBeNull();
 		expect(screen.getByRole('columnheader', { name: 'Type filter' })).not.toBeNull();
@@ -58,7 +61,6 @@ describe('pages/Tags', () => {
 		expect(screen.getByRole('row', { name: '4 tag4 Metadata 4 4 4 4 Online Search Offline Search' }));
 		await waitFor(() => expect(screen.getByRole('listitem', { name: '1' })));
 		await waitFor(() => expect(screen.getByRole('listitem', { name: '2' })));
-		await waitFor(() => expect(screen.getByRole('listitem', { name: '11' })));
 		await waitFor(() => expect(screen.getByText('tag3')).not.toBeNull());
 	});
 	it('Dispatches Online and Offline Search correctly', async () => {

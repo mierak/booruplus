@@ -508,7 +508,7 @@ describe('db/favorites', () => {
 			expect(toArraySpy).toBeCalledTimes(1);
 			expect(postsBulkGetSpy).toBeCalledWith(allIds.sort());
 			tags.forEach((tag) => {
-				expect(result).toContainEqual({ tag, count: parseInt(tag) });
+				expect(result[tag]).toEqual(parseInt(tag));
 			});
 		});
 	});

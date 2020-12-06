@@ -27,11 +27,11 @@ const ExcludedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
 
 	const theme = useSelector((state: RootState) => state.settings.theme);
 	const excludededTags = useSelector(
-		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.excludedTags) || state.onlineSearchForm.excludedTags
+		(state: RootState) => mode === 'offline' ? state.downloadedSearchForm.excludedTags : state.onlineSearchForm.excludedTags
 	);
 
 	const handleTagClose = (tag: Tag): void => {
-		const removeTag = (mode === 'offline' && actions.downloadedSearchForm.removeExcludedTag) || actions.onlineSearchForm.removeExcludedTag;
+		const removeTag = mode === 'offline' ? actions.downloadedSearchForm.removeExcludedTag : actions.onlineSearchForm.removeExcludedTag;
 		dispatch(removeTag(tag));
 	};
 
@@ -41,8 +41,8 @@ const ExcludedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
 
 	const handleDrop = (event: React.DragEvent): void => {
 		const tag: Tag = JSON.parse(event.dataTransfer.getData('tag'));
-		const removeTag = (mode === 'offline' && actions.downloadedSearchForm.removeTag) || actions.onlineSearchForm.removeTag;
-		const addExcludedTag = (mode === 'offline' && actions.downloadedSearchForm.addExcludedTag) || actions.onlineSearchForm.addExcludedTag;
+		const removeTag = mode === 'offline' ? actions.downloadedSearchForm.removeTag : actions.onlineSearchForm.removeTag;
+		const addExcludedTag = mode === 'offline' ? actions.downloadedSearchForm.addExcludedTag : actions.onlineSearchForm.addExcludedTag;
 		if (!excludededTags.some((t) => t.id === tag.id)) {
 			dispatch(addExcludedTag(tag));
 		}
