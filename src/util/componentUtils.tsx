@@ -112,7 +112,7 @@ const loader = ({
 }: LoaderParams): Promise<string> => {
 	const log = window.log;
 	return new Promise<string>((resolve) => {
-		if (post.downloaded === 0 || !ignoreDownloadedStatus) {
+		if (post.downloaded === 0 && !ignoreDownloadedStatus) {
 			shouldLog && log.debug('Post is not downloaded. Reading from URL', notFoundResolveValue);
 			resolve(notFoundResolveValue);
 			return;
