@@ -1,8 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
-import { LoadingOutlined } from '@ant-design/icons';
-import { Spin, Empty } from 'antd';
+import { Empty } from 'antd';
 
 import { RootState } from '@store/types';
 import { imageCache } from '@util/objectUrlCache';
@@ -40,13 +39,6 @@ const StyledHoverImage = styled.img<ImageProps>`
 	display: ${(props): string => (props.$loaded ? 'block' : 'none')};
 `;
 
-const StyledSpin = styled(Spin)`
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-`;
-
 const StyledEmpty = styled(Empty)`
 	position: absolute;
 	left: 50%;
@@ -58,7 +50,6 @@ const PreviewImage = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
 	const containerRef = React.useRef<HTMLDivElement>(null);
 	const imageRef = React.useRef<HTMLImageElement>(null);
 	const hoveredPost = useSelector((state: RootState) => state.posts.hoveredPost);
-	const [isLoaded, setLoaded] = React.useState(false);
 	const [isLoading, setLoading] = React.useState(true);
 	const [windowSize, setWindowSize] = React.useState({ width: 0, height: 0 });
 	const [isEmpty, setEmpty] = React.useState(false);
@@ -79,11 +70,8 @@ const PreviewImage = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
 			ref.current = containerRef.current;
 		}
 
-		let isCanceled = false;
 		const cleanup = (): void => {
 			image.src = '';
-			isCanceled = true;
-			setLoaded(false);
 			setLoading(false);
 			setEmpty(false);
 		};
@@ -102,7 +90,6 @@ const PreviewImage = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
 		const cached = imageCache.getIfPresent(post.id);
 		if (cached) {
 			image.src = cached;
-			setLoaded(true);
 			return cleanup;
 		}
 
@@ -111,14 +98,8 @@ const PreviewImage = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
 			const url = await previewLoader(post);
 			if (url) {
 				image.src = url;
-				image.onload = (): void => {
-					if (!isCanceled) {
-						setLoaded(true);
-					}
-				};
 			} else {
 				setEmpty(true);
-				setLoaded(true);
 			}
 		})();
 
@@ -127,9 +108,8 @@ const PreviewImage = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
 
 	return hoveredPost.visible ? (
 		<Container ref={containerRef} $loading={isLoading}>
-			{!isLoaded && isLoading && <StyledSpin indicator={<LoadingOutlined style={{ fontSize: '64px' }} />} />}
-			{isLoaded && isEmpty && <StyledEmpty description='Preview not available' />}
-			<StyledHoverImage data-testid='preview-image' ref={imageRef} $loaded={isLoaded && !isEmpty} />
+			{isEmpty && <StyledEmpty description='Preview not available' />}
+			<StyledHoverImage data-testid='preview-image' ref={imageRef} $loaded={!isEmpty} />
 		</Container>
 	) : (
 		<></>
