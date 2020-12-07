@@ -6,6 +6,7 @@ import { Empty } from 'antd';
 import { RootState } from '@store/types';
 import { imageCache } from '@util/objectUrlCache';
 import { previewLoader, getPreviewImageSize } from '@util/componentUtils';
+import { isFilenameVideo } from '@util/utils';
 
 interface Props {
 	setImagePosition: () => void;
@@ -86,6 +87,11 @@ const PreviewImage = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
 		image.style.width = `${previewSize.width}px`;
 		image.style.height = `${previewSize.height}px`;
 		props.setImagePosition();
+
+		if (isFilenameVideo(post.image)) {
+			setEmpty(true);
+			return cleanup;
+		}
 
 		const cached = imageCache.getIfPresent(post.id);
 		if (cached) {

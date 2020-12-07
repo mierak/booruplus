@@ -100,4 +100,29 @@ describe('thumbnails/PreviewImage', () => {
 		// then
 		expect(await screen.findByText('Preview not available')).not.toBeNull();
 	});
+	it('Renders empty state if post is downloaded and is a video', async () => {
+		// given
+		const post = mPost({image: 'test.webm'});
+		const store = mockStore(
+			mState({
+				posts: {
+					hoveredPost: {
+						post,
+						visible: true,
+					},
+				},
+			})
+		);
+		const ref = ({ current: {} } as unknown) as React.RefObject<HTMLDivElement>;
+
+		// when
+		render(
+			<Provider store={store}>
+				<PreviewImage setImagePosition={setImagePositionMock} ref={ref} />
+			</Provider>
+		);
+
+		// then
+		expect(await screen.findByText('Preview not available')).not.toBeNull();
+	});
 });
