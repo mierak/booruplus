@@ -11,6 +11,7 @@ import {
 	TagsOutlined,
 	GlobalOutlined,
 	ClockCircleOutlined,
+	LoadingOutlined,
 } from '@ant-design/icons';
 
 import { Icon } from '@appTypes/components';
@@ -46,6 +47,8 @@ export const getIcon = (icon: Icon, onClick?: (() => void) | undefined): React.R
 			return <GlobalOutlined onClick={onClick} />;
 		case 'clock-circle-outlined':
 			return <ClockCircleOutlined onClick={onClick} />;
+		case 'loading-outlined':
+			return <LoadingOutlined />;
 	}
 };
 

@@ -132,7 +132,7 @@ describe('Thumbnail', () => {
 			payload: { data: index, context: 'posts' },
 		});
 	});
-	it('Renders action without popconfirm', () => {
+	it('Renders action without popconfirm', async () => {
 		// given
 		const index = 2;
 		const store = mockStore(
@@ -162,6 +162,42 @@ describe('Thumbnail', () => {
 
 		// then
 		expect(onClick).toHaveBeenCalledTimes(1);
+		await screen.findByRole('img', { name: 'plus' });
+	});
+	it('Show spinner when async action is processing', async () => {
+		// given
+		const index = 2;
+		const store = mockStore(
+			mState({
+				posts: {
+					posts: { posts, favorites: [] },
+				},
+			})
+		);
+		const onClick = jest.fn().mockResolvedValue(new Promise(resolve => {
+			setTimeout(resolve(), 500);
+		}));
+		const actions: utils.CardAction[] = [
+			{
+				onClick,
+				icon: 'plus-outlined',
+				key: 'plus-action',
+				tooltip: 'tooltip',
+			},
+		];
+
+		// when
+		render(
+			<Provider store={store}>
+				<Thumbnail context='posts' index={index} actions={actions} />
+			</Provider>
+		);
+		fireEvent.click(screen.getByRole('img', { name: 'plus' }));
+
+		// then
+		expect(screen.getByRole('img', { name: 'loading' })).not.toBeNull();
+		expect(onClick).toHaveBeenCalledTimes(1);
+		await screen.findByRole('img', { name: 'plus' });
 	});
 	it('Renders action with popconfirm', async () => {
 		// given

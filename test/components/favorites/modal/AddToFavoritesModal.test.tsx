@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { thunks, actions } from '../../../../src/store';
 import { RootState, AppDispatch } from '../../../../src/store/types';
@@ -63,7 +63,7 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 		expect(screen.getByText('node12')).not.toBeNull();
 		await waitFor(() => undefined, { timeout: 0 });
 	});
-	it('Closes modal when Close button is pressed', () => {
+	it('Closes modal when Close button is pressed', async () => {
 		// given
 		const store = mockStore(mState());
 
@@ -78,6 +78,7 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions[0]).toMatchObject({ type: actions.modals.setVisible.type, payload: false });
+		await waitFor(() => undefined);
 	});
 	it('Dispatches addPostsToDirectory() when node is selected and Add button clicked', async () => {
 		const postIdsToFavorite = [1, 2, 3, 4, 5];

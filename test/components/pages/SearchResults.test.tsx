@@ -243,6 +243,7 @@ describe('pages/Thumbnails', () => {
 			type: thunks.posts.downloadPost.pending.type,
 			meta: { arg: { context: 'posts', post: posts[1] } },
 		});
+		expect(await screen.findAllByRole('img', { name: 'download' })).toHaveLength(3);
 	});
 	it('Dispatches blacklistPosts() for correct post when Move button is pressed', async () => {
 		// given
@@ -283,6 +284,7 @@ describe('pages/Thumbnails', () => {
 		);
 		expect(deleteImageMock).toBeCalledWith(posts[3]);
 		expect(notificationMock).toBeCalledWith('success', 'Post deleted', 'Image was successfuly deleted from disk.');
+		expect(await screen.findAllByRole('img', { name: 'delete' })).toHaveLength(6);
 		notificationMock.mockClear();
 	});
 	it('Dispatches showModal() and setPostIds() for correct post when Favorite button is pressed', async () => {
@@ -319,6 +321,7 @@ describe('pages/Thumbnails', () => {
 				modalState: { [ActiveModal.ADD_POSTS_TO_FAVORITES]: { postIdsToFavorite: [posts[2].id] } },
 			},
 		});
+		expect(await screen.findAllByRole('img', { name: 'heart' })).toHaveLength(5);
 	});
 	it('Dispatches addPreviewToActiveSavedSearch() for correct post when Add Preview button is pressed', async () => {
 		// given
@@ -358,6 +361,7 @@ describe('pages/Thumbnails', () => {
 			meta: { arg: posts[3] },
 		});
 		expect(notificationMock).toBeCalledWith('success', 'Preview added', 'Preview was successfuly added to saved search');
+		expect(await screen.findAllByRole('img', { name: 'plus' })).toHaveLength(5);
 		notificationMock.mockClear();
 	});
 	it('Renders loading state', () => {

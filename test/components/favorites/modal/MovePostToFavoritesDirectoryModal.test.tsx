@@ -69,7 +69,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		expect(screen.getByText('node11')).not.toBeNull();
 		await waitFor(() => undefined, { timeout: 0 });
 	});
-	it('Closes modal when Cancel button is pressed', () => {
+	it('Closes modal when Cancel button is pressed', async () => {
 		// given
 		const store = mockStore(mState());
 
@@ -85,6 +85,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toHaveLength(1);
 		expect(dispatchedActions[0]).toMatchObject({ type: actions.modals.setVisible.type, payload: false });
+		await waitFor(() => undefined);
 	});
 	it('Dispatches addPostsToDirectory() when node is selected and Add button clicked', async () => {
 		const postIdsToFavorite = [1, 2, 3, 4, 5];

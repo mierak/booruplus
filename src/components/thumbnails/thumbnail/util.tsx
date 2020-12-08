@@ -11,42 +11,33 @@ const StyledDummyActions = styled.div`
 	background-color: ${(props): string => (props.theme === 'dark' ? 'rgb(29,29,29)' : 'rgb(250,250,250)')};
 `;
 
-interface PopConfirmProps {
-	children: React.ReactElement;
-	title: string;
-	okText: string;
-	cancelText: string;
-	action: () => void;
+interface CardActionProps {
+	icon: Icon;
+	tooltip: string;
+	post?: Post;
+	actionHandler?: (post: Post) => Promise<void> | void;
+	onClick?: () => void;
 }
 
-const WithPopconfirm: React.FunctionComponent<PopConfirmProps> = (props) => {
-	return (
-		<Popconfirm
-			title={props.title}
-			cancelText={props.okText}
-			okText={props.cancelText}
-			onCancel={props.action}
-			okType='default'
-			cancelButtonProps={{
-				type: 'primary',
-			}}
-		>
-			{props.children}
-		</Popconfirm>
-	);
-};
+const PostCardAction: React.FunctionComponent<CardActionProps> = (props: CardActionProps) => {
+	const [loading, setLoading] = React.useState(false);
 
-const renderPostCardAction = (
-	icon: Icon,
-	key: string,
-	tooltip: string,
-	onClick?: (post: Post) => void,
-	post?: Post
-): React.ReactElement => {
-	const handler = onClick && post ? (): void => onClick(post) : undefined;
+	const { post, actionHandler, onClick } = props;
+	let handler: (() => void) | undefined;
+
+	if (actionHandler && post) {
+		handler = async (): Promise<void> => {
+			setLoading(true);
+			await actionHandler(post);
+			setLoading(false);
+		};
+	} else {
+		handler = onClick;
+	}
+
 	return (
-		<Tooltip destroyTooltipOnHide title={tooltip} key={key}>
-			{getIcon(icon, handler)}
+		<Tooltip destroyTooltipOnHide title={props.tooltip}>
+			{getIcon(loading ? 'loading-outlined' : props.icon, handler)}
 		</Tooltip>
 	);
 };
@@ -56,18 +47,30 @@ export const getActions = ({ actions, post }: { actions: CardAction[]; post: Pos
 		.filter((a) => (a.condition ? a.condition(post) : true))
 		.map((action) => {
 			if (!action.popConfirm) {
-				return renderPostCardAction(action.icon, action.key, action.tooltip, action.onClick, post);
+				return (
+					<PostCardAction
+						icon={action.icon}
+						key={action.key}
+						tooltip={action.tooltip}
+						actionHandler={action.onClick}
+						post={post}
+					/>
+				);
 			}
 			return (
-				<WithPopconfirm
+				<Popconfirm
 					key={action.key}
 					title={action.popConfirm.title}
-					okText={action.popConfirm.okText}
-					cancelText={action.popConfirm.cancelText}
-					action={(): void => action.onClick(post)}
+					cancelText={action.popConfirm.okText}
+					okText={action.popConfirm.cancelText}
+					onCancel={(): void => action.onClick(post)}
+					okType='default'
+					cancelButtonProps={{
+						type: 'primary',
+					}}
 				>
-					{renderPostCardAction(action.icon, action.key, action.tooltip)}
-				</WithPopconfirm>
+					<PostCardAction icon={action.icon} key={action.key} tooltip={action.tooltip} />
+				</Popconfirm>
 			);
 		});
 };

@@ -13,7 +13,8 @@ export type Icon =
 	| 'pic-center-outlined'
 	| 'tags-outlined'
 	| 'global-outlined'
-	| 'clock-circle-outlined';
+	| 'clock-circle-outlined'
+	| 'loading-outlined';
 
 export interface ContextMenu {
 	title: string;

@@ -49,7 +49,7 @@ describe('favorites/modal/DeleteDirectoryModal', () => {
 		expect(dispatchedActions).toHaveLength(1);
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.setVisible.type, payload: false });
 	});
-	it('Closes modal and dispatches addSubFolder when Add button is pressed', () => {
+	it('Closes modal and dispatches addSubFolder when Add button is pressed', async () => {
 		// given
 		const store = mockStore(mState());
 		const notificationSpy = jest.spyOn(componentTypes, 'openNotificationWithIcon').mockImplementation();
@@ -68,12 +68,12 @@ describe('favorites/modal/DeleteDirectoryModal', () => {
 			type: thunks.favorites.deleteDirectoryAndChildren.pending.type,
 			meta: { arg: 123 },
 		});
-		waitFor(() =>
+		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.setVisible.type, payload: false })
 		);
-		waitFor(() => expect(notificationSpy).toHaveBeenCalledWith('success', expect.anything(), expect.anything()));
+		await waitFor(() => expect(notificationSpy).toHaveBeenCalledWith('success', expect.anything(), expect.anything()));
 	});
-	it('Shows error notification when trying to delete default directory', () => {
+	it('Shows error notification when trying to delete default directory', async () => {
 		// given
 		const store = mockStore(mState());
 		const notificationSpy = jest.spyOn(componentTypes, 'openNotificationWithIcon').mockImplementation();
@@ -89,7 +89,7 @@ describe('favorites/modal/DeleteDirectoryModal', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.setVisible.type, payload: false });
-		waitFor(() =>
+		await waitFor(() =>
 			expect(notificationSpy).toHaveBeenCalledWith(
 				'error',
 				'Failed to delete folder',

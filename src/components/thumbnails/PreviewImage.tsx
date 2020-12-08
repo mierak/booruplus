@@ -16,22 +16,14 @@ interface ImageProps {
 	$loaded: boolean;
 }
 
-interface ContainerProps {
-	$loading: boolean;
-}
 
-const Container = styled.div<ContainerProps>`
+const Container = styled.div`
 	z-index: 2000;
 	pointer-events: none;
 	position: absolute;
 	box-sizing: content-box;
-	${(props): string | undefined => {
-		if (props.$loading)
-			return `
-				border: 1px solid rgb(48, 48, 48);
-				background-color: rgb(20, 20, 20);
-		`;
-	}}
+	background-color:  rgb(20, 20, 20);
+	border: 1px solid rgb(48, 48, 48);
 `;
 
 const StyledHoverImage = styled.img<ImageProps>`
@@ -51,7 +43,6 @@ const PreviewImage = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
 	const containerRef = React.useRef<HTMLDivElement>(null);
 	const imageRef = React.useRef<HTMLImageElement>(null);
 	const hoveredPost = useSelector((state: RootState) => state.posts.hoveredPost);
-	const [isLoading, setLoading] = React.useState(true);
 	const [windowSize, setWindowSize] = React.useState({ width: 0, height: 0 });
 	const [isEmpty, setEmpty] = React.useState(false);
 
@@ -73,7 +64,6 @@ const PreviewImage = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
 
 		const cleanup = (): void => {
 			image.src = '';
-			setLoading(false);
 			setEmpty(false);
 		};
 
@@ -100,7 +90,6 @@ const PreviewImage = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
 		}
 
 		(async (): Promise<void> => {
-			setLoading(true);
 			const url = await previewLoader(post);
 			if (url) {
 				image.src = url;
@@ -113,7 +102,7 @@ const PreviewImage = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
 	}, [hoveredPost.post, hoveredPost.visible, props, ref, windowSize]);
 
 	return hoveredPost.visible ? (
-		<Container ref={containerRef} $loading={isLoading}>
+		<Container ref={containerRef}>
 			{isEmpty && <StyledEmpty description='Preview not available' />}
 			<StyledHoverImage data-testid='preview-image' ref={imageRef} $loaded={!isEmpty} />
 		</Container>

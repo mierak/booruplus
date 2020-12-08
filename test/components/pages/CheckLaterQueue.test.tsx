@@ -104,6 +104,7 @@ describe('pages/CheckLaterQueue', () => {
 			type: actions.posts.removePosts.type,
 			payload: { context: 'checkLaterQueue', data: posts[1] },
 		});
+		expect(await screen.findAllByRole('img', { name: 'close' })).toHaveLength(5);
 	});
 	it('Dispatches downloadPost() for correct post when Download button is pressed', async () => {
 		// given
@@ -136,6 +137,7 @@ describe('pages/CheckLaterQueue', () => {
 			type: thunks.posts.downloadPost.pending.type,
 			meta: { arg: { context: 'checkLaterQueue', post: posts[1] } },
 		});
+		expect(await screen.findAllByRole('img', { name: 'download' })).toHaveLength(3);
 	});
 	it('Dispatches downloadAllPosts() when download All button is pressed', async () => {
 		// given
@@ -446,5 +448,6 @@ describe('pages/CheckLaterQueue', () => {
 				modalState: { [ActiveModal.ADD_POSTS_TO_FAVORITES]: { postIdsToFavorite: [posts[2].id] } },
 			},
 		});
+		expect(await screen.findAllByRole('img', { name: 'heart' })).toHaveLength(5);
 	});
 });
