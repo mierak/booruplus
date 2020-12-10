@@ -20,7 +20,9 @@ describe('thunks/favorites', () => {
 		it('Calls db correctly', async () => {
 			// given
 			const store = mockStore(initialState);
-			const treeNode = mTreeNode({ children: [mTreeNode({ key: '2' }), mTreeNode({ key: '3' }), mTreeNode({ key: '4' })] });
+			const treeNode = mTreeNode({
+				children: [mTreeNode({ key: '2' }), mTreeNode({ key: '3' }), mTreeNode({ key: '4' })],
+			});
 			mockedDb.favorites.getCompleteTree.mockResolvedValue(treeNode);
 
 			// when
@@ -37,7 +39,9 @@ describe('thunks/favorites', () => {
 		it('Calls db correctly', async () => {
 			// given
 			const store = mockStore(initialState);
-			const treeNode = mTreeNode({ children: [mTreeNode({ key: '2' }), mTreeNode({ key: '3' }), mTreeNode({ key: '4' })] });
+			const treeNode = mTreeNode({
+				children: [mTreeNode({ key: '2' }), mTreeNode({ key: '3' }), mTreeNode({ key: '4' })],
+			});
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
 			mockedDb.favorites.getNodeWithoutChildren.mockResolvedValue(treeNode);
 			mockedDb.posts.getBulk.mockResolvedValue(posts);
@@ -130,10 +134,16 @@ describe('thunks/favorites', () => {
 			// then
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.favorites.deleteNodeAndChildren).toBeCalledWith(key);
-			expect(dispatchedActions[0]).toMatchObject({ type: 'favorites/deleteDirectoryAndChildren/pending', payload: undefined });
+			expect(dispatchedActions[0]).toMatchObject({
+				type: 'favorites/deleteDirectoryAndChildren/pending',
+				payload: undefined,
+			});
 			expect(dispatchedActions[1]).toMatchObject({ type: 'favorites/fetchAllKeys/pending', payload: undefined });
 			expect(dispatchedActions[2]).toMatchObject({ type: 'favorites/fetchTreeData/pending', payload: undefined });
-			expect(dispatchedActions[3]).toMatchObject({ type: 'favorites/deleteDirectoryAndChildren/fulfilled', payload: undefined });
+			expect(dispatchedActions[3]).toMatchObject({
+				type: 'favorites/deleteDirectoryAndChildren/fulfilled',
+				payload: undefined,
+			});
 		});
 	});
 	describe('addPostsToDirectory()', () => {
@@ -141,14 +151,18 @@ describe('thunks/favorites', () => {
 			// given
 			const store = mockStore(initialState);
 			const key = 1;
-			const postIds = [1, 2, 3, 4, 5];
+			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 }), mPost({ id: 5 })];
 
 			// when
-			await store.dispatch(thunks.addPostsToDirectory({ key, ids: postIds }));
+			await store.dispatch(thunks.addPostsToDirectory({ key, posts }));
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(mockedDb.favorites.addPostsToNode).toBeCalledWith(key, postIds);
+			expect(mockedDb.favorites.addPostsToNode).toBeCalledWith(
+				key,
+				posts.map((p) => p.id)
+			);
+			expect(mockedDb.posts.bulkSave).toBeCalledWith(posts);
 			expect(dispatchedActions[0]).toMatchObject({ type: 'favorites/addPostsToDirectory/pending', payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({ type: 'favorites/fetchTreeData/pending', payload: undefined });
 			expect(dispatchedActions[2]).toMatchObject({ type: 'favorites/addPostsToDirectory/fulfilled', payload: undefined });
@@ -158,17 +172,26 @@ describe('thunks/favorites', () => {
 		it('Calls db correctly', async () => {
 			// given
 			const store = mockStore({ ...initialState, favorites: { ...initialState.favorites, activeNodeKey: 1 } });
-			const postIds = [1, 2, 3, 4, 5];
+			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 }), mPost({ id: 5 })];
 
 			// when
-			await store.dispatch(thunks.removePostsFromActiveDirectory(postIds));
+			await store.dispatch(thunks.removePostsFromActiveDirectory(posts));
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(mockedDb.favorites.removePostsFromNode).toBeCalledWith(store.getState().favorites.activeNodeKey, postIds);
-			expect(dispatchedActions[0]).toMatchObject({ type: thunks.removePostsFromActiveDirectory.pending.type, payload: undefined });
+			expect(mockedDb.favorites.removePostsFromNode).toBeCalledWith(
+				store.getState().favorites.activeNodeKey,
+				posts.map((p) => p.id)
+			);
+			expect(dispatchedActions[0]).toMatchObject({
+				type: thunks.removePostsFromActiveDirectory.pending.type,
+				payload: undefined,
+			});
 			expect(dispatchedActions[1]).toMatchObject({ type: 'favorites/fetchTreeData/pending', payload: undefined });
-			expect(dispatchedActions[2]).toMatchObject({ type: 'favorites/removePostFromActiveDirectory/fulfilled', payload: undefined });
+			expect(dispatchedActions[2]).toMatchObject({
+				type: 'favorites/removePostFromActiveDirectory/fulfilled',
+				payload: undefined,
+			});
 		});
 	});
 	describe('exportDirectory()', () => {
@@ -182,7 +205,7 @@ describe('thunks/favorites', () => {
 			mockedDb.posts.getBulk.mockResolvedValue(posts);
 
 			// when
-			await store.dispatch(thunks.exportDirectory({  targetDirectoryKey: selectedKey  }));
+			await store.dispatch(thunks.exportDirectory({ targetDirectoryKey: selectedKey }));
 
 			// then
 			const dispatchedActions = store.getActions();

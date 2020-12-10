@@ -6,6 +6,7 @@ import { RootState, AppDispatch } from '../../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mState } from '../../../helpers/store.helper';
+import { mPost } from '../../../helpers/test.helper';
 
 import MovePostsToSuppliedFavoritesDirectoryModal from '../../../../src/components/favorites/modal/MovePostsToSuppliedFavoritesDirectoryModal';
 import * as componentTypes from '../../../../src/types/components';
@@ -23,7 +24,7 @@ describe('favorites/modal/MovePostsToFavoritesDirectory', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<MovePostsToSuppliedFavoritesDirectoryModal postIdsToMove={[]} targetDirectoryKey={1} />
+				<MovePostsToSuppliedFavoritesDirectoryModal postsToMove={[]} targetDirectoryKey={1} />
 			</Provider>
 		);
 
@@ -39,7 +40,7 @@ describe('favorites/modal/MovePostsToFavoritesDirectory', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<MovePostsToSuppliedFavoritesDirectoryModal postIdsToMove={[]} targetDirectoryKey={1} />
+				<MovePostsToSuppliedFavoritesDirectoryModal postsToMove={[]} targetDirectoryKey={1} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('Close'));
@@ -50,7 +51,7 @@ describe('favorites/modal/MovePostsToFavoritesDirectory', () => {
 	});
 	it('Closes modal and dispatches correct actions when Move button is pressed', async () => {
 		// given
-		const postIds = [1, 3, 5, 7, 9];
+		const postsToMove = [mPost({ id: 1 }), mPost({ id: 3 }), mPost({ id: 5 }), mPost({ id: 7 }), mPost({ id: 9 })];
 		const selectedKey = 123456;
 		const store = mockStore(mState());
 		const notificationSpy = jest.spyOn(componentTypes, 'openNotificationWithIcon').mockImplementation();
@@ -58,7 +59,7 @@ describe('favorites/modal/MovePostsToFavoritesDirectory', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<MovePostsToSuppliedFavoritesDirectoryModal postIdsToMove={postIds} targetDirectoryKey={selectedKey} />
+				<MovePostsToSuppliedFavoritesDirectoryModal postsToMove={postsToMove} targetDirectoryKey={selectedKey} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('Move'));
@@ -67,12 +68,12 @@ describe('favorites/modal/MovePostsToFavoritesDirectory', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
 			type: thunks.favorites.removePostsFromActiveDirectory.pending.type,
-			meta: { arg: postIds },
+			meta: { arg: postsToMove },
 		});
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({
 				type: thunks.favorites.addPostsToDirectory.pending.type,
-				meta: { arg: { ids: postIds, key: selectedKey } },
+				meta: { arg: { posts: postsToMove, key: selectedKey } },
 			})
 		);
 		await waitFor(() =>
@@ -91,7 +92,7 @@ describe('favorites/modal/MovePostsToFavoritesDirectory', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<MovePostsToSuppliedFavoritesDirectoryModal postIdsToMove={[]} targetDirectoryKey={1} />
+				<MovePostsToSuppliedFavoritesDirectoryModal postsToMove={[]} targetDirectoryKey={1} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('Move'));

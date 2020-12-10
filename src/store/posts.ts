@@ -178,7 +178,7 @@ const postsSlice = createSlice({
 			state.posts.favorites = action.payload;
 		});
 		builder.addCase(thunks.favorites.removePostsFromActiveDirectory.fulfilled, (state, action) => {
-			state.posts.favorites = state.posts.favorites.filter((post) => !action.meta.arg.includes(post.id));
+			state.posts.favorites = state.posts.favorites.filter((post) => !action.meta.arg.find(p => p.id === post.id));
 		});
 		builder.addCase(thunks.downloadedSearchForm.fetchPosts.fulfilled, (state, action) => {
 			for (const post of action.payload) {

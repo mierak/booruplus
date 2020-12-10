@@ -8,7 +8,7 @@ import thunk from 'redux-thunk';
 import { mState } from '../../../helpers/store.helper';
 
 import MovePostsToFavoritesDirectoryModal from '../../../../src/components/favorites/modal/MovePostsToFavoritesDirectoryModal';
-import { mTreeNode } from '../../../helpers/test.helper';
+import { mPost, mTreeNode } from '../../../helpers/test.helper';
 import * as componentTypes from '../../../../src/types/components';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
@@ -53,7 +53,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<MovePostsToFavoritesDirectoryModal treeData={rootNode.children} expandedKeys={expandedKeys} postIdsToMove={[]} />
+				<MovePostsToFavoritesDirectoryModal treeData={rootNode.children} expandedKeys={expandedKeys} postsToMove={[]} />
 			</Provider>
 		);
 
@@ -76,7 +76,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<MovePostsToFavoritesDirectoryModal treeData={rootNode.children} expandedKeys={expandedKeys} postIdsToMove={[]} />
+				<MovePostsToFavoritesDirectoryModal treeData={rootNode.children} expandedKeys={expandedKeys} postsToMove={[]} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
@@ -88,7 +88,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		await waitFor(() => undefined);
 	});
 	it('Dispatches addPostsToDirectory() when node is selected and Add button clicked', async () => {
-		const postIdsToFavorite = [1, 2, 3, 4, 5];
+		const postsToMove = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 }), mPost({ id: 5 })];
 		const selectedNodeKey = 11;
 		const store = mockStore(mState());
 		const notificationSpy = jest.spyOn(componentTypes, 'openNotificationWithIcon').mockImplementation();
@@ -99,7 +99,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 				<MovePostsToFavoritesDirectoryModal
 					treeData={rootNode.children}
 					expandedKeys={expandedKeys}
-					postIdsToMove={postIdsToFavorite}
+					postsToMove={postsToMove}
 				/>
 			</Provider>
 		);
@@ -111,11 +111,11 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
 			type: thunks.favorites.removePostsFromActiveDirectory.pending.type,
-			meta: { arg: postIdsToFavorite },
+			meta: { arg: postsToMove },
 		});
 		expect(dispatchedActions).toContainMatchingAction({
 			type: thunks.favorites.addPostsToDirectory.pending.type,
-			meta: { arg: { ids: postIdsToFavorite, key: selectedNodeKey } },
+			meta: { arg: { posts: postsToMove, key: selectedNodeKey } },
 		});
 		expect(dispatchedActions).toContainMatchingAction({ type: thunks.favorites.fetchPostsInDirectory.pending.type });
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.setVisible.type, payload: false });
@@ -136,7 +136,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<MovePostsToFavoritesDirectoryModal treeData={rootNode.children} expandedKeys={expandedKeys} postIdsToMove={[]} />
+				<MovePostsToFavoritesDirectoryModal treeData={rootNode.children} expandedKeys={expandedKeys} postsToMove={[]} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('node11'));
@@ -155,7 +155,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		);
 	});
 	it('When no node is selected it dispatches with default node key', async () => {
-		const postIdsToFavorite = [1, 2, 3, 4, 5];
+		const postsToMove = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 }), mPost({ id: 5 })];
 		const store = mockStore(mState());
 
 		// when
@@ -164,7 +164,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 				<MovePostsToFavoritesDirectoryModal
 					treeData={rootNode.children}
 					expandedKeys={expandedKeys}
-					postIdsToMove={postIdsToFavorite}
+					postsToMove={postsToMove}
 				/>
 			</Provider>
 		);
@@ -175,7 +175,7 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({
 				type: thunks.favorites.addPostsToDirectory.pending.type,
-				meta: { arg: { ids: postIdsToFavorite, key: 1 } },
+				meta: { arg: { posts: postsToMove, key: 1 } },
 			})
 		);
 	});

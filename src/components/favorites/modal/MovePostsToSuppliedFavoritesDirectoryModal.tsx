@@ -11,7 +11,7 @@ import { MovePostsToDirectoryConfirmationModalProps as MovePostsToSuppliedFavori
 
 const MovePostsToSuppliedFavoritesDirectoryModal: React.FunctionComponent<MovePostsToSuppliedFavoritesDirectoryModalProps> = ({
 	targetDirectoryKey,
-	postIdsToMove,
+	postsToMove,
 }) => {
 	const dispatch = useDispatch<AppDispatch>();
 
@@ -20,7 +20,7 @@ const MovePostsToSuppliedFavoritesDirectoryModal: React.FunctionComponent<MovePo
 	};
 
 	const handleConfirm = async (): Promise<void> => {
-		if (postIdsToMove.length === 0) {
+		if (postsToMove.length === 0) {
 			openNotificationWithIcon(
 				'error',
 				'Failed to add post to directory',
@@ -30,8 +30,8 @@ const MovePostsToSuppliedFavoritesDirectoryModal: React.FunctionComponent<MovePo
 			dispatch(actions.modals.setVisible(false));
 			return;
 		}
-		await dispatch(thunks.favorites.removePostsFromActiveDirectory(postIdsToMove));
-		await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToMove, key: targetDirectoryKey }));
+		await dispatch(thunks.favorites.removePostsFromActiveDirectory(postsToMove));
+		await dispatch(thunks.favorites.addPostsToDirectory({ posts: postsToMove, key: targetDirectoryKey }));
 		await dispatch(thunks.favorites.fetchPostsInDirectory());
 		openNotificationWithIcon('success', 'Success', 'Successfuly moved post to folder');
 		dispatch(actions.modals.setVisible(false));

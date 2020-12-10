@@ -101,7 +101,7 @@ const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 		dispatch(
 			actions.modals.showModal({
 				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
-				modalState: { [ActiveModal.ADD_POSTS_TO_FAVORITES]: { postIdsToFavorite: [post.id] } },
+				modalState: { [ActiveModal.ADD_POSTS_TO_FAVORITES]: { postsToFavorite: [post] } },
 			})
 		);
 	};

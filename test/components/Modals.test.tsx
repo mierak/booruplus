@@ -41,7 +41,7 @@ describe('components', () => {
 					modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
 					modalState: {
 						[ActiveModal.ADD_POSTS_TO_FAVORITES]: {
-							postIdsToFavorite: [],
+							postsToFavorite: [],
 						},
 					},
 				})
@@ -73,7 +73,7 @@ describe('components', () => {
 					modal: ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION,
 					modalState: {
 						[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]: {
-							postIdsToMove: [],
+							postsToMove: [],
 							targetDirectoryKey: 1,
 						},
 					},
@@ -113,7 +113,7 @@ describe('components', () => {
 					modal: ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION,
 					modalState: {
 						[ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION]: {
-							postIdsToMove: [],
+							postsToMove: [],
 						},
 					},
 				})

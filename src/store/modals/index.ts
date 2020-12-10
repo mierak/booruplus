@@ -14,10 +14,10 @@ export const initialState: ModalsState = {
 	isVisible: false,
 	modalProps: {
 		[ActiveModal.ADD_FAVORITES_DIRECTORY]: { selectedNodeKey: 1 },
-		[ActiveModal.ADD_POSTS_TO_FAVORITES]: { postIdsToFavorite: [] },
+		[ActiveModal.ADD_POSTS_TO_FAVORITES]: { postsToFavorite: [] },
 		[ActiveModal.DELETE_FAVORITES_DIRECTORY]: { selectedNodeKey: 1 },
-		[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]: { postIdsToMove: [], targetDirectoryKey: 1 },
-		[ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION]: { postIdsToMove: [] },
+		[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]: { postsToMove: [], targetDirectoryKey: 1 },
+		[ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION]: { postsToMove: [] },
 		[ActiveModal.RENAME_FAVORITES_DIRECTORY]: { targetDirectoryKey: 1 },
 		[ActiveModal.SETTINGS]: {},
 		[ActiveModal.NONE]: {},
