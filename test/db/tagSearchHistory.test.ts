@@ -10,18 +10,16 @@ describe('db/tagSearchHistory', () => {
 		await db.tagSearchHistory.clear();
 	});
 	describe('saveSearch()', () => {
-		it('Calls put for every tag', async () => {
+		it('Calls bulkPut with all tags', async () => {
 			// given
 			const tags = [mTag({ tag: 'tag1' }), mTag({ tag: 'tag2' }), mTag({ tag: 'tag3' })];
-			const put = jest.spyOn(db.tagSearchHistory, 'put');
+			const put = jest.spyOn(db.tagSearchHistory, 'bulkPut');
 
 			// when
 			await saveSearch(tags);
 
 			// then
-			tags.forEach((tag) => {
-				expect(put).toBeCalledWith({ tag, date: expect.stringMatching('') });
-			});
+			expect(put).toBeCalledWith(tags.map(tag => ({tag, date: expect.stringMatching('')})));
 		});
 	});
 	describe('getMostSearched()', () => {

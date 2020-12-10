@@ -87,12 +87,14 @@ export const downloadPost = createAsyncThunk<Post, { post: Post; context: PostsC
 	'posts/downloadPost',
 	async (params, thunkApi): Promise<Post> => {
 		thunkLogger.getActionLogger(downloadPost, { initialMessage: `post id: ${params.post.id.toString()}` });
-		const updatedPost = { ...params.post };
+		const updatedPost: Post = {
+			...params.post,
+			downloaded: 1,
+			blacklisted: 0,
+			downloadedAt: moment().valueOf()
+		};
 		await saveImage(updatedPost);
-		updatedPost.downloaded = 1;
-		updatedPost.blacklisted = 0;
-		updatedPost.downloadedAt = moment().valueOf();
-		db.posts.update(updatedPost);
+		db.posts.put(updatedPost);
 
 		!params.taskId && (await thunkApi.dispatch(downloadTags(updatedPost.tags)));
 		return updatedPost;
@@ -278,7 +280,7 @@ export const blacklistPosts = createAsyncThunk<Post[], { context: PostsContext; 
 		for (const p of posts) {
 			deleteImage(p);
 			const post = copyAndBlacklistPost(p);
-			db.posts.update(post);
+			db.posts.put(post);
 			resultPosts.push(post);
 		}
 		logger.debug(`Blacklisted and deleted ${resultPosts.length} posts`);
@@ -303,11 +305,13 @@ export const blacklistSelectedPosts = createAsyncThunk<void, { context: PostsCon
 	}
 );
 
-export const incrementViewCount = createAsyncThunk<Post, Post, ThunkApi>(
+export const incrementViewCount = createAsyncThunk<Post, { post: Post; context: PostsContext }, ThunkApi>(
 	'posts/incrementViewCount',
-	async (post): Promise<Post> => {
+	async ({ post }): Promise<Post> => {
 		const logger = thunkLogger.getActionLogger(incrementViewCount);
 		logger.debug(`Post id ${post.id} view count incremented to ${post.viewCount + 1}`);
-		return db.posts.incrementViewcount(post);
+		const p: Post = { ...post, viewCount: post.viewCount + 1 };
+		await db.posts.put(p);
+		return p;
 	}
 );

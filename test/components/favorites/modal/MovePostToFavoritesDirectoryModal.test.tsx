@@ -129,11 +129,6 @@ describe('favorites/modal/MoveDirectoryModal', () => {
 					rootNode,
 					expandedKeys,
 				},
-				modals: {
-					addToFavoritesModal: {
-						postIdsToFavorite: [],
-					},
-				},
 			})
 		);
 		const notificationSpy = jest.spyOn(componentTypes, 'openNotificationWithIcon').mockImplementation();

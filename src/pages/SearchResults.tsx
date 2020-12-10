@@ -104,7 +104,6 @@ const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 				modalState: { [ActiveModal.ADD_POSTS_TO_FAVORITES]: { postIdsToFavorite: [post.id] } },
 			})
 		);
-		dispatch(actions.modals.addToFavoritesModal.setPostIds([post.id]));
 	};
 
 	const handleBlacklist = (post: Post): void => {

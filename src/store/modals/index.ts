@@ -1,16 +1,9 @@
-import { createSlice, PayloadAction, combineReducers } from '@reduxjs/toolkit';
-
-import addToFavoritesModal, {
-	actions as addToFavoritesActions,
-	initialState as addToFavoritesInitialState,
-	AddToFavoritesModalState,
-} from './addToFavoritesModal';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ActiveModal, PerModalState } from '@appTypes/modalTypes';
 
 export interface ModalsState {
 	activeModal: ActiveModal;
 	isVisible: boolean;
-	addToFavorites: AddToFavoritesModalState;
 	modalProps: {
 		[K in ActiveModal]: PerModalState[K];
 	};
@@ -19,7 +12,6 @@ export interface ModalsState {
 export const initialState: ModalsState = {
 	activeModal: ActiveModal.NONE,
 	isVisible: false,
-	addToFavorites: addToFavoritesInitialState,
 	modalProps: {
 		[ActiveModal.ADD_FAVORITES_DIRECTORY]: { selectedNodeKey: 1 },
 		[ActiveModal.ADD_POSTS_TO_FAVORITES]: { postIdsToFavorite: [] },
@@ -50,9 +42,6 @@ const modalSlice = createSlice({
 	},
 });
 
-export const actions = { ...modalSlice.actions, addToFavoritesModal: addToFavoritesActions };
+export const actions = { ...modalSlice.actions };
 
-export default combineReducers({
-	common: modalSlice.reducer,
-	addToFavoritesModal: addToFavoritesModal,
-});
+export default modalSlice.reducer;

@@ -18,12 +18,11 @@ export const saveOrUpdateFromApi = async (post: Post): Promise<Post> => {
 	return clone;
 };
 
-export const bulkSaveOrUpdateFromApi = async (posts: Post[]): Promise<Post[]> => {
+export const bulkUpdateFromApi = async (posts: Post[]): Promise<Post[]> => {
 	const savedPosts = await db.posts.bulkGet(posts.map((post) => post.id));
 	const result: Post[] = [];
 	for (const [index, post] of savedPosts.entries()) {
 		if (post === undefined) {
-			db.posts.put(posts[index]);
 			result.push(posts[index]);
 		} else {
 			const clone = { ...posts[index] };
@@ -39,12 +38,8 @@ export const bulkSaveOrUpdateFromApi = async (posts: Post[]): Promise<Post[]> =>
 	return result;
 };
 
-export const update = async (post: Post): Promise<number> => {
-	return db.transaction('rw', db.posts, async () => {
-		const postClone = { ...post };
-		postClone.selected = false;
-		return db.posts.update(postClone.id, postClone);
-	});
+export const put = async (post: Post): Promise<number> => {
+	return db.posts.put(post);
 };
 
 export const bulkSave = async (posts: Post[]): Promise<number | void> => {
@@ -60,17 +55,11 @@ export const getBulk = async (keys: number[]): Promise<Post[]> => {
 };
 
 export const getAllDownloaded = async (): Promise<Post[]> => {
-	return db.posts
-		.where('downloaded')
-		.equals(1)
-		.toArray();
+	return db.posts.where('downloaded').equals(1).toArray();
 };
 
 export const getAllBlacklisted = async (): Promise<Post[]> => {
-	return db.posts
-		.where('blacklisted')
-		.equals(1)
-		.toArray();
+	return db.posts.where('blacklisted').equals(1).toArray();
 };
 
 const sortPosts = (posts: Post[], options: FilterOptions): Post[] => {
@@ -131,13 +120,14 @@ export const getAllWithOptions = async (options: FilterOptions): Promise<Post[]>
 	return filtered;
 };
 
-export const getForTagsWithOptions = async (options: FilterOptions, tags: string[], excludedTags?: string[]): Promise<Post[]> => {
+export const getForTagsWithOptions = async (
+	options: FilterOptions,
+	tags: string[],
+	excludedTags?: string[]
+): Promise<Post[]> => {
 	const arrays = await Promise.all(
 		tags.map(async (tag) => {
-			return db.posts
-				.where('tags')
-				.equals(tag)
-				.toArray();
+			return db.posts.where('tags').equals(tag).toArray();
 		})
 	);
 	if (arrays.length === 0) {
@@ -164,17 +154,11 @@ export const getForTagsWithOptions = async (options: FilterOptions, tags: string
 };
 
 export const getDownloadedCount = async (): Promise<number> => {
-	return db.posts
-		.where('downloaded')
-		.equals(1)
-		.count();
+	return db.posts.where('downloaded').equals(1).count();
 };
 
 export const getBlacklistedCount = async (): Promise<number> => {
-	return db.posts
-		.where('blacklisted')
-		.equals(1)
-		.count();
+	return db.posts.where('blacklisted').equals(1).count();
 };
 
 export const getCountForRating = async (rating: Rating): Promise<number> => {
@@ -192,14 +176,4 @@ export const getMostViewed = async (limit = 20): Promise<Post[]> => {
 		.filter((post) => post.viewCount > 0)
 		.limit(limit)
 		.toArray();
-};
-
-export const incrementViewcount = async (post: Post): Promise<Post> => {
-	const clone = { ...post };
-	if (isNaN(clone.viewCount)) {
-		clone.viewCount = 0;
-	}
-	clone.viewCount = clone.viewCount + 1;
-	await db.posts.put(clone);
-	return clone;
 };

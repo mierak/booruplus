@@ -98,7 +98,6 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 				},
 			})
 		);
-		dispatch(actions.modals.addToFavoritesModal.setPostIds([post.id]));
 	};
 
 	const toggleCollapse = (): void => {

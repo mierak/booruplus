@@ -53,14 +53,14 @@ describe('thunks/onlineSearchForm', () => {
 			// given
 			const store = mockStore(initialState);
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
-			mockedDb.posts.bulkSaveOrUpdateFromApi.mockResolvedValue(posts);
+			mockedDb.posts.bulkUpdateFromApi.mockResolvedValue(posts);
 
 			// when
 			await store.dispatch(thunks.checkPostsAgainstDb(posts));
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(mockedDb.posts.bulkSaveOrUpdateFromApi).toBeCalledWith(posts);
+			expect(mockedDb.posts.bulkUpdateFromApi).toBeCalledWith(posts);
 			expect(dispatchedActions[0]).toMatchObject({ type: 'onlineSearchForm/checkPostsAgainstDb/pending', payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({ type: 'onlineSearchForm/checkPostsAgainstDb/fulfilled', payload: posts });
 		});
