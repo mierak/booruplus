@@ -2,7 +2,7 @@ import Dexie from 'dexie';
 Dexie.dependencies.indexedDB = require('fake-indexeddb');
 Dexie.dependencies.IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
 import db from '../../src/db/database';
-import { FilterOptions } from '../../src/db/types';
+import { FavoritesTreeNode, FilterOptions } from '../../src/db/types';
 import { Post } from '../../src/types/gelbooruTypes';
 import { mPost } from '../helpers/test.helper';
 import {
@@ -27,6 +27,7 @@ describe('db/posts', () => {
 	beforeEach(async (done) => {
 		jest.clearAllMocks();
 		await db.posts.clear();
+		await db.favorites.clear();
 		posts = [];
 		posts.push(
 			...[
@@ -50,14 +51,50 @@ describe('db/posts', () => {
 					createdAt: 4,
 					tags: ['tag1', 'tag2'],
 				}),
-				mPost({ id: 2, downloaded: 1, rating: 's', viewCount: 3, fileUrl: 'test.webm', downloadedAt: 3, createdAt: 3, tags: ['tag2'] }),
+				mPost({
+					id: 2,
+					downloaded: 1,
+					rating: 's',
+					viewCount: 3,
+					fileUrl: 'test.webm',
+					downloadedAt: 3,
+					createdAt: 3,
+					tags: ['tag2'],
+				}),
 			]
 		);
 		posts.push(
 			...[
-				mPost({ id: 3, blacklisted: 1, rating: 'e', viewCount: 4, fileUrl: 'test.jpg', downloadedAt: 2, createdAt: 2, tags: ['tag3'] }),
-				mPost({ id: 4, blacklisted: 1, rating: 'q', viewCount: 5, fileUrl: 'test.gif', downloadedAt: 1, createdAt: 1, tags: ['tag4'] }),
-				mPost({ id: 5, blacklisted: 1, rating: 's', viewCount: 6, fileUrl: 'test.webm', downloadedAt: 0, createdAt: 0, tags: ['tag5'] }),
+				mPost({
+					id: 3,
+					blacklisted: 1,
+					rating: 'e',
+					viewCount: 4,
+					fileUrl: 'test.jpg',
+					downloadedAt: 2,
+					createdAt: 2,
+					tags: ['tag3'],
+				}),
+				mPost({
+					id: 4,
+					blacklisted: 1,
+					rating: 'q',
+					viewCount: 5,
+					fileUrl: 'test.gif',
+					downloadedAt: 1,
+					createdAt: 1,
+					tags: ['tag4'],
+				}),
+				mPost({
+					id: 5,
+					blacklisted: 1,
+					rating: 's',
+					viewCount: 6,
+					fileUrl: 'test.webm',
+					downloadedAt: 0,
+					createdAt: 0,
+					tags: ['tag5'],
+				}),
 			]
 		);
 		await db.posts.bulkPut(posts);
@@ -434,6 +471,77 @@ describe('db/posts', () => {
 			expect(result[3]).toMatchObject(posts[3]);
 			expect(result[4]).toMatchObject(posts[4]);
 			expect(result[5]).toMatchObject(posts[5]);
+		});
+		it('Shows favorited posts', async () => {
+			// given
+			const node: FavoritesTreeNode = {
+				key: 1,
+				parentKey: 0,
+				title: 'title',
+				childrenKeys: [],
+				postIds: [0, 1, 2],
+			};
+			await db.favorites.put(node);
+			const getSpy = jest.spyOn(db.posts, 'toArray');
+			const options: FilterOptions = {
+				blacklisted: true,
+				nonBlacklisted: true,
+				limit: 100,
+				offset: 0,
+				rating: 'any',
+				showFavorites: true,
+				showGifs: true,
+				showImages: true,
+				showVideos: true,
+				sort: 'none',
+				sortOrder: 'desc',
+			};
+
+			// when
+			const result = await getAllWithOptions(options);
+			// then
+			expect(getSpy).toBeCalledTimes(1);
+			expect(result).toHaveLength(6);
+			expect(result[0]).toMatchObject(posts[0]);
+			expect(result[1]).toMatchObject(posts[1]);
+			expect(result[2]).toMatchObject(posts[2]);
+			expect(result[3]).toMatchObject(posts[3]);
+			expect(result[4]).toMatchObject(posts[4]);
+			expect(result[5]).toMatchObject(posts[5]);
+		});
+		it('Does not show favorited posts', async () => {
+			// given
+			const node: FavoritesTreeNode = {
+				key: 1,
+				parentKey: 0,
+				title: 'title',
+				childrenKeys: [],
+				postIds: [0, 1, 2],
+			};
+			await db.favorites.put(node);
+			const getSpy = jest.spyOn(db.posts, 'toArray');
+			const options: FilterOptions = {
+				blacklisted: true,
+				nonBlacklisted: true,
+				limit: 100,
+				offset: 0,
+				rating: 'any',
+				showFavorites: false,
+				showGifs: true,
+				showImages: true,
+				showVideos: true,
+				sort: 'none',
+				sortOrder: 'desc',
+			};
+
+			// when
+			const result = await getAllWithOptions(options);
+			// then
+			expect(getSpy).toBeCalledTimes(1);
+			expect(result).toHaveLength(3);
+			expect(result[0]).toMatchObject(posts[3]);
+			expect(result[1]).toMatchObject(posts[4]);
+			expect(result[2]).toMatchObject(posts[5]);
 		});
 		it('Filters rating correctly', async () => {
 			// given

@@ -14,6 +14,7 @@
 - BUG FIX: Tags popover on fullsize image no longer refetches tags when image was not changed
 - BUG FIX: Images Folder Path now does not save right away, but with the rest of the settings when Save button is pressed.
 - BUG FIX: Editing API Key input won't rerender the whole app anymore
+- BUG FIX: Fix favorites filter for offline search being ignored
 
 ## 0.1.6 - Image caching and Image hover - 4.9.2020
 - Hovering over thumbnail in thumbnails list now shows a pop up preview after a short while. There is a new toggle that lets you disable this in the options.

@@ -82,38 +82,46 @@ const sortPosts = (posts: Post[], options: FilterOptions): Post[] => {
 };
 
 const filterByDownloadedBlacklistedRating = (posts: Post[], options: FilterOptions): Post[] => {
-	let result: Post[] = [];
-	if (options.blacklisted && options.nonBlacklisted) {
-		result = posts.filter((post) => post.downloaded === 1 || post.blacklisted === 1);
-	} else if (options.blacklisted && !options.nonBlacklisted) {
-		result = posts.filter((post) => post.blacklisted === 1);
-	} else if (!options.blacklisted && options.nonBlacklisted) {
-		result = posts.filter((post) => post.downloaded === 1);
-	}
+	const filterCallback = (post: Post): boolean => {
+		let result = true;
+		if (options.blacklisted && options.nonBlacklisted) {
+			result = post.downloaded === 1 || post.blacklisted === 1;
+		} else if (options.blacklisted && !options.nonBlacklisted) {
+			result = post.blacklisted === 1;
+		} else if (!options.blacklisted && options.nonBlacklisted) {
+			result = post.downloaded === 1;
+		}
+		return result && (options.rating === 'any' || post.rating === getRatingName(options.rating));
+	};
 
-	result = result.filter((post) => options.rating === 'any' || post.rating === getRatingName(options.rating));
-	return result;
+	return posts.filter(filterCallback);
 };
 
-// CONSIDER - Add cache to not run expensive filtering on fetchMore()
 const filterPosts = (posts: Post[], options: FilterOptions): Post[] => {
-	let result: Post[] = posts;
-
-	if (!options.showGifs) {
-		result = result.filter((post) => post.extension !== 'gif');
-	}
-	if (!options.showVideos) {
-		result = result.filter((post) => !isExtensionVideo(post.extension));
-	}
-	if (!options.showImages) {
-		result = result.filter((post) => isExtensionVideo(post.extension) || post.extension === 'gif');
-	}
+	const filterCallback = (post: Post): boolean => {
+		let res = true;
+		if (!options.showGifs) {
+			res = res && post.extension !== 'gif';
+		}
+		if (!options.showVideos) {
+			res = res && !isExtensionVideo(post.extension);
+		}
+		if (!options.showImages) {
+			res = res && (isExtensionVideo(post.extension) || post.extension === 'gif');
+		}
+		return res;
+	};
+	const result = posts.filter(filterCallback);
 
 	return result.slice(options.offset, options.limit + options.offset);
 };
 
 export const getAllWithOptions = async (options: FilterOptions): Promise<Post[]> => {
-	const posts = await db.posts.toArray();
+	let posts = await db.posts.toArray();
+	if (!options.showFavorites) {
+		const allFavoriteIds = Array.from(new Set((await db.favorites.toArray()).flatMap((node) => node.postIds)));
+		posts = posts.filter(post => !allFavoriteIds.includes(post.id));
+	}
 	const filteredFirst = filterByDownloadedBlacklistedRating(posts, options);
 	const sorted = sortPosts(filteredFirst, options);
 	const filtered = filterPosts(sorted, options);
