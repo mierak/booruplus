@@ -4,7 +4,6 @@ import { Post } from '@appTypes/gelbooruTypes';
 
 import * as thunks from './thunks';
 import { PostsContext } from './types';
-import thunk from 'redux-thunk';
 
 interface HoveredPost {
 	visible: boolean;
@@ -179,7 +178,7 @@ const postsSlice = createSlice({
 			state.posts.favorites = action.payload;
 		});
 		builder.addCase(thunks.favorites.removePostsFromActiveDirectory.fulfilled, (state, action) => {
-			state.posts.favorites = state.posts.favorites.filter(post => !action.meta.arg.includes(post.id));
+			state.posts.favorites = state.posts.favorites.filter((post) => !action.meta.arg.find(p => p.id === post.id));
 		});
 		builder.addCase(thunks.downloadedSearchForm.fetchPosts.fulfilled, (state, action) => {
 			for (const post of action.payload) {
@@ -207,6 +206,7 @@ const postsSlice = createSlice({
 		builder.addCase(thunks.posts.downloadPost.fulfilled, (state, action) => {
 			const index = state.posts[action.meta.arg.context].findIndex((p) => p.id === action.payload.id);
 			const context = action.meta.arg.context;
+
 			if (index !== -1) {
 				state.posts[context][index] = { ...state.posts[context][index], downloaded: 1 };
 			}

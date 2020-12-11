@@ -17,12 +17,14 @@ type DeepPartial<T> = {
 	[P in keyof T]?: DeepPartial<T[P]>;
 };
 
-export const mPostsPostsState = (ps?: DeepPartial<{ [K in PostsContext]?: Post[] }>): { [K in PostsContext]: Post[] } => {
+export const mPostsPostsState = (
+	ps?: DeepPartial<{ [K in PostsContext]?: Post[] }>
+): { [K in PostsContext]: Post[] } => {
 	return {
 		posts: (ps?.posts as Post[]) ?? initialState.posts.posts.favorites,
 		favorites: (ps?.favorites as Post[]) ?? initialState.posts.posts.posts,
 		mostViewed: (ps?.mostViewed as Post[]) ?? initialState.posts.posts.mostViewed,
-		checkLaterQueue: ( ps?.checkLaterQueue as Post[]) ?? initialState.posts.posts.checkLaterQueue,
+		checkLaterQueue: (ps?.checkLaterQueue as Post[]) ?? initialState.posts.posts.checkLaterQueue,
 	};
 };
 
@@ -104,8 +106,10 @@ const mLoadingStates = (ls?: Partial<LoadingStates>): LoadingStates => {
 		isFullImageLoading: ls?.isFullImageLoading ?? initialState.loadingStates.isFullImageLoading,
 		isMostFavoritedTagsLoading: ls?.isMostFavoritedTagsLoading ?? initialState.loadingStates.isMostFavoritedTagsLoading,
 		isMostSearchedTagsLoading: ls?.isMostSearchedTagsLoading ?? initialState.loadingStates.isMostSearchedTagsLoading,
-		isRatingDistributionChartLoading: ls?.isRatingDistributionChartLoading ?? initialState.loadingStates.isRatingDistributionChartLoading,
-		isFullscreenLoadingMaskVisible: ls?.isFullscreenLoadingMaskVisible ?? initialState.loadingStates.isFullscreenLoadingMaskVisible,
+		isRatingDistributionChartLoading:
+			ls?.isRatingDistributionChartLoading ?? initialState.loadingStates.isRatingDistributionChartLoading,
+		isFullscreenLoadingMaskVisible:
+			ls?.isFullscreenLoadingMaskVisible ?? initialState.loadingStates.isFullscreenLoadingMaskVisible,
 		fullscreenLoadingMaskMessage: ls?.fullscreenLoadingMaskMessage,
 		isScrolling: ls?.isScrolling ?? false,
 		isFetchingPosts: ls?.isFetchingPosts ?? initialState.loadingStates.isFetchingPosts,
@@ -141,12 +145,15 @@ const mSystemState = (ss?: Partial<SystemState>): SystemState => {
 	};
 };
 
-const mDashboardSettingsState = (dss?: Partial<typeof initialState.settings.dashboard>): typeof initialState.settings.dashboard => {
+const mDashboardSettingsState = (
+	dss?: Partial<typeof initialState.settings.dashboard>
+): typeof initialState.settings.dashboard => {
 	return {
 		loadMostFavoritedTags: dss?.loadMostFavoritedTags ?? initialState.settings.dashboard.loadMostFavoritedTags,
 		loadMostSearchedTags: dss?.loadMostSearchedTags ?? initialState.settings.dashboard.loadMostSearchedTags,
 		loadMostViewedPosts: dss?.loadMostViewedPosts ?? initialState.settings.dashboard.loadMostViewedPosts,
-		loadRatingDistributionChart: dss?.loadRatingDistributionChart ?? initialState.settings.dashboard.loadRatingDistributionChart,
+		loadRatingDistributionChart:
+			dss?.loadRatingDistributionChart ?? initialState.settings.dashboard.loadRatingDistributionChart,
 		loadTagStatistics: dss?.loadTagStatistics ?? initialState.settings.dashboard.loadTagStatistics,
 		mostViewedCount: dss?.mostViewedCount ?? initialState.settings.dashboard.mostViewedCount,
 		saveTagsNotFoundInDb: dss?.saveTagsNotFoundInDb ?? initialState.settings.dashboard.saveTagsNotFoundInDb,
@@ -184,19 +191,9 @@ const mTagsState = (ts?: Partial<TagsState>): TagsState => {
 
 const mModalsState = (ms?: Partial<ReturnType<typeof Modals>>): ReturnType<typeof Modals> => {
 	return {
-		addToFavoritesModal: ms?.addToFavoritesModal ?? {
-			postIdsToFavorite:
-				ms?.addToFavoritesModal?.postIdsToFavorite ?? initialState.modals.addToFavoritesModal.postIdsToFavorite,
-		},
-		common: ms?.common ?? {
-			activeModal: ms?.common?.activeModal ?? initialState.modals.common.activeModal,
-			addToFavorites: ms?.common?.addToFavorites ?? {
-				postIdsToFavorite:
-					ms?.common?.addToFavorites.postIdsToFavorite ?? initialState.modals.common.addToFavorites.postIdsToFavorite,
-			},
-			isVisible: ms?.common?.isVisible ?? initialState.modals.common.isVisible,
-			modalProps: ms?.common?.modalProps ?? initialState.modals.common.modalProps,
-		},
+		activeModal: ms?.activeModal ?? initialState.modals.activeModal,
+		isVisible: ms?.isVisible ?? initialState.modals.isVisible,
+		modalProps: ms?.modalProps ?? initialState.modals.modalProps,
 	};
 };
 

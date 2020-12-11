@@ -19,7 +19,7 @@ import { ActiveModal } from '@appTypes/modalTypes';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
-describe('pages/Thumbnails', () => {
+describe('pages/SearchResults', () => {
 	const testUrl = '123testurl.jpg';
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -318,7 +318,7 @@ describe('pages/Thumbnails', () => {
 			type: actions.modals.showModal.type,
 			payload: {
 				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
-				modalState: { [ActiveModal.ADD_POSTS_TO_FAVORITES]: { postIdsToFavorite: [posts[2].id] } },
+				modalState: { [ActiveModal.ADD_POSTS_TO_FAVORITES]: { postsToFavorite: [posts[2]] } },
 			},
 		});
 		expect(await screen.findAllByRole('img', { name: 'heart' })).toHaveLength(5);

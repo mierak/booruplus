@@ -25,7 +25,7 @@ export const checkPostsAgainstDb = createAsyncThunk<Post[], Post[], ThunkApi>(
 	async (posts, _): Promise<Post[]> => {
 		const logger = thunkLogger.getActionLogger(checkPostsAgainstDb);
 		logger.debug(`Checking ${posts.length} posts against DB to save or update`);
-		const result = db.posts.bulkSaveOrUpdateFromApi(posts);
+		const result = db.posts.bulkUpdateFromApi(posts);
 		return result;
 	}
 );

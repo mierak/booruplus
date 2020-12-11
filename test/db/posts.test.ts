@@ -10,15 +10,13 @@ import {
 	getBlacklistedCount,
 	getCountForRating,
 	getMostViewed,
-	incrementViewcount,
-	update,
 	bulkSave,
 	getAll,
 	getAllDownloaded,
 	getBulk,
 	getAllBlacklisted,
 	getAllWithOptions,
-	bulkSaveOrUpdateFromApi,
+	bulkUpdateFromApi,
 	getForTagsWithOptions,
 	saveOrUpdateFromApi,
 } from '../../src/db/posts';
@@ -134,57 +132,6 @@ describe('db/posts', () => {
 			});
 		});
 	});
-	describe('incrementViewCount()', () => {
-		it('Correctly assigns 1 if post has no viewCount', async () => {
-			// given
-			const post = mPost({ viewCount: undefined });
-			const putSpy = jest.spyOn(db.posts, 'put');
-
-			// when
-			const result = await incrementViewcount(post);
-
-			// then
-			expect(result.viewCount).toBe(1);
-			expect(putSpy).toBeCalledWith({ ...post, viewCount: 1 });
-		});
-		it('Correctly assigns 1 if viewCount is NaN', async () => {
-			// given
-			const post = mPost({ viewCount: NaN });
-			const putSpy = jest.spyOn(db.posts, 'put');
-
-			// when
-			const result = await incrementViewcount(post);
-
-			// then
-			expect(result.viewCount).toBe(1);
-			expect(putSpy).toBeCalledWith({ ...post, viewCount: 1 });
-		});
-		it('Correctly increments viewCount if post has viewCount', async () => {
-			// given
-			const post = mPost({ viewCount: 123 });
-			const putSpy = jest.spyOn(db.posts, 'put');
-
-			// when
-			const result = await incrementViewcount(post);
-
-			// then
-			expect(result.viewCount).toBe(124);
-			expect(putSpy).toBeCalledWith({ ...post, viewCount: 124 });
-		});
-	});
-	describe('update()', () => {
-		it('Calls update', async () => {
-			// given
-			const post = { ...posts[1], selected: true };
-			const updateSpy = jest.spyOn(db.posts, 'update');
-
-			// when
-			await update(post);
-
-			// then
-			expect(updateSpy).toBeCalledWith(post.id, { ...post, selected: false });
-		});
-	});
 	describe('bulkSave()', () => {
 		it('Calls bulkPut', async () => {
 			// given
@@ -250,23 +197,23 @@ describe('db/posts', () => {
 			expect(result).toStrictEqual([posts[3], posts[4], posts[5]]);
 		});
 	});
-	describe('bulkSaveOrUpdateFromApi()', () => {
+	describe('bulkUpdateFromApi()', () => {
 		it('Returns correct result', async () => {
 			// given
 			const downloadedPost: Post = { ...posts[0], downloaded: 0 };
-			const newPost = mPost({ id: 123, downloaded: 0 });
+			const newPost = mPost({ id: 1254683, downloaded: 0 });
 			const expectedDownloadedPost = { ...downloadedPost, downloaded: 1 };
 			const putSpy = jest.spyOn(db.posts, 'put');
 			const bulkGetSpy = jest.spyOn(db.posts, 'bulkGet');
 
 			// when
-			const result = await bulkSaveOrUpdateFromApi([downloadedPost, newPost]);
+			const result = await bulkUpdateFromApi([downloadedPost, newPost]);
 
 			// then
 			expect(bulkGetSpy).toBeCalledWith([downloadedPost, newPost].map((post) => post.id));
 			expect(result[0]).toMatchObject(expectedDownloadedPost);
 			expect(putSpy).toBeCalledWith(expectedDownloadedPost);
-			expect(putSpy).toBeCalledWith(newPost);
+			expect(putSpy).not.toBeCalledWith(newPost);
 		});
 	});
 	describe('getAllWithOptions()', () => {

@@ -107,10 +107,9 @@ const CheckLaterQueue: React.FunctionComponent = () => {
 		dispatch(
 			actions.modals.showModal({
 				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
-				modalState: { [ActiveModal.ADD_POSTS_TO_FAVORITES]: { postIdsToFavorite: [post.id] } },
+				modalState: { [ActiveModal.ADD_POSTS_TO_FAVORITES]: { postsToFavorite: [post] } },
 			})
 		);
-		dispatch(actions.modals.addToFavoritesModal.setPostIds([post.id]));
 	};
 
 	const handleBlacklist = (post: Post): void => {

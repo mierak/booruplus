@@ -162,7 +162,7 @@ describe('thunks/posts', () => {
 		});
 	});
 	describe('downloadPost()', () => {
-		it('Clones and updates posts', async () => {
+		it('Clones and saves posts', async () => {
 			// given
 			const store = mockStore(initialState);
 			const post = mPost({ blacklisted: 1, downloaded: 0, tags: ['tag1', 'tag2'] });
@@ -179,11 +179,11 @@ describe('thunks/posts', () => {
 				type: thunks.downloadPost.fulfilled.type,
 				payload: { blacklisted: 0, downloaded: 1 },
 			});
-			expect(mockedDb.posts.update).toBeCalledWith(result.payload);
+			expect(mockedDb.posts.put).toBeCalledWith(result.payload);
 		});
 	});
 	describe('downloadPost()', () => {
-		it('Clones and updates posts', async () => {
+		it('Clones and saves posts', async () => {
 			// given
 			const store = mockStore(initialState);
 			const post = mPost({ blacklisted: 1, downloaded: 0, tags: ['tag1', 'tag2'] });
@@ -200,7 +200,7 @@ describe('thunks/posts', () => {
 				type: thunks.downloadPost.fulfilled.type,
 				payload: { blacklisted: 0, downloaded: 1 },
 			});
-			expect(mockedDb.posts.update).toBeCalledWith(result.payload);
+			expect(mockedDb.posts.put).toBeCalledWith(result.payload);
 		});
 	});
 	describe('downloadPosts()', () => {
@@ -409,7 +409,7 @@ describe('thunks/posts', () => {
 			// then
 			deletedPosts.forEach((post, index) => {
 				expect(deleteImage).toBeCalledWith(posts[index]);
-				expect(mockedDb.posts.update).toBeCalledWith(post);
+				expect(mockedDb.posts.put).toBeCalledWith(post);
 			});
 			const dispatchedActions = store.getActions();
 			expect(dispatchedActions[1]).toMatchObject({ type: thunks.blacklistPosts.fulfilled.type, payload: deletedPosts });
@@ -465,13 +465,13 @@ describe('thunks/posts', () => {
 		it('calls DB with the right post', async () => {
 			// given
 			const store = mockStore(initialState);
-			const post = mPost({ id: 1 });
+			const post = mPost({ id: 1, viewCount: 12345 });
 
 			// when
-			store.dispatch(thunks.incrementViewCount(post));
+			store.dispatch(thunks.incrementViewCount({post, context: 'favorites'}));
 
 			// then
-			expect(mockedDb.posts.incrementViewcount).toBeCalledWith(post);
+			expect(mockedDb.posts.put).toBeCalledWith({...post, viewCount: post.viewCount + 1});
 		});
 	});
 	describe('downloadWholeSearch()', () => {

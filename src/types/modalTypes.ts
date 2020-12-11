@@ -1,4 +1,5 @@
 import { PostsContext } from '@store/types';
+import { Post } from './gelbooruTypes';
 
 export enum ActiveModal {
 	NONE,
@@ -26,7 +27,7 @@ export interface AddDirectoryModalProps {
 	selectedNodeKey: number;
 }
 export interface AddToFavoritesModalProps {
-	postIdsToFavorite: number[];
+	postsToFavorite: Post[];
 }
 export interface AddToFavoritesModalContextProps {
 	context: PostsContext;
@@ -36,11 +37,11 @@ export interface DeleteDirectoryModalProps {
 	selectedNodeKey: number;
 }
 export interface MovePostsToFavoritesDirectoryModalProps {
-	postIdsToMove: number[];
+	postsToMove: Post[];
 }
 export interface MovePostsToDirectoryConfirmationModalProps {
 	targetDirectoryKey: number;
-	postIdsToMove: number[];
+	postsToMove: Post[];
 }
 export interface RenameDirectoryModalProps {
 	targetDirectoryKey: number;

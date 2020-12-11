@@ -72,32 +72,35 @@ export const deleteDirectoryAndChildren = createAsyncThunk<void, number, ThunkAp
 	}
 );
 
-export const addPostsToDirectory = createAsyncThunk<void, { ids: number[]; key: string | number }, ThunkApi>(
+export const addPostsToDirectory = createAsyncThunk<void, { posts: Post[]; key: string | number }, ThunkApi>(
 	'favorites/addPostsToDirectory',
 	async (params, thunkApi): Promise<void> => {
 		const logger = thunkLogger.getActionLogger(addPostsToDirectory);
 
-		logger.debug(`Adding post ids ${params.ids.join(' ')} to directory key: ${params.key}`);
-		await db.favorites.addPostsToNode(parseInt(params.key.toString()), params.ids);
+		const ids = params.posts.map((p) => p.id);
+		logger.debug(`Adding post ids ${ids.join(' ')} to directory key: ${params.key}`);
+		await db.posts.bulkSave(params.posts);
+		await db.favorites.addPostsToNode(parseInt(params.key.toString()), ids);
 		thunkApi.dispatch(fetchTreeData());
 	}
 );
 
-export const removePostsFromActiveDirectory = createAsyncThunk<void, number[], ThunkApi>(
+export const removePostsFromActiveDirectory = createAsyncThunk<void, Post[], ThunkApi>(
 	'favorites/removePostFromActiveDirectory',
-	async (ids, thunkApi): Promise<void> => {
+	async (posts, thunkApi): Promise<void> => {
 		const logger = thunkLogger.getActionLogger(removePostsFromActiveDirectory);
 		const key = thunkApi.getState().favorites.activeNodeKey;
 
+		const ids = posts.map((p) => p.id);
 		logger.debug(`Removing post ids ${ids.join(' ')} from directory key: ${key}`);
 		await db.favorites.removePostsFromNode(key, ids);
 		thunkApi.dispatch(fetchTreeData());
 	}
 );
 
-export const exportDirectory = createAsyncThunk<Post[], {  targetDirectoryKey: number  }, ThunkApi>(
+export const exportDirectory = createAsyncThunk<Post[], { targetDirectoryKey: number }, ThunkApi>(
 	'favorites/exportDirectory',
-	async ({  targetDirectoryKey  }, thunkApi): Promise<Post[]> => {
+	async ({ targetDirectoryKey }, thunkApi): Promise<Post[]> => {
 		const logger = thunkLogger.getActionLogger(exportDirectory);
 
 		const directory = await db.favorites.getNodeWithoutChildren(targetDirectoryKey);

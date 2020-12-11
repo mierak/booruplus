@@ -98,8 +98,8 @@ describe('FullSizeImage', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts: { posts, favorites: [] },
-					selectedIndices: { posts: activePostIndex },
+					posts: { favorites: posts },
+					selectedIndices: { favorites: activePostIndex },
 				},
 			})
 		);
@@ -107,14 +107,14 @@ describe('FullSizeImage', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<FullSizeImage context='posts' />
+				<FullSizeImage context='favorites' />
 			</Provider>
 		);
 
 		// then
 		expect(store.getActions()).toContainMatchingAction({
 			type: thunks.posts.incrementViewCount.pending.type,
-			meta: { arg: posts[activePostIndex] },
+			meta: { arg: { post: posts[activePostIndex], context: 'favorites' } },
 		});
 	});
 });

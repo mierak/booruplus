@@ -101,7 +101,9 @@ const SiderContent: React.FunctionComponent = () => {
 						actions.modals.showModal({
 							modal: ActiveModal.DELETE_FAVORITES_DIRECTORY,
 							modalState: {
-								[ActiveModal.DELETE_FAVORITES_DIRECTORY]: { selectedNodeKey },
+								[ActiveModal.DELETE_FAVORITES_DIRECTORY]: {
+									selectedNodeKey,
+								},
 							},
 						})
 					);
@@ -119,7 +121,9 @@ const SiderContent: React.FunctionComponent = () => {
 						actions.modals.showModal({
 							modal: ActiveModal.RENAME_FAVORITES_DIRECTORY,
 							modalState: {
-								[ActiveModal.RENAME_FAVORITES_DIRECTORY]: { targetDirectoryKey: selectedNodeKey },
+								[ActiveModal.RENAME_FAVORITES_DIRECTORY]: {
+									targetDirectoryKey: selectedNodeKey,
+								},
 							},
 						})
 					);
@@ -139,7 +143,7 @@ const SiderContent: React.FunctionComponent = () => {
 							modalState: {
 								[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]: {
 									targetDirectoryKey: selectedNodeKey,
-									postIdsToMove: posts.filter((p) => p.selected).map((p) => p.id),
+									postsToMove: posts.filter((p) => p.selected),
 								},
 							},
 						})
@@ -160,7 +164,7 @@ const SiderContent: React.FunctionComponent = () => {
 							modalState: {
 								[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]: {
 									targetDirectoryKey: selectedNodeKey,
-									postIdsToMove: posts.map((p) => p.id),
+									postsToMove: posts,
 								},
 							},
 						})
@@ -210,7 +214,10 @@ const SiderContent: React.FunctionComponent = () => {
 		}
 	};
 
-	const handleTreeRightClick = async (info: { event: React.MouseEvent<Element, MouseEvent>; node: EventDataNode }): Promise<void> => {
+	const handleTreeRightClick = async (info: {
+		event: React.MouseEvent<Element, MouseEvent>;
+		node: EventDataNode;
+	}): Promise<void> => {
 		if (visible) {
 			setVisible(false);
 		}

@@ -4,9 +4,10 @@ import { Tag } from '@appTypes/gelbooruTypes';
 import { TagHistory } from '@store/types';
 
 export const saveSearch = async (tags: Tag[]): Promise<void> => {
-	tags.forEach((tag) => {
-		db.tagSearchHistory.put({ tag, date: new Date().toLocaleTimeString() });
+	const history = tags.map((tag) => {
+		return { tag, date: new Date().toLocaleTimeString() };
 	});
+	db.tagSearchHistory.bulkPut(history);
 };
 
 export const getMostSearched = async (limit = 20): Promise<TagHistory[]> => {

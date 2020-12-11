@@ -26,7 +26,7 @@ const StyledDirectoryTree = styled(Tree.DirectoryTree)`
 
 const MovePostsToFavoritesDirectoryModal: React.FunctionComponent<
 	MovePostsToFavoritesDirectoryModalProps & { treeData: TreeNode[] | undefined; expandedKeys: string[] }
-> = ({ treeData, expandedKeys, postIdsToMove }) => {
+> = ({ treeData, expandedKeys, postsToMove }) => {
 	const dispatch = useDispatch<AppDispatch>();
 
 	const [selectedNodeKey, setSelectedNodeKey] = useState(1);
@@ -40,7 +40,7 @@ const MovePostsToFavoritesDirectoryModal: React.FunctionComponent<
 	};
 
 	const handleConfirm = async (): Promise<void> => {
-		if (postIdsToMove.length === 0) {
+		if (postsToMove.length === 0) {
 			openNotificationWithIcon(
 				'error',
 				'Failed to add post to directory',
@@ -50,8 +50,8 @@ const MovePostsToFavoritesDirectoryModal: React.FunctionComponent<
 			dispatch(actions.modals.setVisible(false));
 			return;
 		}
-		await dispatch(thunks.favorites.removePostsFromActiveDirectory(postIdsToMove));
-		await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToMove, key: selectedNodeKey }));
+		await dispatch(thunks.favorites.removePostsFromActiveDirectory(postsToMove));
+		await dispatch(thunks.favorites.addPostsToDirectory({ posts: postsToMove, key: selectedNodeKey }));
 		await dispatch(thunks.favorites.fetchPostsInDirectory());
 		openNotificationWithIcon('success', 'Success', 'Successfuly moved post to folder');
 		dispatch(actions.modals.setVisible(false));

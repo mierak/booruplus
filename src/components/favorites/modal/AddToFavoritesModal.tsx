@@ -34,12 +34,12 @@ const AddtoFavoritesModal: React.FunctionComponent<Props> = (props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
 	const [selectedNode, setSelectedNode] = useState<EventDataNode | TreeNode>();
-	const postIdsToFavorite = useSelector((state: RootState) => {
-		if ('postIdsToFavorite' in props.data) {
-			return props.data.postIdsToFavorite;
+	const postsToFavorite = useSelector((state: RootState) => {
+		if ('postsToFavorite' in props.data) {
+			return props.data.postsToFavorite;
 		} else {
 			const posts = state.posts.posts[props.data.context];
-			return props.data.type === 'all' ? posts.map((p) => p.id) : posts.filter((p) => p.selected).map((p) => p.id);
+			return props.data.type === 'all' ? posts : posts.filter((p) => p.selected);
 		}
 	});
 
@@ -52,7 +52,7 @@ const AddtoFavoritesModal: React.FunctionComponent<Props> = (props) => {
 	};
 
 	const handleConfirm = async (): Promise<void> => {
-		if (postIdsToFavorite.length === 0) {
+		if (postsToFavorite.length === 0) {
 			openNotificationWithIcon(
 				'error',
 				'Failed to add post to directory',
@@ -62,7 +62,7 @@ const AddtoFavoritesModal: React.FunctionComponent<Props> = (props) => {
 			dispatch(actions.modals.setVisible(false));
 			return;
 		}
-		await dispatch(thunks.favorites.addPostsToDirectory({ ids: postIdsToFavorite, key: selectedNode?.key ?? 1 }));
+		await dispatch(thunks.favorites.addPostsToDirectory({ posts: postsToFavorite, key: selectedNode?.key ?? 1 }));
 		openNotificationWithIcon('success', 'Success', 'Post was successfuly added to directory');
 		dispatch(actions.modals.setVisible(false));
 	};

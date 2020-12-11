@@ -286,7 +286,7 @@ describe('pages/Favorites', () => {
 				modal: ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION,
 				modalState: {
 					[ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION]: {
-						postIdsToMove: [3],
+						postsToMove: [posts[2]],
 					},
 				},
 			},
@@ -341,7 +341,7 @@ describe('pages/Favorites', () => {
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({
 				type: thunks.favorites.removePostsFromActiveDirectory.pending.type,
-				meta: { arg: [posts[3].id] },
+				meta: { arg: [posts[3]] },
 			})
 		);
 		expect(deleteImageMock).toBeCalledWith(posts[3]);
@@ -386,7 +386,7 @@ describe('pages/Favorites', () => {
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({
 				type: thunks.favorites.removePostsFromActiveDirectory.pending.type,
-				meta: { arg: [posts[3].id] },
+				meta: { arg: [posts[3]] },
 			})
 		);
 		await waitFor(() =>

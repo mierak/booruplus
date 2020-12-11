@@ -82,9 +82,9 @@ const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
 
 	useEffect(() => {
 		if (post) {
-			dispatch(thunks.posts.incrementViewCount(post));
+			dispatch(thunks.posts.incrementViewCount({ post, context: props.context }));
 		}
-	}, [dispatch, index, post]);
+	}, [dispatch, post, props.context]);
 
 	return <Container className={props.className}>{renderImage()}</Container>;
 };

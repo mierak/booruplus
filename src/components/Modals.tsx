@@ -13,9 +13,9 @@ import MovePostsToSuppliedFavoritesDirectoryModal from './favorites/modal/MovePo
 import { ActiveModal } from '@appTypes/modalTypes';
 
 const Modals: React.FunctionComponent = () => {
-	const activeModal = useSelector((state: RootState) => state.modals.common.activeModal);
-	const visible = useSelector((state: RootState) => state.modals.common.isVisible);
-	const props = useSelector((state: RootState) => state.modals.common.modalProps);
+	const activeModal = useSelector((state: RootState) => state.modals.activeModal);
+	const visible = useSelector((state: RootState) => state.modals.isVisible);
+	const props = useSelector((state: RootState) => state.modals.modalProps);
 	const favoritesTreeData = useSelector((state: RootState) => state.favorites.rootNode);
 	const favoritesTreeExpandedKeys = useSelector((state: RootState) => state.favorites.expandedKeys);
 

@@ -29,7 +29,6 @@ import { actions as tasks, initialState as tasksInitialState } from './tasks';
 import { actions as loadingStates, initialState as loadingStatesInitialState } from './loadingStates';
 import { actions as favorites, initialState as favoritesInitialState } from './favorites';
 import { actions as modals, initialState as modalsInitialState } from './modals/index';
-import { initialState as addToFavoritesModalInitialState } from './modals/addToFavoritesModal';
 
 import * as allThunks from './thunks';
 
@@ -67,7 +66,7 @@ export const initialState = {
 	loadingStates: loadingStatesInitialState,
 	favorites: favoritesInitialState,
 	errors: {},
-	modals: { common: modalsInitialState, addToFavoritesModal: addToFavoritesModalInitialState },
+	modals: modalsInitialState,
 };
 
 export const actions = {
