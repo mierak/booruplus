@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import { Action, AnyAction, combineReducers, Dispatch, Middleware, MiddlewareAPI } from 'redux';
 import { configureStore } from '@reduxjs/toolkit';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 
@@ -14,8 +14,6 @@ import tasksReducer from './tasks';
 import loadingStatesReducer from './loadingStates';
 import favoritesReducer from './favorites';
 import modalsReducer from './modals/index';
-import errorsReducer from './errors';
-import { RootState } from './types';
 
 import { actions as posts, initialState as postsInitialState } from './posts';
 import { actions as onlineSearchForm, initialState as onlineSearchFormInitialState } from './onlineSearchForm';
@@ -31,6 +29,7 @@ import { actions as favorites, initialState as favoritesInitialState } from './f
 import { actions as modals, initialState as modalsInitialState } from './modals/index';
 
 import * as allThunks from './thunks';
+import { RootState } from './types';
 
 export const mainReducer = combineReducers({
 	system: systemReducer,
@@ -45,12 +44,6 @@ export const mainReducer = combineReducers({
 	loadingStates: loadingStatesReducer,
 	favorites: favoritesReducer,
 	modals: modalsReducer,
-	errors: errorsReducer,
-});
-
-export const store = configureStore({
-	reducer: mainReducer,
-	middleware: [thunk as ThunkMiddleware<RootState>],
 });
 
 export const initialState = {
@@ -65,7 +58,6 @@ export const initialState = {
 	tasks: tasksInitialState,
 	loadingStates: loadingStatesInitialState,
 	favorites: favoritesInitialState,
-	errors: {},
 	modals: modalsInitialState,
 };
 
@@ -89,3 +81,20 @@ export const thunks = {
 };
 
 export * from './selectors';
+
+const loggerMiddleware: Middleware = <D extends Dispatch<AnyAction>, S>(api: MiddlewareAPI<D, S>) => {
+	return (next) => {
+		return <A extends Action<string>>(action: A): A => {
+			if (action.type.endsWith('rejected')) {
+				window.log.error(action);
+				window.log.error('State before error', api.getState());
+			}
+			return next(action);
+		};
+	};
+};
+
+export const store = configureStore({
+	reducer: mainReducer,
+	middleware: [thunk as ThunkMiddleware<RootState>, loggerMiddleware],
+});

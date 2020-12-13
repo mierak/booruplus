@@ -85,7 +85,7 @@ const NavigationMenu: React.FunctionComponent = () => {
 			<Menu.Item
 				key='settings'
 				onClick={(): void => {
-					dispatch(actions.modals.showModal({ modal: ActiveModal.SETTINGS, modalState: {} }));
+					dispatch(actions.modals.showModal(ActiveModal.SETTINGS, undefined));
 				}}
 			>
 				<SettingOutlined />

@@ -38,9 +38,7 @@ const Modals: React.FunctionComponent = () => {
 			case ActiveModal.RENAME_FAVORITES_DIRECTORY:
 				return <RenameDirectoryModal {...props[ActiveModal.RENAME_FAVORITES_DIRECTORY]} />;
 			case ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION:
-				return (
-					<MovePostsToSuppliedFavoritesDirectoryModal {...props[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]} />
-				);
+				return <MovePostsToSuppliedFavoritesDirectoryModal {...props[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]} />;
 			case ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION: {
 				return (
 					<MovePostsToFavoritesDirectoryModal

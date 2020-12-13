@@ -19,8 +19,8 @@ export const initialState: ModalsState = {
 		[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]: { postsToMove: [], targetDirectoryKey: 1 },
 		[ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION]: { postsToMove: [] },
 		[ActiveModal.RENAME_FAVORITES_DIRECTORY]: { targetDirectoryKey: 1 },
-		[ActiveModal.SETTINGS]: {},
-		[ActiveModal.NONE]: {},
+		[ActiveModal.SETTINGS]: undefined,
+		[ActiveModal.NONE]: undefined,
 	},
 };
 
@@ -42,6 +42,17 @@ const modalSlice = createSlice({
 	},
 });
 
-export const actions = { ...modalSlice.actions };
+type ShowModalAction = ReturnType<typeof modalSlice.actions.showModal>;
+const showModal = <K extends ActiveModal>(modal: K, modalState: PerModalState[K]): ShowModalAction => {
+	return modalSlice.actions.showModal({
+		modal,
+		modalState: {
+			[modal]: modalState,
+		},
+	});
+};
+showModal.type = modalSlice.actions.showModal.type;
+
+export const actions = { ...modalSlice.actions, showModal };
 
 export default modalSlice.reducer;

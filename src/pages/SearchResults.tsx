@@ -98,12 +98,7 @@ const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 	const context = 'posts';
 
 	const handleFavorite = (post: Post): void => {
-		dispatch(
-			actions.modals.showModal({
-				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
-				modalState: { [ActiveModal.ADD_POSTS_TO_FAVORITES]: { postsToFavorite: [post] } },
-			})
-		);
+		dispatch(actions.modals.showModal(ActiveModal.ADD_POSTS_TO_FAVORITES, { postsToFavorite: [post] }));
 	};
 
 	const handleBlacklist = (post: Post): void => {
@@ -226,28 +221,18 @@ const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 
 	const handleAddAllToFavorites = (): void => {
 		dispatch(
-			actions.modals.showModal({
-				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
-				modalState: {
-					[ActiveModal.ADD_POSTS_TO_FAVORITES]: {
-						context: 'posts',
-						type: 'all',
-					},
-				},
+			actions.modals.showModal(ActiveModal.ADD_POSTS_TO_FAVORITES, {
+				context: 'posts',
+				type: 'all',
 			})
 		);
 	};
 
 	const handleAddSelectedToFavorites = (): void => {
 		dispatch(
-			actions.modals.showModal({
-				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
-				modalState: {
-					[ActiveModal.ADD_POSTS_TO_FAVORITES]: {
-						context: 'posts',
-						type: 'selected',
-					},
-				},
+			actions.modals.showModal(ActiveModal.ADD_POSTS_TO_FAVORITES, {
+				context: 'posts',
+				type: 'selected',
 			})
 		);
 	};

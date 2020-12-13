@@ -225,7 +225,6 @@ export const mState = (state?: PartialRootState): RootState => {
 		system: mSystemState(state?.system),
 		savedSearches: mSavedSearchesState(state?.savedSearches),
 		tags: mTagsState(state?.tags),
-		errors: {},
 		modals: mModalsState(state?.modals),
 	};
 };

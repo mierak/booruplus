@@ -21,13 +21,8 @@ describe('components', () => {
 	describe('Modals', () => {
 		it('Renders AddDirectoryModal', () => {
 			store.dispatch(
-				actions.showModal({
-					modal: ActiveModal.ADD_FAVORITES_DIRECTORY,
-					modalState: {
-						[ActiveModal.ADD_FAVORITES_DIRECTORY]: {
-							selectedNodeKey: 1,
-						},
-					},
+				actions.showModal(ActiveModal.ADD_FAVORITES_DIRECTORY, {
+					selectedNodeKey: 1,
 				})
 			);
 			store.dispatch(actions.setVisible(true));
@@ -37,13 +32,8 @@ describe('components', () => {
 		});
 		it('Renders AddToFavorites', () => {
 			store.dispatch(
-				actions.showModal({
-					modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
-					modalState: {
-						[ActiveModal.ADD_POSTS_TO_FAVORITES]: {
-							postsToFavorite: [],
-						},
-					},
+				actions.showModal(ActiveModal.ADD_POSTS_TO_FAVORITES, {
+					postsToFavorite: [],
 				})
 			);
 			store.dispatch(actions.setVisible(true));
@@ -53,13 +43,8 @@ describe('components', () => {
 		});
 		it('Renders DeleteDirectoryModal', () => {
 			store.dispatch(
-				actions.showModal({
-					modal: ActiveModal.DELETE_FAVORITES_DIRECTORY,
-					modalState: {
-						[ActiveModal.DELETE_FAVORITES_DIRECTORY]: {
-							selectedNodeKey: 1,
-						},
-					},
+				actions.showModal(ActiveModal.DELETE_FAVORITES_DIRECTORY, {
+					selectedNodeKey: 1,
 				})
 			);
 			store.dispatch(actions.setVisible(true));
@@ -69,14 +54,9 @@ describe('components', () => {
 		});
 		it('Renders MovePostsToSuppliedFavoritesDirectoryModal', () => {
 			store.dispatch(
-				actions.showModal({
-					modal: ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION,
-					modalState: {
-						[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]: {
-							postsToMove: [],
-							targetDirectoryKey: 1,
-						},
-					},
+				actions.showModal(ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION, {
+					postsToMove: [],
+					targetDirectoryKey: 1,
 				})
 			);
 			store.dispatch(actions.setVisible(true));
@@ -85,7 +65,7 @@ describe('components', () => {
 			expect(wrapper.find('MovePostsToSuppliedFavoritesDirectoryModal')).toHaveLength(1);
 		});
 		it('Renders SettingsModal', () => {
-			store.dispatch(actions.showModal({ modal: ActiveModal.SETTINGS, modalState: {} }));
+			store.dispatch(actions.showModal(ActiveModal.SETTINGS, undefined));
 			store.dispatch(actions.setVisible(true));
 			const wrapper = setup();
 
@@ -93,13 +73,8 @@ describe('components', () => {
 		});
 		it('Renders RenameDirectoryModal', () => {
 			store.dispatch(
-				actions.showModal({
-					modal: ActiveModal.RENAME_FAVORITES_DIRECTORY,
-					modalState: {
-						[ActiveModal.RENAME_FAVORITES_DIRECTORY]: {
-							targetDirectoryKey: 1,
-						},
-					},
+				actions.showModal(ActiveModal.RENAME_FAVORITES_DIRECTORY, {
+					targetDirectoryKey: 1,
 				})
 			);
 			store.dispatch(actions.setVisible(true));
@@ -109,13 +84,8 @@ describe('components', () => {
 		});
 		it('Renders MovePostsToFavoritesDirectoryModal', () => {
 			store.dispatch(
-				actions.showModal({
-					modal: ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION,
-					modalState: {
-						[ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION]: {
-							postsToMove: [],
-						},
-					},
+				actions.showModal(ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION, {
+					postsToMove: [],
 				})
 			);
 			store.dispatch(actions.setVisible(true));
@@ -125,7 +95,7 @@ describe('components', () => {
 		});
 
 		it('Renders nothing when activeModal is none', () => {
-			store.dispatch(actions.showModal({ modal: ActiveModal.NONE, modalState: {} }));
+			store.dispatch(actions.showModal(ActiveModal.NONE, undefined));
 			store.dispatch(actions.setVisible(true));
 			const wrapper = setup();
 

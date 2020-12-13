@@ -79,13 +79,8 @@ const SiderContent: React.FunctionComponent = () => {
 				onClick={(): void => {
 					setVisible(false);
 					dispatch(
-						actions.modals.showModal({
-							modal: ActiveModal.ADD_FAVORITES_DIRECTORY,
-							modalState: {
-								[ActiveModal.ADD_FAVORITES_DIRECTORY]: {
-									selectedNodeKey,
-								},
-							},
+						actions.modals.showModal(ActiveModal.ADD_FAVORITES_DIRECTORY, {
+							selectedNodeKey,
 						})
 					);
 				}}
@@ -98,13 +93,8 @@ const SiderContent: React.FunctionComponent = () => {
 				onClick={(): void => {
 					setVisible(false);
 					dispatch(
-						actions.modals.showModal({
-							modal: ActiveModal.DELETE_FAVORITES_DIRECTORY,
-							modalState: {
-								[ActiveModal.DELETE_FAVORITES_DIRECTORY]: {
-									selectedNodeKey,
-								},
-							},
+						actions.modals.showModal(ActiveModal.DELETE_FAVORITES_DIRECTORY, {
+							selectedNodeKey,
 						})
 					);
 				}}
@@ -118,13 +108,8 @@ const SiderContent: React.FunctionComponent = () => {
 				onClick={(): void => {
 					setVisible(false);
 					dispatch(
-						actions.modals.showModal({
-							modal: ActiveModal.RENAME_FAVORITES_DIRECTORY,
-							modalState: {
-								[ActiveModal.RENAME_FAVORITES_DIRECTORY]: {
-									targetDirectoryKey: selectedNodeKey,
-								},
-							},
+						actions.modals.showModal(ActiveModal.RENAME_FAVORITES_DIRECTORY, {
+							targetDirectoryKey: selectedNodeKey,
 						})
 					);
 				}}
@@ -138,14 +123,9 @@ const SiderContent: React.FunctionComponent = () => {
 				onClick={async (): Promise<void> => {
 					setVisible(false);
 					dispatch(
-						actions.modals.showModal({
-							modal: ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION,
-							modalState: {
-								[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]: {
-									targetDirectoryKey: selectedNodeKey,
-									postsToMove: posts.filter((p) => p.selected),
-								},
-							},
+						actions.modals.showModal(ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION, {
+							targetDirectoryKey: selectedNodeKey,
+							postsToMove: posts.filter((p) => p.selected),
 						})
 					);
 				}}
@@ -159,14 +139,9 @@ const SiderContent: React.FunctionComponent = () => {
 				onClick={async (): Promise<void> => {
 					setVisible(false);
 					dispatch(
-						actions.modals.showModal({
-							modal: ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION,
-							modalState: {
-								[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]: {
-									targetDirectoryKey: selectedNodeKey,
-									postsToMove: posts,
-								},
-							},
+						actions.modals.showModal(ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION, {
+							targetDirectoryKey: selectedNodeKey,
+							postsToMove: posts,
 						})
 					);
 				}}

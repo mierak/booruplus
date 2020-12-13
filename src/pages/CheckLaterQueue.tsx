@@ -33,27 +33,17 @@ const HeaderMenu: React.FunctionComponent = () => {
 	};
 	const favoriteAll = (): void => {
 		dispatch(
-			actions.modals.showModal({
-				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
-				modalState: {
-					[ActiveModal.ADD_POSTS_TO_FAVORITES]: {
-						context,
-						type: 'all',
-					},
-				},
+			actions.modals.showModal(ActiveModal.ADD_POSTS_TO_FAVORITES, {
+				context,
+				type: 'all',
 			})
 		);
 	};
 	const favoriteSelected = (): void => {
 		dispatch(
-			actions.modals.showModal({
-				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
-				modalState: {
-					[ActiveModal.ADD_POSTS_TO_FAVORITES]: {
-						context,
-						type: 'selected',
-					},
-				},
+			actions.modals.showModal(ActiveModal.ADD_POSTS_TO_FAVORITES, {
+				context,
+				type: 'selected',
 			})
 		);
 	};
@@ -104,12 +94,7 @@ const CheckLaterQueue: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
 
 	const handleFavorite = (post: Post): void => {
-		dispatch(
-			actions.modals.showModal({
-				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
-				modalState: { [ActiveModal.ADD_POSTS_TO_FAVORITES]: { postsToFavorite: [post] } },
-			})
-		);
+		dispatch(actions.modals.showModal(ActiveModal.ADD_POSTS_TO_FAVORITES, { postsToFavorite: [post] }));
 	};
 
 	const handleBlacklist = (post: Post): void => {

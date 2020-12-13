@@ -72,7 +72,7 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 	}, [dispatch]);
 
 	const handleBlacklist = async (post: Post): Promise<void> => {
-		await dispatch(thunks.posts.blacklistPosts({context, posts: [post]}));
+		await dispatch(thunks.posts.blacklistPosts({ context, posts: [post] }));
 		await dispatch(thunks.favorites.removePostsFromActiveDirectory([post]));
 		openNotificationWithIcon('success', 'Post deleted', 'Image was successfuly deleted from disk.');
 	};
@@ -89,13 +89,8 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 
 	const handleMoveToDirectory = (post: Post): void => {
 		dispatch(
-			actions.modals.showModal({
-				modal: ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION,
-				modalState: {
-					[ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION]: {
-						postsToMove: [post],
-					},
-				},
+			actions.modals.showModal(ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION, {
+				postsToMove: [post],
 			})
 		);
 	};

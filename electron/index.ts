@@ -31,6 +31,7 @@ const isProd = app.isPackaged;
 
 log.transports.console.useStyles = true;
 log.transports.console.format = '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{processType}] [{level}] - {text}';
+log.transports.file.maxSize = 5_242_880;
 log.catchErrors({ showDialog: true });
 
 log.debug(`Starting app. Production mode is: ${isProd}`);
