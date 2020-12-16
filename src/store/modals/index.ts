@@ -34,6 +34,7 @@ const modalSlice = createSlice({
 			state.isVisible = true;
 		},
 		setVisible: (state, action: PayloadAction<boolean>): void => {
+			state.modalProps = initialState.modalProps;
 			if (!action.payload) {
 				state.activeModal = ActiveModal.NONE;
 			}

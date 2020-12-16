@@ -98,8 +98,8 @@ const Thumbnail = (props: Props): React.ReactElement => {
 		} else if (event.shiftKey) {
 			dispatch(actions.posts.selectMultiplePosts({ data: props.index, context: props.context }));
 		} else {
-			dispatch(actions.posts.setActivePostIndex({ data: props.index, context: props.context }));
 			activeView !== 'image' && dispatch(actions.system.setActiveView({ view: 'image', context: props.context }));
+			dispatch(actions.posts.setActivePostIndex({ data: props.index, context: props.context }));
 		}
 	};
 

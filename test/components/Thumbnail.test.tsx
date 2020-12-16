@@ -175,7 +175,7 @@ describe('Thumbnail', () => {
 			})
 		);
 		const onClick = jest.fn().mockResolvedValue(new Promise(resolve => {
-			setTimeout(resolve(), 500);
+			setTimeout(resolve(null), 500);
 		}));
 		const actions: utils.CardAction[] = [
 			{

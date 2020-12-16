@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 import { actions, postsSelector } from '@store';
-import { PostsContext, RootState } from '@store/types';
+import { PostsContext, RootState, View } from '@store/types';
 import { CardAction, ContextMenu } from '@appTypes/components';
 import { Post } from '@appTypes/gelbooruTypes';
 import EmptyThumbnails from '@components/EmptyThumbnails';
@@ -57,8 +57,15 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 				case 37:
 					dispatch(actions.posts.previousPost({ context: props.context }));
 					break;
-				case 8:
-					dispatch(actions.system.setActiveView('search-results'));
+				case 8: {
+					let view: View;
+					if (props.context === 'favorites') view = 'favorites';
+					else if (props.context === 'checkLaterQueue') view = 'check-later';
+					else if (props.context === 'mostViewed') view = 'dashboard';
+					else view = 'search-results';
+					dispatch(actions.system.setActiveView(view));
+					break;
+				}
 			}
 		};
 		window.addEventListener('keydown', handleKeyPress, true);
