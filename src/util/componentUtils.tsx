@@ -12,6 +12,7 @@ import {
 	GlobalOutlined,
 	ClockCircleOutlined,
 	LoadingOutlined,
+	CopyOutlined,
 } from '@ant-design/icons';
 
 import { Icon } from '@appTypes/components';
@@ -47,6 +48,8 @@ export const getIcon = (icon: Icon, onClick?: (() => void) | undefined): React.R
 			return <GlobalOutlined onClick={onClick} />;
 		case 'clock-circle-outlined':
 			return <ClockCircleOutlined onClick={onClick} />;
+		case 'copy-outlined':
+			return <CopyOutlined onClick={onClick}/>;
 		case 'loading-outlined':
 			return <LoadingOutlined />;
 	}

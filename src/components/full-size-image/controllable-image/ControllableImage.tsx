@@ -8,7 +8,7 @@ import { AppDispatch, RootState } from '@store/types';
 import { actions } from '@store';
 
 import { Post } from '@appTypes/gelbooruTypes';
-import { ImageControl } from '@appTypes/components';
+import { ImageControl, openNotificationWithIcon } from '@appTypes/components';
 import { IpcChannels } from '@appTypes/processDto';
 
 import TagsPopover from '@components/full-size-image/TagsPopover';
@@ -79,6 +79,11 @@ const ControllableImage: React.FunctionComponent<Props> = ({ className, post, sh
 		dispatch(actions.system.setTagsPopovervisible(visible));
 	};
 
+	const handleCopyToClipboard = (): void => {
+		window.clipboard.writeText(post.fileUrl);
+		openNotificationWithIcon('success', 'Link copied to clipboard', '');
+	};
+
 	const imageControls: ImageControl[] = [
 		{
 			icon: 'plus-outlined',
@@ -115,6 +120,12 @@ const ControllableImage: React.FunctionComponent<Props> = ({ className, post, sh
 			tooltip: 'Open in browser',
 			onClick: handleOpenWeb,
 		},
+		{
+			icon: 'copy-outlined',
+			key: 'copy-to-clipboard',
+			tooltip: 'Copy to clipboard',
+			onClick: handleCopyToClipboard
+		}
 	];
 
 	useEffect(() => {

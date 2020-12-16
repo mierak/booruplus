@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { clipboard, contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import log from 'electron-log';
 
 import { IpcChannels, SavePostDto } from '@appTypes/processDto';
@@ -25,3 +25,4 @@ contextBridge.exposeInMainWorld('api', {
 	},
 });
 contextBridge.exposeInMainWorld('log', log.functions);
+contextBridge.exposeInMainWorld('clipboard', clipboard);

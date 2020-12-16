@@ -31,7 +31,7 @@
 					"name": "@electron-forge/maker-squirrel",
 					"config": {
 						"name": "Lolinizer",
-						"loadingGif": "./chika_dance.gif",
+						"loadingGif": "./empty.gif",
 						"iconUrl": "https://puu.sh/Ge5QV/be0a6fb81a.ico",
 						"setupIcon": "./icon.ico"
 					}

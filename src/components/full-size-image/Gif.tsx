@@ -8,7 +8,7 @@ import { imageLoader } from '@util/componentUtils';
 import { getPostUrl } from '@service/webService';
 
 import { IpcChannels } from '@appTypes/processDto';
-import { ImageControl } from '@appTypes/components';
+import { ImageControl, openNotificationWithIcon } from '@appTypes/components';
 import { Post } from '@appTypes/gelbooruTypes';
 
 import LoadingMask from '@components/LoadingMask';
@@ -46,6 +46,11 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 
 	const handleTagsPopoverVisibilityChange = (visible: boolean): void => {
 		dispatch(actions.system.setTagsPopovervisible(visible));
+	};
+
+	const handleCopyToClipboard = (): void => {
+		window.clipboard.writeText(props.post.fileUrl);
+		openNotificationWithIcon('success', 'Link copied to clipboard', '');
 	};
 
 	useEffect(() => {
@@ -87,6 +92,12 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 			tooltip: 'Open in browser',
 			onClick: handleOpenWeb,
 		},
+		{
+			icon: 'copy-outlined',
+			key: 'copy-to-clipboard',
+			tooltip: 'Copy to clipboard',
+			onClick: handleCopyToClipboard
+		}
 	];
 	return (
 		<Container className={props.className}>

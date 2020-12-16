@@ -6,7 +6,7 @@ import { AppDispatch, RootState } from '@store/types';
 
 import { Post } from '@appTypes/gelbooruTypes';
 import { IpcChannels } from '@appTypes/processDto';
-import { ImageControl } from '@appTypes/components';
+import { ImageControl, openNotificationWithIcon } from '@appTypes/components';
 
 import { isFilenameVideo } from '@util/utils';
 import { actions } from '@store';
@@ -73,6 +73,11 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 	const handleTagsPopoverVisibilityChange = (visible: boolean): void => {
 		dispatch(actions.system.setTagsPopovervisible(visible));
 	};
+	
+	const handleCopyToClipboard = (): void => {
+		window.clipboard.writeText(post.fileUrl);
+		openNotificationWithIcon('success', 'Link copied to clipboard', '');
+	};
 
 	const imageControls: ImageControl[] = [
 		{
@@ -92,6 +97,12 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 			tooltip: 'Open in browser',
 			onClick: handleOpenWeb,
 		},
+		{
+			icon: 'copy-outlined',
+			key: 'copy-to-clipboard',
+			tooltip: 'Copy to clipboard',
+			onClick: handleCopyToClipboard
+		}
 	];
 
 	return (

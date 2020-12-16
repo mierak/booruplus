@@ -3,6 +3,7 @@ import { Post } from 'src/types/gelbooruTypes';
 import { SavePostDto } from 'src/types/processDto';
 import { IpcChannels, IpcListener } from 'src/types/processDto';
 import log from 'electron-log';
+import { clipboard } from 'electron';
 
 interface IpcListener {
 	listener: (event: IpcRendererEvent, ...args: unknown[]) => void;
@@ -17,6 +18,7 @@ export declare global {
 			removeListener(channel: IpcChannels, listener: IpcListener): void;
 		};
 		log: typeof log.functions;
+		clipboard: typeof clipboard;
 	}
 }
 

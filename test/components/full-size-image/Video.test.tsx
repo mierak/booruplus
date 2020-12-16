@@ -88,4 +88,25 @@ describe('Video', () => {
 		// then
 		expect(screen.getByText('tags popover')).not.toBeNull();
 	});
+	it('Creates action that copies link to clipboard', () => {
+		// given
+		const spy = jest.fn();
+		(window.clipboard as any) = {
+			writeText: spy,
+		};
+		const link = 'somelink123.jpg';
+		const post = mPost({ fileUrl: link });
+		const store = mockStore(mState());
+
+		// when
+		render(
+			<Provider store={store}>
+				<Video post={post} />
+			</Provider>
+		);
+		fireEvent.click(screen.getByRole('button', { name: 'Copy to clipboard' }));
+
+		// then
+		expect(spy).toHaveBeenCalledWith(link);
+	});
 });

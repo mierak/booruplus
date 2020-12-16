@@ -14,7 +14,8 @@ export type Icon =
 	| 'tags-outlined'
 	| 'global-outlined'
 	| 'clock-circle-outlined'
-	| 'loading-outlined';
+	| 'loading-outlined'
+	| 'copy-outlined';
 
 export interface ContextMenu {
 	title: string;
