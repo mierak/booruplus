@@ -27,7 +27,7 @@ Both an online and offline alternative to booru sites. Lets you view, download, 
 - This application is developed as a hobby at nights after a fulltime job. If you wish to support the development, buy me a coffee or just simply say thanks, you can do so via [this paypal link](https://paypal.me/mierakoj). All support is highly appreaciated!
 
 ## Screenshots
-[![Dashboard](screenshots/thumbnails/dashboard_tn.jpg "Dashboard")](https://raw.githubusercontent.com/mierak/booruplus/master/screenshots/dashboard.webp)
+[![Dashboard](screenshots/thumbnails/dashboard_tn.jpg "Dashboard")](https://raw.githubusercontent.com/mierak/booruplus/master/screenshots/dashboard2.webp)
 [![Search form](screenshots/thumbnails/search_form_tn.jpg "Search form")](https://raw.githubusercontent.com/mierak/booruplus/master/screenshots/search_form.webp)
 [![Favorites](screenshots/thumbnails/favorites_tn.jpg "Favorites and directory structure")](https://raw.githubusercontent.com/mierak/booruplus/master/screenshots/favorites.webp)
 [![Image view](screenshots/thumbnails/image_view_tn.jpg "View of a full image")](https://raw.githubusercontent.com/mierak/booruplus/master/screenshots/image_view.webp)
