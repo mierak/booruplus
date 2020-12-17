@@ -10,6 +10,7 @@ import { validateApiKey } from '@util/utils';
 import General from './General';
 import Dashboard from './Dashboard';
 import Gelbooru from './Gelbooru';
+import About from './About';
 
 interface Props {
 	className?: string;
@@ -69,6 +70,9 @@ const SettingsModal: React.FunctionComponent<Props> = (props: Props) => {
 				</TabPane>
 				<TabPane key='3' tab='Gelbooru'>
 					<Gelbooru />
+				</TabPane>
+				<TabPane key='4' tab='About'>
+					<About />
 				</TabPane>
 			</Tabs>
 		</Modal>
