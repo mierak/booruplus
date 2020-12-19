@@ -41,7 +41,22 @@ log.debug(`Starting app. Production mode is: ${isProd}`);
 if (require('electron-squirrel-startup')) {
 	app.quit();
 }
+
 let window: BrowserWindow;
+
+const lock = app.requestSingleInstanceLock();
+
+if (!lock) {
+	log.warn('Could not obtain single instance lock, trying to focus already running instance');
+	app.quit();
+} else {
+	app.on('second-instance', () => {
+		if (window && window.isMinimized()) {
+			window.restore();
+			window.focus();
+		}
+	});
+}
 
 app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 
