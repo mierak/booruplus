@@ -1,5 +1,6 @@
 const rules = require('./webpack.rules');
 const plugins = require('./webpack.plugins');
+const webpack = require('webpack');
 const path = require('path');
 const WorkerPlugin = require('worker-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
@@ -21,6 +22,13 @@ plugins.push(
 		allowAsyncCycles: false,
 		// set the current working directory for displaying module paths
 		cwd: process.cwd(),
+	})
+);
+plugins.push(
+	new webpack.DefinePlugin({
+		GLOBALS: {
+			VERSION: JSON.stringify(require('./package.json').version),
+		},
 	})
 );
 
@@ -45,6 +53,7 @@ module.exports = {
 			'@components': path.resolve(__dirname, 'src/components'),
 			'@pages': path.resolve(__dirname, 'src/pages'),
 			'@errors': path.resolve(__dirname, 'src/errors'),
+			'@': path.resolve(__dirname, 'src/'),
 		},
 	},
 };

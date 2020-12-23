@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import Dexie from 'dexie';
 import moment from 'moment';
 
@@ -166,6 +165,7 @@ db.on('populate', async () => {
 });
 
 db.open().catch((err) => {
+	// eslint-disable-next-line no-console
 	console.error('Could not open database: ', err);
 });
 

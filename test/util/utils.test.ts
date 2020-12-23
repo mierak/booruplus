@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import {
 	capitalize,
 	isExtensionVideo,
@@ -17,6 +16,7 @@ import {
 	addThousandsSeparator,
 	formatPercentProgress,
 	postParser,
+	parseVersion,
 } from '@util/utils';
 import { mTag } from '../helpers/test.helper';
 import { Post, PostDto, Rating, Tag } from '@appTypes/gelbooruTypes';
@@ -500,6 +500,59 @@ describe('utils/utils', () => {
 				viewCount: 0,
 				createdAt: 1600121617000,
 			} as Post);
+		});
+	});
+	describe('parseVersion()', () => {
+		it('Parses version correctly', () => {
+			// given
+			const version = 'vasdasd01dss.asdff2sdsdsd.dfdfdfdf3asdasd.dfsa55sss';
+
+			// when
+			const result = parseVersion(version);
+
+			// then
+			expect(result.major).toEqual(1);
+			expect(result.minor).toEqual(2);
+			expect(result.patch).toEqual(3);
+		});
+		it('Correctly compares higher major version', () => {
+			// given
+			const v1 = parseVersion('0.9.9');
+			const v2 = parseVersion('1.1.5');
+
+			// when
+			const result1 = v2.isNewerThan(v1);
+			const result2 = v1.isNewerThan(v2);
+
+			// then
+			expect(result1).toBe(true);
+			expect(result2).toBe(false);
+		});
+		it('Correctly compares higher minor version', () => {
+			// given
+			const v1 = parseVersion('1.1.9');
+			const v2 = parseVersion('1.2.5');
+
+			// when
+			const result1 = v2.isNewerThan(v1);
+			const result2 = v1.isNewerThan(v2);
+
+			// then
+			expect(result1).toBe(true);
+			expect(result2).toBe(false);
+		});
+		it('Correctly compares higher patch version', () => {
+			// given
+			const v1 = parseVersion('1.2.5');
+			const v2 = parseVersion('1.2.6');
+
+			// when
+			const result1 = v2.isNewerThan(v1);
+			const result2 = v1.isNewerThan(v2);
+
+			// then
+			expect(result1).toBe(true);
+			expect(result2).toBe(false);
 		});
 	});
 });

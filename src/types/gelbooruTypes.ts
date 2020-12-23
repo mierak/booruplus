@@ -96,3 +96,9 @@ export interface PostSearchOptions {
 	sort?: Sort;
 	sortOrder?: SortOrder;
 }
+
+export interface ReleaseResponse {
+	assets: { browser_download_url: string }[];
+	tag_name: string;
+	body: string;
+}

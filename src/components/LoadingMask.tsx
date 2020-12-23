@@ -63,14 +63,18 @@ const LoadingMask: React.FunctionComponent<Props> = (props: Props) => {
 	const delay = props.delay ?? 300;
 
 	useEffect(() => {
+		let canceled = false;
 		if (!props.visible) {
 			timeoutHandle !== undefined && clearTimeout(timeoutHandle.current);
 			setVisible(false);
 		} else {
 			timeoutHandle.current = setTimeout(() => {
-				setVisible(true);
+				!canceled && setVisible(true);
 			}, delay);
 		}
+		return (): void => {
+			canceled = true;
+		};
 	}, [delay, props.visible]);
 
 	const renderMask = (): JSX.Element => {

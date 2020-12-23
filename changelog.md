@@ -1,5 +1,8 @@
 # Changelog
 
+## NEXT - TITLE - DATE
+- Added simple update notification on app startup
+
 ## 0.1.7 - Check later queue - 16.12.2020
 - NEW FEATURE: While browsing search results, you can now add images to a transient "Check Later" queue. A button will appear in the left menu where you can go through these images. This queue is cleared everytime you exit the application.
 - Thumbnails Page renamed to Search Results

@@ -1,5 +1,5 @@
 import db from './database';
-import { FavoritesTreeNode, Counts } from './types';
+import { FavoritesTreeNode } from './types';
 
 import { TreeNode } from '@store/types';
 

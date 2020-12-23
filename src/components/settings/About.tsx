@@ -1,6 +1,7 @@
 import React from 'react';
 import { Col, Row } from 'antd';
 import { IpcChannels } from '@appTypes/processDto';
+import { globals } from '@/globals';
 
 const About: React.FunctionComponent = () => {
 	const firstColWidth = 4;
@@ -11,7 +12,7 @@ const About: React.FunctionComponent = () => {
 		<>
 			<Row gutter={[10, 10]}>
 				<Col lg={firstColWidth}>Version:</Col>
-				<Col>0.1.7-BETA</Col>
+				<Col>{globals.VERSION}</Col>
 			</Row>
 			<Row gutter={[10, 10]}>
 				<Col lg={firstColWidth}>Github:</Col>

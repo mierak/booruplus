@@ -37,8 +37,7 @@ describe('db/favorites', () => {
 		child1 = mFavoritesTreeNode({ key: 1, parentKey: 0, postIds: [1, 2, 3], childrenKeys: [11] });
 		child2 = mFavoritesTreeNode({ key: 2, parentKey: 0, postIds: [4, 5, 6] });
 		child11 = mFavoritesTreeNode({ key: 11, parentKey: 1, postIds: [7, 8, 9] });
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		keys = [root.key!!, child1.key!!, child2.key!!, child11.key!!];
+		keys = [root.key ?? 0, child1.key ?? 0, child2.key ?? 0, child11.key ?? 0];
 		await db.favorites.put(root);
 		await db.favorites.put(child1);
 		await db.favorites.put(child11);
@@ -314,8 +313,8 @@ describe('db/favorites', () => {
 		it('Throws error when parent node is not found in DB', async () => {
 			// given
 			const key = 1;
-			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-			//@ts-ignore
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			const spy = jest.spyOn(db.favorites, 'get').mockImplementation((k: number): FavoritesTreeNode | undefined => {
 				if (k === 0) return undefined;
 				return root;
@@ -363,7 +362,7 @@ describe('db/favorites', () => {
 		it('Throws error when child node is not found in DB', async () => {
 			// given
 			const key = 0;
-			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			//@ts-ignore
 			const spy = jest.spyOn(db.favorites, 'get').mockImplementation((k: number): FavoritesTreeNode | undefined => {
 				if (k === 0) return root;

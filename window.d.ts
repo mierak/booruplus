@@ -20,6 +20,9 @@ export declare global {
 		log: typeof log.functions;
 		clipboard: typeof clipboard;
 	}
+	const GLOBALS: {
+		VERSION: string;
+	};
 }
 
 declare global {
@@ -29,6 +32,7 @@ declare global {
 		 * meta.arg is matched by stringifying both objects and comparing the result. As a result
 		 * this function does not support matching non-serializable objects
 		 */
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		interface Matchers<R> {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			toContainMatchingAction(action: { type: string; meta?: any; payload?: any }): CustomMatcherResult;

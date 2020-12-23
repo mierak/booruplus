@@ -6,6 +6,7 @@ import {
 	getPostById,
 	getTagsByNames,
 	getPostsForTags,
+	getLatestAppVersion,
 } from '../../src/service/apiService';
 import 'jest-fetch-mock';
 import { enableFetchMocks } from 'jest-fetch-mock';
@@ -223,9 +224,9 @@ describe('apiService', () => {
 				rating: 'explicit',
 			};
 			const sort = getSortOptionString(sortOpts);
-			const expected1 = `${BASE_POST_URL}${apiKey}&limit=${sortOpts.limit}&pid=${sortOpts.page}&tags=${tags.join(' ')} rating:${
-				sortOpts.rating
-			} ${sort}`;
+			const expected1 = `${BASE_POST_URL}${apiKey}&limit=${sortOpts.limit}&pid=${sortOpts.page}&tags=${tags.join(
+				' '
+			)} rating:${sortOpts.rating} ${sort}`;
 
 			// when
 			await getPostsForTags(tags, sortOpts);
@@ -439,6 +440,35 @@ describe('apiService', () => {
 			expect(resultUploaded).toBe('');
 			expect(resultResolution).toBe('');
 			expect(resultNone).toBe('');
+		});
+	});
+	describe('getLatestAppVersion()', () => {
+		it('Returns correct object', async () => {
+			// given
+			const tagName = 'v0.1.1-TEST';
+			const body = 'testbody123';
+			const downloadUrl = 'someUrl.test.com';
+			fetchMock.mockResponseOnce(
+				JSON.stringify({ tag_name: tagName, body, assets: [{ browser_download_url: downloadUrl }] })
+			);
+
+			// when
+			const result = await getLatestAppVersion();
+
+			// then
+			expect(result?.tag_name).toBe(tagName);
+			expect(result?.body).toBe(body);
+			expect(result?.assets[0].browser_download_url).toBe(downloadUrl);
+		});
+		it('Returns undefined on error', async () => {
+			// given
+			fetchMock.mockRejectOnce(new Error('some error'));
+
+			// when
+			const result = await getLatestAppVersion();
+
+			// then
+			expect(result).toBeUndefined();
 		});
 	});
 });

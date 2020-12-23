@@ -13,13 +13,13 @@ interface ThunkType {
 	[key: string]: unknown;
 }
 
-const registerErrorLogger = (builder: ActionReducerMapBuilder<{}>, action: MyThunk): void => {
+const registerErrorLogger = (builder: ActionReducerMapBuilder<Record<string, unknown>>, action: MyThunk): void => {
 	builder.addCase(action.rejected, (_, result) => {
 		thunkLogger.getActionLogger(action, { logPending: false }).error(result);
 	});
 };
 
-const registerAllFunctions = (thunk: ThunkType, builder: ActionReducerMapBuilder<{}>): void => {
+const registerAllFunctions = (thunk: ThunkType, builder: ActionReducerMapBuilder<Record<string, unknown>>): void => {
 	const keys = Object.keys(thunk);
 	keys.forEach((key) => {
 		const func = thunk[key];

@@ -71,6 +71,7 @@ const createWindow = (): BrowserWindow => {
 			contextIsolation: true,
 			preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
 		},
+		title: `Lolinizer v${GLOBALS.VERSION}`,
 		show: false,
 	});
 	// and load the index.html of the app.

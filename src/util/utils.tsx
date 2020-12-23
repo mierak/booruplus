@@ -139,7 +139,8 @@ export const validateApiKey = (key?: string): boolean => {
 };
 
 export const toAscii = (c: string): number => {
-	if (c.length > 1) throw new Error('Cannot convert character to ASCII because supplied string has more than 1 character');
+	if (c.length > 1)
+		throw new Error('Cannot convert character to ASCII because supplied string has more than 1 character');
 	return c.charCodeAt(0);
 };
 
@@ -220,7 +221,10 @@ interface RowColFromIndexParams {
 	index: number;
 	columns: number;
 }
-export const getRowColFromIndex = ({ index, columns }: RowColFromIndexParams): { rowIndex: number; columnIndex: number } => {
+export const getRowColFromIndex = ({
+	index,
+	columns,
+}: RowColFromIndexParams): { rowIndex: number; columnIndex: number } => {
 	return {
 		rowIndex: Math.floor(index / columns),
 		columnIndex: index % columns,
@@ -235,4 +239,29 @@ export const formatPercentProgress = (done: number, total: number): string => {
 	return `${addThousandsSeparator(Math.round(done / 1024 / 1024))} MB / ${addThousandsSeparator(
 		Math.round(total / 1024 / 1024)
 	)} MB`;
+};
+
+interface Version {
+	major: number;
+	minor: number;
+	patch: number;
+	compare(v: Version): number;
+	isNewerThan(v: Version): boolean;
+}
+
+const compareVersions = (v1: [number, number, number], v2: [number, number, number]): number => {
+	if (v1[0] !== v2[0]) {
+		return v1[0] - v2[0];
+	}
+	if (v1[1] !== v2[1]) {
+		return v1[1] - v2[1];
+	}
+	return v1[2] - v2[2];
+};
+
+export const parseVersion = (version: string): Version => {
+	const res = version.split('.').map((segment) => Number(segment.match(/\d+/)?.[0] ?? 0));
+	const compare = (v: Version): number => compareVersions([res[0], res[1], res[2]], [v.major, v.minor, v.patch]);
+	const isNewerThan = (v: Version): boolean => compare(v) > 0;
+	return { compare, isNewerThan, major: res[0], minor: res[1], patch: res[2] };
 };
