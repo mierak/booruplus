@@ -1,5 +1,5 @@
 import { ReleaseResponse } from '@appTypes/gelbooruTypes';
-import { IpcChannels } from '@appTypes/processDto';
+import { IpcSendChannels } from '@appTypes/processDto';
 import { Divider, List, Typography } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
@@ -19,10 +19,10 @@ const NewVersionNotificationModalBody: React.FunctionComponent<Props> = ({ data 
 	const [showChangelog, setShowChangelog] = React.useState(false);
 	const openDownload = (): void => {
 		const url = data.assets.find((a) => a.browser_download_url.endsWith('Setup.exe'))?.browser_download_url;
-		window.api.send(IpcChannels.OPEN_IN_BROWSER, url);
+		url && window.api.send(IpcSendChannels.OPEN_IN_BROWSER, url);
 	};
 	const openReleases = (): void =>
-		window.api.send(IpcChannels.OPEN_IN_BROWSER, 'https://github.com/mierak/booruplus/releases');
+		window.api.send(IpcSendChannels.OPEN_IN_BROWSER, 'https://github.com/mierak/booruplus/releases');
 	const toggleChangelog = (): void => setShowChangelog((prev) => !prev);
 
 	return (

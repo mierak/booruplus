@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { AppDispatch, RootState } from '@store/types';
 
 import { Post } from '@appTypes/gelbooruTypes';
-import { IpcChannels } from '@appTypes/processDto';
+import { IpcSendChannels } from '@appTypes/processDto';
 import { ImageControl, openNotificationWithIcon } from '@appTypes/components';
 
 import { isFilenameVideo } from '@util/utils';
@@ -67,7 +67,7 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 	}, [dispatch, downloadMissingImage, post]);
 
 	const handleOpenWeb = (): void => {
-		window.api.send(IpcChannels.OPEN_IN_BROWSER, getPostUrl(post.id));
+		window.api.send(IpcSendChannels.OPEN_IN_BROWSER, getPostUrl(post.id));
 	};
 
 	const handleTagsPopoverVisibilityChange = (visible: boolean): void => {

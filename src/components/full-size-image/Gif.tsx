@@ -7,7 +7,7 @@ import { AppDispatch, RootState } from '@store/types';
 import { imageLoader } from '@util/componentUtils';
 import { getPostUrl } from '@service/webService';
 
-import { IpcChannels } from '@appTypes/processDto';
+import { IpcSendChannels } from '@appTypes/processDto';
 import { ImageControl, openNotificationWithIcon } from '@appTypes/components';
 import { Post } from '@appTypes/gelbooruTypes';
 
@@ -41,7 +41,7 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 	const imgRef = useRef<HTMLImageElement>(null);
 
 	const handleOpenWeb = (): void => {
-		window.api.send(IpcChannels.OPEN_IN_BROWSER, getPostUrl(props.post.id));
+		window.api.send(IpcSendChannels.OPEN_IN_BROWSER, getPostUrl(props.post.id));
 	};
 
 	const handleTagsPopoverVisibilityChange = (visible: boolean): void => {

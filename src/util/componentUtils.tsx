@@ -133,7 +133,7 @@ const loader = ({
 
 		loadFunction(post)
 			.then((result) => {
-				const objectUrl = URL.createObjectURL(new Blob([result.data]));
+				const objectUrl = URL.createObjectURL(result.data);
 				cache.add(objectUrl, post.id);
 				shouldLog && log.debug('Post was found and loaded successfuly, ObjectURL:', objectUrl);
 				resolve(objectUrl);
@@ -196,7 +196,7 @@ export const previewLoader = (post: Post): Promise<string | undefined> => {
 			} else {
 				loadImage(post)
 					.then((result) => {
-						const objectUrl = URL.createObjectURL(new Blob([result.data]));
+						const objectUrl = URL.createObjectURL(result.data);
 						imageCache.add(objectUrl, post.id);
 						resolve(objectUrl);
 					})

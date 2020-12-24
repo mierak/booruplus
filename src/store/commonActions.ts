@@ -1,7 +1,7 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { Post } from '@appTypes/gelbooruTypes';
-import { IpcChannels } from '@appTypes/processDto';
+import { IpcInvokeChannels, IpcSendChannels } from '@appTypes/processDto';
 import { thunkLoggerFactory } from '@util/logger';
 
 import { PostsContext, ThunkApi } from '@store/types';
@@ -21,7 +21,7 @@ export const exportPostsToDirectory = createAsyncThunk<
 	async (param, thunkApi): Promise<Post[]> => {
 		const initialMessage = ` - exporting ${'context' in param ? param : 'Post[]'}`;
 		const logger = thunkLogger.getActionLogger(exportPostsToDirectory, { initialMessage });
-		const folder = await window.api.invoke<string>(IpcChannels.OPEN_SELECT_FOLDER_DIALOG);
+		const folder = await window.api.invoke(IpcInvokeChannels.OPEN_SELECT_FOLDER_DIALOG);
 		if (!folder) {
 			logger.debug('Select folder dialog closed without selecting a directory. Cancelling.');
 			return [];
@@ -45,7 +45,7 @@ export const exportPostsToDirectory = createAsyncThunk<
 		}
 		logger.debug(`Exporting ${posts.length} posts.`);
 
-		window.api.send(IpcChannels.EXPORT_POSTS, { path: folder, posts });
+		window.api.send(IpcSendChannels.EXPORT_POSTS, { path: folder, posts });
 
 		return posts;
 	}

@@ -19,7 +19,7 @@ import Gif from '../../../src/components/full-size-image/Gif';
 import '@testing-library/jest-dom';
 import { mPost } from '../../helpers/test.helper';
 import { getPostUrl } from '../../../src/service/webService';
-import { IpcChannels } from '../../../src/types/processDto';
+import { IpcSendChannels } from '../../../src/types/processDto';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -71,7 +71,7 @@ describe('Gif', () => {
 		fireEvent.click(screen.getByRole('button', { name: 'Open in browser' }));
 
 		// then
-		expect(ipcSendSpy).toBeCalledWith(IpcChannels.OPEN_IN_BROWSER, getPostUrl(post.id));
+		expect(ipcSendSpy).toBeCalledWith(IpcSendChannels.OPEN_IN_BROWSER, getPostUrl(post.id));
 	});
 	it('Creates action that shows TagsPopover', () => {
 		// given

@@ -7,7 +7,7 @@ import thunk from 'redux-thunk';
 import { mPost } from '../helpers/test.helper';
 import { mState } from '../helpers/store.helper';
 import { exportPostsToDirectory } from '../../src/store/commonActions';
-import { IpcChannels } from '../../src/types/processDto';
+import { IpcSendChannels } from '../../src/types/processDto';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -43,7 +43,7 @@ describe('store/commonActions', () => {
 
 			// then
 			expect(ipcInvokeSpy).toBeCalledTimes(1);
-			expect(ipcSendSpy).toBeCalledWith(IpcChannels.EXPORT_POSTS, { path, posts });
+			expect(ipcSendSpy).toBeCalledWith(IpcSendChannels.EXPORT_POSTS, { path, posts });
 		});
 		it('It invokes correct IPC for selected posts', async () => {
 			// given
@@ -63,7 +63,7 @@ describe('store/commonActions', () => {
 
 			// then
 			expect(ipcInvokeSpy).toBeCalledTimes(1);
-			expect(ipcSendSpy).toBeCalledWith(IpcChannels.EXPORT_POSTS, { path: path, posts: [posts[0], posts[1]] });
+			expect(ipcSendSpy).toBeCalledWith(IpcSendChannels.EXPORT_POSTS, { path: path, posts: [posts[0], posts[1]] });
 		});
 		it('It invokes correct IPC for supplied posts', async () => {
 			// given
@@ -77,7 +77,7 @@ describe('store/commonActions', () => {
 
 			// then
 			expect(ipcInvokeSpy).toBeCalledTimes(1);
-			expect(ipcSendSpy).toBeCalledWith(IpcChannels.EXPORT_POSTS, { path: path, posts });
+			expect(ipcSendSpy).toBeCalledWith(IpcSendChannels.EXPORT_POSTS, { path: path, posts });
 		});
 	});
 });

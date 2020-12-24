@@ -1,6 +1,6 @@
 import { mPost } from '../helpers/test.helper';
 import { loadImage } from '../../src/util/imageIpcUtils';
-import { IpcChannels } from '../../src/types/processDto';
+import { IpcInvokeChannels } from '../../src/types/processDto';
 
 describe('imageIpcUtils', () => {
 	const invokeMock = jest.fn();
@@ -22,8 +22,8 @@ describe('imageIpcUtils', () => {
 			const result = await loadImage(post);
 
 			// then
-			expect(invokeMock).toBeCalledWith(IpcChannels.LOAD_IMAGE, post);
-			expect(result).toMatchObject({ data, post });
+			expect(invokeMock).toBeCalledWith(IpcInvokeChannels.LOAD_IMAGE, post);
+			expect(result).toMatchObject({ data: new Blob([data]), post });
 		});
 		it('Invokes IPC and rejects with correct value', async () => {
 			// given

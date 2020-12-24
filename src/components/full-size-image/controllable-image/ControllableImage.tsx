@@ -9,7 +9,7 @@ import { actions } from '@store';
 
 import { Post } from '@appTypes/gelbooruTypes';
 import { ImageControl, openNotificationWithIcon } from '@appTypes/components';
-import { IpcChannels } from '@appTypes/processDto';
+import { IpcSendChannels } from '@appTypes/processDto';
 
 import TagsPopover from '@components/full-size-image/TagsPopover';
 import ImageControls from '@components/full-size-image/ImageControls';
@@ -72,7 +72,7 @@ const ControllableImage: React.FunctionComponent<Props> = ({ className, post, sh
 	};
 
 	const handleOpenWeb = (): void => {
-		window.api.send(IpcChannels.OPEN_IN_BROWSER, getPostUrl(post.id));
+		window.api.send(IpcSendChannels.OPEN_IN_BROWSER, getPostUrl(post.id));
 	};
 
 	const handleTagsPopoverVisibilityChange = (visible: boolean): void => {

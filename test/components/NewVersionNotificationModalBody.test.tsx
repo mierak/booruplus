@@ -8,7 +8,7 @@ import thunk from 'redux-thunk';
 import NewVersionNotificationModalBody from '../../src/components/NewVersionNotificationModalBody';
 import userEvent from '@testing-library/user-event';
 import { ReleaseResponse } from '@appTypes/gelbooruTypes';
-import { IpcChannels } from '@appTypes/processDto';
+import { IpcSendChannels } from '@appTypes/processDto';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -79,7 +79,7 @@ describe('LoadingMask', () => {
         userEvent.click(screen.getByText('releases page'));
 
         // then
-        expect(ipcSendSpy).toHaveBeenCalledWith(IpcChannels.OPEN_IN_BROWSER, 'https://github.com/mierak/booruplus/releases');
+        expect(ipcSendSpy).toHaveBeenCalledWith(IpcSendChannels.OPEN_IN_BROWSER, 'https://github.com/mierak/booruplus/releases');
 	});
 	it('Sends IPC to open direct download', () => {
 		// given
@@ -103,6 +103,6 @@ describe('LoadingMask', () => {
         userEvent.click(screen.getByText('here.'));
 
         // then
-        expect(ipcSendSpy).toHaveBeenCalledWith(IpcChannels.OPEN_IN_BROWSER, data.assets[0].browser_download_url);
+        expect(ipcSendSpy).toHaveBeenCalledWith(IpcSendChannels.OPEN_IN_BROWSER, data.assets[0].browser_download_url);
 	});
 });

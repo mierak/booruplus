@@ -5,7 +5,7 @@ import { Descriptions, Form, Input } from 'antd';
 import { AppDispatch, RootState } from '@store/types';
 import { actions } from '@store';
 
-import { IpcChannels } from '@appTypes/processDto';
+import { IpcSendChannels } from '@appTypes/processDto';
 import { validateApiKey } from '@util/utils';
 import { OPTIONS_URL } from '@service/webService';
 
@@ -43,7 +43,7 @@ const Gelbooru: React.FunctionComponent = () => {
 	};
 
 	const handleOpenGelbooruSettings = (): void => {
-		window.api.send(IpcChannels.OPEN_IN_BROWSER, OPTIONS_URL);
+		window.api.send(IpcSendChannels.OPEN_IN_BROWSER, OPTIONS_URL);
 	};
 
 	return (

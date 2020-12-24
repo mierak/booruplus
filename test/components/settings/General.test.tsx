@@ -9,7 +9,7 @@ import '@testing-library/jest-dom';
 import { mState } from '../../helpers/store.helper';
 
 import General from '../../../src/components/settings/General';
-import { IpcChannels } from '../../../src/types/processDto';
+import { IpcInvokeChannels, IpcSendChannels } from '../../../src/types/processDto';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -71,7 +71,7 @@ describe('settings/General', () => {
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({ type: thunks.settings.updateTheme.fulfilled.type, payload: 'light' })
 		);
-		expect(ipcSendSpy).toBeCalledWith(IpcChannels.THEME_CHANGED);
+		expect(ipcSendSpy).toBeCalledWith(IpcSendChannels.THEME_CHANGED);
 	});
 	it('Dispatches importDatabase() when Import button is pressed', async () => {
 		// given
@@ -172,7 +172,7 @@ describe('settings/General', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(ipcSendSpy).toBeCalledWith(IpcChannels.OPEN_SELECT_IMAGES_FOLDER_DIALOG);
+		expect(ipcSendSpy).toBeCalledWith(IpcInvokeChannels.OPEN_SELECT_IMAGES_FOLDER_DIALOG);
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({ type: actions.settings.setImagesFolderPath.type, payload: newPath })
 		);
@@ -206,7 +206,7 @@ describe('settings/General', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		await waitFor(() => expect(ipcSendSpy).toBeCalledWith(IpcChannels.OPEN_SELECT_IMAGES_FOLDER_DIALOG));
+		await waitFor(() => expect(ipcSendSpy).toBeCalledWith(IpcInvokeChannels.OPEN_SELECT_IMAGES_FOLDER_DIALOG));
 		await waitFor(() => expect(dispatchedActions).not.toContainMatchingAction({ type: actions.settings.setImagesFolderPath.type }));
 	});
 	it('Sends open open path dialog message to IPC with correct parameter', async () => {
@@ -233,7 +233,7 @@ describe('settings/General', () => {
 		fireEvent.click(screen.getByRole('button', { name: 'folder-open Open' }));
 
 		// then
-		expect(ipcSendSpy).toBeCalledWith(IpcChannels.OPEN_PATH, store.getState().settings.imagesFolderPath);
+		expect(ipcSendSpy).toBeCalledWith(IpcSendChannels.OPEN_PATH, store.getState().settings.imagesFolderPath);
 	});
 	it('Dispatches toggle imageHover', () => {
 		// given
