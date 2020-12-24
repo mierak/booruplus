@@ -65,7 +65,7 @@ describe('components', () => {
 			expect(wrapper.find('MovePostsToSuppliedFavoritesDirectoryModal')).toHaveLength(1);
 		});
 		it('Renders SettingsModal', () => {
-			store.dispatch(actions.showModal(ActiveModal.SETTINGS, undefined));
+			store.dispatch(actions.showModal(ActiveModal.SETTINGS));
 			store.dispatch(actions.setVisible(true));
 			const wrapper = setup();
 
@@ -95,7 +95,7 @@ describe('components', () => {
 		});
 
 		it('Renders nothing when activeModal is none', () => {
-			store.dispatch(actions.showModal(ActiveModal.NONE, undefined));
+			store.dispatch(actions.showModal(ActiveModal.NONE));
 			store.dispatch(actions.setVisible(true));
 			const wrapper = setup();
 

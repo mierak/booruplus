@@ -44,11 +44,14 @@ const modalSlice = createSlice({
 });
 
 type ShowModalAction = ReturnType<typeof modalSlice.actions.showModal>;
-const showModal = <K extends ActiveModal>(modal: K, modalState: PerModalState[K]): ShowModalAction => {
+const showModal = <K extends ActiveModal>(
+	modal: K,
+	...modalState: PerModalState[K] extends void ? [] : [PerModalState[K]]
+): ShowModalAction => {
 	return modalSlice.actions.showModal({
 		modal,
 		modalState: {
-			[modal]: modalState,
+			[modal]: modalState[0],
 		},
 	});
 };

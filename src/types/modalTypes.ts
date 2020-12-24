@@ -19,8 +19,8 @@ export interface PerModalState {
 	[ActiveModal.DELETE_FAVORITES_DIRECTORY]: DeleteDirectoryModalProps;
 	[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]: MovePostsToDirectoryConfirmationModalProps;
 	[ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION]: MovePostsToFavoritesDirectoryModalProps;
-	[ActiveModal.SETTINGS]?: undefined;
-	[ActiveModal.NONE]?: undefined;
+	[ActiveModal.SETTINGS]?: void;
+	[ActiveModal.NONE]?: void;
 }
 
 export interface AddDirectoryModalProps {
