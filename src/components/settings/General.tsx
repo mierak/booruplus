@@ -8,7 +8,7 @@ import { AppDispatch, RootState } from '@store/types';
 import { thunks, actions } from '@store';
 import { IpcInvokeChannels, IpcSendChannels } from '@appTypes/processDto';
 
-interface ButtonProps {
+type ButtonProps = {
 	$isOffset?: boolean;
 	$wide?: boolean;
 }

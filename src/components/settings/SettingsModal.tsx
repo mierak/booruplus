@@ -12,7 +12,7 @@ import Dashboard from './Dashboard';
 import Gelbooru from './Gelbooru';
 import About from './About';
 
-interface Props {
+type Props = {
 	className?: string;
 }
 

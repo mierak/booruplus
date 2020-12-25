@@ -22,7 +22,7 @@ import Drawers from './Drawers';
 
 const { Content, Sider } = Layout;
 
-interface Props {
+type Props = {
 	children?: React.ReactNode;
 	className?: string;
 }

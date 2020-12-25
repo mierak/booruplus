@@ -5,7 +5,7 @@ import { InputNumber } from 'antd';
 import { RootState } from '@store/types';
 import { actions } from '@store';
 
-interface Props {
+type Props = {
 	mode: 'online' | 'offline';
 }
 

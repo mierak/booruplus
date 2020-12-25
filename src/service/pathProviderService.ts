@@ -2,7 +2,7 @@ import path from 'path';
 
 import { Post } from '@appTypes/gelbooruTypes';
 
-interface PathProvider {
+type PathProvider = {
 	getImagePath(post: Post): string;
 	getThumbnailPath(post: Post): string;
 	getImageDirsPaths(post: Post): string[];

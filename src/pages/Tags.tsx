@@ -15,7 +15,7 @@ import TypeSearchFilter from '@components/tags/TypeSearchFilter';
 
 const { Column } = Table;
 
-interface Props {
+type Props = {
 	className?: string;
 	tagsPerPage?: number;
 }

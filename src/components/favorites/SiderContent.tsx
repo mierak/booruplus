@@ -8,14 +8,14 @@ import { actions, thunks } from '@store';
 import { AppDispatch, RootState } from '@store/types';
 import { ActiveModal } from '@appTypes/modalTypes';
 
-interface PProps {
+type Props = {
 	x: number;
 	y: number;
 }
 
 type Actions = 'add' | 'delete' | 'rename' | 'mark-as-default' | 'move-selected' | 'move-all' | 'export-directory';
 
-const DummyContextMenuPositionerDiv = styled.div<PProps>`
+const DummyContextMenuPositionerDiv = styled.div<Props>`
 	position: absolute;
 	left: ${(props): number => props.x}px;
 	top: ${(props): number => props.y}px;

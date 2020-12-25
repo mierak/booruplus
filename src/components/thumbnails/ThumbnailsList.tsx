@@ -12,7 +12,7 @@ import EmptyThumbnails from '@components/EmptyThumbnails';
 import Grid from './Grid';
 import PreviewImage from './PreviewImage';
 
-interface Props {
+type Props = {
 	className?: string;
 	context: PostsContext;
 	shouldShowLoadMoreButton?: boolean;
@@ -27,7 +27,7 @@ const Container = styled.div`
 	height: 100%;
 `;
 
-interface StyledEmptyThumbnailsProps {
+type StyledEmptyThumbnailsProps = {
 	centered?: boolean;
 }
 

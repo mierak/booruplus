@@ -8,7 +8,7 @@ import { RootState } from '@store/types';
 import TaskProgress from '@components/TaskProgress';
 import { thunks } from '@store';
 
-interface Props {
+type Props = {
 	className?: string;
 }
 

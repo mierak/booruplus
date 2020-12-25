@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 
 import { actions } from '@store';
 
-interface Props {
+type Props = {
 	className?: string;
 }
 

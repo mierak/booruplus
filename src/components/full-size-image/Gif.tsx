@@ -16,7 +16,7 @@ import LoadingMask from '@components/LoadingMask';
 import TagsPopover from './TagsPopover';
 import ImageControls from './ImageControls';
 
-interface Props {
+type Props = {
 	className?: string;
 	post: Post;
 }

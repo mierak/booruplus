@@ -7,7 +7,7 @@ import { actions } from '@store';
 
 import { Rating } from '@appTypes/gelbooruTypes';
 
-interface Props {
+type Props = {
 	mode: 'online' | 'offline';
 	open?: boolean;
 }

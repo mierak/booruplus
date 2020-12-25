@@ -17,7 +17,7 @@ import LoadingMask from '@components/LoadingMask';
 import { getPostUrl } from '@service/webService';
 import { imageLoader } from '@util/componentUtils';
 
-interface Props {
+type Props = {
 	className?: string;
 	showControls?: boolean;
 	post: Post;

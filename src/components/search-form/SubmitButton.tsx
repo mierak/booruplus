@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { actions, thunks } from '@store';
 import { AppDispatch, RootState } from '@store/types';
 
-interface Props {
+type Props = {
 	mode: 'online' | 'offline';
 }
 

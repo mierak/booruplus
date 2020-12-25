@@ -17,13 +17,13 @@ export type Icon =
 	| 'loading-outlined'
 	| 'copy-outlined';
 
-export interface ContextMenu {
+export type ContextMenu = {
 	title: string;
 	key: string;
 	action(post: Post): void;
 }
 
-export interface CardAction {
+export type CardAction = {
 	icon: Icon;
 	key: string;
 	tooltip: string;
@@ -32,7 +32,7 @@ export interface CardAction {
 	condition?: (post: Post) => boolean;
 }
 
-export interface ImageControl {
+export type ImageControl = {
 	key: string;
 	icon: Icon;
 	tooltip: string;

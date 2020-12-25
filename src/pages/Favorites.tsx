@@ -11,11 +11,11 @@ import { RootState, AppDispatch } from '@store/types';
 import { CardAction, openNotificationWithIcon } from '@appTypes/components';
 import { ActiveModal } from '@appTypes/modalTypes';
 
-interface Props {
+type Props = {
 	className?: string;
 }
 
-interface DividerProps {
+type DividerProps = {
 	$active: boolean;
 }
 

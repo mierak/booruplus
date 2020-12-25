@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'antd';
 
-interface FooterProps {
+type FooterProps = {
 	okText?: string;
 	cancelText?: string;
 	onConfirm: () => void;

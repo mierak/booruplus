@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ActiveModal, PerModalState } from '@appTypes/modalTypes';
 
-export interface ModalsState {
+export type ModalsState = {
 	activeModal: ActiveModal;
 	isVisible: boolean;
 	modalProps: {

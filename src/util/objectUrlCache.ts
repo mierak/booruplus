@@ -1,14 +1,14 @@
-export interface ImageCache {
+export type ImageCache = {
 	add: (objectUrl: string, postId: number) => void;
 	revokeAll: () => void;
 	getIfPresent: (postId: number) => string | undefined;
 }
 
-interface UrlCache {
+type UrlCache = {
 	[key: string]: string;
 }
 
-interface ImageCacheItem {
+type ImageCacheItem = {
 	postId: number;
 	objectUrl: string;
 }

@@ -1,11 +1,11 @@
-interface ViewportSettings {
+type ViewportSettings = {
 	width: number;
 	height: number;
 	offsetX: number;
 	offsetY: number;
 }
 
-export interface ListenerVariables {
+export type ListenerVariables = {
 	mouseDown: boolean;
 	previous: {
 		x: number;

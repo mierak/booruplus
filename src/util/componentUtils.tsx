@@ -65,7 +65,7 @@ export const getThumbnailBorder = (active: string, theme: 'dark' | 'light', sele
 	}
 	return 'dashed 1px black';
 };
-interface SetImageSizeParams {
+type SetImageSizeParams = {
 	post: Post;
 	windowSize: { width: number; height: number };
 }
@@ -95,7 +95,7 @@ export const getPreviewImageSize = ({ post, windowSize }: SetImageSizeParams): {
 	}
 };
 
-interface LoaderParams {
+type LoaderParams = {
 	post: Post;
 	downloadMissing: boolean;
 	cache: ImageCache;

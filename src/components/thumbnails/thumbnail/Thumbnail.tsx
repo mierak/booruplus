@@ -11,7 +11,7 @@ import { CardAction, ContextMenu } from '@appTypes/components';
 import { getThumbnailBorder, thumbnailLoader } from '@util/componentUtils';
 import { getActions, getDummyActions } from './util';
 
-interface Props {
+type Props = {
 	context: PostsContext;
 	index: number;
 	contextMenu?: ContextMenu[];
@@ -22,7 +22,7 @@ interface Props {
 	onMouseMove?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
 }
 
-interface CardProps {
+type CardProps = {
 	$isActive: string;
 	$theme: 'dark' | 'light';
 	$height: string;

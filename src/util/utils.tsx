@@ -208,7 +208,7 @@ export const blobToBase64 = (blob: Blob): Promise<string | undefined> => {
 	});
 };
 
-interface IndexFromRowColParams {
+type IndexFromRowColParams = {
 	rowIndex: number;
 	columnIndex: number;
 	columns: number;
@@ -217,7 +217,7 @@ export const getIndexFromRowCol = ({ rowIndex, columnIndex, columns }: IndexFrom
 	return rowIndex * columns + columnIndex;
 };
 
-interface RowColFromIndexParams {
+type RowColFromIndexParams = {
 	index: number;
 	columns: number;
 }
@@ -241,7 +241,7 @@ export const formatPercentProgress = (done: number, total: number): string => {
 	)} MB`;
 };
 
-interface Version {
+type Version = {
 	major: number;
 	minor: number;
 	patch: number;

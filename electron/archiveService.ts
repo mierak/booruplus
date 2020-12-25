@@ -8,10 +8,10 @@ import { Settings } from '@store/types';
 
 type onProgress = (done: number, total: number) => void;
 
-export interface ArchiveService {
+export type ArchiveService = {
 	archiveImages: (targetPath: string, onProgress?: onProgress) => Promise<boolean>;
 	extractImages: (sourcePath: string, onProgress?: onProgress) => Promise<boolean>;
-}
+};
 
 export const getArchiveService = (settings: Settings): ArchiveService => {
 	const imagesPath = settings.imagesFolderPath;

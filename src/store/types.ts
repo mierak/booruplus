@@ -10,15 +10,15 @@ export type AppThunk<T = void> = ThunkAction<Promise<T>, RootState, unknown, Act
 
 export type AppDispatch = typeof store.dispatch;
 
-export interface RejectWithValue<V> {
+export type RejectWithValue<V> = {
 	value: V;
-}
+};
 
-export interface ThunkApi<Rejected = void> {
+export type ThunkApi<Rejected = void> = {
 	dispatch: AppDispatch;
 	state: RootState;
 	rejectValue: Rejected;
-}
+};
 
 export type View =
 	| 'search-results'
@@ -35,18 +35,18 @@ export type SortOrder = 'asc' | 'desc';
 
 export type SearchMode = 'online' | 'offline' | 'saved-search-offline' | 'saved-search-online';
 
-export interface OfflineOptions {
+export type OfflineOptions = {
 	blacklisted: boolean;
 	favorite: boolean;
-}
+};
 
-export interface PostPropertyOptions {
+export type PostPropertyOptions = {
 	blacklisted?: 0 | 1;
 	favorite?: 0 | 1;
 	downloaded?: 0 | 1;
-}
+};
 
-export interface DashboardSettings {
+export type DashboardSettings = {
 	mostViewedCount: number;
 	loadMostSearchedTags: boolean;
 	loadMostFavoritedTags: boolean;
@@ -54,9 +54,9 @@ export interface DashboardSettings {
 	loadTagStatistics: boolean;
 	loadRatingDistributionChart: boolean;
 	saveTagsNotFoundInDb: boolean;
-}
+};
 
-export interface Settings {
+export type Settings = {
 	imagesFolderPath: string;
 	theme: 'dark' | 'light';
 	apiKey: string | undefined;
@@ -68,9 +68,9 @@ export interface Settings {
 		siderWidth: number | undefined;
 		expandedKeys: string[];
 	};
-}
+};
 
-export interface DownloadedSearchFormState {
+export type DownloadedSearchFormState = {
 	selectedTags: Tag[];
 	excludedTags: Tag[];
 	tagOptions: Tag[];
@@ -85,37 +85,37 @@ export interface DownloadedSearchFormState {
 	showVideos: boolean;
 	showImages: boolean;
 	showGifs: boolean;
-}
+};
 
-export interface DownloadTaskState {
+export type DownloadTaskState = {
 	taskId: number;
 	skipped: number;
 	downloaded: number;
 	canceled: boolean;
-}
+};
 
-export interface TagHistory {
+export type TagHistory = {
 	tag: Tag;
 	date: string;
 	count: number;
-}
+};
 
-export interface TreeNode {
+export type TreeNode = {
 	title: string | React.ReactNode;
 	key: string;
 	children: TreeNode[];
 	postIds: number[];
-}
+};
 
 export type TreeData = TreeNode[];
 
-export interface RatingCounts {
+export type RatingCounts = {
 	[key: string]: number;
-}
+};
 
 export type TaskState = 'preparing' | 'downloading' | 'completed' | 'failed' | 'canceled';
 
-export interface Task {
+export type Task = {
 	id: number;
 	timestampStarted: number;
 	timestampDone?: number;
@@ -123,16 +123,16 @@ export interface Task {
 	itemsDone: number;
 	state: TaskState;
 	postIds: number[];
-}
+};
 
-export interface FoundTags {
+export type FoundTags = {
 	tag: Tag;
 	count: number;
-}
+};
 
-export interface NotFoundTags {
+export type NotFoundTags = {
 	tag: string;
 	count: number;
-}
+};
 
 export type PostsContext = 'posts' | 'favorites' | 'mostViewed' | 'checkLaterQueue';

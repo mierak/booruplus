@@ -13,7 +13,7 @@ import { openNotificationWithIcon } from '@appTypes/components';
 
 const { Column } = Table;
 
-interface Props {
+type Props = {
 	className?: string;
 }
 

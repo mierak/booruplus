@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-interface Logger {
+type Logger = {
 	debug(...params: unknown[]): void;
 	error(...params: unknown[]): void;
 	info(...params: unknown[]): void;
 	warn(...params: unknown[]): void;
 }
 
-interface ThunkLogger {
+type ThunkLogger = {
 	getActionLogger(action: ActionParam, options?: { logPending?: boolean; initialMessage?: string }): Logger;
 }
 
-interface ActionParam {
+type ActionParam = {
 	typePrefix: string;
 }
 

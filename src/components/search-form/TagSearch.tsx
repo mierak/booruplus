@@ -11,7 +11,7 @@ import { Tag } from '@appTypes/gelbooruTypes';
 import { useDebounce } from '@hooks/useDebounce';
 import TagSelectOption from '@components/TagSelectOption';
 
-interface Props {
+type Props = {
 	mode: 'online' | 'offline';
 	open?: boolean;
 }

@@ -12,7 +12,7 @@ import ControllableImage from './full-size-image/controllable-image/Controllable
 import Video from './full-size-image/Video';
 import Gif from './full-size-image/Gif';
 
-interface Props {
+type Props = {
 	className?: string;
 	context: PostsContext;
 }

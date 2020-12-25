@@ -9,7 +9,7 @@ import { IpcSendChannels } from '@appTypes/processDto';
 import { validateApiKey } from '@util/utils';
 import { OPTIONS_URL } from '@service/webService';
 
-interface ApiKeyValidationStatus {
+type ApiKeyValidationStatus = {
 	validateStatus: 'error' | 'success' | '';
 	message: string;
 }

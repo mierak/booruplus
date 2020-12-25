@@ -7,7 +7,7 @@ import { TagHistory, RatingCounts } from './types';
 
 const log = window.log;
 
-export interface DashboardState {
+export type DashboardState = {
 	totalDownloadedPosts: number;
 	totalFavoritesPosts: number;
 	totalBlacklistedPosts: number;

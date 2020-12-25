@@ -15,7 +15,7 @@ import ExcludedTags from './search-form/ExcludedTags';
 import SortSelect from './search-form/SortSelect';
 import OrderSelect from './search-form/OrderSelect';
 
-interface Props {
+type Props = {
 	className?: string;
 }
 

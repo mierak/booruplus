@@ -11,7 +11,7 @@ import Tasks from '@pages/Tasks';
 import DownloadedSearchForm from '@components/DownloadedSearchForm';
 import OnlineSearchForm from '@components/OnlineSearchForm';
 
-interface DrawerProps {
+type DrawerProps = {
 	$disablePadding?: boolean;
 }
 const StyledDrawer = styled(Drawer)<DrawerProps>`

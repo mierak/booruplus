@@ -11,7 +11,7 @@ const StyledDummyActions = styled.div`
 	background-color: ${(props): string => (props.theme === 'dark' ? 'rgb(29,29,29)' : 'rgb(250,250,250)')};
 `;
 
-interface CardActionProps {
+type CardActionProps = {
 	icon: Icon;
 	tooltip: string;
 	post?: Post;

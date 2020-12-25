@@ -4,7 +4,7 @@ import { Divider, List, Typography } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 
-interface Props {
+type Props = {
 	data: ReleaseResponse;
 }
 

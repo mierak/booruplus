@@ -8,8 +8,7 @@ import { ThunkApi } from './types';
 const thunkLogger = thunkLoggerFactory();
 
 type MyThunk = AsyncThunk<unknown, unknown, ThunkApi>;
-
-interface ThunkType {
+type ThunkType = {
 	[key: string]: unknown;
 }
 

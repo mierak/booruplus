@@ -9,7 +9,7 @@ import { Tag } from '@appTypes/gelbooruTypes';
 import { actions, thunks } from '@store';
 import { getTagColor, sortTagsByType } from '@util/utils';
 
-interface Props {
+type Props = {
 	tags: string[];
 }
 

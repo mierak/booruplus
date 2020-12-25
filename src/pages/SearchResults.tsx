@@ -25,9 +25,9 @@ import { Post } from '@appTypes/gelbooruTypes';
 import { ActiveModal } from '@appTypes/modalTypes';
 import PageMenuHeader from '@components/common/PageMenuHeader';
 
-interface Props {
+type Props = {
 	className?: string;
-}
+};
 
 const Container = styled.div`
 	overflow-y: hidden;

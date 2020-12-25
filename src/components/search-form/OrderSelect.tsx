@@ -5,8 +5,7 @@ import { Radio } from 'antd';
 
 import { actions } from '@store';
 import { RootState, AppDispatch, SortOrder } from '@store/types';
-
-interface Props {
+type Props = {
 	className?: string;
 	mode: 'online' | 'offline';
 }

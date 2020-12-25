@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { View, SearchMode, PostsContext } from './types';
 import * as thunks from './thunks';
 
-export interface SystemState {
+export type SystemState = {
 	activeView: View;
 	imageViewContext: PostsContext;
 	searchMode: SearchMode;

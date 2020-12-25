@@ -5,7 +5,7 @@ import { Settings } from '@store/types';
 import { Post } from '@appTypes/gelbooruTypes';
 import { getPathProvider } from '../src/service/pathProviderService';
 
-export interface FileService {
+export type FileService = {
 	loadImage: (post: Post) => Promise<{ data: Buffer | undefined; post: Post }>;
 	loadThumbnail: (post: Post) => Promise<{ data: Buffer | undefined; post: Post }>;
 	saveImage: (post: Post, data: ArrayBuffer) => Promise<boolean>;

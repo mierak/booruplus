@@ -5,18 +5,18 @@ import { Post } from '@appTypes/gelbooruTypes';
 import * as thunks from './thunks';
 import { PostsContext } from './types';
 
-interface HoveredPost {
+type HoveredPost = {
 	visible: boolean;
 	post: Post | undefined;
-}
+};
 
 type WithContext<T = null> = { context: PostsContext } & (T extends null ? unknown : { data: T });
 
-export interface PostsState {
+export type PostsState = {
 	selectedIndices: { [K in PostsContext]?: number };
 	posts: { [K in PostsContext]: Post[] };
 	hoveredPost: HoveredPost;
-}
+};
 
 export const initialState: PostsState = {
 	selectedIndices: {},

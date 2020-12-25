@@ -8,7 +8,7 @@ import { PostsContext } from '@store/types';
 
 import Cell from './Cell';
 
-interface CellRendererProps {
+type CellRendererProps = {
 	columnIndex: number;
 	rowIndex: number;
 	style: React.CSSProperties;

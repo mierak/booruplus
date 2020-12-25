@@ -4,7 +4,7 @@ import { SavedSearch } from '@appTypes/gelbooruTypes';
 
 import * as thunks from './thunks';
 
-export interface SavedSearchesState {
+export type SavedSearchesState = {
 	savedSearches: SavedSearch[];
 	activeSavedSearch: SavedSearch | undefined;
 }

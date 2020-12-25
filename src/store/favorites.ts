@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TreeNode } from './types';
 import * as thunks from './thunks';
 
-export interface FavoritesState {
+export type FavoritesState = {
 	rootNode: TreeNode | undefined;
 	activeNodeKey: number; // node key that is displayed
 	expandedKeys: string[];

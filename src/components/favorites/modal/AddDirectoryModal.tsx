@@ -9,7 +9,7 @@ import { openNotificationWithIcon } from '@appTypes/components';
 import ModalFooter from './common/ModalFooter';
 import { AddDirectoryModalProps } from '@appTypes/modalTypes';
 
-interface ValidationStatus {
+type ValidationStatus = {
 	validateStatus: 'error' | 'success' | '';
 	message: string;
 }

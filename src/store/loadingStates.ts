@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import * as thunks from './thunks';
 import { setFullscreenLoadingMaskState } from './commonActions';
 
-export interface LoadingStates {
+export type LoadingStates = {
 	isMostFavoritedTagsLoading: boolean;
 	isMostSearchedTagsLoading: boolean;
 	isRatingDistributionChartLoading: boolean;

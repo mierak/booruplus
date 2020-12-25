@@ -5,7 +5,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { TagType } from '@appTypes/gelbooruTypes';
 import { capitalize } from '@util/utils';
 
-interface Props {
+type Props = {
 	className?: string;
 	visible: boolean;
 	confirm: () => void;

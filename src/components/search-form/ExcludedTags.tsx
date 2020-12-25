@@ -18,7 +18,7 @@ const StyledCard = styled(Card)`
 	}
 `;
 
-interface Props {
+type Props = {
 	mode: 'online' | 'offline';
 }
 

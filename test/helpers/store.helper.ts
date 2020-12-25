@@ -197,7 +197,7 @@ const mModalsState = (ms?: Partial<ReturnType<typeof Modals>>): ReturnType<typeo
 	};
 };
 
-interface PartialRootState {
+type PartialRootState = {
 	dashboard?: Partial<DashboardState>;
 	downloadedSearchForm?: Partial<DownloadedSearchFormState>;
 	onlineSearchForm?: Partial<SearchFormState>;

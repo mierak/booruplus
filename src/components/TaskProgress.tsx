@@ -6,7 +6,7 @@ import moment from 'moment';
 import { RootState, Task, AppDispatch } from '@store/types';
 import { thunks } from '@store';
 
-interface Props {
+type Props = {
 	className?: string;
 	taskId: number;
 }

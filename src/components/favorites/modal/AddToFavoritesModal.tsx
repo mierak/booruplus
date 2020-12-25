@@ -11,7 +11,7 @@ import { AddToFavoritesModalContextProps, AddToFavoritesModalProps } from '@appT
 
 import ModalFooter from './common/ModalFooter';
 
-interface Info {
+type Info = {
 	event: string;
 	selected: boolean;
 	node: EventDataNode;
@@ -19,7 +19,7 @@ interface Info {
 	nativeEvent: MouseEvent;
 }
 
-interface Props {
+type Props = {
 	treeData: TreeNode[] | undefined;
 	expandedKeys: string[];
 	data: AddToFavoritesModalProps | AddToFavoritesModalContextProps;

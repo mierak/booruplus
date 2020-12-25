@@ -5,7 +5,7 @@ import { Tag, Rating } from '@appTypes/gelbooruTypes';
 import { Sort, SortOrder } from './types';
 import * as thunks from './thunks';
 
-export interface SearchFormState {
+export type SearchFormState = {
 	selectedTags: Tag[];
 	excludedTags: Tag[];
 	limit: number;

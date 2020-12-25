@@ -114,7 +114,7 @@ declare class ResizeObserver {
 	unobserve: (target: Element) => void;
 }
 
-interface ResizeObserverObserveOptions {
+type ResizeObserverObserveOptions = {
 	/**
 	 * Sets which box model the observer will observe changes to. Possible values
 	 * are `content-box` (the default), and `border-box`.
@@ -122,7 +122,7 @@ interface ResizeObserverObserveOptions {
 	 * @default "content-box"
 	 */
 	box?: 'content-box' | 'border-box';
-}
+};
 
 /**
  * The function called whenever an observed resize occurs. The function is
@@ -175,7 +175,7 @@ type ResizeObserverCallback = (entries: ResizeObserverEntry[], observer: ResizeO
  * [SVGElement](https://developer.mozilla.org/en-US/docs/Web/API/SVGElement)
  * being observed.
  */
-interface ResizeObserverEntry {
+type ResizeObserverEntry = {
 	/**
 	 * An object containing the new border box size of the observed element when
 	 * the callback is run.
@@ -206,7 +206,7 @@ interface ResizeObserverEntry {
 	 * being observed.
 	 */
 	readonly target: Element;
-}
+};
 
 /**
  * The **borderBoxSize** read-only property of the
@@ -214,7 +214,7 @@ interface ResizeObserverEntry {
  * interface returns an object containing the new border box size of the
  * observed element when the callback is run.
  */
-interface ResizeObserverEntryBoxSize {
+type ResizeObserverEntryBoxSize = {
 	/**
 	 * The length of the observed element's border box in the block dimension. For
 	 * boxes with a horizontal
@@ -232,8 +232,8 @@ interface ResizeObserverEntryBoxSize {
 	 * vertical, this is the vertical dimension, or height.
 	 */
 	inlineSize: number;
-}
+};
 
-interface Window {
+type Window = {
 	ResizeObserver: ResizeObserver;
-}
+};

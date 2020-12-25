@@ -7,7 +7,7 @@ import { AppDispatch, RootState, ThunkApi } from '@store/types';
 import { thunks } from '@store';
 import { Post } from '@appTypes/gelbooruTypes';
 
-interface Props {
+type Props = {
 	className?: string;
 }
 

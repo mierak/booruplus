@@ -9,7 +9,7 @@ import { TagHistory, AppDispatch, RootState } from '@store/types';
 
 import { getTagColor } from '@util/utils';
 
-interface Props {
+type Props = {
 	className?: string;
 	type: 'most-searched' | 'most-favorited';
 	title: string;

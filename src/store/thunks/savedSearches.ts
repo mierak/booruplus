@@ -39,7 +39,7 @@ export const searchOffline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi
 	}
 );
 
-interface NewSearchParams {
+type NewSearchParams = {
 	tags: Tag[];
 	excludedTags: Tag[];
 	rating: Rating;

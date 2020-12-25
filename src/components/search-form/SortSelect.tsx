@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState, Sort } from '@store/types';
 import { actions } from '@store';
 
-interface Props {
+type Props = {
 	className?: string;
 	mode: 'online' | 'offline';
 	open?: boolean;

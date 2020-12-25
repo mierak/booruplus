@@ -12,7 +12,7 @@ import { actions } from '@store/';
 
 import CellRenderer from './CellRenderer';
 
-interface Props {
+type Props = {
 	context: PostsContext;
 	itemCount: number;
 	isSingleColumn?: boolean;
@@ -27,7 +27,7 @@ interface Props {
 	onCellMouseMove?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
 }
 
-interface ContainerProps {
+type ContainerProps = {
 	headerHeight?: number;
 }
 

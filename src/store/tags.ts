@@ -4,7 +4,7 @@ import { Tag } from '@appTypes/gelbooruTypes';
 
 import * as thunks from './thunks';
 
-export interface TagsState {
+export type TagsState = {
 	tags: Tag[];
 }
 

@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 
 import { RootState } from '@store/types';
 
-interface Props {
+type Props = {
 	className?: string;
 	visible: boolean;
 	delay?: number;
@@ -14,7 +14,7 @@ interface Props {
 	opacity?: number;
 }
 
-interface ContainerProps {
+type ContainerProps = {
 	fullscreen?: boolean;
 	opacity?: number;
 }

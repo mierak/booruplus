@@ -12,7 +12,7 @@ export enum ActiveModal {
 	SETTINGS = 'SETTINGS',
 }
 
-export interface PerModalState {
+export type PerModalState = {
 	[ActiveModal.ADD_POSTS_TO_FAVORITES]: AddToFavoritesModalProps | AddToFavoritesModalContextProps;
 	[ActiveModal.ADD_FAVORITES_DIRECTORY]: AddDirectoryModalProps;
 	[ActiveModal.RENAME_FAVORITES_DIRECTORY]: RenameDirectoryModalProps;
@@ -23,26 +23,26 @@ export interface PerModalState {
 	[ActiveModal.NONE]?: void;
 }
 
-export interface AddDirectoryModalProps {
+export type AddDirectoryModalProps = {
 	selectedNodeKey: number;
 }
-export interface AddToFavoritesModalProps {
+export type AddToFavoritesModalProps = {
 	postsToFavorite: Post[];
 }
-export interface AddToFavoritesModalContextProps {
+export type AddToFavoritesModalContextProps = {
 	context: PostsContext;
 	type: 'all' | 'selected';
 }
-export interface DeleteDirectoryModalProps {
+export type DeleteDirectoryModalProps = {
 	selectedNodeKey: number;
 }
-export interface MovePostsToFavoritesDirectoryModalProps {
+export type MovePostsToFavoritesDirectoryModalProps = {
 	postsToMove: Post[];
 }
-export interface MovePostsToDirectoryConfirmationModalProps {
+export type MovePostsToDirectoryConfirmationModalProps = {
 	targetDirectoryKey: number;
 	postsToMove: Post[];
 }
-export interface RenameDirectoryModalProps {
+export type RenameDirectoryModalProps = {
 	targetDirectoryKey: number;
 }

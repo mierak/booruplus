@@ -42,7 +42,7 @@
 		"quotes": ["error", "single"],
 		"semi": ["error", "always"],
 		"react/react-in-jsx-scope": "off",
-		"@typescript-eslint/consistent-type-definitions": ["error", "interface"],
+		"@typescript-eslint/consistent-type-definitions": ["error", "type"],
 		"@typescript-eslint/adjacent-overload-signatures": "error",
 		"@typescript-eslint/no-misused-new": "error",
 		"@typescript-eslint/no-empty-interface": "error",

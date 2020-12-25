@@ -31,7 +31,7 @@ export enum IpcListeners {
 	IMPORT_PROGRESS = 'IMPORT_PROGRESS',
 }
 
-interface IpcInvokeParam {
+type IpcInvokeParam = {
 	[IpcInvokeChannels.SAVE_IMAGE]: SavePostDto;
 	[IpcInvokeChannels.SAVE_THUMBNAIL]: SaveThumbnailDto;
 	[IpcInvokeChannels.LOAD_IMAGE]: Post;
@@ -47,7 +47,7 @@ interface IpcInvokeParam {
 	[IpcInvokeChannels.IMPORT_IMAGES]: void;
 }
 
-interface IpcInvokeReturn {
+type IpcInvokeReturn = {
 	[IpcInvokeChannels.LOAD_IMAGE]: Promise<LoadPostResponse>;
 	[IpcInvokeChannels.LOAD_THUMBNAIL]: Promise<LoadPostResponse>;
 	[IpcInvokeChannels.OPEN_SELECT_IMAGES_FOLDER_DIALOG]: Promise<Electron.OpenDialogReturnValue>;
@@ -63,7 +63,7 @@ interface IpcInvokeReturn {
 	[IpcInvokeChannels.SAVE_THUMBNAIL]: Promise<void>;
 }
 
-interface IpcSendParam {
+type IpcSendParam = {
 	[IpcSendChannels.SETTINGS_CHANGED]: Settings;
 	[IpcSendChannels.THEME_CHANGED]: undefined;
 	[IpcSendChannels.OPEN_IN_BROWSER]: string;
@@ -71,7 +71,7 @@ interface IpcSendParam {
 	[IpcSendChannels.EXPORT_POSTS]: { path: string; posts: Post[] };
 }
 
-interface IpcListenersParam {
+type IpcListenersParam = {
 	[IpcListeners.EXPORT_PROGRESS]: { done: number; total: number };
 	[IpcListeners.IMPORT_PROGRESS]: { done: number; total: number };
 }
@@ -103,32 +103,32 @@ export type IpcInvokeHandlers = {
 	[K in IpcInvokeChannels]: (event: IpcMainInvokeEvent, args: IpcInvokeParam[K]) => IpcInvokeReturn[K];
 }
 
-export interface IpcListenerResponse<K extends IpcListeners> {
+export type IpcListenerResponse<K extends IpcListeners> = {
 	channel: K;
 	params: IpcListenersParam[K];
 }
 
-export interface SavePostDto {
+export type SavePostDto = {
 	data: ArrayBuffer;
 	thumbnailData: ArrayBuffer;
 	post: Post;
 }
 
-export interface SaveThumbnailDto {
+export type SaveThumbnailDto = {
 	data: ArrayBuffer;
 	post: Post;
 }
 
-export interface LoadPostResponse {
+export type LoadPostResponse = {
 	data: Buffer | undefined;
 	post: Post;
 }
 
-export interface SuccessfulLoadPostResponse {
+export type SuccessfulLoadPostResponse = {
 	data: Blob;
 	post: Post;
 }
-export interface ExportDataDto {
+export type ExportDataDto = {
 	data: string;
 	filePath: string;
 }

@@ -7,7 +7,7 @@ import { Post } from '@appTypes/gelbooruTypes';
 import Thumbnail from './thumbnail/Thumbnail';
 import { PostsContext } from '@store/types';
 
-interface CellProps {
+type CellProps = {
 	context: PostsContext;
 	columnIndex: number;
 	rowIndex: number;
