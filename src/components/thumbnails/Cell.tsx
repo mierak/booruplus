@@ -8,7 +8,7 @@ import Thumbnail from './thumbnail/Thumbnail';
 import { PostsContext } from '@store/types';
 
 type CellProps = {
-	context: PostsContext;
+	context: PostsContext | string;
 	columnIndex: number;
 	rowIndex: number;
 	style: React.CSSProperties;

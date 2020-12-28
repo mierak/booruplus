@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { AppDispatch, RootState } from '@store/types';
+import { AppDispatch, RootState, PostsContext } from '@store/types';
 
 import { Post } from '@appTypes/gelbooruTypes';
 import { IpcSendChannels } from '@appTypes/processDto';
@@ -19,7 +19,8 @@ import ImageControls from './ImageControls';
 type Props = {
 	className?: string;
 	post: Post;
-}
+	context: PostsContext | string;
+};
 
 const Container = styled.div`
 	position: relative;
@@ -29,7 +30,7 @@ const StyledVideo = styled.video`
 	width: 100%;
 `;
 
-const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
+const Video: React.FunctionComponent<Props> = ({ post, className, context }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const downloadMissingImage = useSelector((state: RootState) => state.settings.downloadMissingImages);
@@ -73,7 +74,7 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 	const handleTagsPopoverVisibilityChange = (visible: boolean): void => {
 		dispatch(actions.system.setTagsPopovervisible(visible));
 	};
-	
+
 	const handleCopyToClipboard = (): void => {
 		window.clipboard.writeText(post.fileUrl);
 		openNotificationWithIcon('success', 'Link copied to clipboard', '');
@@ -85,7 +86,7 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 			key: 'image-control-show-tags',
 			tooltip: 'Show tags',
 			popOver: {
-				content: <TagsPopover tags={post.tags} />,
+				content: <TagsPopover context={context} tags={post.tags} />,
 				autoAdjustOverflow: true,
 				onVisibleChange: handleTagsPopoverVisibilityChange,
 				trigger: 'click',
@@ -101,8 +102,8 @@ const Video: React.FunctionComponent<Props> = ({ post, className }: Props) => {
 			icon: 'copy-outlined',
 			key: 'copy-to-clipboard',
 			tooltip: 'Copy to clipboard',
-			onClick: handleCopyToClipboard
-		}
+			onClick: handleCopyToClipboard,
+		},
 	];
 
 	return (

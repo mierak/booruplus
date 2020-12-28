@@ -2,41 +2,34 @@ import { Action, AnyAction, combineReducers, Dispatch, Middleware, MiddlewareAPI
 import { configureStore } from '@reduxjs/toolkit';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 
-import onlineSearchFormReducer from './onlineSearchForm';
-import postsReducer from './posts';
-import systemReducer from './system';
-import savedSearchesReducer from './savedSearches';
-import tagsReducer from './tags';
-import downloadedSearchFormReducer from './downloadedSearchForm';
-import settingsReducer from './settings';
-import dashboardReducer from './dashboard';
-import tasksReducer from './tasks';
-import loadingStatesReducer from './loadingStates';
-import favoritesReducer from './favorites';
-import modalsReducer from './modals/index';
-
-import { actions as posts, initialState as postsInitialState } from './posts';
-import { actions as onlineSearchForm, initialState as onlineSearchFormInitialState } from './onlineSearchForm';
-import { actions as system, initialState as systemInitialState } from './system';
-import { actions as savedSearches, initialState as savedSearchesInitialState } from './savedSearches';
-import { actions as tags, initialState as tagsInitialState } from './tags';
-import { actions as downloadedSearchForm, initialState as downloadedSearchFormInitialState } from './downloadedSearchForm';
-import { actions as settings, initialState as settingsInitialState } from './settings';
-import { actions as dashboard, initialState as dashboardInitialState } from './dashboard';
-import { actions as tasks, initialState as tasksInitialState } from './tasks';
-import { actions as loadingStates, initialState as loadingStatesInitialState } from './loadingStates';
-import { actions as favorites, initialState as favoritesInitialState } from './favorites';
-import { actions as modals, initialState as modalsInitialState } from './modals/index';
+import onlineSearchFormReducer, {
+	actions as onlineSearchForm,
+	initialState as onlineSearchFormInitialState,
+} from './onlineSearchForm';
+import postsReducer, { actions as posts, initialState as postsInitialState } from './posts';
+import systemReducer, { actions as system, initialState as systemInitialState } from './system';
+import savedSearchesReducer, {
+	actions as savedSearches,
+	initialState as savedSearchesInitialState,
+} from './savedSearches';
+import tagsReducer, { actions as tags, initialState as tagsInitialState } from './tags';
+import settingsReducer, { actions as settings, initialState as settingsInitialState } from './settings';
+import dashboardReducer, { actions as dashboard, initialState as dashboardInitialState } from './dashboard';
+import tasksReducer, { actions as tasks, initialState as tasksInitialState } from './tasks';
+import loadingStatesReducer, {
+	actions as loadingStates,
+	initialState as loadingStatesInitialState,
+} from './loadingStates';
+import favoritesReducer, { actions as favorites, initialState as favoritesInitialState } from './favorites';
+import modalsReducer, { actions as modals, initialState as modalsInitialState } from './modals/index';
 
 import * as allThunks from './thunks';
-import { RootState } from './types';
 
 export const mainReducer = combineReducers({
 	system: systemReducer,
 	posts: postsReducer,
 	savedSearches: savedSearchesReducer,
 	tags: tagsReducer,
-	downloadedSearchForm: downloadedSearchFormReducer,
 	onlineSearchForm: onlineSearchFormReducer,
 	settings: settingsReducer,
 	dashboard: dashboardReducer,
@@ -51,7 +44,6 @@ export const initialState = {
 	posts: postsInitialState,
 	savedSearches: savedSearchesInitialState,
 	tags: tagsInitialState,
-	downloadedSearchForm: downloadedSearchFormInitialState,
 	onlineSearchForm: onlineSearchFormInitialState,
 	settings: settingsInitialState,
 	dashboard: dashboardInitialState,
@@ -67,7 +59,6 @@ export const actions = {
 	onlineSearchForm,
 	savedSearches,
 	tags,
-	downloadedSearchForm,
 	settings,
 	dashboard,
 	tasks,
@@ -96,5 +87,5 @@ const loggerMiddleware: Middleware = <D extends Dispatch<AnyAction>, S>(api: Mid
 
 export const store = configureStore({
 	reducer: mainReducer,
-	middleware: [thunk as ThunkMiddleware<RootState>, loggerMiddleware],
+	middleware: [thunk as ThunkMiddleware<ReturnType<typeof mainReducer>>, loggerMiddleware],
 });

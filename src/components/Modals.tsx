@@ -11,6 +11,7 @@ import SettingsModal from './settings/SettingsModal';
 import RenameDirectoryModal from './favorites/modal/RenameDirectoryModal';
 import MovePostsToSuppliedFavoritesDirectoryModal from './favorites/modal/MovePostsToSuppliedFavoritesDirectoryModal';
 import { ActiveModal } from '@appTypes/modalTypes';
+import { SearchFormModal } from './SearchForm';
 
 const Modals: React.FunctionComponent = () => {
 	const activeModal = useSelector((state: RootState) => state.modals.activeModal);
@@ -50,6 +51,8 @@ const Modals: React.FunctionComponent = () => {
 			}
 			case ActiveModal.SETTINGS:
 				return <SettingsModal />;
+			case ActiveModal.SEARCH_FORM:
+				return <SearchFormModal {...props[ActiveModal.SEARCH_FORM]} />;
 		}
 	};
 

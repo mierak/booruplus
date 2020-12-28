@@ -2,25 +2,22 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Select } from 'antd';
 
-import { RootState } from '@store/types';
+import { PostsContext, RootState } from '@store/types';
 import { actions } from '@store';
 
 import { Rating } from '@appTypes/gelbooruTypes';
 
 type Props = {
-	mode: 'online' | 'offline';
+	context: PostsContext | string;
 	open?: boolean;
-}
+};
 
-const RatingSelect: React.FunctionComponent<Props> = ({ mode, open }: Props) => {
+const RatingSelect: React.FunctionComponent<Props> = ({ open, context }: Props) => {
 	const dispatch = useDispatch();
-	const rating = useSelector(
-		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.rating) || state.onlineSearchForm.rating
-	);
+	const rating = useSelector((state: RootState) => state.onlineSearchForm[context].rating);
 
-	const handleRatingSelect = (val: Rating): void => {
-		const setRating = (mode === 'offline' && actions.downloadedSearchForm.setRating) || actions.onlineSearchForm.setRating;
-		dispatch(setRating(val));
+	const handleRatingSelect = (data: Rating): void => {
+		dispatch(actions.onlineSearchForm.setRating({ context, data }));
 	};
 
 	return (

@@ -9,6 +9,7 @@ export enum ActiveModal {
 	DELETE_FAVORITES_DIRECTORY = 'DELETE_FAVORITES_DIRECTORY',
 	MOVE_POSTS_TO_DIRECTORY_CONFIRMATION = 'MOVE_POSTS_TO_DIRECTORY_CONFIRMATION',
 	MOVE_POSTS_TO_DIRECTORY_SELECTION = 'MOVE_POSTS_TO_DIRECTORY_SELECTION',
+	SEARCH_FORM = 'SEARCH_FORM',
 	SETTINGS = 'SETTINGS',
 }
 
@@ -19,6 +20,7 @@ export type PerModalState = {
 	[ActiveModal.DELETE_FAVORITES_DIRECTORY]: DeleteDirectoryModalProps;
 	[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]: MovePostsToDirectoryConfirmationModalProps;
 	[ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION]: MovePostsToFavoritesDirectoryModalProps;
+	[ActiveModal.SEARCH_FORM]: SearchFormModalProps;
 	[ActiveModal.SETTINGS]?: void;
 	[ActiveModal.NONE]?: void;
 }
@@ -30,7 +32,7 @@ export type AddToFavoritesModalProps = {
 	postsToFavorite: Post[];
 }
 export type AddToFavoritesModalContextProps = {
-	context: PostsContext;
+	context: PostsContext | string;
 	type: 'all' | 'selected';
 }
 export type DeleteDirectoryModalProps = {
@@ -45,4 +47,9 @@ export type MovePostsToDirectoryConfirmationModalProps = {
 }
 export type RenameDirectoryModalProps = {
 	targetDirectoryKey: number;
+}
+
+export type SearchFormModalProps = {
+	context: PostsContext | string;
+	previousTab: string;
 }

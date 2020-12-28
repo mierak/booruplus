@@ -83,7 +83,11 @@ export const fetchPostsByIds = createAsyncThunk<Post[], number[], ThunkApi>(
  * @param taskId If this is a batch download, taskId should be provided for progress bar
  * @returns Instance of Post that have been downloaded with updated state
  */
-export const downloadPost = createAsyncThunk<Post, { post: Post; context: PostsContext; taskId?: number }, ThunkApi>(
+export const downloadPost = createAsyncThunk<
+	Post,
+	{ post: Post; context: PostsContext | string; taskId?: number },
+	ThunkApi
+>(
 	'posts/downloadPost',
 	async (params, thunkApi): Promise<Post> => {
 		thunkLogger.getActionLogger(downloadPost, { initialMessage: `post id: ${params.post.id.toString()}` });
@@ -91,7 +95,7 @@ export const downloadPost = createAsyncThunk<Post, { post: Post; context: PostsC
 			...params.post,
 			downloaded: 1,
 			blacklisted: 0,
-			downloadedAt: moment().valueOf()
+			downloadedAt: moment().valueOf(),
 		};
 		await saveImage(updatedPost);
 		db.posts.put(updatedPost);
@@ -131,7 +135,7 @@ export const persistTask = createAsyncThunk<Task | undefined, DownloadTaskState,
 
 export const downloadPosts = createAsyncThunk<
 	{ taskId: number; skipped: number; downloaded: number; canceled: boolean },
-	{ posts: Post[]; context: PostsContext },
+	{ posts: Post[]; context: PostsContext | string },
 	ThunkApi
 >(
 	'posts/downloadPosts',
@@ -191,7 +195,7 @@ export const downloadPosts = createAsyncThunk<
 	}
 );
 
-export const downloadSelectedPosts = createAsyncThunk<void, { context: PostsContext }, ThunkApi>(
+export const downloadSelectedPosts = createAsyncThunk<void, { context: PostsContext | string }, ThunkApi>(
 	'posts/downloadSelectedPosts',
 	async ({ context }, thunkApi): Promise<void> => {
 		const logger = thunkLogger.getActionLogger(downloadSelectedPosts);
@@ -207,7 +211,7 @@ export const downloadSelectedPosts = createAsyncThunk<void, { context: PostsCont
 	}
 );
 
-export const downloadAllPosts = createAsyncThunk<void, { context: PostsContext }, ThunkApi>(
+export const downloadAllPosts = createAsyncThunk<void, { context: PostsContext | string }, ThunkApi>(
 	'posts/downloadAllPosts',
 	async ({ context }, thunkApi): Promise<void> => {
 		const logger = thunkLogger.getActionLogger(downloadAllPosts);
@@ -223,20 +227,20 @@ export const downloadAllPosts = createAsyncThunk<void, { context: PostsContext }
 	}
 );
 
-export const downloadWholeSearch = createAsyncThunk<void, void, ThunkApi>(
+export const downloadWholeSearch = createAsyncThunk<void, { context: PostsContext | string }, ThunkApi>(
 	'posts/downloadWholeSearch',
-	async (_, thunkApi): Promise<void> => {
+	async ({ context }, thunkApi): Promise<void> => {
 		const logger = thunkLogger.getActionLogger(downloadWholeSearch);
 
 		const state = thunkApi.getState();
-		const tags = state.onlineSearchForm.selectedTags;
-		const excludedTags = state.onlineSearchForm.excludedTags;
+		const tags = state.onlineSearchForm[context].selectedTags;
+		const excludedTags = state.onlineSearchForm[context].excludedTags;
 		const tagsString = tags.map((tag) => tag.tag);
 		const excludedTagString = excludedTags.map((tag) => tag.tag);
 		const options: PostSearchOptions = {
 			limit: 100,
 			page: 0,
-			rating: state.onlineSearchForm.rating,
+			rating: state.onlineSearchForm[context].rating,
 			apiKey: state.settings.apiKey,
 		};
 
@@ -267,12 +271,12 @@ export const downloadWholeSearch = createAsyncThunk<void, void, ThunkApi>(
 			totalPosts.push(...posts);
 			await delay(2000);
 		}
-		await thunkApi.dispatch(downloadPosts({ posts: totalPosts, context: 'posts' }));
+		await thunkApi.dispatch(downloadPosts({ posts: totalPosts, context }));
 		return Promise.resolve();
 	}
 );
 
-export const blacklistPosts = createAsyncThunk<Post[], { context: PostsContext; posts: Post[] }, ThunkApi>(
+export const blacklistPosts = createAsyncThunk<Post[], { context: PostsContext | string; posts: Post[] }, ThunkApi>(
 	'posts/blacklistPosts',
 	async ({ posts }): Promise<Post[]> => {
 		const logger = thunkLogger.getActionLogger(blacklistPosts);
@@ -288,7 +292,7 @@ export const blacklistPosts = createAsyncThunk<Post[], { context: PostsContext; 
 	}
 );
 
-export const blacklistAllPosts = createAsyncThunk<void, { context: PostsContext }, ThunkApi>(
+export const blacklistAllPosts = createAsyncThunk<void, { context: PostsContext | string }, ThunkApi>(
 	'posts/blacklistAllPosts',
 	async ({ context }, thunkApi): Promise<void> => {
 		thunkLogger.getActionLogger(blacklistAllPosts);
@@ -296,7 +300,7 @@ export const blacklistAllPosts = createAsyncThunk<void, { context: PostsContext 
 	}
 );
 
-export const blacklistSelectedPosts = createAsyncThunk<void, { context: PostsContext }, ThunkApi>(
+export const blacklistSelectedPosts = createAsyncThunk<void, { context: PostsContext | string }, ThunkApi>(
 	'posts/blacklistSelectedPosts',
 	async ({ context }, thunkApi): Promise<void> => {
 		thunkLogger.getActionLogger(blacklistSelectedPosts);
@@ -305,7 +309,7 @@ export const blacklistSelectedPosts = createAsyncThunk<void, { context: PostsCon
 	}
 );
 
-export const incrementViewCount = createAsyncThunk<Post, { post: Post; context: PostsContext }, ThunkApi>(
+export const incrementViewCount = createAsyncThunk<Post, { post: Post; context: PostsContext | string }, ThunkApi>(
 	'posts/incrementViewCount',
 	async ({ post }): Promise<Post> => {
 		const logger = thunkLogger.getActionLogger(incrementViewCount);

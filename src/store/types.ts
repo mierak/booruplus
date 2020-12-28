@@ -20,20 +20,13 @@ export type ThunkApi<Rejected = void> = {
 	rejectValue: Rejected;
 };
 
-export type View =
-	| 'search-results'
-	| 'image'
-	| 'dashboard'
-	| 'saved-searches'
-	| 'favorites'
-	| 'tag-list'
-	| 'check-later';
+export type View = 'searches' | 'image' | 'dashboard' | 'saved-searches' | 'favorites' | 'tag-list' | 'check-later';
 
 export type Sort = 'date-downloaded' | 'date-uploaded' | 'rating' | 'resolution' | 'date-updated' | 'none';
 
 export type SortOrder = 'asc' | 'desc';
 
-export type SearchMode = 'online' | 'offline' | 'saved-search-offline' | 'saved-search-online';
+export type SearchMode = 'online' | 'offline';
 
 export type OfflineOptions = {
 	blacklisted: boolean;
@@ -68,23 +61,6 @@ export type Settings = {
 		siderWidth: number | undefined;
 		expandedKeys: string[];
 	};
-};
-
-export type DownloadedSearchFormState = {
-	selectedTags: Tag[];
-	excludedTags: Tag[];
-	tagOptions: Tag[];
-	rating: Rating;
-	postLimit: number;
-	page: number;
-	sort: Sort;
-	sortOrder: SortOrder;
-	showNonBlacklisted: boolean;
-	showBlacklisted: boolean;
-	showFavorites: boolean;
-	showVideos: boolean;
-	showImages: boolean;
-	showGifs: boolean;
 };
 
 export type DownloadTaskState = {
@@ -135,4 +111,28 @@ export type NotFoundTags = {
 	count: number;
 };
 
+export type SearchFormState = {
+	mode: SearchMode;
+	savedSearchId?: number;
+	selectedTags: Tag[];
+	excludedTags: Tag[];
+	limit: number;
+	rating: Rating;
+	page: number;
+	tagOptions: Tag[];
+	sort: Sort;
+	sortOrder: SortOrder;
+};
+
+export type DownloadedSearchFormState = SearchFormState & {
+	showNonBlacklisted: boolean;
+	showBlacklisted: boolean;
+	showFavorites: boolean;
+	showVideos: boolean;
+	showImages: boolean;
+	showGifs: boolean;
+};
+
 export type PostsContext = 'posts' | 'favorites' | 'mostViewed' | 'checkLaterQueue';
+
+export type WithContext<T = null> = { context: PostsContext | string } & (T extends null ? unknown : { data: T });

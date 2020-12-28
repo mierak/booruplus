@@ -210,8 +210,8 @@ describe('store/posts', () => {
 			const result = reducer(state, action);
 
 			// then
-			result.posts.posts.forEach((post, index) => {
-				expect(post).toMatchObject(posts[index]);
+			result.posts.posts.forEach((post, i) => {
+				expect(post).toMatchObject(posts[i]);
 			});
 		});
 		it('Does not do anything when index is lower than 0', () => {
@@ -232,8 +232,8 @@ describe('store/posts', () => {
 			const result = reducer(state, action);
 
 			// then
-			result.posts.posts.forEach((post, index) => {
-				expect(post).toMatchObject(posts[index]);
+			result.posts.posts.forEach((post, i) => {
+				expect(post).toMatchObject(posts[i]);
 			});
 		});
 		it('Selects all posts from maxSelectedIndex to supplied index', () => {
@@ -648,7 +648,6 @@ describe('store/posts', () => {
 	});
 	it('Removes blacklisted posts when blacklistPosts is fulfilled', () => {
 		// given
-		const context = 'favorites';
 		const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
 		const action = createFulfilledAction(thunks.posts.blacklistPosts.fulfilled.type, [posts[0], posts[1]], {
 			arg: { context },

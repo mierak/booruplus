@@ -31,11 +31,15 @@ describe('Gif', () => {
 	});
 	it('Calls loadImage and renders returned url, calls cleanup', async () => {
 		// given
+		const context = 'ctx';
 		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'], downloaded: 1 });
 		const store = mockStore(
 			mState({
 				settings: {
 					downloadMissingImages: false,
+				},
+				onlineSearchForm: {
+					[context]: {},
 				},
 			})
 		);
@@ -44,7 +48,7 @@ describe('Gif', () => {
 		// when
 		const { unmount } = render(
 			<Provider store={store}>
-				<Gif post={post} />
+				<Gif context={context} post={post} />
 			</Provider>
 		);
 
@@ -55,8 +59,15 @@ describe('Gif', () => {
 	});
 	it('Creates action with open-in-browser IPC message', () => {
 		// given
+		const context = 'ctx';
 		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'], fileUrl: 'test_file_url.gif' });
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				onlineSearchForm: {
+					[context]: {},
+				},
+			})
+		);
 		const ipcSendSpy = jest.fn();
 		(global as any).api = {
 			send: ipcSendSpy,
@@ -65,7 +76,7 @@ describe('Gif', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Gif post={post} />
+				<Gif context={context} post={post} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Open in browser' }));
@@ -75,13 +86,20 @@ describe('Gif', () => {
 	});
 	it('Creates action that shows TagsPopover', () => {
 		// given
+		const context = 'ctx';
 		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'], fileUrl: 'test_file_url.gif' });
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				onlineSearchForm: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<Gif post={post} />
+				<Gif context={context} post={post} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Show tags' }));
@@ -91,18 +109,25 @@ describe('Gif', () => {
 	});
 	it('Creates action that copies link to clipboard', () => {
 		// given
+		const context = 'ctx';
 		const spy = jest.fn();
 		(window.clipboard as any) = {
 			writeText: spy,
 		};
 		const link = 'somelink123.jpg';
 		const post = mPost({ fileUrl: link });
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				onlineSearchForm: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<Gif post={post} />
+				<Gif context={context} post={post} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Copy to clipboard' }));

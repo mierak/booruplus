@@ -3,18 +3,22 @@ import { Empty, Button } from 'antd';
 import { useDispatch } from 'react-redux';
 
 import { actions } from '@store';
+import { PostsContext } from '@store/types';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 type Props = {
 	className?: string;
-}
+	context: PostsContext | string;
+};
 
-const EmptyThumbnails: React.FunctionComponent<Props> = (props: Props) => {
+const EmptyThumbnails: React.FunctionComponent<Props> = ({ className, context }) => {
 	const dispatch = useDispatch();
+	//! TODO previous tab
 	return (
-		<Empty className={props.className} description='No Posts To Show'>
+		<Empty className={className} description='No Posts To Show'>
 			<Button
 				onClick={(): void => {
-					dispatch(actions.system.setSearchFormDrawerVisible(true));
+					dispatch(actions.modals.showModal(ActiveModal.SEARCH_FORM, { context, previousTab: '' }));
 				}}
 			>
 				Open Search Form

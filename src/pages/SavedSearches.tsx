@@ -5,17 +5,18 @@ import { Table, Tag, Row, Col, Card, Popconfirm, Tooltip, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
 import { actions, thunks } from '@store';
-import { RootState, AppDispatch } from '@store/types';
+import { RootState, AppDispatch, DownloadedSearchFormState } from '@store/types';
 import { SavedSearch, Tag as GelbooruTag } from '@appTypes/gelbooruTypes';
-import { getTagColor } from '@util/utils';
+import { generateTabContext, getTagColor } from '@util/utils';
 import moment from 'moment';
 import { openNotificationWithIcon } from '@appTypes/components';
+import { initPostsContext } from '@store/commonActions';
 
 const { Column } = Table;
 
 type Props = {
 	className?: string;
-}
+};
 
 const Container = styled.div`
 	height: 100vh;
@@ -64,6 +65,7 @@ const StyledPreviewsContainer = styled.div`
 const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const savedSearches = useSelector((state: RootState) => state.savedSearches.savedSearches);
+	const contexts = useSelector((state: RootState) => Object.keys(state.onlineSearchForm));
 
 	useEffect(() => {
 		dispatch(thunks.savedSearches.loadSavedSearchesFromDb());
@@ -170,9 +172,17 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 		const posts = record.previews.map((preview) => preview.post);
 		const index = posts.findIndex((post) => post.id === postId);
 		if (index >= 0) {
-			dispatch(actions.posts.setPosts({ data: posts, context: 'posts' }));
-			dispatch(actions.posts.setActivePostIndex({ data: index, context: 'posts' }));
-			dispatch(actions.system.setActiveView({ view: 'image', context: 'posts' }));
+			const context = generateTabContext(contexts);
+			const data: Partial<DownloadedSearchFormState> = {
+				mode: 'offline', // TODO new mode for previews
+				selectedTags: record.tags,
+				excludedTags: record.excludedTags,
+				rating: record.rating,
+			};
+			dispatch(initPostsContext({ context, data }));
+			dispatch(actions.posts.setPosts({ data: posts, context }));
+			dispatch(actions.posts.setActivePostIndex({ data: index, context }));
+			dispatch(actions.system.setActiveView({ view: 'image', context }));
 		}
 	};
 

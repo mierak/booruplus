@@ -9,7 +9,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mState } from '../../helpers/store.helper';
 
-import SearchResults from '../../../src/pages/SearchResults';
+import SearchResults from '../../../src/pages/Searches';
 import '@testing-library/jest-dom';
 import { mPost, mTag } from '../../helpers/test.helper';
 import { deleteImageMock } from '../../helpers/imageBus.mock';

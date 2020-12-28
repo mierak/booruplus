@@ -12,12 +12,15 @@ import PostCountSelect from '../../../src/components/search-form/PostCountSelect
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('search-form/PostCountSelect', () => {
-	it('Renders correctly for online mode', () => {
+	const context = 'ctx';
+	it('Renders correctly', () => {
 		// given
 		const store = mockStore(
 			mState({
 				onlineSearchForm: {
-					limit: 50,
+					[context]: {
+						limit: 50,
+					},
 				},
 			})
 		);
@@ -25,27 +28,7 @@ describe('search-form/PostCountSelect', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<PostCountSelect mode="online" />
-			</Provider>
-		);
-
-		// then
-		expect(screen.getByDisplayValue('50')).not.toBeNull();
-	});
-	it('Renders correctly for offline mode', () => {
-		// given
-		const store = mockStore(
-			mState({
-				downloadedSearchForm: {
-					postLimit: 50,
-				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<PostCountSelect mode="offline" />
+				<PostCountSelect context={context} />
 			</Provider>
 		);
 
@@ -57,7 +40,9 @@ describe('search-form/PostCountSelect', () => {
 		const store = mockStore(
 			mState({
 				onlineSearchForm: {
-					limit: 50,
+					[context]: {
+						limit: 50,
+					},
 				},
 			})
 		);
@@ -65,35 +50,16 @@ describe('search-form/PostCountSelect', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<PostCountSelect mode="online" />
+				<PostCountSelect context={context} />
 			</Provider>
 		);
 		fireEvent.mouseDown(screen.getByRole('button', { name: 'Increase Value' }));
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.setLimit.type, payload: 51 });
-	});
-	it('Changes value on spinner button press for offline mode', async () => {
-		// given
-		const store = mockStore(
-			mState({
-				downloadedSearchForm: {
-					postLimit: 50,
-				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<PostCountSelect mode="offline" />
-			</Provider>
-		);
-		fireEvent.mouseDown(screen.getByRole('button', { name: 'Increase Value' }));
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.setPostLimit.type, payload: 51 });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.onlineSearchForm.setLimit.type,
+			payload: { context, data: 51 },
+		});
 	});
 });

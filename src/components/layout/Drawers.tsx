@@ -8,12 +8,9 @@ import { actions } from '@store';
 
 import Tasks from '@pages/Tasks';
 
-import DownloadedSearchForm from '@components/DownloadedSearchForm';
-import OnlineSearchForm from '@components/OnlineSearchForm';
-
 type DrawerProps = {
 	$disablePadding?: boolean;
-}
+};
 const StyledDrawer = styled(Drawer)<DrawerProps>`
 	&& .ant-drawer-body {
 		${(props): string => (props.$disablePadding ? 'padding: 0' : '')};
@@ -23,43 +20,15 @@ const StyledDrawer = styled(Drawer)<DrawerProps>`
 const Drawers: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const searchFormDrawerVisible = useSelector((state: RootState) => state.system.isSearchFormDrawerVsibile);
-	const downloadedSearchFormDrawerVisible = useSelector((state: RootState) => state.system.isDownloadedSearchFormDrawerVisible);
 	const isTasksDrawerVisible = useSelector((state: RootState) => state.system.isTasksDrawerVisible);
-
-	const handleSearchFormDrawerClose = (): void => {
-		dispatch(actions.system.setSearchFormDrawerVisible(false));
-	};
-
-	const handleDownloadedSearchFormDrawerClose = (): void => {
-		dispatch(actions.system.setDownloadedSearchFormDrawerVisible(false));
-	};
 
 	const handleTasksDrawerClose = (): void => {
 		dispatch(actions.system.setTasksDrawerVisible(false));
 	};
 
+	//! TODO downloads not working at all with new context
 	return (
 		<>
-			<Drawer
-				title='New Online Search'
-				placement='right'
-				width={700}
-				closable={true}
-				visible={searchFormDrawerVisible}
-				onClose={handleSearchFormDrawerClose}
-			>
-				<OnlineSearchForm />
-			</Drawer>
-			<Drawer
-				title='New Offline Search'
-				placement='right'
-				width={700}
-				visible={downloadedSearchFormDrawerVisible}
-				onClose={handleDownloadedSearchFormDrawerClose}
-			>
-				<DownloadedSearchForm />
-			</Drawer>
 			<StyledDrawer
 				$disablePadding
 				title='Downloads'

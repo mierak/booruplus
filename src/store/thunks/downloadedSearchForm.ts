@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import { db } from '@db';
 import { FilterOptions } from '@db/types';
-import { ThunkApi, DownloadedSearchFormState } from '@store/types';
+import { ThunkApi, DownloadedSearchFormState, PostsContext } from '@store/types';
 import { Tag, Post } from '@appTypes/gelbooruTypes';
 import { thunkLoggerFactory } from '@util/logger';
 import { thumbnailCache } from '@util/objectUrlCache';
@@ -13,8 +13,8 @@ export const getFilterOptions = (state: DownloadedSearchFormState): FilterOption
 	return {
 		blacklisted: state.showBlacklisted,
 		nonBlacklisted: state.showNonBlacklisted,
-		limit: state.postLimit,
-		offset: state.postLimit * state.page,
+		limit: state.limit,
+		offset: state.limit * state.page,
 		rating: state.rating,
 		sort: state.sort,
 		sortOrder: state.sortOrder,
@@ -25,26 +25,29 @@ export const getFilterOptions = (state: DownloadedSearchFormState): FilterOption
 	};
 };
 
-export const loadTagsByPattern = createAsyncThunk<Tag[], string, ThunkApi>(
+export const loadTagsByPattern = createAsyncThunk<Tag[], { pattern: string; context: string }, ThunkApi>(
 	'downloadedSearchForm/loadTagsByPattern',
-	async (pattern): Promise<Tag[]> => {
+	async ({ pattern }): Promise<Tag[]> => {
 		const logger = thunkLogger.getActionLogger(loadTagsByPattern);
 		logger.debug('Getting tags with Pattern:', pattern);
 		return db.tags.getByPattern(pattern);
 	}
 );
 
-export const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
+export const fetchPosts = createAsyncThunk<Post[], { context: PostsContext | string }, ThunkApi>(
 	'downloadedSearchForm/fetchPosts',
-	async (_, thunkApi): Promise<Post[]> => {
+	async ({ context }, thunkApi): Promise<Post[]> => {
 		thumbnailCache.revokeAll();
 		const logger = thunkLogger.getActionLogger(fetchPosts);
-		const state = thunkApi.getState();
+		const state = thunkApi.getState().onlineSearchForm[context];
+		if (!('showImages' in state)) {
+			return [];
+		}
 
-		const filterOptions = getFilterOptions(state.downloadedSearchForm);
+		const filterOptions = getFilterOptions(state);
 
-		const tags = state.downloadedSearchForm.selectedTags.map((tag) => tag.tag);
-		const excludedTags = state.downloadedSearchForm.excludedTags.map((tag) => tag.tag);
+		const tags = state.selectedTags.map((tag) => tag.tag);
+		const excludedTags = state.excludedTags.map((tag) => tag.tag);
 
 		let posts: Post[];
 		if (tags.length === 0 && excludedTags.length === 0) {
@@ -59,22 +62,25 @@ export const fetchPosts = createAsyncThunk<Post[], void, ThunkApi>(
 		}
 
 		logger.debug(`Saving search history for Tags [${tags.join(' ')}]`);
-		db.tagSearchHistory.saveSearch(state.downloadedSearchForm.selectedTags);
+		db.tagSearchHistory.saveSearch(state.selectedTags);
 		return posts;
 	}
 );
 
 // TODO change to dispatch fetchPosts()
-export const fetchMorePosts = createAsyncThunk<Post[], void, ThunkApi>(
+export const fetchMorePosts = createAsyncThunk<Post[], { context: PostsContext | string }, ThunkApi>(
 	'downloadedSearchForm/fetchMorePosts',
-	async (_, thunkApi): Promise<Post[]> => {
+	async ({ context }, thunkApi): Promise<Post[]> => {
 		const logger = thunkLogger.getActionLogger(fetchMorePosts);
-		const state = thunkApi.getState();
+		const state = thunkApi.getState().onlineSearchForm[context];
+		if (!('showImages' in state)) {
+			return [];
+		}
 
-		const filterOptions = getFilterOptions(state.downloadedSearchForm);
+		const filterOptions = getFilterOptions(state);
 
-		const tags = state.downloadedSearchForm.selectedTags.map((tag) => tag.tag);
-		const excludedTags = state.downloadedSearchForm.excludedTags.map((tag) => tag.tag);
+		const tags = state.selectedTags.map((tag) => tag.tag);
+		const excludedTags = state.excludedTags.map((tag) => tag.tag);
 
 		let posts: Post[];
 		if (tags.length === 0 && excludedTags.length === 0) {

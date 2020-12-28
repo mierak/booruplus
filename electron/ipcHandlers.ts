@@ -208,10 +208,10 @@ export const initIpcHandlers = (window: BrowserWindow): void => {
 						dialog.showErrorBox('Could not compress exported data.', err.message);
 					} else {
 						log.debug(`Data compressed. Writing file ${data.filePath}`);
-						fs.writeFile(data.filePath, result, (err) => {
-							if (err) {
-								log.error('Could not write file.', err.name, err.message, err.stack);
-								dialog.showErrorBox('Could not save exported data.', err.message);
+						fs.writeFile(data.filePath, result, (error) => {
+							if (error) {
+								log.error('Could not write file.', error.name, error.message, error.stack);
+								dialog.showErrorBox('Could not save exported data.', error.message);
 							} else {
 								log.info(`Exported data succesfully saved to ${data.filePath}.`);
 							}
@@ -221,8 +221,8 @@ export const initIpcHandlers = (window: BrowserWindow): void => {
 			);
 			return Promise.resolve();
 		},
-		EXPORT_IMAGES: async (_, path: string) => {
-			return archiveService.archiveImages(path, (done: number, total: number): void => {
+		EXPORT_IMAGES: async (_, targetPath: string) => {
+			return archiveService.archiveImages(targetPath, (done: number, total: number): void => {
 				notifyIpcListener({ channel: IpcListeners.EXPORT_PROGRESS, params: { done, total } });
 			});
 		},

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { actions } from '@store';
-import { AppDispatch, RootState } from '@store/types';
+import { AppDispatch, PostsContext, RootState } from '@store/types';
 import { imageLoader } from '@util/componentUtils';
 import { getPostUrl } from '@service/webService';
 
@@ -19,7 +19,8 @@ import ImageControls from './ImageControls';
 type Props = {
 	className?: string;
 	post: Post;
-}
+	context: PostsContext | string;
+};
 
 const Container = styled.div`
 	position: relative;
@@ -80,7 +81,7 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 			key: 'image-control-show-tags',
 			tooltip: 'Show tags',
 			popOver: {
-				content: <TagsPopover tags={props.post.tags} />,
+				content: <TagsPopover context={props.context} tags={props.post.tags} />,
 				autoAdjustOverflow: true,
 				onVisibleChange: handleTagsPopoverVisibilityChange,
 				trigger: 'click',
@@ -96,8 +97,8 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 			icon: 'copy-outlined',
 			key: 'copy-to-clipboard',
 			tooltip: 'Copy to clipboard',
-			onClick: handleCopyToClipboard
-		}
+			onClick: handleCopyToClipboard,
+		},
 	];
 	return (
 		<Container className={props.className}>

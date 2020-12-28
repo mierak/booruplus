@@ -13,12 +13,13 @@ import '@testing-library/jest-dom';
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('search-form/LoadMoreButton', () => {
+	const context = 'ctx';
 	it('Renders correctly', () => {
 		// given
 		const store = mockStore(
 			mState({
-				system: {
-					searchMode: 'online',
+				onlineSearchForm: {
+					[context]: {},
 				},
 			})
 		);
@@ -26,7 +27,7 @@ describe('search-form/LoadMoreButton', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<LoadMoreButton />
+				<LoadMoreButton context={context} />
 			</Provider>
 		);
 
@@ -37,8 +38,8 @@ describe('search-form/LoadMoreButton', () => {
 		// given
 		const store = mockStore(
 			mState({
-				system: {
-					searchMode: 'online',
+				onlineSearchForm: {
+					[context]: {},
 				},
 				loadingStates: {
 					isSearchDisabled: true,
@@ -49,7 +50,7 @@ describe('search-form/LoadMoreButton', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<LoadMoreButton />
+				<LoadMoreButton context={context} />
 			</Provider>
 		);
 
@@ -60,8 +61,10 @@ describe('search-form/LoadMoreButton', () => {
 		// given
 		const store = mockStore(
 			mState({
-				system: {
-					searchMode: 'online',
+				onlineSearchForm: {
+					[context]: {
+						mode: 'online',
+					},
 				},
 			})
 		);
@@ -69,7 +72,7 @@ describe('search-form/LoadMoreButton', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<LoadMoreButton />
+				<LoadMoreButton context={context} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Load More' }));
@@ -82,8 +85,10 @@ describe('search-form/LoadMoreButton', () => {
 		// given
 		const store = mockStore(
 			mState({
-				system: {
-					searchMode: 'offline',
+				onlineSearchForm: {
+					[context]: {
+						mode: 'offline',
+					},
 				},
 			})
 		);
@@ -91,51 +96,7 @@ describe('search-form/LoadMoreButton', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<LoadMoreButton />
-			</Provider>
-		);
-		fireEvent.click(screen.getByRole('button', { name: 'Load More' }));
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.downloadedSearchForm.fetchMorePosts.pending.type });
-	});
-	it('Dispatches fetchMorePosts() for saved-search-online mode', () => {
-		// given
-		const store = mockStore(
-			mState({
-				system: {
-					searchMode: 'saved-search-online',
-				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<LoadMoreButton />
-			</Provider>
-		);
-		fireEvent.click(screen.getByRole('button', { name: 'Load More' }));
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.onlineSearchForm.fetchMorePosts.pending.type });
-	});
-	it('Dispatches fetchMorePosts() for saved-search-offline mode', () => {
-		// given
-		const store = mockStore(
-			mState({
-				system: {
-					searchMode: 'saved-search-offline',
-				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<LoadMoreButton />
+				<LoadMoreButton context={context} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Load More' }));

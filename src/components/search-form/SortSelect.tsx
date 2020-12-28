@@ -2,40 +2,39 @@ import React from 'react';
 import { Select } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { AppDispatch, RootState, Sort } from '@store/types';
+import { AppDispatch, PostsContext, RootState, Sort } from '@store/types';
 import { actions } from '@store';
 
 type Props = {
 	className?: string;
-	mode: 'online' | 'offline';
+	context: PostsContext | string;
 	open?: boolean;
-}
+};
 
 const { Option } = Select;
 
-const SortSelect: React.FunctionComponent<Props> = (props: Props) => {
+const SortSelect: React.FunctionComponent<Props> = ({ context, open, className }) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const value = useSelector((state: RootState) =>
-		props.mode === 'online' ? state.onlineSearchForm.sort : state.downloadedSearchForm.sort
-	);
+	const value = useSelector((state: RootState) => state.onlineSearchForm[context].sort);
+	const mode = useSelector((state: RootState) => state.onlineSearchForm[context].mode);
 
-	const onChange = props.mode === 'online' ? actions.onlineSearchForm.setSort : actions.downloadedSearchForm.setSort;
+	const onChange = actions.onlineSearchForm.setSort;
 
 	const handleChange = (val: Sort): void => {
-		dispatch(onChange(val));
+		dispatch(onChange({ context, data: val }));
 	};
 
 	const renderOptions = (): React.ReactNode => {
 		const options: JSX.Element[] = [];
-		if (props.mode === 'online') {
+		if (mode === 'online') {
 			options.push(
 				<Option key='select-option-date-uploaded' value='date-uploaded'>
 					Date Uploaded
 				</Option>
 			);
 		}
-		if (props.mode === 'offline') {
+		if (mode === 'offline') {
 			options.push(
 				<Option key='select-option-date-downloaded' value='date-downloaded'>
 					Date Downloaded
@@ -56,7 +55,7 @@ const SortSelect: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	return (
-		<Select defaultValue={value} className={props.className} onChange={handleChange} open={props.open}>
+		<Select defaultValue={value} className={className} onChange={handleChange} open={open}>
 			{renderOptions()}
 		</Select>
 	);

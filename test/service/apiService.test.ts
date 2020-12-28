@@ -8,7 +8,6 @@ import {
 	getPostsForTags,
 	getLatestAppVersion,
 } from '../../src/service/apiService';
-import 'jest-fetch-mock';
 import { enableFetchMocks } from 'jest-fetch-mock';
 
 import * as utils from '../../src/util/utils';

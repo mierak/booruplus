@@ -2,16 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Table, Tag as AntTag, Button } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
 
-import { AppDispatch, RootState } from '@store/types';
+import { AppDispatch, PostsContext, RootState } from '@store/types';
 import { Tag } from '@appTypes/gelbooruTypes';
 import { actions, thunks } from '@store';
 import { getTagColor, sortTagsByType } from '@util/utils';
 
 type Props = {
 	tags: string[];
-}
+	context: PostsContext | string;
+};
 
 const Container = styled.div`
 	margin: -16px;
@@ -19,7 +19,7 @@ const Container = styled.div`
 	max-height: calc(100vh / 2);
 `;
 
-const TagsPopover: React.FunctionComponent<Props> = ({ tags }: Props) => {
+const TagsPopover: React.FunctionComponent<Props> = ({ tags, context }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const containerRef = useRef<HTMLDivElement>(null);
 	const visible = useSelector((state: RootState) => state.system.isTagsPopoverVisible);
@@ -56,33 +56,18 @@ const TagsPopover: React.FunctionComponent<Props> = ({ tags }: Props) => {
 			await dispatch(thunks.tags.searchTagOffline(record));
 		};
 
-		const handleAddOnline = (): void => {
-			dispatch(actions.onlineSearchForm.addTag(record));
-		};
-
-		const handleAddOffline = (): void => {
-			dispatch(actions.downloadedSearchForm.addTag(record));
+		const handleAddToCurrent = (): void => {
+			dispatch(actions.onlineSearchForm.addTag({ context, data: record }));
 		};
 
 		return [
-			<Button
-				type='link'
-				key='btn-online-add-tag'
-				icon={<PlusOutlined style={{ fontSize: '12px' }} />}
-				onClick={handleAddOnline}
-				title='Add tag to online search'
-			/>,
-			<Button key='btn-search-online' type='link' onClick={handleOnlineSearch}>
+			<Button key='btn-add-tag' type='link' onClick={handleAddToCurrent}>
+				Add
+			</Button>,
+			<Button key='btn-search-tag-online' type='link' onClick={handleOnlineSearch}>
 				Online
 			</Button>,
-			<Button
-				type='link'
-				key='btn-offline-add-tag'
-				icon={<PlusOutlined style={{ fontSize: '12px' }} />}
-				onClick={handleAddOffline}
-				title='Add tag to offline search'
-			/>,
-			<Button key='btn-search-offline' type='link' onClick={handleOfflineSearch}>
+			<Button key='btn-search-tag-offline' type='link' onClick={handleOfflineSearch}>
 				Offline
 			</Button>,
 		];
@@ -90,7 +75,14 @@ const TagsPopover: React.FunctionComponent<Props> = ({ tags }: Props) => {
 
 	return (
 		<Container ref={containerRef}>
-			<Table dataSource={loading ? undefined : fetchedTags} rowKey='id' size='small' pagination={false} bordered loading={loading}>
+			<Table
+				dataSource={loading ? undefined : fetchedTags}
+				rowKey='id'
+				size='small'
+				pagination={false}
+				bordered
+				loading={loading}
+			>
 				<Table.Column title='Tag' dataIndex='tag' render={renderTag} />
 				<Table.Column title='Search' dataIndex='' render={renderActions} />
 			</Table>

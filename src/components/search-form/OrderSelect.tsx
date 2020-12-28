@@ -4,28 +4,26 @@ import { RadioChangeEvent } from 'antd/lib/radio';
 import { Radio } from 'antd';
 
 import { actions } from '@store';
-import { RootState, AppDispatch, SortOrder } from '@store/types';
+import { RootState, AppDispatch, SortOrder, PostsContext } from '@store/types';
 type Props = {
 	className?: string;
-	mode: 'online' | 'offline';
-}
+	context: PostsContext | string;
+};
 
-const OrderSelect: React.FunctionComponent<Props> = (props: Props) => {
+const OrderSelect: React.FunctionComponent<Props> = ({ context, className }) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const onChange = props.mode === 'online' ? actions.onlineSearchForm.setSortOrder : actions.downloadedSearchForm.setSortOrder;
+	const onChange = actions.onlineSearchForm.setSortOrder;
 
-	const value = useSelector((state: RootState) =>
-		props.mode === 'online' ? state.onlineSearchForm.sortOrder : state.downloadedSearchForm.sortOrder
-	);
+	const value = useSelector((state: RootState) => state.onlineSearchForm[context].sortOrder);
 
 	const handleChange = (event: RadioChangeEvent): void => {
-		const val = event.target.value as SortOrder;
-		dispatch(onChange(val));
+		const data = event.target.value as SortOrder;
+		dispatch(onChange({ context, data }));
 	};
 
 	return (
-		<Radio.Group value={value} className={props.className} onChange={handleChange}>
+		<Radio.Group value={value} className={className} onChange={handleChange}>
 			<Radio value='desc'>Desc</Radio>
 			<Radio value='asc'>Asc</Radio>
 		</Radio.Group>

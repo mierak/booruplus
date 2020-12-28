@@ -1,8 +1,9 @@
 import { doDatabaseMock } from '../helpers/database.mock';
 doDatabaseMock();
-import reducer, { actions, initialState, SearchFormState } from '../../src/store/onlineSearchForm';
+import reducer, { actions, initialState } from '../../src/store/onlineSearchForm';
 import { thunks } from '../../src/store/';
 import { createAction, mTag, createPendingAction } from '../helpers/test.helper';
+import { DownloadedSearchFormState } from '@store/types';
 
 describe('store/onlineSearchForm', () => {
 	it('Adds tag', () => {
@@ -29,22 +30,24 @@ describe('store/onlineSearchForm', () => {
 	});
 	it('Removes tag', () => {
 		//given
+		const context = 'ctx';
 		const tag = mTag({ tag: 'tag1' });
 		const action = createAction(actions.removeTag.type, tag);
 
 		// when
-		const result = reducer({ ...initialState, selectedTags: [tag] }, action);
+		const result = reducer({ ...initialState, [context]: { ...initialState.default, selectedTags: [tag] } }, action);
 
 		// then
 		expect(result.selectedTags).not.toContain(tag);
 	});
 	it('Removes tag', () => {
 		//given
+		const context = 'ctx';
 		const tag = mTag({ tag: 'tag1' });
 		const action = createAction(actions.removeExcludedTag.type, tag);
 
 		// when
-		const result = reducer({ ...initialState, excludedTags: [tag] }, action);
+		const result = reducer({ ...initialState, [context]: { ...initialState.default, excludedTags: [tag] } }, action);
 
 		// then
 		expect(result.excludedTags).not.toContain(tag);
@@ -62,11 +65,12 @@ describe('store/onlineSearchForm', () => {
 	});
 	it('Clears tag options', () => {
 		//given
+		const context = 'ctx';
 		const tags = [mTag({ tag: 'tag1' }), mTag({ tag: 'tag2' }), mTag({ tag: 'tag3' })];
 		const action = createAction(actions.clearTagOptions.type, tags);
 
 		// when
-		const result = reducer({ ...initialState, tagOptions: tags }, action);
+		const result = reducer({ ...initialState, [context]: { ...initialState.default, tagOptions: tags } }, action);
 
 		// then
 		expect(result.tagOptions).toEqual([]);
@@ -128,8 +132,10 @@ describe('store/onlineSearchForm', () => {
 	});
 	it('Clear reset to initialState', () => {
 		//given
-		const action = createAction(actions.clear.type);
-		const state: SearchFormState = {
+		const context = 'ctx';
+		const action = createAction(actions.clear.type, { context });
+		const state: DownloadedSearchFormState = {
+			mode: 'offline',
 			excludedTags: [],
 			page: 123,
 			limit: 123,
@@ -138,10 +144,16 @@ describe('store/onlineSearchForm', () => {
 			sort: 'resolution',
 			sortOrder: 'asc',
 			tagOptions: [],
+			showBlacklisted: true,
+			showFavorites: false,
+			showGifs: false,
+			showImages: false,
+			showNonBlacklisted: false,
+			showVideos: false,
 		};
 
 		// when
-		const result = reducer(state, action);
+		const result = reducer({ [context]: state }, action);
 
 		// then
 		expect(result).toStrictEqual(initialState);
@@ -166,33 +178,5 @@ describe('store/onlineSearchForm', () => {
 
 		// then
 		expect(result.page).toEqual(1);
-	});
-	it('Resets state properly when tags searchTagOnline is pending', () => {
-		//given
-		const selectedTag = mTag({ tag: 'tag1' });
-		const excludedTags = [mTag({ tag: 'tag2' })];
-		const action = createPendingAction(thunks.tags.searchTagOnline.pending.type, { arg: selectedTag });
-
-		// when
-		const result = reducer({ ...initialState, page: 123, excludedTags }, action);
-
-		// then
-		expect(result.selectedTags).toEqual([selectedTag]);
-		expect(result.excludedTags).toEqual([]);
-		expect(result.page).toEqual(0);
-	});
-	it('Resets state properly when savedSearches searchOnlinee is pending', () => {
-		//given
-		const selectedTags = [mTag({ tag: 'tag1' })];
-		const excludedTags = [mTag({ tag: 'tag2' })];
-		const action = createPendingAction(thunks.savedSearches.searchOnline.pending.type, { arg: { tags: selectedTags, excludedTags } });
-
-		// when
-		const result = reducer({ ...initialState, page: 123 }, action);
-
-		// then
-		expect(result.selectedTags).toEqual(selectedTags);
-		expect(result.excludedTags).toEqual(excludedTags);
-		expect(result.page).toEqual(0);
 	});
 });

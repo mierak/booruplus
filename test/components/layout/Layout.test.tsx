@@ -27,25 +27,25 @@ describe('layout/Layout', () => {
 
 		// then
 		expect(screen.getByText('Dashboard')).not.toBeNull();
-		expect(screen.getByText('Search Results')).not.toBeNull();
+		expect(screen.getByText('Search')).not.toBeNull();
 		expect(screen.getByText('Saved Searches')).not.toBeNull();
 		expect(screen.getByText('Favorites')).not.toBeNull();
 		expect(screen.getByText('Tag List')).not.toBeNull();
-		expect(screen.getByText('Online Search')).not.toBeNull();
-		expect(screen.getByText('Offline Search')).not.toBeNull();
 		expect(screen.getByText('Downloads')).not.toBeNull();
 		expect(screen.getByText('Settings')).not.toBeNull();
 		expect(screen.queryByText('Check Later')).toBeNull();
 	});
 	it('Renders Check Later queue', () => {
 		// given
-		const store = mockStore(mState({
-			posts: {
+		const store = mockStore(
+			mState({
 				posts: {
-					checkLaterQueue: [mPost()]
-				}
-			}
-		}));
+					posts: {
+						checkLaterQueue: [mPost()],
+					},
+				},
+			})
+		);
 
 		// when
 		render(
@@ -73,7 +73,7 @@ describe('layout/Layout', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setActiveView.type, payload: 'dashboard' });
 	});
-	it('Switches to Thumbnails', () => {
+	it('Switches to Searches', () => {
 		// given
 		const store = mockStore(mState());
 
@@ -83,13 +83,13 @@ describe('layout/Layout', () => {
 				<Layout />
 			</Provider>
 		);
-		fireEvent.click(screen.getByText('Search Results'));
+		fireEvent.click(screen.getByText('Search'));
 
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
 			type: actions.system.setActiveView.type,
-			payload: 'search-results',
+			payload: 'searches',
 		});
 	});
 	it('Switches to Saved Searches', () => {
@@ -106,7 +106,10 @@ describe('layout/Layout', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setActiveView.type, payload: 'saved-searches' });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.system.setActiveView.type,
+			payload: 'saved-searches',
+		});
 	});
 	it('Switches to Favorites', () => {
 		// given
@@ -139,38 +142,6 @@ describe('layout/Layout', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setActiveView.type, payload: 'tag-list' });
-	});
-	it('Opens Online Search Drawer', () => {
-		// given
-		const store = mockStore(mState());
-
-		// when
-		render(
-			<Provider store={store}>
-				<Layout />
-			</Provider>
-		);
-		fireEvent.click(screen.getByText('Online Search'));
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setSearchFormDrawerVisible.type, payload: true });
-	});
-	it('Opens Offline Search Drawer', () => {
-		// given
-		const store = mockStore(mState());
-
-		// when
-		render(
-			<Provider store={store}>
-				<Layout />
-			</Provider>
-		);
-		fireEvent.click(screen.getByText('Offline Search'));
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setDownloadedSearchFormDrawerVisible.type, payload: true });
 	});
 	it('Opens Downloads Drawer', () => {
 		// given
@@ -209,13 +180,15 @@ describe('layout/Layout', () => {
 	});
 	it('Switches to Tag List', () => {
 		// given
-		const store = mockStore(mState({
-			posts: {
+		const store = mockStore(
+			mState({
 				posts: {
-					checkLaterQueue: [mPost()]
-				}
-			}
-		}));
+					posts: {
+						checkLaterQueue: [mPost()],
+					},
+				},
+			})
+		);
 
 		// when
 		render(
@@ -227,6 +200,9 @@ describe('layout/Layout', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setActiveView.type, payload: 'check-later' });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.system.setActiveView.type,
+			payload: 'check-later',
+		});
 	});
 });

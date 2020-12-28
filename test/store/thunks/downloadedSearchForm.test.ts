@@ -16,8 +16,9 @@ describe('thunks/downloadedSearchForm', () => {
 		it('Constructs object correctly', () => {
 			// given
 			const downloadedSearchFormState: DownloadedSearchFormState = {
+				mode: 'online',
 				page: 5,
-				postLimit: 20,
+				limit: 20,
 				rating: 'explicit',
 				showBlacklisted: false,
 				showFavorites: true,
@@ -37,9 +38,9 @@ describe('thunks/downloadedSearchForm', () => {
 
 			// then
 			expect(result.blacklisted).toBe(downloadedSearchFormState.showBlacklisted);
-			expect(result.limit).toBe(downloadedSearchFormState.postLimit);
+			expect(result.limit).toBe(downloadedSearchFormState.limit);
 			expect(result.nonBlacklisted).toBe(downloadedSearchFormState.showNonBlacklisted);
-			expect(result.offset).toBe(downloadedSearchFormState.postLimit * downloadedSearchFormState.page);
+			expect(result.offset).toBe(downloadedSearchFormState.limit * downloadedSearchFormState.page);
 			expect(result.rating).toBe(downloadedSearchFormState.rating);
 			expect(result.sort).toBe(downloadedSearchFormState.sort);
 			expect(result.sortOrder).toBe(downloadedSearchFormState.sortOrder);
@@ -52,44 +53,54 @@ describe('thunks/downloadedSearchForm', () => {
 	describe('loadTagsByPattern()', () => {
 		it('Calls db with correct pattern and return tags', async () => {
 			// given
+			const context = 'ctx';
 			const store = mockStore(initialState);
 			const tags = [mTag({ tag: 'tag1', id: 1 }), mTag({ tag: 'tag2', id: 2 }), mTag({ tag: 'tag2', id: 2 })];
 			const pattern = 'tag_pattern';
 			mockedDb.tags.getByPattern.mockResolvedValue(tags);
 
 			// when
-			await store.dispatch(thunks.loadTagsByPattern(pattern));
+			await store.dispatch(thunks.loadTagsByPattern({ context, pattern }));
 
 			// then
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.tags.getByPattern).toBeCalledWith(pattern);
-			expect(dispatchedActions[0]).toMatchObject({ type: 'downloadedSearchForm/loadTagsByPattern/pending', payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({ type: 'downloadedSearchForm/loadTagsByPattern/fulfilled', payload: tags });
+			expect(dispatchedActions[0]).toMatchObject({
+				type: 'downloadedSearchForm/loadTagsByPattern/pending',
+				payload: undefined,
+			});
+			expect(dispatchedActions[1]).toMatchObject({
+				type: 'downloadedSearchForm/loadTagsByPattern/fulfilled',
+				payload: tags,
+			});
 		});
 	});
 	describe('fetchPosts()', () => {
 		it('Calls db with correct tags and return posts', async () => {
 			// given
+			const context = 'ctx';
 			const selectedTags = [mTag({ tag: 'tag1' }), mTag({ tag: 'tag2' })];
 			const excludedTags = [mTag({ tag: 'excluded_tag1' }), mTag({ tag: 'excluded_tag2' })];
 			const store = mockStore({
 				...initialState,
-				downloadedSearchForm: {
-					...initialState.downloadedSearchForm,
-					selectedTags,
-					excludedTags,
+				onlineSearchForm: {
+					[context]: {
+						...initialState.onlineSearchForm.default,
+						selectedTags,
+						excludedTags,
+					},
 				},
 			});
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
 			mockedDb.posts.getForTagsWithOptions.mockResolvedValue(posts);
 
 			// when
-			await store.dispatch(thunks.fetchPosts());
+			await store.dispatch(thunks.fetchPosts({ context }));
 
 			// then
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.posts.getForTagsWithOptions).toBeCalledWith(
-				thunks.getFilterOptions(store.getState().downloadedSearchForm),
+				thunks.getFilterOptions(store.getState().onlineSearchForm[context]),
 				selectedTags.map((tag) => tag.tag),
 				excludedTags.map((tag) => tag.tag)
 			);
@@ -99,25 +110,30 @@ describe('thunks/downloadedSearchForm', () => {
 		});
 		it('Fetches all posts when no tags or selected tags are provide', async () => {
 			// given
+			const context = 'ctx';
 			const selectedTags: Tag[] = [];
 			const excludedTags: Tag[] = [];
 			const store = mockStore({
 				...initialState,
-				downloadedSearchForm: {
-					...initialState.downloadedSearchForm,
-					selectedTags,
-					excludedTags,
+				onlineSearchForm: {
+					[context]: {
+						...initialState.onlineSearchForm.default,
+						selectedTags,
+						excludedTags,
+					},
 				},
 			});
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
 			mockedDb.posts.getAllWithOptions.mockResolvedValue(posts);
 
 			// when
-			await store.dispatch(thunks.fetchPosts());
+			await store.dispatch(thunks.fetchPosts({ context }));
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(mockedDb.posts.getAllWithOptions).toBeCalledWith(thunks.getFilterOptions(store.getState().downloadedSearchForm));
+			expect(mockedDb.posts.getAllWithOptions).toBeCalledWith(
+				thunks.getFilterOptions(store.getState().onlineSearchForm[context])
+			);
 			expect(mockedDb.tagSearchHistory.saveSearch).toBeCalledWith(selectedTags);
 			expect(dispatchedActions[0]).toMatchObject({ type: 'downloadedSearchForm/fetchPosts/pending', payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({ type: 'downloadedSearchForm/fetchPosts/fulfilled', payload: posts });
@@ -126,57 +142,77 @@ describe('thunks/downloadedSearchForm', () => {
 	describe('fetchMorePosts()', () => {
 		it('Calls db with correct tags and return posts', async () => {
 			// given
+			const context = 'ctx';
 			const selectedTags = [mTag({ tag: 'tag1' }), mTag({ tag: 'tag2' })];
 			const excludedTags = [mTag({ tag: 'excluded_tag1' }), mTag({ tag: 'excluded_tag2' })];
 			const store = mockStore({
 				...initialState,
-				downloadedSearchForm: {
-					...initialState.downloadedSearchForm,
-					selectedTags,
-					excludedTags,
+				onlineSearchForm: {
+					[context]: {
+						...initialState.onlineSearchForm.default,
+						selectedTags,
+						excludedTags,
+					},
 				},
 			});
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
 			mockedDb.posts.getForTagsWithOptions.mockResolvedValue(posts);
 
 			// when
-			await store.dispatch(thunks.fetchMorePosts());
+			await store.dispatch(thunks.fetchMorePosts({ context }));
 
 			// then
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.posts.getForTagsWithOptions).toBeCalledWith(
-				thunks.getFilterOptions(store.getState().downloadedSearchForm),
+				thunks.getFilterOptions(store.getState().onlineSearchForm[context]),
 				selectedTags.map((tag) => tag.tag),
 				excludedTags.map((tag) => tag.tag)
 			);
 			expect(mockedDb.tagSearchHistory.saveSearch).toBeCalledWith(selectedTags);
-			expect(dispatchedActions[0]).toMatchObject({ type: 'downloadedSearchForm/fetchMorePosts/pending', payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({ type: 'downloadedSearchForm/fetchMorePosts/fulfilled', payload: posts });
+			expect(dispatchedActions[0]).toMatchObject({
+				type: 'downloadedSearchForm/fetchMorePosts/pending',
+				payload: undefined,
+			});
+			expect(dispatchedActions[1]).toMatchObject({
+				type: 'downloadedSearchForm/fetchMorePosts/fulfilled',
+				payload: posts,
+			});
 		});
 		it('Fetches all posts when no tags or selected tags are provide', async () => {
 			// given
+			const context = 'ctx';
 			const selectedTags: Tag[] = [];
 			const excludedTags: Tag[] = [];
 			const store = mockStore({
 				...initialState,
-				downloadedSearchForm: {
-					...initialState.downloadedSearchForm,
-					selectedTags,
-					excludedTags,
+				onlineSearchForm: {
+					[context]: {
+						...initialState.onlineSearchForm.default,
+						selectedTags,
+						excludedTags,
+					},
 				},
 			});
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
 			mockedDb.posts.getAllWithOptions.mockResolvedValue(posts);
 
 			// when
-			await store.dispatch(thunks.fetchMorePosts());
+			await store.dispatch(thunks.fetchMorePosts({ context }));
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(mockedDb.posts.getAllWithOptions).toBeCalledWith(thunks.getFilterOptions(store.getState().downloadedSearchForm));
+			expect(mockedDb.posts.getAllWithOptions).toBeCalledWith(
+				thunks.getFilterOptions(store.getState().onlineSearchForm[context])
+			);
 			expect(mockedDb.tagSearchHistory.saveSearch).toBeCalledWith(selectedTags);
-			expect(dispatchedActions[0]).toMatchObject({ type: 'downloadedSearchForm/fetchMorePosts/pending', payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({ type: 'downloadedSearchForm/fetchMorePosts/fulfilled', payload: posts });
+			expect(dispatchedActions[0]).toMatchObject({
+				type: 'downloadedSearchForm/fetchMorePosts/pending',
+				payload: undefined,
+			});
+			expect(dispatchedActions[1]).toMatchObject({
+				type: 'downloadedSearchForm/fetchMorePosts/fulfilled',
+				payload: posts,
+			});
 		});
 	});
 });

@@ -104,7 +104,7 @@ export const exportImages = createAsyncThunk<boolean, void, ThunkApi>(
 			return false;
 		}
 
-		const progressUpdate = (_: unknown, { done, total }: { done: number; total: number }): void => {
+		const progressUpdate = (__: unknown, { done, total }: { done: number; total: number }): void => {
 			const percent = Math.floor((done / total) * 100);
 			dispatch(
 				setFullscreenLoadingMaskState({
@@ -130,7 +130,7 @@ export const importImages = createAsyncThunk<boolean, void, ThunkApi>(
 	async (_, { dispatch }): Promise<boolean> => {
 		const logger = thunkLogger.getActionLogger(importImages);
 
-		const progressUpdate = (_: unknown, { done, total }: { done: number; total: number }): void => {
+		const progressUpdate = (__: unknown, { done, total }: { done: number; total: number }): void => {
 			const percent = Math.floor((done / total) * 100);
 			dispatch(
 				setFullscreenLoadingMaskState({

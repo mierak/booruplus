@@ -1,6 +1,7 @@
 import { Post } from './gelbooruTypes';
 import { IconType } from 'antd/lib/notification';
 import { notification } from 'antd';
+import { PostsContext } from '@store/types';
 
 export type Icon =
 	| 'heart-outlined'
@@ -27,7 +28,7 @@ export type CardAction = {
 	icon: Icon;
 	key: string;
 	tooltip: string;
-	onClick: (post: Post) => void;
+	onClick: (post: Post, context: PostsContext | string) => void;
 	popConfirm?: { title: string; okText: string; cancelText: string };
 	condition?: (post: Post) => boolean;
 }

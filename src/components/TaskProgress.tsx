@@ -22,14 +22,14 @@ const TaskProgress: React.FunctionComponent<Props> = (props: Props) => {
 		return moment(timestamp).format(momentFormat);
 	};
 
-	const getTaskProgressStatus = (task: Task): 'exception' | 'success' | 'active' | undefined => {
-		if (task.state === 'canceled') {
+	const getTaskProgressStatus = (t: Task): 'exception' | 'success' | 'active' | undefined => {
+		if (t.state === 'canceled') {
 			return 'exception';
 		}
-		if (task.itemsDone / task.items >= 1) {
+		if (t.itemsDone / t.items >= 1) {
 			return 'success';
 		}
-		if (task.state === 'preparing') {
+		if (t.state === 'preparing') {
 			return 'active';
 		}
 	};

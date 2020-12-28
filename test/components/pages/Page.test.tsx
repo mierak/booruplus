@@ -51,10 +51,20 @@ describe('pages/Dashboard', () => {
 	});
 	it('Renders correctly on Thumbnails page', async () => {
 		// given
+		const context = 'ctx';
 		const store = mockStore(
 			mState({
 				system: {
-					activeView: 'search-results',
+					activeView: 'searches',
+					activeSearchTab: context,
+				},
+				onlineSearchForm: {
+					[context]: {},
+				},
+				posts: {
+					posts: {
+						[context]: [],
+					},
 				},
 			})
 		);
@@ -68,6 +78,31 @@ describe('pages/Dashboard', () => {
 
 		// then
 		await waitFor(() => expect(screen.getByText('Image List')).not.toBeNull());
+	});
+	it('Renders correctly on CheckLaterQueue page', async () => {
+		// given
+		const store = mockStore(
+			mState({
+				system: {
+					activeView: 'check-later',
+				},
+				posts: {
+					posts: {
+						checkLaterQueue: [],
+					},
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<Page />
+			</Provider>
+		);
+
+		// then
+		await waitFor(() => expect(screen.getByText('Your Queue')).not.toBeNull());
 	});
 	it('Renders correctly on Image View page', async () => {
 		// given

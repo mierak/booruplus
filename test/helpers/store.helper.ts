@@ -1,9 +1,7 @@
 import { initialState } from '../../src/store';
-import { PostsContext, RootState, Settings } from '@store/types';
+import { PostsContext, RootState, Settings, DownloadedSearchFormState } from '@store/types';
 import { PostsState } from '@store/posts';
 import { DashboardState } from '@store/dashboard';
-import { DownloadedSearchFormState } from '@store/types';
-import { SearchFormState } from '@store/onlineSearchForm';
 import { FavoritesState } from '@store/favorites';
 import { LoadingStates } from '@store/loadingStates';
 import { TasksState } from '@store/tasks';
@@ -12,6 +10,7 @@ import { SavedSearchesState } from '@store/savedSearches';
 import { TagsState } from '@store/tags';
 import Modals from '@store/modals';
 import { Post } from '@appTypes/gelbooruTypes';
+import { OnlineSearchFormState } from '@store/onlineSearchForm';
 
 type DeepPartial<T> = {
 	[P in keyof T]?: DeepPartial<T[P]>;
@@ -21,6 +20,7 @@ export const mPostsPostsState = (
 	ps?: DeepPartial<{ [K in PostsContext]?: Post[] }>
 ): { [K in PostsContext]: Post[] } => {
 	return {
+		...ps,
 		posts: (ps?.posts as Post[]) ?? initialState.posts.posts.favorites,
 		favorites: (ps?.favorites as Post[]) ?? initialState.posts.posts.posts,
 		mostViewed: (ps?.mostViewed as Post[]) ?? initialState.posts.posts.mostViewed,
@@ -61,36 +61,18 @@ const mDashboardState = (ds?: Partial<DashboardState>): DashboardState => {
 	};
 };
 
-const mDownloadedSearchFormState = (ds?: Partial<DownloadedSearchFormState>): DownloadedSearchFormState => {
-	return {
-		excludedTags: ds?.excludedTags ?? initialState.downloadedSearchForm.excludedTags,
-		page: ds?.page ?? initialState.downloadedSearchForm.page,
-		postLimit: ds?.postLimit ?? initialState.downloadedSearchForm.postLimit,
-		rating: ds?.rating ?? initialState.downloadedSearchForm.rating,
-		selectedTags: ds?.selectedTags ?? initialState.downloadedSearchForm.selectedTags,
-		showBlacklisted: ds?.showBlacklisted ?? initialState.downloadedSearchForm.showBlacklisted,
-		showFavorites: ds?.showFavorites ?? initialState.downloadedSearchForm.showFavorites,
-		showGifs: ds?.showGifs ?? initialState.downloadedSearchForm.showGifs,
-		showImages: ds?.showImages ?? initialState.downloadedSearchForm.showImages,
-		showNonBlacklisted: ds?.showNonBlacklisted ?? initialState.downloadedSearchForm.showNonBlacklisted,
-		showVideos: ds?.showVideos ?? initialState.downloadedSearchForm.showVideos,
-		sort: ds?.sort ?? initialState.downloadedSearchForm.sort,
-		sortOrder: ds?.sortOrder ?? initialState.downloadedSearchForm.sortOrder,
-		tagOptions: ds?.tagOptions ?? initialState.downloadedSearchForm.tagOptions,
-	};
-};
-
-const mOnlineSearchFormState = (os?: Partial<SearchFormState>): SearchFormState => {
-	return {
-		excludedTags: os?.excludedTags ?? initialState.onlineSearchForm.excludedTags,
-		page: os?.page ?? initialState.onlineSearchForm.page,
-		limit: os?.limit ?? initialState.onlineSearchForm.limit,
-		rating: os?.rating ?? initialState.onlineSearchForm.rating,
-		selectedTags: os?.selectedTags ?? initialState.onlineSearchForm.selectedTags,
-		sort: os?.sort ?? initialState.onlineSearchForm.sort,
-		sortOrder: os?.sortOrder ?? initialState.onlineSearchForm.sortOrder,
-		tagOptions: os?.tagOptions ?? initialState.onlineSearchForm.tagOptions,
-	};
+const mOnlineSearchFormState = (ds?: { [key: string]: Partial<DownloadedSearchFormState> }): OnlineSearchFormState => {
+	if (ds) {
+		const newObj: OnlineSearchFormState = {};
+		for (const [key, value] of Object.entries(ds)) {
+			newObj[key] = {
+				...initialState.onlineSearchForm.default,
+				...value,
+			};
+		}
+		return newObj;
+	}
+	return { default: initialState.onlineSearchForm.default };
 };
 
 const mFavoritesState = (fs?: Partial<FavoritesState>): FavoritesState => {
@@ -127,22 +109,7 @@ const mTasksState = (ts?: Partial<TasksState>): TasksState => {
 };
 
 const mSystemState = (ss?: Partial<SystemState>): SystemState => {
-	return {
-		activeView: ss?.activeView ?? initialState.system.activeView,
-		imageViewContext: ss?.imageViewContext ?? initialState.system.imageViewContext,
-		isDownloadedSearchFormDrawerVisible:
-			ss?.isDownloadedSearchFormDrawerVisible ?? initialState.system.isDownloadedSearchFormDrawerVisible,
-		isImageViewThumbnailsCollapsed:
-			ss?.isImageViewThumbnailsCollapsed ?? initialState.system.isImageViewThumbnailsCollapsed,
-		isFavoritesDirectoryTreeCollapsed:
-			ss?.isFavoritesDirectoryTreeCollapsed ?? initialState.system.isFavoritesDirectoryTreeCollapsed,
-		isSearchFormDrawerVsibile: ss?.isSearchFormDrawerVsibile ?? initialState.system.isSearchFormDrawerVsibile,
-		isTagOptionsLoading: ss?.isTagOptionsLoading ?? initialState.system.isTagOptionsLoading,
-		isTagTableLoading: ss?.isTagTableLoading ?? initialState.system.isTagTableLoading,
-		isTagsPopoverVisible: ss?.isTagsPopoverVisible ?? initialState.system.isTagsPopoverVisible,
-		isTasksDrawerVisible: ss?.isTasksDrawerVisible ?? initialState.system.isTasksDrawerVisible,
-		searchMode: ss?.searchMode ?? initialState.system.searchMode,
-	};
+	return { ...initialState.system, ...ss };
 };
 
 const mDashboardSettingsState = (
@@ -199,8 +166,7 @@ const mModalsState = (ms?: Partial<ReturnType<typeof Modals>>): ReturnType<typeo
 
 type PartialRootState = {
 	dashboard?: Partial<DashboardState>;
-	downloadedSearchForm?: Partial<DownloadedSearchFormState>;
-	onlineSearchForm?: Partial<SearchFormState>;
+	onlineSearchForm?: { [key: string]: Partial<DownloadedSearchFormState> };
 	favorites?: Partial<FavoritesState>;
 	loadingStates?: Partial<LoadingStates>;
 	tasks?: Partial<TasksState>;
@@ -210,12 +176,11 @@ type PartialRootState = {
 	savedSearches?: Partial<SavedSearchesState>;
 	tags?: Partial<TagsState>;
 	modals?: Partial<ReturnType<typeof Modals>>;
-}
+};
 
 export const mState = (state?: PartialRootState): RootState => {
 	return {
 		dashboard: mDashboardState(state?.dashboard),
-		downloadedSearchForm: mDownloadedSearchFormState(state?.downloadedSearchForm),
 		onlineSearchForm: mOnlineSearchFormState(state?.onlineSearchForm),
 		favorites: mFavoritesState(state?.favorites),
 		loadingStates: mLoadingStates(state?.loadingStates),

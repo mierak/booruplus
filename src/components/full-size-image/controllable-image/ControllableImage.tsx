@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import { Renderer } from '@components/full-size-image/controllable-image/renderer';
 
-import { AppDispatch, RootState } from '@store/types';
+import { AppDispatch, PostsContext, RootState } from '@store/types';
 import { actions } from '@store';
 
 import { Post } from '@appTypes/gelbooruTypes';
@@ -20,14 +20,15 @@ import { imageLoader } from '@util/componentUtils';
 type Props = {
 	className?: string;
 	showControls?: boolean;
+	context: PostsContext | string;
 	post: Post;
-}
+};
 
 const Container = styled.div`
 	position: relative;
 `;
 
-const ControllableImage: React.FunctionComponent<Props> = ({ className, post, showControls }: Props) => {
+const ControllableImage: React.FunctionComponent<Props> = ({ className, post, showControls, context }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
 	const isLoading = useSelector((state: RootState) => state.loadingStates.isFullImageLoading);
@@ -108,7 +109,7 @@ const ControllableImage: React.FunctionComponent<Props> = ({ className, post, sh
 			key: 'image-control-show-tags',
 			tooltip: 'Show tags',
 			popOver: {
-				content: <TagsPopover tags={post.tags} />,
+				content: <TagsPopover context={context} tags={post.tags} />,
 				autoAdjustOverflow: true,
 				onVisibleChange: handleTagsPopoverVisibilityChange,
 				trigger: 'click',
@@ -124,8 +125,8 @@ const ControllableImage: React.FunctionComponent<Props> = ({ className, post, sh
 			icon: 'copy-outlined',
 			key: 'copy-to-clipboard',
 			tooltip: 'Copy to clipboard',
-			onClick: handleCopyToClipboard
-		}
+			onClick: handleCopyToClipboard,
+		},
 	];
 
 	useEffect(() => {

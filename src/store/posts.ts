@@ -3,18 +3,25 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Post } from '@appTypes/gelbooruTypes';
 
 import * as thunks from './thunks';
-import { PostsContext } from './types';
+import { PostsContext, WithContext } from './types';
+import { deletePostsContext, initPostsContext } from './commonActions';
 
 type HoveredPost = {
 	visible: boolean;
 	post: Post | undefined;
 };
 
-type WithContext<T = null> = { context: PostsContext } & (T extends null ? unknown : { data: T });
-
 export type PostsState = {
-	selectedIndices: { [K in PostsContext]?: number };
-	posts: { [K in PostsContext]: Post[] };
+	selectedIndices: {
+		[K in PostsContext]?: number;
+	} & {
+		[key: string]: number | undefined;
+	};
+	posts: {
+		[K in PostsContext]: Post[];
+	} & {
+		[key: string]: Post[];
+	};
 	hoveredPost: HoveredPost;
 };
 
@@ -25,6 +32,7 @@ export const initialState: PostsState = {
 		favorites: [],
 		mostViewed: [],
 		checkLaterQueue: [],
+		default: [],
 	},
 	hoveredPost: {
 		visible: false,
@@ -73,8 +81,8 @@ const postsSlice = createSlice({
 			}
 
 			const isSelected = state.posts[ctx][index].selected;
-			const selectedIndexes = state.posts[ctx].reduce<number[]>((acc, post, index): number[] => {
-				return post.selected ? [...acc, index] : acc;
+			const selectedIndexes = state.posts[ctx].reduce<number[]>((acc, post, i): number[] => {
+				return post.selected ? [...acc, i] : acc;
 			}, []);
 
 			if (selectedIndexes.length === 0) {
@@ -132,12 +140,18 @@ const postsSlice = createSlice({
 		},
 	},
 	extraReducers: (builder) => {
-		builder.addCase(thunks.onlineSearchForm.fetchPosts.pending, (state, _) => {
-			state.posts.posts = [];
+		builder.addCase(initPostsContext, (state, action) => {
+			state.posts[action.payload.context] = [];
+		});
+		builder.addCase(deletePostsContext, (state, action) => {
+			delete state.posts[action.payload.context];
+		});
+		builder.addCase(thunks.onlineSearchForm.fetchPosts.pending, (state, action) => {
+			state.posts[action.meta.arg.context] = [];
 			state.selectedIndices.posts = undefined;
 		});
-		builder.addCase(thunks.downloadedSearchForm.fetchPosts.pending, (state) => {
-			state.posts.posts = [];
+		builder.addCase(thunks.downloadedSearchForm.fetchPosts.pending, (state, action) => {
+			state.posts[action.meta.arg.context] = [];
 			state.selectedIndices.posts = undefined;
 		});
 		builder.addCase(thunks.onlineSearchForm.fetchMorePosts.fulfilled, (state, action) => {
@@ -161,7 +175,7 @@ const postsSlice = createSlice({
 		});
 		builder.addCase(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled, (state, action) => {
 			for (const post of action.payload) {
-				post.blacklisted !== 1 && state.posts.posts.push(post);
+				post.blacklisted !== 1 && state.posts[action.meta.arg.context].push(post);
 			}
 		});
 		builder.addCase(thunks.favorites.fetchPostsInDirectory.pending, (state) => {
@@ -176,12 +190,12 @@ const postsSlice = createSlice({
 		});
 		builder.addCase(thunks.downloadedSearchForm.fetchPosts.fulfilled, (state, action) => {
 			for (const post of action.payload) {
-				state.posts.posts.push(post);
+				state.posts[action.meta.arg.context].push(post);
 			}
 		});
 		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.fulfilled, (state, action) => {
 			for (const post of action.payload) {
-				state.posts.posts.push(post);
+				state.posts[action.meta.arg.context].push(post);
 			}
 			const index = state.posts.posts.length - action.payload.length;
 			if (index < state.posts.posts.length && index >= 0) {

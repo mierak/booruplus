@@ -32,9 +32,9 @@ jest.mock('antd', () => {
 });
 import { getThumbnailUrl } from '../../../src/service/webService';
 import { SavedSearchAlreadyExistsError } from '@errors/savedSearchError';
-import { mPostsPostsState } from '../../helpers/store.helper';
 
 describe('thunks/savedSearches', () => {
+	const context = 'ctx';
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
@@ -82,7 +82,7 @@ describe('thunks/savedSearches', () => {
 			const blob = await (await fetch(url)).blob();
 
 			// when
-			await store.dispatch(thunks.addPreviewsToActiveSavedSearch([post, post2]));
+			await store.dispatch(thunks.addPreviewsToActiveSavedSearch({ savedSearchId: savedSearch.id, posts: [post, post2] }));
 
 			// then
 			const dispatchedActions = store.getActions();
@@ -112,7 +112,7 @@ describe('thunks/savedSearches', () => {
 			});
 
 			// when
-			await store.dispatch(thunks.addPreviewsToActiveSavedSearch([post]));
+			await store.dispatch(thunks.addPreviewsToActiveSavedSearch({ savedSearchId: undefined, posts: [post] }));
 
 			// then
 			const dispatchedActions = store.getActions();
@@ -123,97 +123,6 @@ describe('thunks/savedSearches', () => {
 				payload: undefined,
 			});
 			expect(dispatchedActions).toContainMatchingAction({ type: thunks.addPreviewsToActiveSavedSearch.rejected.type });
-		});
-	});
-	describe('addPreviewToActiveSavedSearch()', () => {
-		it('Dispatches addPreviewsToActiveSavedSearch', async () => {
-			// given
-			const post = mPost({ id: 123456, hash: 'posthash', directory: 'postdirectory' });
-			const savedSearch = mSavedSearch({ id: 123 });
-			const store = mockStore({
-				...initialState,
-				savedSearches: {
-					...initialState.savedSearches,
-					activeSavedSearch: savedSearch,
-				},
-			});
-
-			// when
-			await store.dispatch(thunks.addPreviewToActiveSavedSearch(post));
-
-			// then
-			const dispatchedActions = store.getActions();
-			expect(dispatchedActions).toContainMatchingAction({
-				type: thunks.addPreviewsToActiveSavedSearch.pending.type,
-				meta: { arg: [post] },
-			});
-		});
-	});
-	describe('addSelectedPreviewsToActiveSavedSearch()', () => {
-		it('Dispatches addPreviewsToActiveSavedSearch', async () => {
-			// given
-			const post = mPost({ id: 123456, hash: 'posthash', directory: 'postdirectory', selected: true });
-			const posts = [post, mPost()];
-			const savedSearch = mSavedSearch({ id: 123 });
-			const store = mockStore({
-				...initialState,
-				savedSearches: {
-					...initialState.savedSearches,
-					activeSavedSearch: savedSearch,
-				},
-				posts: {
-					posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
-					selectedIndices: { posts: 0 },
-					hoveredPost: {
-						post: undefined,
-						visible: false,
-					},
-				},
-			});
-
-			// when
-			await store.dispatch(thunks.addSelectedPreviewsToActiveSavedSearch());
-
-			// then
-			const dispatchedActions = store.getActions();
-			expect(dispatchedActions).toContainMatchingAction({
-				type: thunks.addPreviewsToActiveSavedSearch.pending.type,
-				meta: { arg: [post] },
-			});
-		});
-	});
-
-	describe('addAllPreviewsToActiveSavedSearch()', () => {
-		it('Dispatches addPreviewsToActiveSavedSearch', async () => {
-			// given
-			const post = mPost({ id: 123456, hash: 'posthash', directory: 'postdirectory', selected: true });
-			const posts = [post, mPost()];
-			const savedSearch = mSavedSearch({ id: 123 });
-			const store = mockStore({
-				...initialState,
-				savedSearches: {
-					...initialState.savedSearches,
-					activeSavedSearch: savedSearch,
-				},
-				posts: {
-					posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
-					selectedIndices: { posts: 0 },
-					hoveredPost: {
-						post: undefined,
-						visible: false,
-					},
-				},
-			});
-
-			// when
-			await store.dispatch(thunks.addAllPreviewsToActiveSavedSearch());
-
-			// then
-			const dispatchedActions = store.getActions();
-			expect(dispatchedActions).toContainMatchingAction({
-				type: thunks.addPreviewsToActiveSavedSearch.pending.type,
-				meta: { arg: posts },
-			});
 		});
 	});
 	describe('searchOnline()', () => {
@@ -295,7 +204,7 @@ describe('thunks/savedSearches', () => {
 			mockedDb.savedSearches.createAndSave.mockResolvedValue(123);
 
 			// when
-			await store.dispatch(thunks.saveSearch({ tags: selectedTags, excludedTags, rating }));
+			await store.dispatch(thunks.saveSearch({ tags: selectedTags, excludedTags, rating, context }));
 
 			// then
 			const dispatchedActions = store.getActions();
@@ -311,7 +220,7 @@ describe('thunks/savedSearches', () => {
 			mockedDb.savedSearches.createAndSave.mockResolvedValue(savedSearch);
 
 			// when
-			await store.dispatch(thunks.saveSearch({ tags: [], excludedTags: [], rating }));
+			await store.dispatch(thunks.saveSearch({ tags: [], excludedTags: [], rating, context }));
 
 			// then
 			const dispatchedActions = store.getActions();

@@ -36,11 +36,15 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 	});
 	it('Renders correctly', async () => {
 		// given
+		const context = 'ctx';
 		const post = mPost({ fileUrl: 'url.jpg' });
 		const store = mockStore(
 			mState({
 				settings: {
 					downloadMissingImages: false,
+				},
+				onlineSearchForm: {
+					[context]: {},
 				},
 			})
 		);
@@ -48,7 +52,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		// when
 		const { unmount } = render(
 			<Provider store={store}>
-				<ControllableImage post={post} />
+				<ControllableImage post={post} context={context} />
 			</Provider>
 		);
 		const container = screen.getByTestId('controllable-image-container');
@@ -79,13 +83,20 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 	});
 	it('Renders controls when shotControls prop is true', () => {
 		// given
+		const context = 'ctx';
 		const post = mPost({ fileUrl: 'url.jpg' });
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				onlineSearchForm: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<ControllableImage post={post} showControls />
+				<ControllableImage post={post} context={context} showControls />
 			</Provider>
 		);
 
@@ -98,13 +109,20 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 	});
 	it('Calls renderer.zoomIn() when Zoom in action is clicked', () => {
 		// given
+		const context = 'ctx';
 		const post = mPost({ fileUrl: 'url.jpg' });
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				onlineSearchForm: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<ControllableImage post={post} showControls />
+				<ControllableImage context={context} post={post} showControls />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Zoom in' }));
@@ -114,13 +132,20 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 	});
 	it('Calls renderer.zoomOut() when Zoom in action is clicked', () => {
 		// given
+		const context = 'ctx';
 		const post = mPost({ fileUrl: 'url.jpg' });
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				onlineSearchForm: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<ControllableImage post={post} showControls />
+				<ControllableImage context={context} post={post} showControls />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Zoom out' }));
@@ -130,13 +155,20 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 	});
 	it('Calls renderer.setViewportSettings() with correct values and renderer.drawViewport() when Center Image action is clicked', async () => {
 		// given
+		const context = 'ctx';
 		const post = mPost({ fileUrl: 'url.jpg' });
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				onlineSearchForm: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<ControllableImage post={post} showControls />
+				<ControllableImage context={context} post={post} showControls />
 			</Provider>
 		);
 		const container = screen.getByTestId('controllable-image-container');
@@ -166,8 +198,15 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 	});
 	it('Creates action with open-in-browser IPC message', () => {
 		// given
+		const context = 'ctx';
 		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'], fileUrl: 'test_file_url.jpg' });
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				onlineSearchForm: {
+					[context]: {},
+				},
+			})
+		);
 		const ipcSendSpy = jest.fn();
 		(global as any).api = {
 			send: ipcSendSpy,
@@ -176,7 +215,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ControllableImage post={post} showControls />
+				<ControllableImage context={context} post={post} showControls />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Open in browser' }));
@@ -186,13 +225,20 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 	});
 	it('Creates action that shows TagsPopover', () => {
 		// given
+		const context = 'ctx';
 		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'], fileUrl: 'test_file_url.jpg' });
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				onlineSearchForm: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<ControllableImage post={post} showControls />
+				<ControllableImage context={context} post={post} showControls />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Show tags' }));
@@ -202,18 +248,25 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 	});
 	it('Creates action that copies link to clipboard', () => {
 		// given
+		const context = 'ctx';
 		const spy = jest.fn();
 		(window.clipboard as any) = {
 			writeText: spy,
 		};
 		const link = 'somelink123.jpg';
 		const post = mPost({ fileUrl: link });
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				onlineSearchForm: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<ControllableImage showControls post={post} />
+				<ControllableImage context={context} showControls post={post} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Copy to clipboard' }));

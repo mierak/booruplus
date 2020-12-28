@@ -212,7 +212,7 @@ type IndexFromRowColParams = {
 	rowIndex: number;
 	columnIndex: number;
 	columns: number;
-}
+};
 export const getIndexFromRowCol = ({ rowIndex, columnIndex, columns }: IndexFromRowColParams): number => {
 	return rowIndex * columns + columnIndex;
 };
@@ -220,7 +220,7 @@ export const getIndexFromRowCol = ({ rowIndex, columnIndex, columns }: IndexFrom
 type RowColFromIndexParams = {
 	index: number;
 	columns: number;
-}
+};
 export const getRowColFromIndex = ({
 	index,
 	columns,
@@ -247,7 +247,7 @@ type Version = {
 	patch: number;
 	compare(v: Version): number;
 	isNewerThan(v: Version): boolean;
-}
+};
 
 const compareVersions = (v1: [number, number, number], v2: [number, number, number]): number => {
 	if (v1[0] !== v2[0]) {
@@ -264,4 +264,10 @@ export const parseVersion = (version: string): Version => {
 	const compare = (v: Version): number => compareVersions([res[0], res[1], res[2]], [v.major, v.minor, v.patch]);
 	const isNewerThan = (v: Version): boolean => compare(v) > 0;
 	return { compare, isNewerThan, major: res[0], minor: res[1], patch: res[2] };
+};
+
+//! TODO find a better way
+export const generateTabContext = (tabs: string[]): string => {
+	const lastTabNumber = Math.max(...tabs.map((tab) => Number(tab.match(/\d+/)?.[0] ?? 0)));
+	return `tab${lastTabNumber + 1}`;
 };

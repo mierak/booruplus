@@ -6,8 +6,9 @@ import { RootState, AppDispatch } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mState } from '../../helpers/store.helper';
-import TagStatistic from '../../../src/components/dashboard/TagStatistic';
 import { mTag } from '../../helpers/test.helper';
+import { initPostsContext } from '../../../src/store/commonActions';
+import TagStatistic from '../../../src/components/dashboard/TagStatistic';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -181,12 +182,10 @@ describe('TagStatistic', () => {
 
 		// then
 		const dispatchedActions = mStore.getActions();
+		expect(dispatchedActions).toContainMatchingAction({ type: initPostsContext.type });
 		expect(dispatchedActions[0]).toMatchObject({ type: actions.onlineSearchForm.setSelectedTags.type });
 		expect(dispatchedActions[1]).toMatchObject({ type: thunks.onlineSearchForm.fetchPosts.pending.type });
-		expect(dispatchedActions[2]).toMatchObject({ type: actions.system.setActiveView.type, payload: 'search-results' });
-		expect(dispatchedActions[3]).toMatchObject({ type: actions.downloadedSearchForm.setSelectedTags.type });
 		expect(dispatchedActions[4]).toMatchObject({ type: thunks.downloadedSearchForm.fetchPosts.pending.type });
-		expect(dispatchedActions[5]).toMatchObject({ type: actions.system.setActiveView.type, payload: 'search-results' });
 	});
 	it('Puts ellipsis at the end of tags longer than 25 characters', () => {
 		// given
