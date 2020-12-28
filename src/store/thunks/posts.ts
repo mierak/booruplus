@@ -1,11 +1,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import moment from 'moment';
 
+import type { Task, DownloadTaskState, PostsContext, ThunkApi } from '@store/types';
+import type { Post, PostSearchOptions, Tag } from '@appTypes/gelbooruTypes';
+
 import { db } from '@db';
 import * as api from '@service/apiService';
 import { deleteImage, saveImage } from '@util/imageIpcUtils';
-import { ThunkApi, Task, DownloadTaskState, PostsContext } from '@store/types';
-import { Post, PostSearchOptions, Tag } from '@appTypes/gelbooruTypes';
 import { delay } from '@util/utils';
 import { thunkLoggerFactory } from '@util/logger';
 import { thumbnailCache } from '@util/objectUrlCache';

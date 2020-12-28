@@ -71,8 +71,6 @@ export const thunks = {
 	...allThunks,
 };
 
-export * from './selectors';
-
 const loggerMiddleware: Middleware = <D extends Dispatch<AnyAction>, S>(api: MiddlewareAPI<D, S>) => {
 	return (next) => {
 		return <A extends Action<string>>(action: A): A => {

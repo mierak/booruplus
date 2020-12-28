@@ -1,6 +1,7 @@
-import { Settings } from '@store/types';
 import { IpcMainEvent, IpcMainInvokeEvent } from 'electron';
-import { Post } from './gelbooruTypes';
+
+import type { Settings } from '@store/types';
+import type { Post } from './gelbooruTypes';
 
 export enum IpcInvokeChannels {
 	OPEN_IMPORT_DATA_DIALOG = 'OPEN_IMPORT_DATA_DIALOG',

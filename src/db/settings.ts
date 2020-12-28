@@ -1,7 +1,7 @@
 import db from './database';
-import { SettingsPair } from './types';
 
-import { Settings } from '@store/types';
+import type { SettingsPair } from './types';
+import type { Settings } from '@store/types';
 
 export const saveSettings = async (settings: SettingsPair): Promise<string> => {
 	return db.settings.put(settings);

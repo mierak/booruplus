@@ -1,16 +1,17 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import moment from 'moment';
 
+import type { PostsContext, DownloadedSearchFormState, ThunkApi, RejectWithValue } from '@store/types';
+import type { Rating, SavedSearch, Tag, Post } from '@appTypes/gelbooruTypes';
+
 import { db } from '@db';
-import { ThunkApi, RejectWithValue, PostsContext, DownloadedSearchFormState } from '@store/types';
-import { Rating, SavedSearch, Tag, Post } from '@appTypes/gelbooruTypes';
 import { getThumbnailUrl } from '@service/webService';
 import { thunkLoggerFactory } from '@util/logger';
+import { NoActiveSavedSearchError, SavedSearchAlreadyExistsError } from '@errors/savedSearchError';
 
 import { initPostsContext } from '@store/commonActions';
 import * as downloadedSearchFormThunk from './downloadedSearchForm';
 import * as onlineSearchFormThunk from './onlineSearchForm';
-import { NoActiveSavedSearchError, SavedSearchAlreadyExistsError } from '@errors/savedSearchError';
 import { generateTabContext } from '@util/utils';
 
 const thunkLogger = thunkLoggerFactory();

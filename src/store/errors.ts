@@ -10,7 +10,7 @@ const thunkLogger = thunkLoggerFactory();
 type MyThunk = AsyncThunk<unknown, unknown, ThunkApi>;
 type ThunkType = {
 	[key: string]: unknown;
-}
+};
 
 const registerErrorLogger = (builder: ActionReducerMapBuilder<Record<string, unknown>>, action: MyThunk): void => {
 	builder.addCase(action.rejected, (_, result) => {

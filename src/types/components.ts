@@ -1,7 +1,8 @@
-import { Post } from './gelbooruTypes';
 import { IconType } from 'antd/lib/notification';
 import { notification } from 'antd';
-import { PostsContext } from '@store/types';
+
+import type { Post } from './gelbooruTypes';
+import type { PostsContext } from '@store/types';
 
 export type Icon =
 	| 'heart-outlined'

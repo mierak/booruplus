@@ -1,9 +1,11 @@
-export * as onlineSearchForm from './onlineSearchForm';
-export * as downloadedSearchForm from './downloadedSearchForm';
-export * as dashboard from './dashboard';
-export * as posts from './posts';
-export * as savedSearches from './savedSearches';
-export * as settings from './settings';
-export * as tags from './tags';
-export * as tasks from './tasks';
-export * as favorites from './favorites';
+import * as onlineSearchForm from './onlineSearchForm';
+import * as downloadedSearchForm from './downloadedSearchForm';
+import * as dashboard from './dashboard';
+import * as posts from './posts';
+import * as savedSearches from './savedSearches';
+import * as settings from './settings';
+import * as tags from './tags';
+import * as tasks from './tasks';
+import * as favorites from './favorites';
+
+export { onlineSearchForm, downloadedSearchForm, dashboard, posts, savedSearches, settings, tags, tasks, favorites };

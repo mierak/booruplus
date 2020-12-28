@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Post } from '@appTypes/gelbooruTypes';
+import type { Post } from '@appTypes/gelbooruTypes';
+import type { PostsContext, WithContext } from './types';
 
 import * as thunks from './thunks';
-import { PostsContext, WithContext } from './types';
 import { deletePostsContext, initPostsContext } from './commonActions';
 
 type HoveredPost = {

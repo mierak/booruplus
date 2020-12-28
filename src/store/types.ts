@@ -2,8 +2,6 @@ import { mainReducer, store } from '.';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
-import { Tag, Rating } from '@appTypes/gelbooruTypes';
-
 export type RootState = ReturnType<typeof mainReducer>;
 
 export type AppThunk<T = void> = ThunkAction<Promise<T>, RootState, unknown, Action<string>>;
@@ -19,6 +17,8 @@ export type ThunkApi<Rejected = void> = {
 	state: RootState;
 	rejectValue: Rejected;
 };
+
+import type { Tag, Rating } from '@appTypes/gelbooruTypes';
 
 export type View = 'searches' | 'image' | 'dashboard' | 'saved-searches' | 'favorites' | 'tag-list' | 'check-later';
 

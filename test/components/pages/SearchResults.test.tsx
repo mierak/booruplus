@@ -12,9 +12,8 @@ import { mState } from '../../helpers/store.helper';
 import SearchResults from '../../../src/pages/Searches';
 import '@testing-library/jest-dom';
 import { mPost, mTag } from '../../helpers/test.helper';
-import { deleteImageMock } from '../../helpers/imageBus.mock';
 import * as utils from '../../../src/types/components';
-import { thumbnailLoaderMock } from '../../helpers/imageBus.mock';
+import { thumbnailLoaderMock, deleteImageMock } from '../../helpers/imageBus.mock';
 import { ActiveModal } from '@appTypes/modalTypes';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);

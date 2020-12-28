@@ -1,5 +1,5 @@
+import type { ErrorInstance, ErrorNotification, ErrorWithNotification, ErrorWithNotificationConstructor } from './types';
 import { openNotificationWithIcon } from '@appTypes/components';
-import { ErrorInstance, ErrorNotification, ErrorWithNotification, ErrorWithNotificationConstructor } from './types';
 
 const registry = new Map<ErrorWithNotificationConstructor, ErrorNotification>();
 

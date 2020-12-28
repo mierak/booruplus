@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { SavedSearch } from '@appTypes/gelbooruTypes';
+import type { SavedSearch } from '@appTypes/gelbooruTypes';
 
-import * as thunks from './thunks';
+import {savedSearches} from './thunks';
 
 export type SavedSearchesState = {
 	savedSearches: SavedSearch[];
@@ -29,35 +29,35 @@ const savedSearchesSlice = createSlice({
 		},
 	},
 	extraReducers: (builder) => {
-		builder.addCase(thunks.savedSearches.searchOnline.fulfilled, (state, action) => {
+		builder.addCase(savedSearches.searchOnline.fulfilled, (state, action) => {
 			const index = state.savedSearches.findIndex((savedSearch) => savedSearch.id === action.payload.id);
 			state.savedSearches[index] = action.payload;
 			state.activeSavedSearch = action.payload;
 		});
-		builder.addCase(thunks.savedSearches.searchOffline.fulfilled, (state, action) => {
+		builder.addCase(savedSearches.searchOffline.fulfilled, (state, action) => {
 			const index = state.savedSearches.findIndex((savedSearch) => savedSearch.id === action.payload.id);
 			state.savedSearches[index] = action.payload;
 			state.activeSavedSearch = action.payload;
 		});
 		// Save Search
-		builder.addCase(thunks.savedSearches.saveSearch.fulfilled, (state, action) => {
+		builder.addCase(savedSearches.saveSearch.fulfilled, (state, action) => {
 			state.savedSearches.push(action.payload);
 			state.activeSavedSearch = action.payload;
 		});
-		builder.addCase(thunks.savedSearches.saveSearch.rejected, (state, action) => {
+		builder.addCase(savedSearches.saveSearch.rejected, (state, action) => {
 			if (action.payload) {
 				action.payload.showNotification();
 				state.activeSavedSearch = action.payload.savedSearch;
 			}
 		});
-		builder.addCase(thunks.savedSearches.remove.fulfilled, (state, action) => {
+		builder.addCase(savedSearches.remove.fulfilled, (state, action) => {
 			const index = state.savedSearches.findIndex((s) => s.id === action.payload);
 			state.savedSearches.splice(index, 1);
 		});
-		builder.addCase(thunks.savedSearches.loadSavedSearchesFromDb.fulfilled, (state, action) => {
+		builder.addCase(savedSearches.loadSavedSearchesFromDb.fulfilled, (state, action) => {
 			state.savedSearches = action.payload;
 		});
-		builder.addCase(thunks.savedSearches.removePreview.fulfilled, (state, action) => {
+		builder.addCase(savedSearches.removePreview.fulfilled, (state, action) => {
 			const index = state.savedSearches.findIndex((s) => s.id === action.payload.savedSearchId);
 			if (index !== -1) {
 				const search = state.savedSearches[index];
@@ -65,7 +65,7 @@ const savedSearchesSlice = createSlice({
 				state.savedSearches[index] = search;
 			}
 		});
-		builder.addCase(thunks.savedSearches.addPreviewsToActiveSavedSearch.rejected, (_, action) => {
+		builder.addCase(savedSearches.addPreviewsToActiveSavedSearch.rejected, (_, action) => {
 			action.payload?.showNotification();
 		});
 	},

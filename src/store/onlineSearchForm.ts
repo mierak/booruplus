@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Tag, Rating } from '@appTypes/gelbooruTypes';
+import type { Tag, Rating } from '@appTypes/gelbooruTypes';
+import type { DownloadedSearchFormState, SearchMode, Sort, SortOrder, WithContext } from './types';
 
-import { DownloadedSearchFormState, SearchMode, Sort, SortOrder, WithContext } from './types';
-import * as thunks from './thunks';
+import { onlineSearchForm, downloadedSearchForm, savedSearches } from './thunks';
 import { deletePostsContext, initPostsContext } from './commonActions';
 
 export type OnlineSearchFormState = { [key: string]: DownloadedSearchFormState };
@@ -126,19 +126,19 @@ const searchFormSlice = createSlice({
 		builder.addCase(deletePostsContext, (state, action) => {
 			delete state[action.payload.context];
 		});
-		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.fulfilled, (state, action) => {
+		builder.addCase(onlineSearchForm.getTagsByPatternFromApi.fulfilled, (state, action) => {
 			state[action.meta.arg.context].tagOptions = action.payload;
 		});
-		builder.addCase(thunks.onlineSearchForm.fetchMorePosts.fulfilled, (state, action) => {
+		builder.addCase(onlineSearchForm.fetchMorePosts.fulfilled, (state, action) => {
 			state[action.meta.arg.context].page = state[action.meta.arg.context].page + 1;
 		});
-		builder.addCase(thunks.downloadedSearchForm.loadTagsByPattern.fulfilled, (state, action) => {
+		builder.addCase(downloadedSearchForm.loadTagsByPattern.fulfilled, (state, action) => {
 			state[action.meta.arg.context].tagOptions = action.payload;
 		});
-		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.pending, (state, action) => {
+		builder.addCase(downloadedSearchForm.fetchMorePosts.pending, (state, action) => {
 			state[action.meta.arg.context].page = state[action.meta.arg.context].page + 1;
 		});
-		builder.addCase(thunks.savedSearches.saveSearch.fulfilled, (state, action) => {
+		builder.addCase(savedSearches.saveSearch.fulfilled, (state, action) => {
 			state[action.meta.arg.context].savedSearchId = action.payload.id;
 		});
 	},

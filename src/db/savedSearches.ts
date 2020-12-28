@@ -1,8 +1,9 @@
 import db from './database';
-import { SavedSearch, Rating, Tag, Post } from '@appTypes/gelbooruTypes';
+import type { SavedSearch, Rating, Tag, Post } from '@appTypes/gelbooruTypes';
+import type { SavedSearch as DbSavedSearch } from './types';
+
 import { compareTagArrays } from '@util/utils';
 
-import { SavedSearch as DbSavedSearch } from './types';
 
 const transformDbSavedSearchToSavedSearch = (savedSearch: DbSavedSearch): SavedSearch => {
 	const previews = savedSearch.previews.map((preview) => {

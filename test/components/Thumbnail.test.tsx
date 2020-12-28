@@ -143,7 +143,7 @@ describe('Thumbnail', () => {
 			})
 		);
 		const onClick = jest.fn();
-		const actions: utils.CardAction[] = [
+		const cardActions: utils.CardAction[] = [
 			{
 				onClick,
 				icon: 'plus-outlined',
@@ -155,7 +155,7 @@ describe('Thumbnail', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnail context='posts' index={index} actions={actions} />
+				<Thumbnail context='posts' index={index} actions={cardActions} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('img', { name: 'plus' }));
@@ -177,7 +177,7 @@ describe('Thumbnail', () => {
 		const onClick = jest.fn().mockResolvedValue(new Promise(resolve => {
 			setTimeout(resolve(null), 500);
 		}));
-		const actions: utils.CardAction[] = [
+		const cardActions: utils.CardAction[] = [
 			{
 				onClick,
 				icon: 'plus-outlined',
@@ -189,7 +189,7 @@ describe('Thumbnail', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnail context='posts' index={index} actions={actions} />
+				<Thumbnail context='posts' index={index} actions={cardActions} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('img', { name: 'plus' }));
@@ -211,7 +211,7 @@ describe('Thumbnail', () => {
 		);
 		const onClick = jest.fn();
 		const title = 'popconfirm title';
-		const actions: utils.CardAction[] = [
+		const cardActions: utils.CardAction[] = [
 			{
 				onClick,
 				icon: 'plus-outlined',
@@ -229,12 +229,12 @@ describe('Thumbnail', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnail context='posts' index={index} actions={actions} />
+				<Thumbnail context='posts' index={index} actions={cardActions} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('img', { name: 'plus' }));
 		await waitFor(() => screen.getByText(title));
-		fireEvent.click(screen.getByRole('button', { name: actions[0].popConfirm?.okText }));
+		fireEvent.click(screen.getByRole('button', { name: cardActions[0].popConfirm?.okText }));
 
 		// then
 		expect(onClick).toHaveBeenCalledTimes(1);
@@ -251,7 +251,7 @@ describe('Thumbnail', () => {
 		);
 		const onClick = jest.fn();
 		const title = 'popconfirm title';
-		const actions: utils.CardAction[] = [
+		const cardActions: utils.CardAction[] = [
 			{
 				onClick,
 				icon: 'plus-outlined',
@@ -269,7 +269,7 @@ describe('Thumbnail', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnail context='posts' index={index} actions={actions} />
+				<Thumbnail context='posts' index={index} actions={cardActions} />
 			</Provider>
 		);
 
@@ -287,7 +287,7 @@ describe('Thumbnail', () => {
 			})
 		);
 		const onClick = jest.fn();
-		const actions: utils.CardAction[] = [
+		const cardActions: utils.CardAction[] = [
 			{
 				onClick,
 				icon: 'plus-outlined',
@@ -300,7 +300,7 @@ describe('Thumbnail', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Thumbnail context='posts' index={index} actions={actions} />
+				<Thumbnail context='posts' index={index} actions={cardActions} />
 			</Provider>
 		);
 

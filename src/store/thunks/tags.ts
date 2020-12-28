@@ -1,8 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
+import type { AppThunk, DownloadedSearchFormState, ThunkApi } from '@store/types';
+import type { Tag, TagType } from '@appTypes/gelbooruTypes';
+
 import { db } from '@db';
-import { AppThunk, DownloadedSearchFormState, ThunkApi } from '@store/types';
-import { Tag, TagType } from '@appTypes/gelbooruTypes';
 import * as api from '@service/apiService';
 import { thunkLoggerFactory } from '@util/logger';
 import { generateTabContext } from '@util/utils';

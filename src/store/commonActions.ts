@@ -1,10 +1,10 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { Post } from '@appTypes/gelbooruTypes';
-import { IpcInvokeChannels, IpcSendChannels } from '@appTypes/processDto';
-import { thunkLoggerFactory } from '@util/logger';
+import type { Post } from '@appTypes/gelbooruTypes';
+import type { DownloadedSearchFormState, PostsContext, ThunkApi, WithContext } from '@store/types';
 
-import { DownloadedSearchFormState, PostsContext, ThunkApi, WithContext } from '@store/types';
+import { thunkLoggerFactory } from '@util/logger';
+import { IpcInvokeChannels, IpcSendChannels } from '@appTypes/processDto';
 
 const thunkLogger = thunkLoggerFactory();
 

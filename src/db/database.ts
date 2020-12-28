@@ -1,10 +1,9 @@
 import Dexie from 'dexie';
 import moment from 'moment';
 
-import { Post, Tag } from '@appTypes/gelbooruTypes';
-import { Task } from '@store/types';
-
-import { SettingsPair, SavedSearch, FavoritesTreeNode } from './types';
+import type { Post, Tag } from '@appTypes/gelbooruTypes';
+import type { Task } from '@store/types';
+import type { SettingsPair, SavedSearch, FavoritesTreeNode } from './types';
 
 class Database extends Dexie {
 	posts: Dexie.Table<Post, number>;

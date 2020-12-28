@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { View, PostsContext } from './types';
+import type { View, PostsContext } from './types';
+
 import { initPostsContext } from './commonActions';
 import * as thunks from './thunks';
 

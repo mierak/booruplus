@@ -8,8 +8,6 @@
 		"plugin:react/recommended",
 		"plugin:@typescript-eslint/eslint-recommended",
 		"plugin:@typescript-eslint/recommended",
-		"plugin:import/errors",
-		"plugin:import/warnings",
 		"plugin:import/typescript",
 		"plugin:react-hooks/recommended",
 		"prettier"
@@ -35,9 +33,11 @@
 			"typescript": {}
 		}
 	},
-	"plugins": ["react", "@typescript-eslint"],
+	"plugins": ["react", "@typescript-eslint", "import"],
 	"rules": {
-	"import/no-named-as-default-member": "off",
+		"import/no-duplicates": "error",
+		"import/no-cycle": "error",
+		"import/namespace": "error",
 		"indent": [
 			0,
 			"tab",

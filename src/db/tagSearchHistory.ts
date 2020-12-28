@@ -1,7 +1,7 @@
 import db from './database';
 
-import { Tag } from '@appTypes/gelbooruTypes';
-import { TagHistory } from '@store/types';
+import type { Tag } from '@appTypes/gelbooruTypes';
+import type { TagHistory } from '@store/types';
 
 export const saveSearch = async (tags: Tag[]): Promise<void> => {
 	const history = tags.map((tag) => {

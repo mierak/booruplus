@@ -1,4 +1,4 @@
-import { IconType } from 'antd/lib/notification';
+import type { IconType } from 'antd/lib/notification';
 import { showErrorNotification } from './errorNotificationRegistry';
 
 export type ErrorWithNotificationConstructor = new (...args: never[]) => ErrorWithNotification;

@@ -1,9 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import * as api from '@service/apiService';
+import type { Post, Tag, PostSearchOptions } from '@appTypes/gelbooruTypes';
+import type { PostsContext, RootState, ThunkApi } from '@store/types';
+
 import { db } from '@db';
-import { ThunkApi, RootState, PostsContext } from '@store/types';
-import { Post, Tag, PostSearchOptions } from '@appTypes/gelbooruTypes';
+import * as api from '@service/apiService';
 import { thunkLoggerFactory } from '@util/logger';
 import { thumbnailCache } from '@util/objectUrlCache';
 

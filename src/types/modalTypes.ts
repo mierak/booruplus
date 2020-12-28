@@ -1,5 +1,5 @@
-import { PostsContext } from '@store/types';
-import { Post } from './gelbooruTypes';
+import type { PostsContext } from '@store/types';
+import type { Post } from './gelbooruTypes';
 
 export enum ActiveModal {
 	NONE = 'NONE',
