@@ -1,14 +1,15 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { thunks, actions } from '../../../src/store';
-import { RootState, AppDispatch } from '../../../src/store/types';
+import { thunks } from '../../../src/store';
+import { RootState, AppDispatch, DownloadedSearchFormState } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mState } from '../../helpers/store.helper';
 import { mTag } from '../../helpers/test.helper';
 import { initPostsContext } from '../../../src/store/commonActions';
 import TagStatistic from '../../../src/components/dashboard/TagStatistic';
+import { generateTabContext } from '@util/utils';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -163,10 +164,11 @@ describe('TagStatistic', () => {
 	});
 	it('Renders actions and calls correct functions when clicked', () => {
 		// given
+		const tag = { tag: mTag({ tag: 'tag1' }), count: 1, date: '' };
 		const mStore = mockStore(
 			mState({
 				dashboard: {
-					mostSearchedTags: [{ tag: mTag({ tag: 'tag1' }), count: 1, date: '' }],
+					mostSearchedTags: [tag],
 				},
 			})
 		);
@@ -179,13 +181,34 @@ describe('TagStatistic', () => {
 		);
 		fireEvent.click(screen.getByText('Online'));
 		fireEvent.click(screen.getByText('Offline'));
+		const context = generateTabContext(Object.keys(mStore.getState().onlineSearchForm));
+		const dataOnline: Partial<DownloadedSearchFormState> = {
+			mode: 'online',
+			selectedTags: [tag.tag],
+		};
+		const dataOffline: Partial<DownloadedSearchFormState> = {
+			mode: 'offline',
+			selectedTags: [tag.tag],
+		};
 
 		// then
 		const dispatchedActions = mStore.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: initPostsContext.type });
-		expect(dispatchedActions[0]).toMatchObject({ type: actions.onlineSearchForm.setSelectedTags.type });
-		expect(dispatchedActions[1]).toMatchObject({ type: thunks.onlineSearchForm.fetchPosts.pending.type });
-		expect(dispatchedActions[4]).toMatchObject({ type: thunks.downloadedSearchForm.fetchPosts.pending.type });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: initPostsContext.type,
+			payload: { context, data: dataOnline },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: initPostsContext.type,
+			payload: { context, data: dataOffline },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: thunks.onlineSearchForm.fetchPosts.pending.type,
+			meta: { arg: { context } },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: thunks.downloadedSearchForm.fetchPosts.pending.type,
+			meta: { arg: { context } },
+		});
 	});
 	it('Puts ellipsis at the end of tags longer than 25 characters', () => {
 		// given

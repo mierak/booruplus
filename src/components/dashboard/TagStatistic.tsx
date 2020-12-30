@@ -8,7 +8,7 @@ import { thunks } from '@store';
 import { TagHistory, AppDispatch, RootState, DownloadedSearchFormState } from '@store/types';
 
 import { generateTabContext, getTagColor } from '@util/utils';
-import { initPostsContext } from '@store/commonActions';
+import { initPostsContext } from '../../store/commonActions';
 
 type Props = {
 	className?: string;

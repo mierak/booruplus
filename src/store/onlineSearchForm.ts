@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import type { Tag, Rating } from '@appTypes/gelbooruTypes';
-import type { DownloadedSearchFormState, SearchMode, Sort, SortOrder, WithContext } from './types';
+import type { DownloadedSearchFormState, Sort, SortOrder, WithContext } from './types';
 
-import { onlineSearchForm, downloadedSearchForm, savedSearches } from './thunks';
+import * as thunks from './thunks';
 import { deletePostsContext, initPostsContext } from './commonActions';
 
 export type OnlineSearchFormState = { [key: string]: DownloadedSearchFormState };
@@ -79,9 +79,6 @@ const searchFormSlice = createSlice({
 		updateContext: (state, action: PayloadAction<WithContext<Partial<DownloadedSearchFormState>>>): void => {
 			state[action.payload.context] = { ...state[action.payload.context], ...action.payload.data };
 		},
-		setContextMode: (state, action: PayloadAction<WithContext<SearchMode>>): void => {
-			state[action.payload.context].mode = action.payload.data;
-		},
 		toggleShowNonBlacklisted: (state, action: PayloadAction<WithContext>): void => {
 			const currentState = state[action.payload.context];
 			if ('showNonBlacklisted' in currentState) {
@@ -126,19 +123,19 @@ const searchFormSlice = createSlice({
 		builder.addCase(deletePostsContext, (state, action) => {
 			delete state[action.payload.context];
 		});
-		builder.addCase(onlineSearchForm.getTagsByPatternFromApi.fulfilled, (state, action) => {
+		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.fulfilled, (state, action) => {
 			state[action.meta.arg.context].tagOptions = action.payload;
 		});
-		builder.addCase(onlineSearchForm.fetchMorePosts.fulfilled, (state, action) => {
+		builder.addCase(thunks.onlineSearchForm.fetchMorePosts.fulfilled, (state, action) => {
 			state[action.meta.arg.context].page = state[action.meta.arg.context].page + 1;
 		});
-		builder.addCase(downloadedSearchForm.loadTagsByPattern.fulfilled, (state, action) => {
+		builder.addCase(thunks.downloadedSearchForm.loadTagsByPattern.fulfilled, (state, action) => {
 			state[action.meta.arg.context].tagOptions = action.payload;
 		});
-		builder.addCase(downloadedSearchForm.fetchMorePosts.pending, (state, action) => {
+		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.fulfilled, (state, action) => {
 			state[action.meta.arg.context].page = state[action.meta.arg.context].page + 1;
 		});
-		builder.addCase(savedSearches.saveSearch.fulfilled, (state, action) => {
+		builder.addCase(thunks.savedSearches.saveSearch.fulfilled, (state, action) => {
 			state[action.meta.arg.context].savedSearchId = action.payload.id;
 		});
 	},

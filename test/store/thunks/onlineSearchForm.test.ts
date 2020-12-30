@@ -131,7 +131,7 @@ describe('thunks/onlineSearchForm', () => {
 			expect(dispatchedActions[0]).toMatchObject({ type: 'onlineSearchForm/fetchPosts/pending', payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({
 				type: 'onlineSearchForm/checkPostsAgainstDb/pending',
-				meta: { arg: posts },
+				meta: { arg: { context, posts } },
 			});
 			expect(dispatchedActions[2]).toMatchObject({ type: 'onlineSearchForm/checkPostsAgainstDb/fulfilled' });
 			expect(dispatchedActions[3]).toMatchObject({ type: 'onlineSearchForm/fetchPosts/fulfilled', payload: posts });
@@ -162,7 +162,7 @@ describe('thunks/onlineSearchForm', () => {
 			expect(dispatchedActions[0]).toMatchObject({ type: 'onlineSearchForm/fetchMorePosts/pending', payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({
 				type: 'onlineSearchForm/checkPostsAgainstDb/pending',
-				meta: { arg: posts },
+				meta: { arg: { context, posts } },
 			});
 			expect(dispatchedActions[2]).toMatchObject({ type: 'onlineSearchForm/checkPostsAgainstDb/fulfilled' });
 			expect(dispatchedActions[3]).toMatchObject({ type: 'onlineSearchForm/fetchMorePosts/fulfilled', payload: posts });

@@ -95,7 +95,10 @@ describe('search-from/SelectedTags', () => {
 			type: actions.onlineSearchForm.removeExcludedTag.type,
 			payload: { context, data: tag },
 		});
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.addTag.type, payload: tag });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.onlineSearchForm.addTag.type,
+			payload: { context, data: tag },
+		});
 	});
 	it('Adds stringified tag to dataTransfer on drag start over tage', () => {
 		// given

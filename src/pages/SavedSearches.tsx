@@ -10,7 +10,7 @@ import { SavedSearch, Tag as GelbooruTag } from '@appTypes/gelbooruTypes';
 import { generateTabContext, getTagColor } from '@util/utils';
 import moment from 'moment';
 import { openNotificationWithIcon } from '@appTypes/components';
-import { initPostsContext } from '@store/commonActions';
+import { initPostsContext } from '../store/commonActions';
 
 const { Column } = Table;
 
@@ -174,7 +174,7 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 		if (index >= 0) {
 			const context = generateTabContext(contexts);
 			const data: Partial<DownloadedSearchFormState> = {
-				mode: 'offline', // TODO new mode for previews
+				mode: 'offline', //! TODO new mode for previews
 				selectedTags: record.tags,
 				excludedTags: record.excludedTags,
 				rating: record.rating,

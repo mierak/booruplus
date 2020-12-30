@@ -10,7 +10,7 @@ import { generateTabContext } from '@util/utils';
 
 import * as onlineSearchFormThunk from './onlineSearchForm';
 import * as downloadedSearchFormThunk from './downloadedSearchForm';
-import { initPostsContext } from '@store/commonActions';
+import { initPostsContext } from '../commonActions';
 
 const thunkLogger = thunkLoggerFactory();
 

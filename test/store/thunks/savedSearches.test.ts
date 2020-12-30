@@ -11,6 +11,7 @@ import * as thunks from '../../../src/store/thunks/savedSearches';
 import * as onlineSearchFormThunk from '../../../src/store/thunks/onlineSearchForm';
 import * as downloadedSearchFormThunk from '../../../src/store/thunks/downloadedSearchForm';
 import { mSavedSearch, mTag, mPost } from '../../helpers/test.helper';
+import { mState } from '../../helpers/store.helper';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 jest.mock('../../../src/service/apiService', () => {
@@ -32,6 +33,7 @@ jest.mock('antd', () => {
 });
 import { getThumbnailUrl } from '../../../src/service/webService';
 import { SavedSearchAlreadyExistsError } from '@errors/savedSearchError';
+import { generateTabContext } from '@util/utils';
 
 describe('thunks/savedSearches', () => {
 	const context = 'ctx';
@@ -82,7 +84,7 @@ describe('thunks/savedSearches', () => {
 			const blob = await (await fetch(url)).blob();
 
 			// when
-			await store.dispatch(thunks.addPreviewsToActiveSavedSearch({ savedSearchId: savedSearch.id, posts: [post, post2] }));
+			await store.dispatch(thunks.addPreviewsToSavedSearch({ savedSearchId: savedSearch.id, posts: [post, post2] }));
 
 			// then
 			const dispatchedActions = store.getActions();
@@ -93,13 +95,13 @@ describe('thunks/savedSearches', () => {
 			expect(fetchMock.mock.calls.length).toBe(3);
 			expect(fetchMock.mock.calls[1][0]).toEqual(url);
 			expect(fetchMock.mock.calls[2][0]).toEqual(url2);
-			expect(dispatchedActions[0]).toMatchObject({
-				type: thunks.addPreviewsToActiveSavedSearch.pending.type,
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.addPreviewsToSavedSearch.pending.type,
 				payload: undefined,
 			});
-			expect(dispatchedActions[1]).toMatchObject({
-				type: thunks.addPreviewsToActiveSavedSearch.fulfilled.type,
-				payload: savedSearch,
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.addPreviewsToSavedSearch.fulfilled.type,
+				payload: savedSearch.id,
 			});
 		});
 		it('Dispatches rejected actions when no saved search is set as active', async () => {
@@ -112,23 +114,29 @@ describe('thunks/savedSearches', () => {
 			});
 
 			// when
-			await store.dispatch(thunks.addPreviewsToActiveSavedSearch({ savedSearchId: undefined, posts: [post] }));
+			await store.dispatch(thunks.addPreviewsToSavedSearch({ savedSearchId: undefined, posts: [post] }));
 
 			// then
 			const dispatchedActions = store.getActions();
 			expect(fetchMock.mock.calls.length).toBe(0);
 			expect(mockedDb.savedSearches.addPreviews).toBeCalledTimes(0);
 			expect(dispatchedActions).toContainMatchingAction({
-				type: thunks.addPreviewsToActiveSavedSearch.pending.type,
+				type: thunks.addPreviewsToSavedSearch.pending.type,
 				payload: undefined,
 			});
-			expect(dispatchedActions).toContainMatchingAction({ type: thunks.addPreviewsToActiveSavedSearch.rejected.type });
+			expect(dispatchedActions).toContainMatchingAction({ type: thunks.addPreviewsToSavedSearch.rejected.type });
 		});
 	});
 	describe('searchOnline()', () => {
-		it('Calls db correctly and dispatches fetchPosts', async () => {
+		it('Calls db correctly, inits context and dispatches fetchPosts', async () => {
 			// given
-			const store = mockStore(initialState);
+			const store = mockStore(
+				mState({
+					onlineSearchForm: {
+						['1']: {},
+					},
+				})
+			);
 			const mockSearch = mSavedSearch({ id: 123, lastSearched: undefined });
 			const savedSearch = {
 				id: mockSearch.id,
@@ -137,6 +145,7 @@ describe('thunks/savedSearches', () => {
 				tags: mockSearch.tags,
 				excludedTags: mockSearch.excludedTags,
 			};
+			const newContext = generateTabContext(Object.keys(store.getState().onlineSearchForm));
 
 			// when
 			await store.dispatch(thunks.searchOnline(savedSearch));
@@ -145,13 +154,32 @@ describe('thunks/savedSearches', () => {
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.savedSearches.save.mock.calls[0][0]).toMatchObject(savedSearch);
 			expect(dispatchedActions).toContainMatchingAction({ type: thunks.searchOnline.pending.type, payload: undefined });
+			expect(dispatchedActions).toContainMatchingAction({
+				type: 'common/initPostsContext',
+				payload: {
+					context: newContext,
+					data: {
+						mode: 'online',
+						savedSearchId: savedSearch.id,
+						selectedTags: savedSearch.tags,
+						excludedTags: savedSearch.excludedTags,
+						rating: savedSearch.rating,
+					},
+				},
+			});
 			expect(dispatchedActions).toContainMatchingAction({ type: onlineSearchFormThunk.fetchPosts.pending.type });
 		});
 	});
 	describe('searchOffline()', () => {
 		it('Calls db correctly and dispatches fetchPosts', async () => {
 			// given
-			const store = mockStore(initialState);
+			const store = mockStore(
+				mState({
+					onlineSearchForm: {
+						['1']: {},
+					},
+				})
+			);
 			const mockSearch = mSavedSearch({ id: 123, lastSearched: undefined });
 			const savedSearch = {
 				id: mockSearch.id,
@@ -160,6 +188,7 @@ describe('thunks/savedSearches', () => {
 				tags: mockSearch.tags,
 				excludedTags: mockSearch.excludedTags,
 			};
+			const newContext = generateTabContext(Object.keys(store.getState().onlineSearchForm));
 
 			// when
 			await store.dispatch(thunks.searchOffline(savedSearch));
@@ -167,10 +196,21 @@ describe('thunks/savedSearches', () => {
 			// then
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.savedSearches.save.mock.calls[0][0]).toMatchObject(savedSearch);
-			expect(dispatchedActions[0]).toMatchObject({ type: thunks.searchOffline.pending.type, payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({ type: downloadedSearchFormThunk.fetchPosts.pending.type });
-			expect(dispatchedActions[2]).toMatchObject({ type: downloadedSearchFormThunk.fetchPosts.fulfilled.type });
-			expect(dispatchedActions[3]).toMatchObject({ type: thunks.searchOffline.fulfilled.type, payload: savedSearch });
+			expect(dispatchedActions).toContainMatchingAction({
+				type: 'common/initPostsContext',
+				payload: {
+					context: newContext,
+					data: {
+						mode: 'offline',
+						savedSearchId: savedSearch.id,
+						selectedTags: savedSearch.tags,
+						excludedTags: savedSearch.excludedTags,
+						rating: savedSearch.rating,
+					},
+				},
+			});
+			expect(dispatchedActions).toContainMatchingAction({ type: thunks.searchOffline.pending.type, payload: undefined });
+			expect(dispatchedActions).toContainMatchingAction({ type: downloadedSearchFormThunk.fetchPosts.pending.type });
 		});
 	});
 	describe('removePreview()', () => {

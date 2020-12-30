@@ -129,7 +129,7 @@ const postsSlice = createSlice({
 			if (state.selectedIndices[ctx] !== undefined) {
 				const index =
 					state.selectedIndices[ctx] === 0
-						? state.posts.posts.length - 1
+						? state.posts[ctx].length - 1
 						: (state.selectedIndices[ctx] ?? state.posts[ctx].length) - 1;
 				state.selectedIndices[ctx] = index;
 			}
@@ -148,20 +148,21 @@ const postsSlice = createSlice({
 		});
 		builder.addCase(thunks.onlineSearchForm.fetchPosts.pending, (state, action) => {
 			state.posts[action.meta.arg.context] = [];
-			state.selectedIndices.posts = undefined;
+			state.selectedIndices[action.meta.arg.context] = undefined;
 		});
 		builder.addCase(thunks.downloadedSearchForm.fetchPosts.pending, (state, action) => {
 			state.posts[action.meta.arg.context] = [];
-			state.selectedIndices.posts = undefined;
+			state.selectedIndices[action.meta.arg.context] = undefined;
 		});
 		builder.addCase(thunks.onlineSearchForm.fetchMorePosts.fulfilled, (state, action) => {
-			const index = state.posts.posts.length - action.payload.length;
-			if (index < state.posts.posts.length && index >= 0) {
-				state.selectedIndices.posts = index;
+			const context = action.meta.arg.context;
+			const index = state.posts[context].length - action.payload.length;
+			if (index < state.posts[context].length && index >= 0) {
+				state.selectedIndices[context] = index;
 			} else if (index < 0) {
-				state.selectedIndices.posts = 0;
-			} else if (index >= state.posts.posts.length) {
-				state.selectedIndices.posts = state.posts.posts.length - 1;
+				state.selectedIndices[context] = 0;
+			} else if (index >= state.posts[context].length) {
+				state.selectedIndices[context] = state.posts[context].length - 1;
 			}
 		});
 		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state) => {
@@ -194,16 +195,17 @@ const postsSlice = createSlice({
 			}
 		});
 		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.fulfilled, (state, action) => {
+			const context = action.meta.arg.context;
 			for (const post of action.payload) {
-				state.posts[action.meta.arg.context].push(post);
+				state.posts[context].push(post);
 			}
-			const index = state.posts.posts.length - action.payload.length;
-			if (index < state.posts.posts.length && index >= 0) {
-				state.selectedIndices.posts = index;
+			const index = state.posts[context].length - action.payload.length;
+			if (index < state.posts[context].length && index >= 0) {
+				state.selectedIndices[context] = index;
 			} else if (index < 0) {
-				state.selectedIndices.posts = 0;
-			} else if (index >= state.posts.posts.length) {
-				state.selectedIndices.posts = state.posts.posts.length - 1;
+				state.selectedIndices[context] = 0;
+			} else if (index >= state.posts[context].length) {
+				state.selectedIndices[context] = state.posts[context].length - 1;
 			}
 		});
 		builder.addCase(thunks.posts.blacklistPosts.fulfilled, (state, action) => {
@@ -212,8 +214,8 @@ const postsSlice = createSlice({
 			state.posts[context] = state.posts[context].filter((post) => !idsToRemove.includes(post.id));
 		});
 		builder.addCase(thunks.posts.downloadPost.fulfilled, (state, action) => {
-			const index = state.posts[action.meta.arg.context].findIndex((p) => p.id === action.payload.id);
 			const context = action.meta.arg.context;
+			const index = state.posts[context].findIndex((p) => p.id === action.payload.id);
 
 			if (index !== -1) {
 				state.posts[context][index] = { ...state.posts[context][index], downloaded: 1 };

@@ -65,7 +65,7 @@ const savedSearchesSlice = createSlice({
 				state.savedSearches[index] = search;
 			}
 		});
-		builder.addCase(savedSearches.addPreviewsToActiveSavedSearch.rejected, (_, action) => {
+		builder.addCase(savedSearches.addPreviewsToSavedSearch.rejected, (_, action) => {
 			action.payload?.showNotification();
 		});
 	},

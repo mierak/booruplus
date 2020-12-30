@@ -13,7 +13,7 @@ import { ActiveModal } from '@appTypes/modalTypes';
 import PageMenuHeader from '@components/common/PageMenuHeader';
 import SearchResultsMenu from '@components/SearchResultsMenu';
 import { generateTabContext } from '@util/utils';
-import { deletePostsContext, initPostsContext } from '@store/commonActions';
+import { deletePostsContext, initPostsContext } from '../store/commonActions';
 
 type Props = {
 	className?: string;
@@ -61,7 +61,7 @@ const ThumbnailsListTabContent: React.FunctionComponent<{ context: PostsContext 
 		};
 
 		const handleAddPreview = (post: Post): void => {
-			dispatch(thunks.savedSearches.addPreviewsToActiveSavedSearch({ savedSearchId, posts: [post] }));
+			dispatch(thunks.savedSearches.addPreviewsToSavedSearch({ savedSearchId, posts: [post] }));
 			openNotificationWithIcon('success', 'Preview added', 'Preview was successfuly added to saved search');
 		};
 		const thumbnailActions: CardAction[] = [
@@ -122,7 +122,7 @@ const ThumbnailsListTabContent: React.FunctionComponent<{ context: PostsContext 
 	}
 };
 
-const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
+const Searches: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
 	const activeTab = useSelector((state: RootState) => state.system.activeSearchTab);
@@ -177,4 +177,4 @@ const SearchResults: React.FunctionComponent<Props> = (props: Props) => {
 	);
 };
 
-export default SearchResults;
+export default Searches;

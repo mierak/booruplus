@@ -16,6 +16,7 @@ import { thumbnailLoaderMock } from '../helpers/imageBus.mock';
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('ThumbnailsList', () => {
+	const context = 'ctx';
 	const posts = [
 		mPost({ id: 1, directory: 'dir1', hash: 'hash1' }),
 		mPost({ id: 2, directory: 'dir2', hash: 'hash2' }),
@@ -33,7 +34,10 @@ describe('ThumbnailsList', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts: { posts, favorites: [] },
+					posts: { [context]: posts },
+				},
+				onlineSearchForm: {
+					[context]: {},
 				},
 			})
 		);
@@ -41,7 +45,7 @@ describe('ThumbnailsList', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ThumbnailsList shouldShowLoadMoreButton context='posts' />
+				<ThumbnailsList shouldShowLoadMoreButton context={context} />
 			</Provider>
 		);
 

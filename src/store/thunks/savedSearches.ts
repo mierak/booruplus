@@ -9,7 +9,7 @@ import { getThumbnailUrl } from '@service/webService';
 import { thunkLoggerFactory } from '@util/logger';
 import { NoActiveSavedSearchError, SavedSearchAlreadyExistsError } from '@errors/savedSearchError';
 
-import { initPostsContext } from '@store/commonActions';
+import { initPostsContext } from '../commonActions';
 import * as downloadedSearchFormThunk from './downloadedSearchForm';
 import * as onlineSearchFormThunk from './onlineSearchForm';
 import { generateTabContext } from '@util/utils';
@@ -49,8 +49,8 @@ export const searchOffline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi
 		const context = generateTabContext(Object.keys(getState().onlineSearchForm));
 		const data: Partial<DownloadedSearchFormState> = {
 			mode: 'offline',
-			selectedTags: savedSearch.tags,
 			savedSearchId: savedSearch.id,
+			selectedTags: savedSearch.tags,
 			excludedTags: savedSearch.excludedTags,
 			rating: savedSearch.rating,
 		};
@@ -110,14 +110,14 @@ export const loadSavedSearchesFromDb = createAsyncThunk<SavedSearch[], void, Thu
 	}
 );
 
-export const addPreviewsToActiveSavedSearch = createAsyncThunk<
+export const addPreviewsToSavedSearch = createAsyncThunk<
 	number,
 	{ posts: Post[]; savedSearchId?: number },
 	ThunkApi<NoActiveSavedSearchError>
 >(
 	'savedSearches/addPreviewsToActiveSavedSearch',
 	async ({ posts, savedSearchId }, { rejectWithValue }): Promise<number | RejectWithValue<NoActiveSavedSearchError>> => {
-		const logger = thunkLogger.getActionLogger(addPreviewsToActiveSavedSearch);
+		const logger = thunkLogger.getActionLogger(addPreviewsToSavedSearch);
 		if (savedSearchId === undefined) {
 			return rejectWithValue(new NoActiveSavedSearchError());
 		}

@@ -1,9 +1,11 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button, Form, Col, Row, Modal, Tabs } from 'antd';
 
+import type { AppDispatch, PostsContext, RootState } from '@store/types';
+import type { SearchFormModalProps } from '@appTypes/modalTypes';
+
 import { actions, thunks } from '@store';
-import { AppDispatch, PostsContext } from '@store/types';
 
 import TagSearch from './search-form/TagSearch';
 import RatingSelect from './search-form/RatingSelect';
@@ -15,16 +17,16 @@ import SubmitButton from './search-form/SubmitButton';
 import ExcludedTags from './search-form/ExcludedTags';
 import SortSelect from './search-form/SortSelect';
 import OrderSelect from './search-form/OrderSelect';
-import { SearchFormModalProps } from '@appTypes/modalTypes';
 import { deletePostsContext } from '@store/commonActions';
 
 type Props = {
 	className?: string;
-	mode: 'online' | 'offline';
 	context: PostsContext | string;
 };
 
-const SearchForm: React.FunctionComponent<Props> = ({ mode, context, className }) => {
+const SearchForm: React.FunctionComponent<Props> = ({ context, className }) => {
+	const mode = useSelector((state: RootState) => state.onlineSearchForm[context].mode);
+
 	return (
 		<Form labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} layout='horizontal' className={className}>
 			<Form.Item label='Find Tag'>
@@ -80,7 +82,7 @@ export default SearchForm;
 
 export const SearchFormModal: React.FunctionComponent<SearchFormModalProps> = (props) => {
 	const dispatch = useDispatch<AppDispatch>();
-	const [activeTab, setActiveTab] = React.useState<'online' | 'offline'>('online');
+	const activeTab = useSelector((state: RootState) => state.onlineSearchForm[props.context].mode);
 	const fetchPosts =
 		activeTab === 'online' ? thunks.onlineSearchForm.fetchPosts : thunks.downloadedSearchForm.fetchPosts;
 
@@ -100,7 +102,6 @@ export const SearchFormModal: React.FunctionComponent<SearchFormModalProps> = (p
 				context={props.context}
 				onSubmit={(): void => {
 					dispatch(actions.modals.setVisible(false));
-					dispatch(actions.onlineSearchForm.setContextMode({ context: props.context, data: activeTab }));
 					dispatch(fetchPosts({ context: props.context }));
 				}}
 			/>
@@ -114,12 +115,20 @@ export const SearchFormModal: React.FunctionComponent<SearchFormModalProps> = (p
 	);
 	return (
 		<Modal centered visible={true} footer={footer} width={700} onCancel={handleClose}>
-			<Tabs size='small' activeKey={activeTab} onChange={(key): void => setActiveTab(key as 'online' | 'offline')}>
+			<Tabs
+				size='small'
+				activeKey={activeTab}
+				onChange={(key): void => {
+					dispatch(
+						actions.onlineSearchForm.updateContext({ context: props.context, data: { mode: key as 'online' | 'offline' } })
+					);
+				}}
+			>
 				<Tabs.TabPane tab='Online Search' key='online'>
-					<SearchForm {...props} mode='online' />
+					<SearchForm {...props} />
 				</Tabs.TabPane>
 				<Tabs.TabPane tab='Offline Search' key='offline'>
-					<SearchForm {...props} mode='offline' />
+					<SearchForm {...props} />
 				</Tabs.TabPane>
 			</Tabs>
 		</Modal>

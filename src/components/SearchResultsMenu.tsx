@@ -167,7 +167,7 @@ const SearchResultsMenu: React.FunctionComponent<Props> = ({ context }) => {
 			okText: 'Add',
 			onOk: () => {
 				dispatch(
-					thunks.savedSearches.addPreviewsToActiveSavedSearch({ savedSearchId, posts: posts.filter((p) => p.selected) })
+					thunks.savedSearches.addPreviewsToSavedSearch({ savedSearchId, posts: posts.filter((p) => p.selected) })
 				);
 			},
 		});
@@ -181,7 +181,7 @@ const SearchResultsMenu: React.FunctionComponent<Props> = ({ context }) => {
 			cancelText: 'Cancel',
 			okText: 'Add',
 			onOk: () => {
-				dispatch(thunks.savedSearches.addPreviewsToActiveSavedSearch({ savedSearchId, posts }));
+				dispatch(thunks.savedSearches.addPreviewsToSavedSearch({ savedSearchId, posts }));
 			},
 		});
 		m.destroy();

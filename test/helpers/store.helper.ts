@@ -16,9 +16,7 @@ type DeepPartial<T> = {
 	[P in keyof T]?: DeepPartial<T[P]>;
 };
 
-export const mPostsPostsState = (
-	ps?: DeepPartial<{ [K in PostsContext]?: Post[] }>
-): { [K in PostsContext]: Post[] } => {
+export const mPostsPostsState = (ps?: DeepPartial<{ [key: string]: Post[] }>): { [K in PostsContext]: Post[] } => {
 	return {
 		...ps,
 		posts: (ps?.posts as Post[]) ?? initialState.posts.posts.favorites,
