@@ -93,6 +93,29 @@ describe('components', () => {
 
 			expect(wrapper.find('MovePostsToFavoritesDirectoryModal')).toHaveLength(1);
 		});
+		it('Renders SearchFormModal', () => {
+			store.dispatch(
+				actions.showModal(ActiveModal.SEARCH_FORM, {
+					context: 'default',
+					previousTab: '',
+				})
+			);
+			store.dispatch(actions.setVisible(true));
+			const wrapper = setup();
+
+			expect(wrapper.find('SearchFormModal')).toHaveLength(1);
+		});
+		it('Renders RenameTabModal', () => {
+			store.dispatch(
+				actions.showModal(ActiveModal.RENAME_TAB, {
+					context: 'default',
+				})
+			);
+			store.dispatch(actions.setVisible(true));
+			const wrapper = setup();
+
+			expect(wrapper.find('RenameTabModal')).toHaveLength(1);
+		});
 
 		it('Renders nothing when activeModal is none', () => {
 			store.dispatch(actions.showModal(ActiveModal.NONE));

@@ -9,7 +9,7 @@ import { AppDispatch, RootState, TreeNode } from '@store/types';
 import { openNotificationWithIcon } from '@appTypes/components';
 import { AddToFavoritesModalContextProps, AddToFavoritesModalProps } from '@appTypes/modalTypes';
 
-import ModalFooter from './common/ModalFooter';
+import ModalFooter from '../../common/ModalFooter';
 
 type Info = {
 	event: string;

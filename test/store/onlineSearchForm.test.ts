@@ -68,6 +68,7 @@ describe('store/onlineSearchForm', () => {
 	describe('Updates context', () => {
 		//given
 		const state: DownloadedSearchFormState = {
+			tabName: '',
 			mode: 'offline',
 			excludedTags: [],
 			page: 123,
@@ -96,6 +97,7 @@ describe('store/onlineSearchForm', () => {
 		//given
 		const action = createAction(actions.clear.type, { context: defaultCtx });
 		const state: DownloadedSearchFormState = {
+			tabName: '',
 			mode: 'offline',
 			excludedTags: [],
 			page: 123,

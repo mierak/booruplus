@@ -13,6 +13,7 @@ export type OnlineSearchFormState = {
 };
 
 const defaultValues: DownloadedSearchFormState = {
+	tabName: '',
 	mode: 'online',
 	selectedTags: [],
 	excludedTags: [],

@@ -6,7 +6,7 @@ import { AppDispatch } from '@store/types';
 import { actions, thunks } from '@store';
 import { openNotificationWithIcon } from '@appTypes/components';
 
-import ModalFooter from './common/ModalFooter';
+import ModalFooter from '../../common/ModalFooter';
 import { MovePostsToDirectoryConfirmationModalProps as MovePostsToSuppliedFavoritesDirectoryModalProps } from '@appTypes/modalTypes';
 
 const MovePostsToSuppliedFavoritesDirectoryModal: React.FunctionComponent<MovePostsToSuppliedFavoritesDirectoryModalProps> = ({

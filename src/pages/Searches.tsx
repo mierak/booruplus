@@ -1,20 +1,21 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { Spin, Tabs, Tooltip } from 'antd';
-import { LoadingOutlined, DisconnectOutlined, GlobalOutlined } from '@ant-design/icons';
+import { Spin, Tabs } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 
-import type { RootState, AppDispatch, PostsContext, ContextMode } from '@store/types';
+import type { RootState, AppDispatch, PostsContext } from '@store/types';
 
-import { CardAction, openNotificationWithIcon } from '@appTypes/components';
+import { CardAction, openNotificationWithIcon, TabAction } from '@appTypes/components';
 import { actions, thunks } from '@store';
 import ThumbnailsList from '@components/thumbnails/ThumbnailsList';
 import { Post } from '@appTypes/gelbooruTypes';
 import { ActiveModal } from '@appTypes/modalTypes';
 import PageMenuHeader from '@components/common/PageMenuHeader';
 import SearchResultsMenu from '@components/common/SearchResultsMenu';
-import { capitalize, generateTabContext } from '@util/utils';
+import { generateTabContext } from '@util/utils';
 import { deletePostsContext, initPostsContext } from '../store/commonActions';
+import SearchTab from '@components/common/SearchTab';
 
 type Props = {
 	className?: string;
@@ -123,16 +124,6 @@ const ThumbnailsListTabContent: React.FunctionComponent<{ context: PostsContext 
 	}
 };
 
-const Tab: React.FunctionComponent<{ mode: ContextMode; title: string }> = ({ mode, title }) => {
-	const icon = mode === 'online' ? <GlobalOutlined /> : mode === 'offline' ? <DisconnectOutlined /> : null;
-	return (
-		<span>
-			<Tooltip title={capitalize(mode)}>{icon}</Tooltip>
-			{title}
-		</span>
-	);
-};
-
 const Searches: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
@@ -144,7 +135,7 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 			return contexts
 				.filter((ctx) => state.onlineSearchForm[ctx].mode !== 'other')
 				.map((ctx) => {
-					const title = state.onlineSearchForm[ctx]?.selectedTags[0]?.tag ?? 'New Tab';
+					const title = state.onlineSearchForm[ctx]?.tabName ?? '';
 					return {
 						title,
 						context: ctx,
@@ -157,6 +148,49 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 		}
 	);
 
+	const tabsContextMenu: TabAction[] = [
+		{
+			key: 'reload',
+			title: 'Reload from first page',
+			icon: 'reload-outlined',
+			onClick: (context, mode) => {
+				dispatch(actions.onlineSearchForm.updateContext({ context, data: { page: 0 } }));
+				if (mode === 'online') {
+					dispatch(thunks.onlineSearchForm.fetchPosts({ context }));
+				} else if (mode === 'offline') {
+					dispatch(thunks.downloadedSearchForm.fetchPosts({ context }));
+				}
+			},
+		},
+		{
+			key: 'rename',
+			title: 'Rename',
+			icon: 'dash-outlined',
+			onClick: (context) => {
+				dispatch(actions.modals.showModal(ActiveModal.RENAME_TAB, { context }));
+			},
+		},
+		{
+			key: 'edit',
+			title: 'Edit search parameters',
+			icon: 'edit-outlined',
+			onClick: (context) => {
+				dispatch(actions.modals.showModal(ActiveModal.SEARCH_FORM, { context, previousTab: activeTab }));
+			},
+		},
+		{
+			key: 'close',
+			title: 'Close',
+			icon: 'close-outlined',
+			onClick: (context) => {
+				dispatch(deletePostsContext({ context }));
+				dispatch(
+					actions.system.setActiveSearchTab([...ts].reverse().find((tab) => tab.context !== context)?.context ?? '')
+				);
+			},
+		},
+	];
+
 	return (
 		<Container className={props.className}>
 			<Tabs
@@ -168,7 +202,7 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 					if (action === 'add') {
 						const context = generateTabContext(ts.map((t) => t.context));
 						dispatch(initPostsContext({ context: context, data: { mode: 'online' } }));
-						dispatch(actions.modals.showModal(ActiveModal.SEARCH_FORM, { context: context, previousTab: activeTab }));
+						dispatch(actions.modals.showModal(ActiveModal.SEARCH_FORM, { context, previousTab: activeTab }));
 					} else {
 						dispatch(deletePostsContext({ context: key.toString() }));
 						dispatch(
@@ -184,7 +218,7 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 					<Tabs.TabPane
 						closable={ts.length > 1}
 						key={tab.context}
-						tab={<Tab mode={tab.mode} title={tab.title} />}
+						tab={<SearchTab mode={tab.mode} title={tab.title} contextMenu={tabsContextMenu} context={tab.context} />}
 						style={{ height: '100vh' }}
 					>
 						<PageMenuHeader menu={<SearchResultsMenu context={tab.context} />} title='Image List' />

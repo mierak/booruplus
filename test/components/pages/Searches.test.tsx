@@ -15,7 +15,6 @@ import { mPost, mTag } from '../../helpers/test.helper';
 import * as utils from '../../../src/types/components';
 import { thumbnailLoaderMock, deleteImageMock } from '../../helpers/imageBus.mock';
 import { ActiveModal } from '@appTypes/modalTypes';
-import { onlineSearchForm } from '@store/thunks';
 import { generateTabContext } from '@util/utils';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);

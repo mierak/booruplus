@@ -112,6 +112,7 @@ export type NotFoundTags = {
 };
 
 export type SearchFormState = {
+	tabName: string;
 	mode: ContextMode;
 	savedSearchId?: number;
 	selectedTags: Tag[];

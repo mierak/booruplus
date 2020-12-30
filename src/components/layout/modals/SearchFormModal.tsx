@@ -10,6 +10,7 @@ import { actions, thunks } from '@store';
 import SubmitButton from '@components/search-form/SubmitButton';
 import { deletePostsContext } from '../../../store/commonActions';
 import SearchForm from '@components/search-form/SearchForm';
+import SearchTab from '@components/common/SearchTab';
 
 const SearchFormModal: React.FunctionComponent<SearchFormModalProps> = (props) => {
 	const dispatch = useDispatch<AppDispatch>();
@@ -55,10 +56,10 @@ const SearchFormModal: React.FunctionComponent<SearchFormModalProps> = (props) =
 					);
 				}}
 			>
-				<Tabs.TabPane tab='Online Search' key='online'>
+				<Tabs.TabPane tab={<SearchTab mode='online' title='Online Search' />} key='online'>
 					<SearchForm {...props} />
 				</Tabs.TabPane>
-				<Tabs.TabPane tab='Offline Search' key='offline'>
+				<Tabs.TabPane tab={<SearchTab mode='offline' title='Offline Search' />} key='offline'>
 					<SearchForm {...props} />
 				</Tabs.TabPane>
 			</Tabs>

@@ -17,6 +17,7 @@ describe('thunks/downloadedSearchForm', () => {
 		it('Constructs object correctly', () => {
 			// given
 			const downloadedSearchFormState: DownloadedSearchFormState = {
+				tabName: '',
 				mode: 'online',
 				page: 5,
 				limit: 20,

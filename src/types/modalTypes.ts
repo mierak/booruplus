@@ -10,6 +10,7 @@ export enum ActiveModal {
 	MOVE_POSTS_TO_DIRECTORY_CONFIRMATION = 'MOVE_POSTS_TO_DIRECTORY_CONFIRMATION',
 	MOVE_POSTS_TO_DIRECTORY_SELECTION = 'MOVE_POSTS_TO_DIRECTORY_SELECTION',
 	SEARCH_FORM = 'SEARCH_FORM',
+	RENAME_TAB = 'RENAME_TAB',
 	SETTINGS = 'SETTINGS',
 }
 
@@ -21,6 +22,7 @@ export type PerModalState = {
 	[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]: MovePostsToDirectoryConfirmationModalProps;
 	[ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION]: MovePostsToFavoritesDirectoryModalProps;
 	[ActiveModal.SEARCH_FORM]: SearchFormModalProps;
+	[ActiveModal.RENAME_TAB]: RenameTabProps;
 	[ActiveModal.SETTINGS]?: void;
 	[ActiveModal.NONE]?: void;
 }
@@ -52,4 +54,8 @@ export type RenameDirectoryModalProps = {
 export type SearchFormModalProps = {
 	context: PostsContext | string;
 	previousTab: string;
+}
+
+export type RenameTabProps = {
+	context: string;
 }

@@ -1,7 +1,7 @@
 {
 	"name": "Lolinizer",
 	"productName": "Lolinizer",
-	"version": "0.1.7-BETA",
+	"version": "0.1.8-BETA",
 	"description": "My Electron application description",
 	"main": ".webpack/main",
 	"scripts": {
@@ -124,7 +124,7 @@
 		"@types/tar": "^4.0.3",
 		"@welldone-software/why-did-you-render": "^4.3.1",
 		"ant-design-pro": "^2.3.2",
-		"antd": "^4.8.5",
+		"antd": "^4.9.4",
 		"comlink": "^4.3.0",
 		"dexie": "3.0.0-rc.7",
 		"electron-log": "^4.3.0",
