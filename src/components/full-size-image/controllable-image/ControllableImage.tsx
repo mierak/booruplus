@@ -16,6 +16,7 @@ import ImageControls from '@components/full-size-image/ImageControls';
 import LoadingMask from '@components/LoadingMask';
 import { getPostUrl } from '@service/webService';
 import { imageLoader } from '@util/componentUtils';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 type Props = {
 	className?: string;
@@ -126,6 +127,14 @@ const ControllableImage: React.FunctionComponent<Props> = ({ className, post, sh
 			key: 'copy-to-clipboard',
 			tooltip: 'Copy to clipboard',
 			onClick: handleCopyToClipboard,
+		},
+		{
+			icon: 'heart-outlined',
+			key: 'add-to-favorites',
+			tooltip: 'Add to favorites',
+			onClick: () => {
+				dispatch(actions.modals.showModal(ActiveModal.ADD_POSTS_TO_FAVORITES, { context, postsToFavorite: [post] }));
+			},
 		},
 	];
 

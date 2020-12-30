@@ -15,6 +15,7 @@ import { imageLoader } from '@util/componentUtils';
 
 import TagsPopover from './TagsPopover';
 import ImageControls from './ImageControls';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 type Props = {
 	className?: string;
@@ -103,6 +104,14 @@ const Video: React.FunctionComponent<Props> = ({ post, className, context }: Pro
 			key: 'copy-to-clipboard',
 			tooltip: 'Copy to clipboard',
 			onClick: handleCopyToClipboard,
+		},
+		{
+			icon: 'heart-outlined',
+			key: 'add-to-favorites',
+			tooltip: 'Add to favorites',
+			onClick: () => {
+				dispatch(actions.modals.showModal(ActiveModal.ADD_POSTS_TO_FAVORITES, { context, postsToFavorite: [post] }));
+			},
 		},
 	];
 

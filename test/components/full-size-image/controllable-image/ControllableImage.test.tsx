@@ -22,6 +22,8 @@ import { mPost } from '../../../helpers/test.helper';
 import { defineClientSize, defineClientBoundingRect } from '../../../helpers/utilities.helper';
 import { getPostUrl } from '../../../../src/service/webService';
 import { IpcSendChannels } from '../../../../src/types/processDto';
+import { actions } from '@store/';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -273,5 +275,39 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 
 		// then
 		expect(spy).toHaveBeenCalledWith(link);
+	});
+	it('Creates action to add to favorites', () => {
+		// given
+		const context = 'ctx';
+		const spy = jest.fn();
+		(window.clipboard as any) = {
+			writeText: spy,
+		};
+		const link = 'somelink123.jpg';
+		const post = mPost({ fileUrl: link });
+		const store = mockStore(
+			mState({
+				onlineSearchForm: {
+					[context]: {},
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<ControllableImage context={context} showControls post={post} />
+			</Provider>
+		);
+		fireEvent.click(screen.getByRole('button', { name: 'Add to favorites' }));
+
+		// then
+		expect(store.getActions()).toContainMatchingAction({
+			type: actions.modals.showModal.type,
+			payload: {
+				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
+				modalState: { [ActiveModal.ADD_POSTS_TO_FAVORITES]: { context, postsToFavorite: [post] } },
+			},
+		});
 	});
 });

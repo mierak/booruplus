@@ -15,6 +15,7 @@ import LoadingMask from '@components/LoadingMask';
 
 import TagsPopover from './TagsPopover';
 import ImageControls from './ImageControls';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 type Props = {
 	className?: string;
@@ -98,6 +99,19 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 			key: 'copy-to-clipboard',
 			tooltip: 'Copy to clipboard',
 			onClick: handleCopyToClipboard,
+		},
+		{
+			icon: 'heart-outlined',
+			key: 'add-to-favorites',
+			tooltip: 'Add to favorites',
+			onClick: () => {
+				dispatch(
+					actions.modals.showModal(ActiveModal.ADD_POSTS_TO_FAVORITES, {
+						context: props.context,
+						postsToFavorite: [props.post],
+					})
+				);
+			},
 		},
 	];
 	return (
