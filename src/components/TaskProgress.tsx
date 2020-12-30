@@ -5,16 +5,33 @@ import moment from 'moment';
 
 import { RootState, Task, AppDispatch } from '@store/types';
 import { thunks } from '@store';
+import { initPostsContext } from '../store/commonActions';
+import { generateTabContext } from '@util/utils';
 
 type Props = {
 	className?: string;
 	taskId: number;
-}
+};
 
 const TaskProgress: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
 	const task = useSelector((state: RootState) => state.tasks.tasks[props.taskId]);
+	const tabs = useSelector(
+		(state: RootState) => {
+			const contexts = Object.keys(state.onlineSearchForm);
+			return contexts.map((ctx) => {
+				const title = state.onlineSearchForm[ctx]?.selectedTags[0]?.tag ?? 'New Tab';
+				return {
+					title,
+					context: ctx,
+				};
+			});
+		},
+		(first, second) => {
+			return JSON.stringify(first) === JSON.stringify(second);
+		}
+	);
 
 	const momentFormat = 'DD/MM/YYYY, HH:mm:ss';
 
@@ -35,7 +52,9 @@ const TaskProgress: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const handleOpen = (): void => {
-		dispatch(thunks.posts.fetchPostsByIds(task.postIds));
+		const context = generateTabContext(tabs.map((tab) => tab.context));
+		dispatch(initPostsContext({ context: context, data: { mode: 'online' } }));
+		dispatch(thunks.posts.fetchPostsByIds({context, ids: task.postIds}));
 	};
 
 	const handleCancel = (): void => {
@@ -82,7 +101,8 @@ const TaskProgress: React.FunctionComponent<Props> = (props: Props) => {
 	const renderWithTooltip = (children: React.ReactElement): React.ReactNode => {
 		const items: string[] = [];
 		items.push(`Added: ${formatTimestamp(task.timestampStarted)}`);
-		task.timestampDone && items.push(`${task.state === 'canceled' ? 'Canceled' : 'Completed'}: ${formatTimestamp(task.timestampDone)}`);
+		task.timestampDone &&
+			items.push(`${task.state === 'canceled' ? 'Canceled' : 'Completed'}: ${formatTimestamp(task.timestampDone)}`);
 
 		const content = items.map((item, index) => <div key={item + '' + index}>{item}</div>);
 		return (

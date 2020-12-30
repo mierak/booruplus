@@ -449,7 +449,9 @@ describe('store/posts', () => {
 		it('Resets state when fetchPostsById is pending', () => {
 			// given
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-			const action = createPendingAction(thunks.posts.fetchPostsByIds.pending.type);
+			const action = createPendingAction(thunks.posts.fetchPostsByIds.pending.type, {
+				arg: { context, ids: posts.map((p) => p.id) },
+			});
 			const state: PostsState = {
 				...initialState,
 				posts: mPostsPostsState({ [context]: posts }),
@@ -466,10 +468,12 @@ describe('store/posts', () => {
 		it('Adds posts when fetchPostsById is fulfilled', () => {
 			// given
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-			const action = createAction(thunks.posts.fetchPostsByIds.fulfilled.type, posts);
+			const action = createFulfilledAction(thunks.posts.fetchPostsByIds.fulfilled.type, posts, {
+				arg: { context, ids: posts.map((p) => p.id) },
+			});
 			const state: PostsState = {
 				...initialState,
-				posts: mPostsPostsState({ posts: [], favorites: [], mostViewed: [] }),
+				posts: mPostsPostsState({ [context]: [] }),
 				selectedIndices: { posts: 123 },
 			};
 
@@ -477,7 +481,7 @@ describe('store/posts', () => {
 			const result = reducer(state, action);
 
 			// then
-			expect(result.posts.posts).toHaveLength(posts.length);
+			expect(result.posts[context]).toHaveLength(posts.length);
 		});
 
 		it('Resets state when fetchPostsInDirectory is pending', () => {

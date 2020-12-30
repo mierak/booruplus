@@ -69,9 +69,9 @@ export const cancelPostsDownload = createAsyncThunk<void, Post[], ThunkApi>(
 	}
 );
 
-export const fetchPostsByIds = createAsyncThunk<Post[], number[], ThunkApi>(
+export const fetchPostsByIds = createAsyncThunk<Post[], { context: PostsContext | string; ids: number[] }, ThunkApi>(
 	'posts/fetchPostsByIds',
-	async (ids): Promise<Post[]> => {
+	async ({ ids }): Promise<Post[]> => {
 		thumbnailCache.revokeAll();
 		const logger = thunkLogger.getActionLogger(fetchPostsByIds);
 		logger.debug('Getting', ids.length, 'posts from DB');

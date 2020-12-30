@@ -102,9 +102,10 @@ const systemSlice = createSlice({
 		builder.addCase(thunks.posts.downloadPosts.pending, (state) => {
 			state.isTasksDrawerVisible = true;
 		});
-		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state) => {
+		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state, action) => {
 			state.isTasksDrawerVisible = false;
 			state.activeView = 'searches';
+			state.activeSearchTab = action.meta.arg.context;
 		});
 	},
 });

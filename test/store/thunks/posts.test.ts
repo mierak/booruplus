@@ -146,13 +146,14 @@ describe('thunks/posts', () => {
 	describe('fetchPostsById()', () => {
 		it('Calls db with correct ids', async () => {
 			// given
+			const context = 'ctx';
 			const store = mockStore(initialState);
 			const postIds = [1, 2, 3, 4, 5];
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
 			mockedDb.posts.getBulk.mockResolvedValue(posts);
 
 			// when
-			await store.dispatch(thunks.fetchPostsByIds(postIds));
+			await store.dispatch(thunks.fetchPostsByIds({ context, ids: postIds }));
 
 			// then
 			const dispatchedActions = store.getActions();

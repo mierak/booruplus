@@ -165,13 +165,15 @@ const postsSlice = createSlice({
 				state.selectedIndices[context] = state.posts[context].length - 1;
 			}
 		});
-		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state) => {
-			state.posts.posts = [];
-			state.selectedIndices.posts = undefined;
+		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state, action) => {
+			const context = action.meta.arg.context;
+			state.posts[context] = [];
+			state.selectedIndices[context] = undefined;
 		});
 		builder.addCase(thunks.posts.fetchPostsByIds.fulfilled, (state, action) => {
+			const context = action.meta.arg.context;
 			for (const post of action.payload) {
-				state.posts.posts.push(post);
+				state.posts[context].push(post);
 			}
 		});
 		builder.addCase(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled, (state, action) => {
