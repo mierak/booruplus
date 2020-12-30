@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { RootState, AppDispatch } from '../../src/store/types';
+import { RootState, AppDispatch } from '../../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import NewVersionNotificationModalBody from '../../src/components/NewVersionNotificationModalBody';
+import NewVersionNotificationModalBody from '../../../../src/components/layout/modals/NewVersionNotificationModalBody';
 import userEvent from '@testing-library/user-event';
 import { ReleaseResponse } from '@appTypes/gelbooruTypes';
 import { IpcSendChannels } from '@appTypes/processDto';

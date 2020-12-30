@@ -21,7 +21,7 @@ import loadingStatesReducer, {
 	initialState as loadingStatesInitialState,
 } from './loadingStates';
 import favoritesReducer, { actions as favorites, initialState as favoritesInitialState } from './favorites';
-import modalsReducer, { actions as modals, initialState as modalsInitialState } from './modals/index';
+import modalsReducer, { actions as modals, initialState as modalsInitialState } from './modals';
 
 import * as allThunks from './thunks';
 

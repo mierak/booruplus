@@ -7,7 +7,7 @@ import { thunks } from '@store';
 
 import { isFilenameVideo, getImageExtensionFromFilename } from '@util/utils';
 
-import EmptyThumbnails from './EmptyThumbnails';
+import EmptyThumbnails from './thumbnails/EmptyThumbnails';
 import ControllableImage from './full-size-image/controllable-image/ControllableImage';
 import Video from './full-size-image/Video';
 import Gif from './full-size-image/Gif';

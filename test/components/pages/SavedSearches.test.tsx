@@ -249,7 +249,7 @@ describe('pages/SavedSearches', () => {
 		);
 		const context = generateTabContext(Object.keys(store.getState().onlineSearchForm));
 		const data: Partial<DownloadedSearchFormState> = {
-			mode: 'offline', //! TODO new mode for previews
+			mode: 'other',
 			selectedTags: savedSearches[0].tags,
 			excludedTags: savedSearches[0].excludedTags,
 			rating: savedSearches[0].rating,

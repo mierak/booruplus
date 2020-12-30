@@ -1,10 +1,10 @@
 import React from 'react';
 import Enzyme, { mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import Modals from '../../src/components/Modals';
-import { store } from '../../src/store/';
+import Modals from '../../../src/components/layout/Modals';
+import { store } from '../../../src/store';
 import { Provider } from 'react-redux';
-import { actions } from '../../src/store/modals/index';
+import { actions } from '../../../src/store/modals';
 import { ActiveModal } from '@appTypes/modalTypes';
 
 Enzyme.configure({ adapter: new Adapter() });

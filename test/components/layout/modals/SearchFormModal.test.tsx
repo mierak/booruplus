@@ -1,22 +1,15 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { RootState, AppDispatch } from '../../src/store/types';
+import { RootState, AppDispatch } from '../../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { mState } from '../helpers/store.helper';
+import { mState } from '../../../helpers/store.helper';
 
-import { SearchFormModal } from '../../src/components/SearchForm';
+import SearchFormModal from '../../../../src/components/layout/modals/SearchFormModal';
 import '@testing-library/jest-dom';
-import { mTag } from '../helpers/test.helper';
+import { mTag } from '../../../helpers/test.helper';
 import { actions, thunks } from '@store/';
-// jest.mock('@store/commonActions', () => {
-//     const t = jest.fn();
-// 	return {
-// 		deletePostsContext: t,
-// 	};
-// });
-// import { deletePostsContext } from '@store/commonActions';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -104,27 +97,26 @@ describe('SearchFormModal', () => {
 			type: thunks.onlineSearchForm.fetchPosts.pending.type,
 			meta: { arg: { context } },
 		});
-    });
-    //! TODO problem with commonActions
-    // it('Submit hides modal, deletes context and switches to previous tab on close', () => {
-	// 	// given
-	// 	const prevTab = '';
-	// 	const store = mockStore(state);
+	});
+	it('Submit hides modal, deletes context and switches to previous tab on close', () => {
+		// given
+		const prevTab = '';
+		const store = mockStore(state);
 
-	// 	// when
-	// 	render(
-	// 		<Provider store={store}>
-	// 			<SearchFormModal context={context} previousTab={prevTab} />
-	// 		</Provider>
-	// 	);
-	// 	fireEvent.click(screen.getAllByRole('button', { name: 'Close' })[1]);
+		// when
+		render(
+			<Provider store={store}>
+				<SearchFormModal context={context} previousTab={prevTab} />
+			</Provider>
+		);
+		fireEvent.click(screen.getAllByRole('button', { name: 'Close' })[1]);
 
-	// 	// then
-	// 	const dispatchedActions = store.getActions();
-	// 	expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.setVisible.type, payload: false });
-	// 	expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setActiveSearchTab.type, payload: prevTab });
-	// 	expect(dispatchedActions).toContainMatchingAction({ type: deletePostsContext.type, payload: { context } });
-	// });
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.setVisible.type, payload: false });
+		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setActiveSearchTab.type, payload: prevTab });
+		expect(dispatchedActions).toContainMatchingAction({ type: 'common/deletePostsContext', payload: { context } });
+	});
 	it('Dispatches clear() when CLear button is pressed', () => {
 		// given
 		const prevTab = '';

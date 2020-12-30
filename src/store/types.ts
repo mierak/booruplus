@@ -26,7 +26,7 @@ export type Sort = 'date-downloaded' | 'date-uploaded' | 'rating' | 'resolution'
 
 export type SortOrder = 'asc' | 'desc';
 
-export type SearchMode = 'online' | 'offline';
+export type ContextMode = 'online' | 'offline' | 'other';
 
 export type OfflineOptions = {
 	blacklisted: boolean;
@@ -112,7 +112,7 @@ export type NotFoundTags = {
 };
 
 export type SearchFormState = {
-	mode: SearchMode;
+	mode: ContextMode;
 	savedSearchId?: number;
 	selectedTags: Tag[];
 	excludedTags: Tag[];
@@ -133,6 +133,6 @@ export type DownloadedSearchFormState = SearchFormState & {
 	showGifs: boolean;
 };
 
-export type PostsContext = 'posts' | 'favorites' | 'mostViewed' | 'checkLaterQueue';
+export type PostsContext = 'favorites' | 'mostViewed' | 'checkLaterQueue';
 
 export type WithContext<T = null> = { context: PostsContext | string } & (T extends null ? unknown : { data: T });

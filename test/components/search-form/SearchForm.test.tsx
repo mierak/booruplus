@@ -1,14 +1,14 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { RootState, AppDispatch } from '../../src/store/types';
+import { RootState, AppDispatch } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { mState } from '../helpers/store.helper';
+import { mState } from '../../helpers/store.helper';
 
-import SearchForm from '../../src/components/SearchForm';
+import SearchForm from '../../../src/components/search-form/SearchForm';
 import '@testing-library/jest-dom';
-import { mTag } from '../helpers/test.helper';
+import { mTag } from '../../helpers/test.helper';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 

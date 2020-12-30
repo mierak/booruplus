@@ -2,11 +2,11 @@ import { doDatabaseMock } from '../helpers/database.mock';
 doDatabaseMock();
 import reducer, { actions, initialState, SystemState } from '../../src/store/system';
 import { thunks } from '../../src/store/';
-import { createAction } from '../helpers/test.helper';
+import { createAction, createPendingAction } from '../helpers/test.helper';
 
 describe('store/system', () => {
 	describe('reducers', () => {
-		fit('Sets active view', () => {
+		it('Sets active view', () => {
 			// given
 			const activeView = 'image';
 			const action = createAction(actions.setActiveView.type, activeView);
@@ -262,7 +262,10 @@ describe('store/system', () => {
 				describe('fetchPostsById', () => {
 					it('pending', () => {
 						// given
-						const action = createAction(thunks.posts.fetchPostsByIds.pending.type);
+						const context = 'ctx';
+						const action = createPendingAction(thunks.posts.fetchPostsByIds.pending.type, {
+							arg: { context },
+						});
 						const state: SystemState = {
 							...initialState,
 							isTasksDrawerVisible: true,
@@ -274,7 +277,8 @@ describe('store/system', () => {
 
 						// then
 						expect(result.isTasksDrawerVisible).toBe(false);
-						expect(result.activeView).toBe('search-results');
+						expect(result.activeView).toBe('searches');
+						expect(result.activeSearchTab).toBe(context);
 					});
 				});
 			});

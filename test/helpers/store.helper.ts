@@ -19,7 +19,6 @@ type DeepPartial<T> = {
 export const mPostsPostsState = (ps?: DeepPartial<{ [key: string]: Post[] }>): { [K in PostsContext]: Post[] } => {
 	return {
 		...ps,
-		posts: (ps?.posts as Post[]) ?? initialState.posts.posts.favorites,
 		favorites: (ps?.favorites as Post[]) ?? initialState.posts.posts.posts,
 		mostViewed: (ps?.mostViewed as Post[]) ?? initialState.posts.posts.mostViewed,
 		checkLaterQueue: (ps?.checkLaterQueue as Post[]) ?? initialState.posts.posts.checkLaterQueue,
@@ -59,9 +58,16 @@ const mDashboardState = (ds?: Partial<DashboardState>): DashboardState => {
 	};
 };
 
-const mOnlineSearchFormState = (ds?: { [key: string]: Partial<DownloadedSearchFormState> }): OnlineSearchFormState => {
+type SearchFormState = {
+	[K in PostsContext]: DownloadedSearchFormState;
+} & { [key: string]: Partial<DownloadedSearchFormState> };
+const mOnlineSearchFormState = (ds?: Partial<SearchFormState>): OnlineSearchFormState => {
 	if (ds) {
-		const newObj: OnlineSearchFormState = {};
+		const newObj: OnlineSearchFormState = {
+			checkLaterQueue: { ...initialState.onlineSearchForm.default, mode: 'other' },
+			favorites: { ...initialState.onlineSearchForm.default, mode: 'other' },
+			mostViewed: { ...initialState.onlineSearchForm.default, mode: 'other' },
+		};
 		for (const [key, value] of Object.entries(ds)) {
 			newObj[key] = {
 				...initialState.onlineSearchForm.default,
@@ -70,7 +76,7 @@ const mOnlineSearchFormState = (ds?: { [key: string]: Partial<DownloadedSearchFo
 		}
 		return newObj;
 	}
-	return { default: initialState.onlineSearchForm.default };
+	return { ...initialState.onlineSearchForm };
 };
 
 const mFavoritesState = (fs?: Partial<FavoritesState>): FavoritesState => {
@@ -164,7 +170,7 @@ const mModalsState = (ms?: Partial<ReturnType<typeof Modals>>): ReturnType<typeo
 
 type PartialRootState = {
 	dashboard?: Partial<DashboardState>;
-	onlineSearchForm?: { [key: string]: Partial<DownloadedSearchFormState> };
+	onlineSearchForm?: Partial<SearchFormState>;
 	favorites?: Partial<FavoritesState>;
 	loadingStates?: Partial<LoadingStates>;
 	tasks?: Partial<TasksState>;

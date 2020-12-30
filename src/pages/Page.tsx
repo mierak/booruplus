@@ -20,7 +20,7 @@ import '../css/index.css';
 import CheckLaterQueue from './CheckLaterQueue';
 import { parseVersion } from '@util/utils';
 import { getLatestAppVersion } from '@service/apiService';
-import NewVersionNotificationModalBody from '@components/NewVersionNotificationModalBody';
+import NewVersionNotificationModalBody from '@components/layout/modals/NewVersionNotificationModalBody';
 
 const Page: React.FunctionComponent = () => {
 	const [hydrated, setHydrated] = useState(false);

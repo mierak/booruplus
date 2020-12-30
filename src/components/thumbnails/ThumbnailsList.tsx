@@ -6,7 +6,7 @@ import { actions } from '@store';
 import { PostsContext, RootState, View } from '@store/types';
 import { CardAction, ContextMenu } from '@appTypes/components';
 import { Post } from '@appTypes/gelbooruTypes';
-import EmptyThumbnails from '@components/EmptyThumbnails';
+import EmptyThumbnails from '@components/thumbnails/EmptyThumbnails';
 
 import Grid from './Grid';
 import PreviewImage from './PreviewImage';
@@ -46,6 +46,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const postCount = useSelector((state: RootState) => state.posts.posts[props.context]?.length ?? 0);
 	const activePostIndex = useSelector((state: RootState) => state.posts.selectedIndices[props.context]);
 	const useImageHover = useSelector((state: RootState) => state.settings.imageHover);
+	const contextMode = useSelector((state: RootState) => state.onlineSearchForm[props.context].mode);
 
 	useEffect(() => {
 		const handleKeyPress = (event: KeyboardEvent): void => {
@@ -145,13 +146,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 				activeIndex={activePostIndex}
 				actions={props.actions}
 				isSingleColumn={props.singleColumn}
-				renderLoadMore={
-					props.shouldShowLoadMoreButton &&
-					postCount > 0 &&
-					props.context !== 'mostViewed' &&
-					props.context !== 'favorites' &&
-					props.context !== 'checkLaterQueue'
-				}
+				renderLoadMore={contextMode !== 'other'}
 				headerHeight={props.hasHeader ? 72 : 0}
 				contextMenu={props.contextMenu}
 				onCellMouseEnter={!props.singleColumn && useImageHover ? onMouseEnter : undefined}

@@ -156,7 +156,7 @@ describe('store/onlineSearchForm', () => {
 		const result = reducer(undefined, action);
 
 		// then
-		expect(result).toStrictEqual({ [defaultCtx]: state });
+		expect(result).toStrictEqual({ ...initialState, [defaultCtx]: state });
 	});
 	it('Clear reset to initialState', () => {
 		//given
@@ -180,7 +180,7 @@ describe('store/onlineSearchForm', () => {
 		};
 
 		// when
-		const result = reducer({ [defaultCtx]: state }, action);
+		const result = reducer({ ...initialState, [defaultCtx]: state }, action);
 
 		// then
 		expect(result).toStrictEqual(initialState);

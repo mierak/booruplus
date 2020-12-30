@@ -483,21 +483,22 @@ describe('thunks/posts', () => {
 			const excludedTags = [mTag({ tag: 'tag3' }), mTag({ tag: 'tag4' })];
 			const rating = 'explicit';
 			const apiKey = 'api_key';
-			const store = mockStore({
-				...initialState,
-				onlineSearchForm: {
-					[context]: {
-						...initialState.onlineSearchForm.default,
-						selectedTags,
-						excludedTags,
-						rating,
+			const store = mockStore(
+				mState({
+					onlineSearchForm: {
+						[context]: {
+							...initialState.onlineSearchForm.default,
+							selectedTags,
+							excludedTags,
+							rating,
+						},
 					},
-				},
-				settings: {
-					...initialState.settings,
-					apiKey,
-				},
-			});
+					settings: {
+						...initialState.settings,
+						apiKey,
+					},
+				})
+			);
 			const options: PostSearchOptions = {
 				rating,
 				apiKey,

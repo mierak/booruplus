@@ -9,7 +9,7 @@ import { PostsContext, RootState } from '@store/types';
 
 import { Tag } from '@appTypes/gelbooruTypes';
 import { useDebounce } from '@hooks/useDebounce';
-import TagSelectOption from '@components/TagSelectOption';
+import TagSelectOption from '@components/search-form/TagSelectOption';
 
 type Props = {
 	context: PostsContext | string;

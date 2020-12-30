@@ -19,6 +19,7 @@ jest.mock('../../../src/service/apiService', () => {
 	};
 });
 import { getTagsByPattern, getPostsForTags } from '../../../src/service/apiService';
+import { mState } from '../../helpers/store.helper';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -27,20 +28,21 @@ describe('thunks/onlineSearchForm', () => {
 	describe('postApiOptions()', () => {
 		it('Constructs object correctly', () => {
 			// given
-			const store = mockStore({
-				...initialState,
-				settings: { ...initialState.settings, apiKey: 'api_key' },
-				onlineSearchForm: {
-					[context]: {
-						...initialState.onlineSearchForm.default,
-						limit: 20,
-						page: 5,
-						rating: 'explicit',
-						sort: 'rating',
-						sortOrder: 'desc',
+			const store = mockStore(
+				mState({
+					settings: { ...initialState.settings, apiKey: 'api_key' },
+					onlineSearchForm: {
+						[context]: {
+							...initialState.onlineSearchForm.default,
+							limit: 20,
+							page: 5,
+							rating: 'explicit',
+							sort: 'rating',
+							sortOrder: 'desc',
+						},
 					},
-				},
-			});
+				})
+			);
 
 			// when
 			const state = store.getState();
@@ -110,10 +112,13 @@ describe('thunks/onlineSearchForm', () => {
 			// given
 			const selectedTags = [mTag({ tag: 'tag1' }), mTag({ tag: 'tag2' })];
 			const excludedTags = [mTag({ tag: 'excluded_tag1' }), mTag({ tag: 'excluded_tag2' })];
-			const store = mockStore({
-				...initialState,
-				onlineSearchForm: { [context]: { ...initialState.onlineSearchForm.default, selectedTags, excludedTags } },
-			});
+			const store = mockStore(
+				mState({
+					onlineSearchForm: {
+						[context]: { ...initialState.onlineSearchForm.default, selectedTags, excludedTags },
+					},
+				})
+			);
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
 			(getPostsForTags as jest.Mock).mockResolvedValueOnce(posts);
 
@@ -142,10 +147,13 @@ describe('thunks/onlineSearchForm', () => {
 			// given
 			const selectedTags = [mTag({ tag: 'tag1' }), mTag({ tag: 'tag2' })];
 			const excludedTags = [mTag({ tag: 'excluded_tag1' }), mTag({ tag: 'excluded_tag2' })];
-			const store = mockStore({
-				...initialState,
-				onlineSearchForm: { [context]: { ...initialState.onlineSearchForm.default, selectedTags, excludedTags } },
-			});
+			const store = mockStore(
+				mState({
+					onlineSearchForm: {
+						[context]: { ...initialState.onlineSearchForm.default, selectedTags, excludedTags },
+					},
+				})
+			);
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
 			(getPostsForTags as jest.Mock).mockResolvedValueOnce(posts);
 

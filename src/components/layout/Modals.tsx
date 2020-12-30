@@ -3,15 +3,15 @@ import { useSelector } from 'react-redux';
 
 import { RootState } from '@store/types';
 
-import AddDirectoryModal from './favorites/modal/AddDirectoryModal';
-import AddtoFavoritesModal from './favorites/modal/AddToFavoritesModal';
-import DeleteDirectoryModal from './favorites/modal/DeleteDirectoryModal';
-import MovePostsToFavoritesDirectoryModal from './favorites/modal/MovePostsToFavoritesDirectoryModal';
-import SettingsModal from './settings/SettingsModal';
-import RenameDirectoryModal from './favorites/modal/RenameDirectoryModal';
-import MovePostsToSuppliedFavoritesDirectoryModal from './favorites/modal/MovePostsToSuppliedFavoritesDirectoryModal';
+import AddDirectoryModal from '../favorites/modal/AddDirectoryModal';
+import AddtoFavoritesModal from '../favorites/modal/AddToFavoritesModal';
+import DeleteDirectoryModal from '../favorites/modal/DeleteDirectoryModal';
+import MovePostsToFavoritesDirectoryModal from '../favorites/modal/MovePostsToFavoritesDirectoryModal';
+import SettingsModal from '../settings/SettingsModal';
+import RenameDirectoryModal from '../favorites/modal/RenameDirectoryModal';
+import MovePostsToSuppliedFavoritesDirectoryModal from '../favorites/modal/MovePostsToSuppliedFavoritesDirectoryModal';
 import { ActiveModal } from '@appTypes/modalTypes';
-import { SearchFormModal } from './SearchForm';
+import SearchFormModal from './modals/SearchFormModal';
 
 const Modals: React.FunctionComponent = () => {
 	const activeModal = useSelector((state: RootState) => state.modals.activeModal);

@@ -174,7 +174,7 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 		if (index >= 0) {
 			const context = generateTabContext(contexts);
 			const data: Partial<DownloadedSearchFormState> = {
-				mode: 'offline', //! TODO new mode for previews
+				mode: 'other',
 				selectedTags: record.tags,
 				excludedTags: record.excludedTags,
 				rating: record.rating,

@@ -11,7 +11,7 @@ import { CardAction, openNotificationWithIcon } from '@appTypes/components';
 import { Post } from '@appTypes/gelbooruTypes';
 import { ActiveModal } from '@appTypes/modalTypes';
 import PageMenuHeader from '@components/common/PageMenuHeader';
-import SearchResultsMenu from '@components/SearchResultsMenu';
+import SearchResultsMenu from '@components/common/SearchResultsMenu';
 import { generateTabContext } from '@util/utils';
 import { deletePostsContext, initPostsContext } from '../store/commonActions';
 
@@ -130,13 +130,15 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 	const ts = useSelector(
 		(state: RootState) => {
 			const contexts = Object.keys(state.onlineSearchForm);
-			return contexts.map((ctx) => {
-				const title = state.onlineSearchForm[ctx]?.selectedTags[0]?.tag ?? 'New Tab';
-				return {
-					title,
-					context: ctx,
-				};
-			});
+			return contexts
+				.filter((ctx) => state.onlineSearchForm[ctx].mode !== 'other')
+				.map((ctx) => {
+					const title = state.onlineSearchForm[ctx]?.selectedTags[0]?.tag ?? 'New Tab';
+					return {
+						title,
+						context: ctx,
+					};
+				});
 		},
 		(first, second) => {
 			return JSON.stringify(first) === JSON.stringify(second);

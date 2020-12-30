@@ -26,7 +26,6 @@ const Drawers: React.FunctionComponent = () => {
 		dispatch(actions.system.setTasksDrawerVisible(false));
 	};
 
-	//! TODO downloads not working at all with new context
 	return (
 		<>
 			<StyledDrawer

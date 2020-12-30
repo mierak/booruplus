@@ -17,7 +17,7 @@ const LoadMoreButton: React.FunctionComponent<Props> = ({ className, context }: 
 	const isSearchDisabled = useSelector((state: RootState) => state.loadingStates.isSearchDisabled);
 	const searchMode = useSelector((state: RootState) => state.onlineSearchForm[context].mode);
 
-	const getLoadMore = (): LoadMoreType => {
+	const getLoadMore = (): LoadMoreType | undefined => {
 		switch (searchMode) {
 			case 'online':
 				return thunks.onlineSearchForm.fetchMorePosts;

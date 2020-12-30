@@ -1,12 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import type { Tag, Rating } from '@appTypes/gelbooruTypes';
-import type { DownloadedSearchFormState, Sort, SortOrder, WithContext } from './types';
+import type { DownloadedSearchFormState, PostsContext, Sort, SortOrder, WithContext } from './types';
 
 import * as thunks from './thunks';
 import { deletePostsContext, initPostsContext } from './commonActions';
 
-export type OnlineSearchFormState = { [key: string]: DownloadedSearchFormState };
+export type OnlineSearchFormState = {
+	[K in PostsContext]: DownloadedSearchFormState;
+} & {
+	[key: string]: DownloadedSearchFormState;
+};
 
 const defaultValues: DownloadedSearchFormState = {
 	mode: 'online',
@@ -28,6 +32,9 @@ const defaultValues: DownloadedSearchFormState = {
 
 export const initialState: OnlineSearchFormState = {
 	default: defaultValues,
+	checkLaterQueue: { ...defaultValues, mode: 'other' },
+	favorites: { ...defaultValues, mode: 'other' },
+	mostViewed: { ...defaultValues, mode: 'other' },
 };
 
 const searchFormSlice = createSlice({
@@ -73,7 +80,7 @@ const searchFormSlice = createSlice({
 		clearTagOptions: (state, action: PayloadAction<WithContext>): void => {
 			state[action.payload.context].tagOptions = [];
 		},
-		clear: (state, action: PayloadAction<WithContext>): { [key: string]: DownloadedSearchFormState } => {
+		clear: (state, action: PayloadAction<WithContext>): OnlineSearchFormState => {
 			return { ...state, [action.payload.context]: defaultValues };
 		},
 		updateContext: (state, action: PayloadAction<WithContext<Partial<DownloadedSearchFormState>>>): void => {

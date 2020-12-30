@@ -62,6 +62,9 @@ describe('ThumbnailsList', () => {
 				posts: {
 					posts: { posts, favorites: [] },
 				},
+				onlineSearchForm: {
+					posts: {},
+				},
 			})
 		);
 		const addMap: { [key: string]: (event: Partial<KeyboardEvent>) => void } = {};
@@ -99,6 +102,9 @@ describe('ThumbnailsList', () => {
 				posts: {
 					posts: { posts: [], favorites: [] },
 				},
+				onlineSearchForm: {
+					posts: {},
+				},
 			})
 		);
 
@@ -120,25 +126,8 @@ describe('ThumbnailsList', () => {
 				posts: {
 					posts: { posts: [], favorites: [] },
 				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<ThumbnailsList context='posts' />
-			</Provider>
-		);
-
-		// then
-		expect(screen.queryByText('Load More')).toBeNull();
-	});
-	it('Does not render Load More button when search mode is favorites', () => {
-		//given
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts, favorites: [] },
+				onlineSearchForm: {
+					posts: {},
 				},
 			})
 		);
@@ -153,12 +142,17 @@ describe('ThumbnailsList', () => {
 		// then
 		expect(screen.queryByText('Load More')).toBeNull();
 	});
-	it('Does not render Load More button when search mode is open-download', () => {
+	it('Does not render Load More button when mode is other', () => {
 		//given
 		const store = mockStore(
 			mState({
 				posts: {
-					posts: { posts, favorites: [] },
+					posts: { posts },
+				},
+				onlineSearchForm: {
+					posts: {
+						mode: 'other',
+					},
 				},
 			})
 		);
@@ -179,6 +173,9 @@ describe('ThumbnailsList', () => {
 			mState({
 				posts: {
 					posts: { posts, favorites: [] },
+				},
+				onlineSearchForm: {
+					posts: {},
 				},
 			})
 		);

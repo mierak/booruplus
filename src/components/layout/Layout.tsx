@@ -14,7 +14,7 @@ import {
 
 import { actions } from '@store';
 import { RootState, View } from '@store/types';
-import Modals from '@components/Modals';
+import Modals from '@components/layout/Modals';
 import { ActiveModal } from '@appTypes/modalTypes';
 
 import Drawers from './Drawers';

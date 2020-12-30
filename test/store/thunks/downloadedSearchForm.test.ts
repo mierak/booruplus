@@ -7,6 +7,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import * as thunks from '../../../src/store/thunks/downloadedSearchForm';
 import { mPost, mTag } from '../../helpers/test.helper';
+import { mState } from '../../helpers/store.helper';
 import { Tag } from '@appTypes/gelbooruTypes';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
@@ -81,16 +82,17 @@ describe('thunks/downloadedSearchForm', () => {
 			const context = 'ctx';
 			const selectedTags = [mTag({ tag: 'tag1' }), mTag({ tag: 'tag2' })];
 			const excludedTags = [mTag({ tag: 'excluded_tag1' }), mTag({ tag: 'excluded_tag2' })];
-			const store = mockStore({
-				...initialState,
-				onlineSearchForm: {
-					[context]: {
-						...initialState.onlineSearchForm.default,
-						selectedTags,
-						excludedTags,
+			const store = mockStore(
+				mState({
+					onlineSearchForm: {
+						[context]: {
+							...initialState.onlineSearchForm.default,
+							selectedTags,
+							excludedTags,
+						},
 					},
-				},
-			});
+				})
+			);
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
 			mockedDb.posts.getForTagsWithOptions.mockResolvedValue(posts);
 
@@ -113,16 +115,17 @@ describe('thunks/downloadedSearchForm', () => {
 			const context = 'ctx';
 			const selectedTags: Tag[] = [];
 			const excludedTags: Tag[] = [];
-			const store = mockStore({
-				...initialState,
-				onlineSearchForm: {
-					[context]: {
-						...initialState.onlineSearchForm.default,
-						selectedTags,
-						excludedTags,
+			const store = mockStore(
+				mState({
+					onlineSearchForm: {
+						[context]: {
+							...initialState.onlineSearchForm.default,
+							selectedTags,
+							excludedTags,
+						},
 					},
-				},
-			});
+				})
+			);
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
 			mockedDb.posts.getAllWithOptions.mockResolvedValue(posts);
 
@@ -145,16 +148,17 @@ describe('thunks/downloadedSearchForm', () => {
 			const context = 'ctx';
 			const selectedTags = [mTag({ tag: 'tag1' }), mTag({ tag: 'tag2' })];
 			const excludedTags = [mTag({ tag: 'excluded_tag1' }), mTag({ tag: 'excluded_tag2' })];
-			const store = mockStore({
-				...initialState,
-				onlineSearchForm: {
-					[context]: {
-						...initialState.onlineSearchForm.default,
-						selectedTags,
-						excludedTags,
+			const store = mockStore(
+				mState({
+					onlineSearchForm: {
+						[context]: {
+							...initialState.onlineSearchForm.default,
+							selectedTags,
+							excludedTags,
+						},
 					},
-				},
-			});
+				})
+			);
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
 			mockedDb.posts.getForTagsWithOptions.mockResolvedValue(posts);
 
@@ -183,16 +187,17 @@ describe('thunks/downloadedSearchForm', () => {
 			const context = 'ctx';
 			const selectedTags: Tag[] = [];
 			const excludedTags: Tag[] = [];
-			const store = mockStore({
-				...initialState,
-				onlineSearchForm: {
-					[context]: {
-						...initialState.onlineSearchForm.default,
-						selectedTags,
-						excludedTags,
+			const store = mockStore(
+				mState({
+					onlineSearchForm: {
+						[context]: {
+							...initialState.onlineSearchForm.default,
+							selectedTags,
+							excludedTags,
+						},
 					},
-				},
-			});
+				})
+			);
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
 			mockedDb.posts.getAllWithOptions.mockResolvedValue(posts);
 
