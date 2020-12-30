@@ -539,7 +539,7 @@ describe('pages/Searches', () => {
 					<Searches />
 				</Provider>
 			);
-			fireEvent.click(screen.getAllByRole('tab', { name: 'switchhere' })[0]);
+			fireEvent.click(screen.getAllByRole('tab', { name: 'global switchhere' })[0]);
 
 			// then
 			const dispatchedActions = store.getActions();

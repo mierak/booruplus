@@ -23,8 +23,7 @@ const PostCountSelect: React.FunctionComponent<Props> = ({ context }: Props) => 
 		} else {
 			return;
 		}
-		const setPostLimit = actions.onlineSearchForm.setLimit;
-		dispatch(setPostLimit({ context, data }));
+		dispatch(actions.onlineSearchForm.updateContext({ context, data: { limit: data } }));
 	};
 
 	return (

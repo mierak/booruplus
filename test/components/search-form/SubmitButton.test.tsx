@@ -138,8 +138,8 @@ describe('search-from/SubmitButton', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).not.toContainMatchingAction({
-			type: actions.onlineSearchForm.setPage.type,
-			payload: { context, data: 0 },
+			type: actions.onlineSearchForm.updateContext.type,
+			payload: { context, data: { page: 0 } },
 		});
 		expect(onSubmitSpy).toHaveBeenCalledTimes(1);
 	});
@@ -168,8 +168,8 @@ describe('search-from/SubmitButton', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.setPage.type,
-			payload: { context, data: 0 },
+			type: actions.onlineSearchForm.updateContext.type,
+			payload: { context, data: { page: 0 } },
 		});
 		expect(onSubmitSpy).toHaveBeenCalledTimes(1);
 	});

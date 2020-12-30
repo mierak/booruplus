@@ -86,12 +86,28 @@ describe('search-from/Checkboxes', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.toggleShowNonBlacklisted.type,
+			type: actions.onlineSearchForm.updateContext.type,
+			payload: { context, data: { showNonBlacklisted: false } },
 		});
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.toggleShowBlacklisted.type });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.toggleShowFavorites.type });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.toggleShowImages.type });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.toggleShowGifs.type });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.toggleShowVideos.type });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.onlineSearchForm.updateContext.type,
+			payload: { context, data: { showBlacklisted: false } },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.onlineSearchForm.updateContext.type,
+			payload: { context, data: { showFavorites: false } },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.onlineSearchForm.updateContext.type,
+			payload: { context, data: { showImages: false } },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.onlineSearchForm.updateContext.type,
+			payload: { context, data: { showGifs: false } },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.onlineSearchForm.updateContext.type,
+			payload: { context, data: { showVideos: false } },
+		});
 	});
 });

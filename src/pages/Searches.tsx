@@ -1,18 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { Spin, Tabs } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
+import { Spin, Tabs, Tooltip } from 'antd';
+import { LoadingOutlined, DisconnectOutlined, GlobalOutlined } from '@ant-design/icons';
 
-import { actions, thunks } from '@store';
-import { RootState, AppDispatch, PostsContext } from '@store/types';
-import ThumbnailsList from '@components/thumbnails/ThumbnailsList';
+import type { RootState, AppDispatch, PostsContext, ContextMode } from '@store/types';
+
 import { CardAction, openNotificationWithIcon } from '@appTypes/components';
+import { actions, thunks } from '@store';
+import ThumbnailsList from '@components/thumbnails/ThumbnailsList';
 import { Post } from '@appTypes/gelbooruTypes';
 import { ActiveModal } from '@appTypes/modalTypes';
 import PageMenuHeader from '@components/common/PageMenuHeader';
 import SearchResultsMenu from '@components/common/SearchResultsMenu';
-import { generateTabContext } from '@util/utils';
+import { capitalize, generateTabContext } from '@util/utils';
 import { deletePostsContext, initPostsContext } from '../store/commonActions';
 
 type Props = {
@@ -122,6 +123,16 @@ const ThumbnailsListTabContent: React.FunctionComponent<{ context: PostsContext 
 	}
 };
 
+const Tab: React.FunctionComponent<{ mode: ContextMode; title: string }> = ({ mode, title }) => {
+	const icon = mode === 'online' ? <GlobalOutlined /> : mode === 'offline' ? <DisconnectOutlined /> : null;
+	return (
+		<span>
+			<Tooltip title={capitalize(mode)}>{icon}</Tooltip>
+			{title}
+		</span>
+	);
+};
+
 const Searches: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
@@ -137,6 +148,7 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 					return {
 						title,
 						context: ctx,
+						mode: state.onlineSearchForm[ctx].mode,
 					};
 				});
 		},
@@ -169,7 +181,12 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 				}}
 			>
 				{ts.map((tab) => (
-					<Tabs.TabPane closable={ts.length > 1} key={tab.context} tab={tab.title} style={{ height: '100vh' }}>
+					<Tabs.TabPane
+						closable={ts.length > 1}
+						key={tab.context}
+						tab={<Tab mode={tab.mode} title={tab.title} />}
+						style={{ height: '100vh' }}
+					>
 						<PageMenuHeader menu={<SearchResultsMenu context={tab.context} />} title='Image List' />
 						<ThumbnailsListTabContent context={tab.context} />
 					</Tabs.TabPane>

@@ -53,17 +53,6 @@ describe('store/onlineSearchForm', () => {
 		// then
 		expect(result[defaultCtx].excludedTags).not.toContain(tag);
 	});
-	it('Sets selected tags', () => {
-		//given
-		const tags = [mTag({ tag: 'tag1' }), mTag({ tag: 'tag2' }), mTag({ tag: 'tag3' })];
-		const action = createAction(actions.setSelectedTags.type, { context: defaultCtx, data: tags });
-
-		// when
-		const result = reducer(undefined, action);
-
-		// then
-		expect(result[defaultCtx].selectedTags).toStrictEqual(tags);
-	});
 	it('Clears tag options', () => {
 		//given
 		const context = 'ctx';
@@ -75,61 +64,6 @@ describe('store/onlineSearchForm', () => {
 
 		// then
 		expect(result[defaultCtx].tagOptions).toEqual([]);
-	});
-	it('Sets rating', () => {
-		//given
-		const rating = 'explicit';
-		const action = createAction(actions.setRating.type, { context: defaultCtx, data: rating });
-
-		// when
-		const result = reducer(undefined, action);
-
-		// then
-		expect(result[defaultCtx].rating).toEqual(rating);
-	});
-	it('Sets post limit', () => {
-		//given
-		const limit = 123;
-		const action = createAction(actions.setLimit.type, { context: defaultCtx, data: limit });
-
-		// when
-		const result = reducer(undefined, action);
-
-		// then
-		expect(result[defaultCtx].limit).toEqual(limit);
-	});
-	it('Sets page', () => {
-		//given
-		const page = 123;
-		const action = createAction(actions.setPage.type, { context: defaultCtx, data: page });
-
-		// when
-		const result = reducer(undefined, action);
-
-		// then
-		expect(result[defaultCtx].page).toEqual(page);
-	});
-	it('Sets sort', () => {
-		//given
-		const sort = 'rating';
-		const action = createAction(actions.setSort.type, { context: defaultCtx, data: sort });
-
-		// when
-		const result = reducer(undefined, action);
-
-		// then
-		expect(result[defaultCtx].sort).toEqual(sort);
-	});
-	it('Sets sort order', () => {
-		//given
-		const sort = 'asc';
-		const action = createAction(actions.setSortOrder.type, { context: defaultCtx, data: sort });
-
-		// when
-		const result = reducer(undefined, action);
-
-		// then
-		expect(result[defaultCtx].sortOrder).toEqual(sort);
 	});
 	describe('Updates context', () => {
 		//given

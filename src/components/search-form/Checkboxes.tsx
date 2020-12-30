@@ -34,22 +34,22 @@ const Checkboxes: React.FunctionComponent<Props> = ({ context }) => {
 	): void => {
 		switch (checkbox) {
 			case 'non-blacklisted':
-				dispatch(actions.onlineSearchForm.toggleShowNonBlacklisted({ context }));
+				dispatch(actions.onlineSearchForm.updateContext({ context, data: { showNonBlacklisted: !showNonBlacklisted } }));
 				break;
 			case 'blacklisted':
-				dispatch(actions.onlineSearchForm.toggleShowBlacklisted({ context }));
+				dispatch(actions.onlineSearchForm.updateContext({ context, data: { showBlacklisted: !showBlacklisted } }));
 				break;
 			case 'favorites':
-				dispatch(actions.onlineSearchForm.toggleShowFavorites({ context }));
+				dispatch(actions.onlineSearchForm.updateContext({ context, data: { showFavorites: !showFavorites } }));
 				break;
 			case 'gifs':
-				dispatch(actions.onlineSearchForm.toggleShowGifs({ context }));
+				dispatch(actions.onlineSearchForm.updateContext({ context, data: { showGifs: !showGifs } }));
 				break;
 			case 'images':
-				dispatch(actions.onlineSearchForm.toggleShowImages({ context }));
+				dispatch(actions.onlineSearchForm.updateContext({ context, data: { showImages: !showImages } }));
 				break;
 			case 'videos':
-				dispatch(actions.onlineSearchForm.toggleShowVideos({ context }));
+				dispatch(actions.onlineSearchForm.updateContext({ context, data: { showVideos: !showVideos } }));
 				break;
 		}
 	};

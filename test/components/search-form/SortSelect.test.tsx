@@ -79,8 +79,8 @@ describe('search-form/SortSelect', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.setSort.type,
-			payload: { context, data: 'rating' },
+			type: actions.onlineSearchForm.updateContext.type,
+			payload: { context, data: { sort: 'rating' } },
 		});
 		await waitFor(() => undefined);
 	});

@@ -17,7 +17,7 @@ const RatingSelect: React.FunctionComponent<Props> = ({ open, context }: Props) 
 	const rating = useSelector((state: RootState) => state.onlineSearchForm[context].rating);
 
 	const handleRatingSelect = (data: Rating): void => {
-		dispatch(actions.onlineSearchForm.setRating({ context, data }));
+		dispatch(actions.onlineSearchForm.updateContext({ context, data: { rating: data } }));
 	};
 
 	return (

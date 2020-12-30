@@ -407,10 +407,14 @@ describe('store/posts', () => {
 			const action = createAction('common/deletePostsContext', { context });
 
 			// when
-			const result = reducer({ ...initialState, posts: mPostsPostsState({ [context]: [] }) }, action);
+			const result = reducer(
+				{ ...initialState, posts: mPostsPostsState({ [context]: [] }), selectedIndices: { [context]: 123 } },
+				action
+			);
 
 			// then
 			expect(result.posts[context]).toBeUndefined();
+			expect(result.selectedIndices[context]).toBeUndefined();
 		});
 		it('Resets state when online fetchPosts is pending', () => {
 			// given

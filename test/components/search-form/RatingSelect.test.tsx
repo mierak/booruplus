@@ -80,8 +80,8 @@ describe('search-form/RatingSelect', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.setRating.type,
-			payload: { context, data: 'explicit' },
+			type: actions.onlineSearchForm.updateContext.type,
+			payload: { context, data: { rating: 'explicit' } },
 		});
 		await waitFor(() => undefined);
 	});

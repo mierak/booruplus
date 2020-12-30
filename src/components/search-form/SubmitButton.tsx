@@ -14,12 +14,11 @@ const SubmitButton: React.FunctionComponent<Props> = ({ context, onSubmit }: Pro
 	const dispatch = useDispatch<AppDispatch>();
 
 	const stateSlice = useSelector((state: RootState) => state.onlineSearchForm[context]);
-	const setPage = actions.onlineSearchForm.setPage;
 	const isDisabled = stateSlice.page === 0;
 	const isSearchButtonDisabled = useSelector((state: RootState) => state.loadingStates.isSearchDisabled);
 
 	const handleCancel = (): void => {
-		dispatch(setPage({ context, data: 0 }));
+		dispatch(actions.onlineSearchForm.updateContext({ context, data: { page: 0 } }));
 		onSubmit();
 	};
 

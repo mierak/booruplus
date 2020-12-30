@@ -55,8 +55,8 @@ describe('search-form/OrderSelect', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.setSortOrder.type,
-			payload: { context, data: 'asc' },
+			type: actions.onlineSearchForm.updateContext.type,
+			payload: { context, data: { sortOrder: 'asc' } },
 		});
 	});
 });

@@ -23,8 +23,7 @@ const PageSelect: React.FunctionComponent<Props> = ({ context }: Props) => {
 		} else {
 			return;
 		}
-		const setPage = actions.onlineSearchForm.setPage;
-		dispatch(setPage({ context, data }));
+		dispatch(actions.onlineSearchForm.updateContext({ context, data: { page: data } }));
 	};
 
 	return (

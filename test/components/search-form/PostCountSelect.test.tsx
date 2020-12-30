@@ -58,8 +58,8 @@ describe('search-form/PostCountSelect', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.setLimit.type,
-			payload: { context, data: 51 },
+			type: actions.onlineSearchForm.updateContext.type,
+			payload: { context, data: { limit: 51 } },
 		});
 	});
 });

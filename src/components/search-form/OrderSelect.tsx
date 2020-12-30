@@ -13,13 +13,10 @@ type Props = {
 const OrderSelect: React.FunctionComponent<Props> = ({ context, className }) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const onChange = actions.onlineSearchForm.setSortOrder;
-
 	const value = useSelector((state: RootState) => state.onlineSearchForm[context].sortOrder);
 
 	const handleChange = (event: RadioChangeEvent): void => {
-		const data = event.target.value as SortOrder;
-		dispatch(onChange({ context, data }));
+		dispatch(actions.onlineSearchForm.updateContext({ context, data: { sortOrder: event.target.value as SortOrder } }));
 	};
 
 	return (

@@ -19,10 +19,8 @@ const SortSelect: React.FunctionComponent<Props> = ({ context, open, className }
 	const value = useSelector((state: RootState) => state.onlineSearchForm[context].sort);
 	const mode = useSelector((state: RootState) => state.onlineSearchForm[context].mode);
 
-	const onChange = actions.onlineSearchForm.setSort;
-
-	const handleChange = (val: Sort): void => {
-		dispatch(onChange({ context, data: val }));
+	const handleChange = (sort: Sort): void => {
+		dispatch(actions.onlineSearchForm.updateContext({ context, data: { sort } }));
 	};
 
 	const renderOptions = (): React.ReactNode => {

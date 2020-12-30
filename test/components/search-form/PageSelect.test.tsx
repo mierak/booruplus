@@ -58,8 +58,8 @@ describe('search-form/PostCountSelect', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.setPage.type,
-			payload: { context, data: 12 },
+			type: actions.onlineSearchForm.updateContext.type,
+			payload: { context, data: { page: 12 } },
 		});
 	});
 });

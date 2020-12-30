@@ -145,6 +145,7 @@ const postsSlice = createSlice({
 		});
 		builder.addCase(deletePostsContext, (state, action) => {
 			delete state.posts[action.payload.context];
+			delete state.selectedIndices[action.payload.context];
 		});
 		builder.addCase(thunks.onlineSearchForm.fetchPosts.pending, (state, action) => {
 			state.posts[action.meta.arg.context] = [];
