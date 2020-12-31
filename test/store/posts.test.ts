@@ -7,21 +7,21 @@ import { mPostsPostsState } from '../helpers/store.helper';
 import { Post } from '../../src/types/gelbooruTypes';
 
 describe('store/posts', () => {
-	const context = 'posts';
+	const context = 'ctx';
 	it('Sets activePostIndex', () => {
 		// given
 		const index = 123;
 		const action = createAction(actions.setActivePostIndex.type, { data: index, context });
 		const state: PostsState = {
 			...initialState,
-			selectedIndices: { posts: 0 },
+			selectedIndices: { [context]: 0 },
 		};
 
 		// when
 		const result = reducer(state, action);
 
 		// then
-		expect(result.selectedIndices.posts).toBe(index);
+		expect(result.selectedIndices[context]).toBe(index);
 	});
 	it('Sets posts', () => {
 		// given
@@ -29,14 +29,14 @@ describe('store/posts', () => {
 		const action = createAction(actions.setPosts.type, { data: posts, context });
 		const state: PostsState = {
 			...initialState,
-			posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
+			posts: mPostsPostsState({ [context]: posts }),
 		};
 
 		// when
 		const result = reducer(state, action);
 
 		// then
-		expect(result.posts.posts).toHaveLength(posts.length);
+		expect(result.posts[context]).toHaveLength(posts.length);
 	});
 	it('Adds post(s)', () => {
 		const post = mPost();
@@ -44,7 +44,7 @@ describe('store/posts', () => {
 		const action2 = createAction(actions.addPosts.type, { data: [mPost(), mPost()], context });
 		const state: PostsState = {
 			...initialState,
-			posts: mPostsPostsState({ posts: [] }),
+			posts: mPostsPostsState({ [context]: [] }),
 		};
 
 		// when
@@ -52,8 +52,8 @@ describe('store/posts', () => {
 		const result2 = reducer(state, action2);
 
 		// then
-		expect(result.posts.posts).toHaveLength(1);
-		expect(result2.posts.posts).toHaveLength(2);
+		expect(result.posts[context]).toHaveLength(1);
+		expect(result2.posts[context]).toHaveLength(2);
 	});
 	it('Removes post(s)', () => {
 		const posts = [mPost({ id: 0 }), mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
@@ -61,7 +61,7 @@ describe('store/posts', () => {
 		const action2 = createAction(actions.removePosts.type, { data: [posts[1], posts[3]], context });
 		const state: PostsState = {
 			...initialState,
-			posts: mPostsPostsState({ posts }),
+			posts: mPostsPostsState({ [context]: posts }),
 		};
 
 		// when
@@ -69,11 +69,11 @@ describe('store/posts', () => {
 		const result2 = reducer(state, action2);
 
 		// then
-		expect(result.posts.posts).toHaveLength(posts.length - 1);
-		expect(result.posts.posts.find((p) => p.id === 2)).toBeUndefined();
-		expect(result2.posts.posts).toHaveLength(posts.length - 2);
-		expect(result2.posts.posts.find((p) => p.id === 1)).toBeUndefined();
-		expect(result2.posts.posts.find((p) => p.id === 3)).toBeUndefined();
+		expect(result.posts[context]).toHaveLength(posts.length - 1);
+		expect(result.posts[context].find((p) => p.id === 2)).toBeUndefined();
+		expect(result2.posts[context]).toHaveLength(posts.length - 2);
+		expect(result2.posts[context].find((p) => p.id === 1)).toBeUndefined();
+		expect(result2.posts[context].find((p) => p.id === 3)).toBeUndefined();
 	});
 	it('Sets post selected', () => {
 		// given
@@ -81,14 +81,14 @@ describe('store/posts', () => {
 		const action = createAction(actions.setPostSelected.type, { data: { post: posts[1], selected: true }, context });
 		const state: PostsState = {
 			...initialState,
-			posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
+			posts: mPostsPostsState({ [context]: posts }),
 		};
 
 		// when
 		const result = reducer(state, action);
 
 		// then
-		expect(result.posts.posts[1].selected).toBe(true);
+		expect(result.posts[context][1].selected).toBe(true);
 	});
 	it('Correctly sets next index when nextPost', () => {
 		// given
@@ -96,15 +96,15 @@ describe('store/posts', () => {
 		const action = createAction(actions.nextPost.type, { context });
 		const state: PostsState = {
 			...initialState,
-			posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
-			selectedIndices: { posts: 0 },
+			posts: mPostsPostsState({ [context]: posts }),
+			selectedIndices: { [context]: 0 },
 		};
 
 		// when
 		const result = reducer(state, action);
 
 		// then
-		expect(result.selectedIndices.posts).toBe(1);
+		expect(result.selectedIndices[context]).toBe(1);
 	});
 	it('Correctly sets next index when nextPost and current post is last', () => {
 		// given
@@ -112,15 +112,15 @@ describe('store/posts', () => {
 		const action = createAction(actions.nextPost.type, { context });
 		const state: PostsState = {
 			...initialState,
-			posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
-			selectedIndices: { posts: 2 },
+			posts: mPostsPostsState({ [context]: posts }),
+			selectedIndices: { [context]: 2 },
 		};
 
 		// when
 		const result = reducer(state, action);
 
 		// then
-		expect(result.selectedIndices.posts).toBe(0);
+		expect(result.selectedIndices[context]).toBe(0);
 	});
 	it('Correctly sets previous index when previousPost', () => {
 		// given
@@ -128,15 +128,15 @@ describe('store/posts', () => {
 		const action = createAction(actions.previousPost.type, { context });
 		const state: PostsState = {
 			...initialState,
-			posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
-			selectedIndices: { posts: 2 },
+			posts: mPostsPostsState({ [context]: posts }),
+			selectedIndices: { [context]: 2 },
 		};
 
 		// when
 		const result = reducer(state, action);
 
 		// then
-		expect(result.selectedIndices.posts).toBe(1);
+		expect(result.selectedIndices[context]).toBe(1);
 	});
 	it('Correctly sets previous index when previousPost and current post is first', () => {
 		// given
@@ -144,15 +144,15 @@ describe('store/posts', () => {
 		const action = createAction(actions.previousPost.type, { context });
 		const state: PostsState = {
 			...initialState,
-			posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
-			selectedIndices: { posts: 0 },
+			posts: mPostsPostsState({ [context]: posts }),
+			selectedIndices: { [context]: 0 },
 		};
 
 		// when
 		const result = reducer(state, action);
 
 		// then
-		expect(result.selectedIndices.posts).toBe(2);
+		expect(result.selectedIndices[context]).toBe(2);
 	});
 	it('Unselects all posts on unselectAllPosts', () => {
 		// given
@@ -160,14 +160,14 @@ describe('store/posts', () => {
 		const action = createAction(actions.unselectAllPosts.type, { context });
 		const state: PostsState = {
 			...initialState,
-			posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
+			posts: mPostsPostsState({ [context]: posts }),
 		};
 
 		// when
 		const result = reducer(state, action);
 
 		// then
-		result.posts.posts.forEach((post) => {
+		result.posts[context].forEach((post) => {
 			expect(post.selected).toBe(false);
 		});
 	});
@@ -183,14 +183,14 @@ describe('store/posts', () => {
 			const action = createAction(actions.selectMultiplePosts.type, { data: index, context });
 			const state: PostsState = {
 				...initialState,
-				posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
+				posts: mPostsPostsState({ [context]: posts }),
 			};
 
 			// when
 			const result = reducer(state, action);
 
 			// then
-			expect(result.posts.posts[index].selected).toBe(true);
+			expect(result.posts[context][index].selected).toBe(true);
 		});
 		it('Does not do anything when index is higher or equal than posts length', () => {
 			// given
@@ -203,15 +203,15 @@ describe('store/posts', () => {
 			const action = createAction(actions.selectMultiplePosts.type, { data: index, context });
 			const state: PostsState = {
 				...initialState,
-				posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
+				posts: mPostsPostsState({ [context]: posts }),
 			};
 
 			// when
 			const result = reducer(state, action);
 
 			// then
-			result.posts.posts.forEach((post, index) => {
-				expect(post).toMatchObject(posts[index]);
+			result.posts[context].forEach((post, i) => {
+				expect(post).toMatchObject(posts[i]);
 			});
 		});
 		it('Does not do anything when index is lower than 0', () => {
@@ -225,15 +225,15 @@ describe('store/posts', () => {
 			const action = createAction(actions.selectMultiplePosts.type, { data: index, context });
 			const state: PostsState = {
 				...initialState,
-				posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
+				posts: mPostsPostsState({ [context]: posts }),
 			};
 
 			// when
 			const result = reducer(state, action);
 
 			// then
-			result.posts.posts.forEach((post, index) => {
-				expect(post).toMatchObject(posts[index]);
+			result.posts[context].forEach((post, i) => {
+				expect(post).toMatchObject(posts[i]);
 			});
 		});
 		it('Selects all posts from maxSelectedIndex to supplied index', () => {
@@ -255,16 +255,16 @@ describe('store/posts', () => {
 			const action = createAction(actions.selectMultiplePosts.type, { data: index, context });
 			const state: PostsState = {
 				...initialState,
-				posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
+				posts: mPostsPostsState({ [context]: posts }),
 			};
 
 			// when
 			const result = reducer(state, action);
 
 			// then
-			expect(result.posts.posts[0].selected).toBe(false);
-			expect(result.posts.posts[1].selected).toBe(false);
-			result.posts.posts.slice(2).forEach((post) => {
+			expect(result.posts[context][0].selected).toBe(false);
+			expect(result.posts[context][1].selected).toBe(false);
+			result.posts[context].slice(2).forEach((post) => {
 				expect(post.selected).toBe(true);
 			});
 		});
@@ -287,18 +287,18 @@ describe('store/posts', () => {
 			const action = createAction(actions.selectMultiplePosts.type, { data: index, context });
 			const state: PostsState = {
 				...initialState,
-				posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
+				posts: mPostsPostsState({ [context]: posts }),
 			};
 
 			// when
 			const result = reducer(state, action);
 
 			// then
-			expect(result.posts.posts[0].selected).toBe(false);
-			result.posts.posts.slice(1, 5).forEach((post) => {
+			expect(result.posts[context][0].selected).toBe(false);
+			result.posts[context].slice(1, 5).forEach((post) => {
 				expect(post.selected).toBe(true);
 			});
-			result.posts.posts.slice(6).forEach((post) => {
+			result.posts[context].slice(6).forEach((post) => {
 				expect(post.selected).toBe(false);
 			});
 		});
@@ -321,17 +321,17 @@ describe('store/posts', () => {
 			const action = createAction(actions.selectMultiplePosts.type, { data: index, context });
 			const state: PostsState = {
 				...initialState,
-				posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
+				posts: mPostsPostsState({ [context]: posts }),
 			};
 
 			// when
 			const result = reducer(state, action);
 
 			// then
-			result.posts.posts.slice(0, 4).forEach((post) => {
+			result.posts[context].slice(0, 4).forEach((post) => {
 				expect(post.selected).toBe(true);
 			});
-			result.posts.posts.slice(5, 10).forEach((post) => {
+			result.posts[context].slice(5, 10).forEach((post) => {
 				expect(post.selected).toBe(false);
 			});
 			expect(posts[10].selected).toBe(true);
@@ -355,18 +355,18 @@ describe('store/posts', () => {
 			const action = createAction(actions.selectMultiplePosts.type, { data: index, context });
 			const state: PostsState = {
 				...initialState,
-				posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
+				posts: mPostsPostsState({ [context]: posts }),
 			};
 
 			// when
 			const result = reducer(state, action);
 
 			// then
-			expect(result.posts.posts[0].selected).toBe(true);
-			result.posts.posts.slice(1, 6).forEach((post) => {
+			expect(result.posts[context][0].selected).toBe(true);
+			result.posts[context].slice(1, 6).forEach((post) => {
 				expect(post.selected).toBe(false);
 			});
-			result.posts.posts.slice(7).forEach((post) => {
+			result.posts[context].slice(7).forEach((post) => {
 				expect(post.selected).toBe(true);
 			});
 		});
@@ -391,130 +391,93 @@ describe('store/posts', () => {
 			expect(result.hoveredPost).toMatchObject({ post, visible: true });
 		});
 	});
-	it('Resets state when online fetchPosts is pending', () => {
-		// given
-		const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-		const action = createPendingAction(thunks.onlineSearchForm.fetchPosts.pending.type);
-		const state: PostsState = {
-			...initialState,
-			posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
-			selectedIndices: { posts: 123 },
-		};
+	describe('extraReducers', () => {
+		it('Initializes new posts context', () => {
+			// given
+			const action = createAction('common/initPostsContext', { context });
 
-		// when
-		const result = reducer(state, action);
+			// when
+			const result = reducer(undefined, action);
 
-		// then
-		expect(result.posts.posts).toHaveLength(0);
-		expect(result.selectedIndices.posts).toBe(undefined);
-	});
-	it('Resets state when offline fetchPosts is pending', () => {
-		// given
-		const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-		const action = createPendingAction(thunks.downloadedSearchForm.fetchPosts.pending.type);
-		const state: PostsState = {
-			...initialState,
-			posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
-			selectedIndices: { posts: 123 },
-		};
+			// then
+			expect(result.posts[context]).toEqual([]);
+		});
+		it('Deletes posts context', () => {
+			// given
+			const action = createAction('common/deletePostsContext', { context });
 
-		// when
-		const result = reducer(state, action);
+			// when
+			const result = reducer(
+				{ ...initialState, posts: mPostsPostsState({ [context]: [] }), selectedIndices: { [context]: 123 } },
+				action
+			);
 
-		// then
-		expect(result.posts.posts).toHaveLength(0);
-		expect(result.selectedIndices.posts).toBe(undefined);
-	});
-	it('Resets state when fetchPostsById is pending', () => {
-		// given
-		const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-		const action = createPendingAction(thunks.posts.fetchPostsByIds.pending.type);
-		const state: PostsState = {
-			...initialState,
-			posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
-			selectedIndices: { posts: 123 },
-		};
-
-		// when
-		const result = reducer(state, action);
-
-		// then
-		expect(result.posts.posts).toHaveLength(0);
-		expect(result.selectedIndices.posts).toBe(undefined);
-	});
-	it('Resets state when fetchPostsInDirectory is pending', () => {
-		// given
-		const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-		const action = createPendingAction(thunks.favorites.fetchPostsInDirectory.pending.type);
-		const state: PostsState = {
-			...initialState,
-			posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }),
-			selectedIndices: { favorites: 123 },
-		};
-
-		// when
-		const result = reducer(state, action);
-
-		// then
-		expect(result.posts.favorites).toHaveLength(0);
-		expect(result.selectedIndices.favorites).toBe(undefined);
-	});
-	it('Adds posts when fetchPostsById is fulfilled', () => {
-		// given
-		const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-		const action = createAction(thunks.posts.fetchPostsByIds.fulfilled.type, posts);
-		const state: PostsState = {
-			...initialState,
-			posts: mPostsPostsState({ posts: [], favorites: [], mostViewed: [] }),
-			selectedIndices: { posts: 123 },
-		};
-
-		// when
-		const result = reducer(state, action);
-
-		// then
-		expect(result.posts.posts).toHaveLength(posts.length);
-	});
-	it('Adds posts when online fetchPosts - checkPostsAgainstDb is fulfilled', () => {
-		// given
-		const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-		const action = createAction(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled.type, posts);
-		const state: PostsState = {
-			...initialState,
-			posts: mPostsPostsState({ posts: [], favorites: [], mostViewed: [] }),
-			selectedIndices: { posts: 123 },
-		};
-
-		// when
-		const result = reducer(state, action);
-
-		// then
-		expect(result.posts.posts).toHaveLength(posts.length);
-	});
-	it('Adds posts when offline fetchPosts is fulfilled', () => {
-		// given
-		const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-		const action = createAction(thunks.downloadedSearchForm.fetchPosts.fulfilled.type, posts);
-		const state: PostsState = {
-			...initialState,
-			posts: mPostsPostsState({ posts: [], favorites: [], mostViewed: [] }),
-			selectedIndices: { posts: 123 },
-		};
-
-		// when
-		const result = reducer(state, action);
-
-		// then
-		expect(result.posts.posts).toHaveLength(posts.length);
-	});
-	describe('downloadedSearchForm.fetchMorePosts()', () => {
-		it('Adds posts when offline fetchMorePosts is fulfilled', () => {
+			// then
+			expect(result.posts[context]).toBeUndefined();
+			expect(result.selectedIndices[context]).toBeUndefined();
+		});
+		it('Resets state when online fetchPosts is pending', () => {
 			// given
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-			const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts);
+			const action = createPendingAction(thunks.onlineSearches.fetchPosts.pending.type, { arg: { context } });
 			const state: PostsState = {
 				...initialState,
-				posts: mPostsPostsState({ posts: [], favorites: [], mostViewed: [] }),
+				posts: mPostsPostsState({ [context]: posts }),
+				selectedIndices: { [context]: 123 },
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.posts[context]).toHaveLength(0);
+			expect(result.selectedIndices[context]).toBe(undefined);
+		});
+		it('Resets state when offline fetchPosts is pending', () => {
+			// given
+			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
+			const action = createPendingAction(thunks.offlineSearches.fetchPosts.pending.type, { arg: { context } });
+			const state: PostsState = {
+				...initialState,
+				posts: mPostsPostsState({ [context]: posts }),
+				selectedIndices: { [context]: 123 },
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.posts[context]).toHaveLength(0);
+			expect(result.selectedIndices[context]).toBe(undefined);
+		});
+		it('Resets state when fetchPostsById is pending', () => {
+			// given
+			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
+			const action = createPendingAction(thunks.posts.fetchPostsByIds.pending.type, {
+				arg: { context, ids: posts.map((p) => p.id) },
+			});
+			const state: PostsState = {
+				...initialState,
+				posts: mPostsPostsState({ [context]: posts }),
+				selectedIndices: { [context]: 123 },
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.posts[context]).toHaveLength(0);
+			expect(result.selectedIndices[context]).toBe(undefined);
+		});
+		it('Adds posts when fetchPostsById is fulfilled', () => {
+			// given
+			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
+			const action = createFulfilledAction(thunks.posts.fetchPostsByIds.fulfilled.type, posts, {
+				arg: { context, ids: posts.map((p) => p.id) },
+			});
+			const state: PostsState = {
+				...initialState,
+				posts: mPostsPostsState({ [context]: [] }),
 				selectedIndices: { posts: 123 },
 			};
 
@@ -522,159 +485,284 @@ describe('store/posts', () => {
 			const result = reducer(state, action);
 
 			// then
-			expect(result.posts.posts).toHaveLength(posts.length);
+			expect(result.posts[context]).toHaveLength(posts.length);
 		});
-		it('Sets activePostIndex to first new post', () => {
+
+		it('Resets state when fetchPostsInDirectory is pending', () => {
 			// given
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-			const currentPosts = [mPost({ id: 4 }), mPost({ id: 5 }), mPost({ id: 6 })];
-			const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts);
+			const action = createPendingAction(thunks.favorites.fetchPostsInDirectory.pending.type);
 			const state: PostsState = {
 				...initialState,
-				posts: mPostsPostsState({ posts: currentPosts, favorites: [], mostViewed: [] }),
-				selectedIndices: { posts: undefined },
+				posts: mPostsPostsState({ favorites: posts }),
+				selectedIndices: { favorites: 123 },
 			};
 
 			// when
 			const result = reducer(state, action);
 
 			// then
-			expect(result.selectedIndices.posts).toBe(3);
+			expect(result.posts.favorites).toHaveLength(0);
+			expect(result.selectedIndices.favorites).toBe(undefined);
 		});
-		it('Sets activePostIndex to last post if no posts were fetched', () => {
-			// given
-			const posts: Post[] = [];
-			const currentPosts = [mPost({ id: 4 }), mPost({ id: 5 }), mPost({ id: 6 })];
-			const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts);
-			const state: PostsState = {
-				...initialState,
-				posts: mPostsPostsState({ posts: currentPosts, favorites: [], mostViewed: [] }),
-				selectedIndices: { posts: undefined },
-			};
-
-			// when
-			const result = reducer(state, action);
-
-			// then
-			expect(result.selectedIndices.posts).toBe(2);
-		});
-		it('Sets activePostIndex to 0 ifposts were fetched, but no posts were currently in state', () => {
+		it('Removes posts from active directory', () => {
 			// given
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-			const currentPosts: Post[] = [];
-			const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts);
+			const action = createFulfilledAction(thunks.favorites.removePostsFromActiveDirectory.fulfilled.type, undefined, {
+				arg: [posts[0]],
+			});
 			const state: PostsState = {
 				...initialState,
-				posts: mPostsPostsState({ posts: currentPosts, favorites: [], mostViewed: [] }),
-				selectedIndices: { posts: undefined },
+				posts: mPostsPostsState({ favorites: posts }),
 			};
 
 			// when
 			const result = reducer(state, action);
 
 			// then
-			expect(result.selectedIndices.posts).toBe(0);
+			expect(result.posts.favorites).toHaveLength(2);
+			expect(result.posts.favorites[0].id).toBe(2);
+			expect(result.posts.favorites[1].id).toBe(3);
 		});
-	});
-	describe('onlineSearchForm.fetchMorePosts()', () => {
-		it('Sets activePostIndex to first new post', () => {
+		it('Adds posts when online fetchPosts - checkPostsAgainstDb is fulfilled', () => {
 			// given
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-			const currentPosts = [mPost({ id: 4 }), mPost({ id: 5 }), mPost({ id: 6 })];
-			const checkAction = createAction(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled.type, posts);
-			const action = createAction(thunks.onlineSearchForm.fetchMorePosts.fulfilled.type, posts);
+			const action = createFulfilledAction(thunks.onlineSearches.checkPostsAgainstDb.fulfilled.type, posts, {
+				arg: { context },
+			});
 			const state: PostsState = {
 				...initialState,
-				posts: mPostsPostsState({ posts: currentPosts, favorites: [], mostViewed: [] }),
-				selectedIndices: { posts: undefined },
-			};
-
-			// when
-			const result = reducer(reducer(state, checkAction), action);
-
-			// then
-			expect(result.selectedIndices.posts).toBe(3);
-		});
-		it('Sets activePostIndex to last post if no posts were fetched', () => {
-			// given
-			const posts: Post[] = [];
-			const currentPosts = [mPost({ id: 4 }), mPost({ id: 5 }), mPost({ id: 6 })];
-			const action = createAction(thunks.onlineSearchForm.fetchMorePosts.fulfilled.type, posts);
-			const state: PostsState = {
-				...initialState,
-				posts: mPostsPostsState({ posts: currentPosts, favorites: [], mostViewed: [] }),
-				selectedIndices: { posts: undefined },
+				posts: mPostsPostsState({ [context]: [] }),
+				selectedIndices: { posts: 123 },
 			};
 
 			// when
 			const result = reducer(state, action);
 
 			// then
-			expect(result.selectedIndices.posts).toBe(2);
+			expect(result.posts[context]).toHaveLength(posts.length);
 		});
-		it('Sets activePostIndex to 0 ifposts were fetched, but no posts were currently in state', () => {
+		it('Adds posts when offline fetchPosts is fulfilled', () => {
 			// given
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-			const currentPosts: Post[] = [];
-			const action = createAction(thunks.onlineSearchForm.fetchMorePosts.fulfilled.type, posts);
+			const action = createFulfilledAction(thunks.offlineSearches.fetchPosts.fulfilled.type, posts, {
+				arg: { context },
+			});
 			const state: PostsState = {
 				...initialState,
-				posts: mPostsPostsState({ posts: currentPosts, favorites: [], mostViewed: [] }),
-				selectedIndices: { posts: undefined },
+				posts: mPostsPostsState({ [context]: [] }),
+				selectedIndices: { [context]: 123 },
 			};
 
 			// when
 			const result = reducer(state, action);
 
 			// then
-			expect(result.selectedIndices.posts).toBe(0);
+			expect(result.posts[context]).toHaveLength(posts.length);
 		});
-	});
-	it('Adds posts when favorites fetchPostsInDirectory is fulfilled', () => {
-		// given
-		const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-		const action = createAction(thunks.favorites.fetchPostsInDirectory.fulfilled.type, posts);
-		const state: PostsState = {
-			...initialState,
-			posts: mPostsPostsState({ posts: [], favorites: [], mostViewed: [] }),
-			selectedIndices: { posts: 123 },
-		};
+		describe('downloadedSearchForm.fetchMorePosts()', () => {
+			it('Adds posts when offline fetchMorePosts is fulfilled', () => {
+				// given
+				const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
+				const action = createFulfilledAction(thunks.offlineSearches.fetchMorePosts.fulfilled.type, posts, {
+					arg: { context },
+				});
+				const state: PostsState = {
+					...initialState,
+					posts: mPostsPostsState({ [context]: [] }),
+					selectedIndices: { [context]: 123 },
+				};
 
-		// when
-		const result = reducer(state, action);
+				// when
+				const result = reducer(state, action);
 
-		// then
-		expect(result.posts.favorites).toHaveLength(posts.length);
-	});
-	it('Removes blacklisted posts when blacklistPosts is fulfilled', () => {
-		// given
-		const context = 'favorites';
-		const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-		const action = createFulfilledAction(thunks.posts.blacklistPosts.fulfilled.type, [posts[0], posts[1]], {
-			arg: { context },
+				// then
+				expect(result.posts[context]).toHaveLength(posts.length);
+			});
+			it('Sets activePostIndex to first new post', () => {
+				// given
+				const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
+				const currentPosts = [mPost({ id: 4 }), mPost({ id: 5 }), mPost({ id: 6 })];
+				const action = createFulfilledAction(thunks.offlineSearches.fetchMorePosts.fulfilled.type, posts, {
+					arg: { context },
+				});
+				const state: PostsState = {
+					...initialState,
+					posts: mPostsPostsState({ [context]: currentPosts }),
+					selectedIndices: { [context]: undefined },
+				};
+
+				// when
+				const result = reducer(state, action);
+
+				// then
+				expect(result.selectedIndices[context]).toBe(3);
+			});
+			it('Sets activePostIndex to last post if no posts were fetched', () => {
+				// given
+				const posts: Post[] = [];
+				const currentPosts = [mPost({ id: 4 }), mPost({ id: 5 }), mPost({ id: 6 })];
+				const action = createFulfilledAction(thunks.offlineSearches.fetchMorePosts.fulfilled.type, posts, {
+					arg: { context },
+				});
+				const state: PostsState = {
+					...initialState,
+					posts: mPostsPostsState({ [context]: currentPosts }),
+					selectedIndices: { [context]: undefined },
+				};
+
+				// when
+				const result = reducer(state, action);
+
+				// then
+				expect(result.selectedIndices[context]).toBe(2);
+			});
+			it('Sets activePostIndex to 0 if posts were fetched, but no posts were currently in state', () => {
+				// given
+				const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
+				const currentPosts: Post[] = [];
+				const action = createFulfilledAction(thunks.offlineSearches.fetchMorePosts.fulfilled.type, posts, {
+					arg: { context },
+				});
+				const state: PostsState = {
+					...initialState,
+					posts: mPostsPostsState({ [context]: currentPosts }),
+					selectedIndices: { [context]: undefined },
+				};
+
+				// when
+				const result = reducer(state, action);
+
+				// then
+				expect(result.selectedIndices[context]).toBe(0);
+			});
 		});
-		const state: PostsState = {
-			...initialState,
-			posts: mPostsPostsState({ favorites: posts }),
-			selectedIndices: { posts: 123 },
-		};
+		describe('onlineSearchForm.fetchMorePosts()', () => {
+			it('Sets activePostIndex to first new post', () => {
+				// given
+				const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
+				const currentPosts = [mPost({ id: 4 }), mPost({ id: 5 }), mPost({ id: 6 })];
+				const checkAction = createFulfilledAction(thunks.onlineSearches.checkPostsAgainstDb.fulfilled.type, posts, {
+					arg: { context },
+				});
+				const action = createFulfilledAction(thunks.onlineSearches.fetchMorePosts.fulfilled.type, posts, {
+					arg: { context },
+				});
+				const state: PostsState = {
+					...initialState,
+					posts: mPostsPostsState({ [context]: currentPosts }),
+					selectedIndices: { [context]: undefined },
+				};
 
-		// when
-		const result = reducer(state, action);
+				// when
+				const result = reducer(reducer(state, checkAction), action);
 
-		// then
-		expect(result.posts[context]).toHaveLength(1);
-		expect(result.posts[context][0].id).toBe(3);
-	});
-	it('Sets most viewed posts when fetchMostViewedPosts() is fulfiled', () => {
-		//given
-		const mostviewedPosts = [mPost({ id: 1 }), mPost({ id: 2 })];
-		const action = createAction(thunks.dashboard.fetchMostViewedPosts.fulfilled.type, mostviewedPosts);
+				// then
+				expect(result.selectedIndices[context]).toBe(3);
+			});
+			it('Sets activePostIndex to last post if no posts were fetched', () => {
+				// given
+				const posts: Post[] = [];
+				const currentPosts = [mPost({ id: 4 }), mPost({ id: 5 }), mPost({ id: 6 })];
+				const action = createFulfilledAction(thunks.onlineSearches.fetchMorePosts.fulfilled.type, posts, {
+					arg: { context },
+				});
+				const state: PostsState = {
+					...initialState,
+					posts: mPostsPostsState({ [context]: currentPosts }),
+					selectedIndices: { [context]: undefined },
+				};
 
-		// when
-		const result = reducer(undefined, action);
+				// when
+				const result = reducer(state, action);
 
-		// then
-		expect(result.posts.mostViewed).toStrictEqual(mostviewedPosts);
+				// then
+				expect(result.selectedIndices[context]).toBe(2);
+			});
+			it('Sets activePostIndex to 0 if posts were fetched, but no posts were currently in state', () => {
+				// given
+				const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
+				const currentPosts: Post[] = [];
+				const action = createFulfilledAction(thunks.onlineSearches.fetchMorePosts.fulfilled.type, posts, {
+					arg: { context },
+				});
+				const state: PostsState = {
+					...initialState,
+					posts: mPostsPostsState({ [context]: currentPosts }),
+					selectedIndices: { [context]: undefined },
+				};
+
+				// when
+				const result = reducer(state, action);
+
+				// then
+				expect(result.selectedIndices[context]).toBe(0);
+			});
+		});
+		it('Adds posts when favorites fetchPostsInDirectory is fulfilled', () => {
+			// given
+			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
+			const action = createAction(thunks.favorites.fetchPostsInDirectory.fulfilled.type, posts);
+			const state: PostsState = {
+				...initialState,
+				posts: mPostsPostsState({ favorites: [] }),
+				selectedIndices: { favorites: 123 },
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.posts.favorites).toHaveLength(posts.length);
+		});
+		it('Removes blacklisted posts when blacklistPosts is fulfilled', () => {
+			// given
+			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
+			const action = createFulfilledAction(thunks.posts.blacklistPosts.fulfilled.type, [posts[0], posts[1]], {
+				arg: { context },
+			});
+			const state: PostsState = {
+				...initialState,
+				posts: mPostsPostsState({ [context]: posts }),
+				selectedIndices: { [context]: 123 },
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.posts[context]).toHaveLength(1);
+			expect(result.posts[context][0].id).toBe(3);
+		});
+		it('Switches posts downloaded status when downloadPost is fulfilled', () => {
+			// given
+			const posts = [mPost({ id: 1, downloaded: 0 }), mPost({ id: 2, downloaded: 0 }), mPost({ id: 3, downloaded: 0 })];
+			const action = createFulfilledAction(thunks.posts.downloadPost.fulfilled.type, posts[0], {
+				arg: { context },
+			});
+			const state: PostsState = {
+				...initialState,
+				posts: mPostsPostsState({ [context]: posts }),
+				selectedIndices: { [context]: 123 },
+			};
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.posts[context]).toHaveLength(3);
+			expect(result.posts[context][0].downloaded).toBe(1);
+		});
+		it('Sets most viewed posts when fetchMostViewedPosts() is fulfiled', () => {
+			//given
+			const mostviewedPosts = [mPost({ id: 1 }), mPost({ id: 2 })];
+			const action = createAction(thunks.dashboard.fetchMostViewedPosts.fulfilled.type, mostviewedPosts);
+
+			// when
+			const result = reducer(undefined, action);
+
+			// then
+			expect(result.posts.mostViewed).toStrictEqual(mostviewedPosts);
+		});
 	});
 });

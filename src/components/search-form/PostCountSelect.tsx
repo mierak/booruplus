@@ -2,31 +2,28 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { InputNumber } from 'antd';
 
-import { RootState } from '@store/types';
+import { PostsContext, RootState } from '@store/types';
 import { actions } from '@store';
 
 type Props = {
-	mode: 'online' | 'offline';
-}
+	context: PostsContext | string;
+};
 
-const PostCountSelect: React.FunctionComponent<Props> = ({ mode }: Props) => {
+const PostCountSelect: React.FunctionComponent<Props> = ({ context }: Props) => {
 	const dispatch = useDispatch();
 
-	const postLimit = useSelector(
-		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.postLimit) || state.onlineSearchForm.limit
-	);
+	const postLimit = useSelector((state: RootState) => state.searchContexts[context].limit);
 
 	const handlePostCountChange = (value: number | string | undefined): void => {
-		let val: number;
+		let data: number;
 		if (typeof value === 'string') {
-			val = parseInt(value);
+			data = parseInt(value);
 		} else if (typeof value === 'number') {
-			val = value;
+			data = value;
 		} else {
 			return;
 		}
-		const setPostLimit = (mode === 'offline' && actions.downloadedSearchForm.setPostLimit) || actions.onlineSearchForm.setLimit;
-		dispatch(setPostLimit(val));
+		dispatch(actions.searchContexts.updateContext({ context, data: { limit: data } }));
 	};
 
 	return (

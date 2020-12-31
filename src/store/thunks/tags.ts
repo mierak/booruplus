@@ -1,13 +1,16 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
+import type { AppThunk, SearchContext, ThunkApi } from '@store/types';
+import type { Tag, TagType } from '@appTypes/gelbooruTypes';
+
 import { db } from '@db';
-import { AppThunk, ThunkApi } from '@store/types';
-import { Tag, TagType } from '@appTypes/gelbooruTypes';
 import * as api from '@service/apiService';
 import { thunkLoggerFactory } from '@util/logger';
+import { generateTabContext } from '@util/utils';
 
-import * as onlineSearchFormThunk from './onlineSearchForm';
-import * as downloadedSearchFormThunk from './downloadedSearchForm';
+import * as onlineSearchFormThunk from './onlineSearches';
+import * as downloadedSearchFormThunk from './offlineSearches';
+import { initPostsContext } from '../commonActions';
 
 const thunkLogger = thunkLoggerFactory();
 
@@ -63,18 +66,30 @@ export const loadByPatternFromDb = createAsyncThunk<Tag[], string, ThunkApi>(
 
 export const searchTagOnline = createAsyncThunk<Tag, Tag, ThunkApi>(
 	'tags/searchOnline',
-	async (tag, thunkApi): Promise<Tag> => {
+	async (tag, { getState, dispatch }): Promise<Tag> => {
 		thunkLogger.getActionLogger(searchTagOnline);
-		await thunkApi.dispatch(onlineSearchFormThunk.fetchPosts());
+		const context = generateTabContext(Object.keys(getState().searchContexts));
+		const data: Partial<SearchContext> = {
+			mode: 'online',
+			selectedTags: [tag],
+		};
+		dispatch(initPostsContext({ context, data }));
+		await dispatch(onlineSearchFormThunk.fetchPosts({ context }));
 		return tag;
 	}
 );
 
 export const searchTagOffline = createAsyncThunk<Tag, Tag, ThunkApi>(
 	'tags/searchOffline',
-	async (tag, thunkApi): Promise<Tag> => {
+	async (tag, { getState, dispatch }): Promise<Tag> => {
 		thunkLogger.getActionLogger(searchTagOffline);
-		await thunkApi.dispatch(downloadedSearchFormThunk.fetchPosts());
+		const context = generateTabContext(Object.keys(getState().searchContexts));
+		const data: Partial<SearchContext> = {
+			mode: 'offline',
+			selectedTags: [tag],
+		};
+		dispatch(initPostsContext({ context, data }));
+		await dispatch(downloadedSearchFormThunk.fetchPosts({ context }));
 		return tag;
 	}
 );

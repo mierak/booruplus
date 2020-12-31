@@ -12,14 +12,21 @@ import OrderSelect from '../../../src/components/search-form/OrderSelect';
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('search-form/OrderSelect', () => {
+	const context = 'ctx';
 	it('Renders Asc and Desc checkboxes', () => {
 		// given
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<OrderSelect mode="online" />
+				<OrderSelect context={context} />
 			</Provider>
 		);
 
@@ -29,34 +36,27 @@ describe('search-form/OrderSelect', () => {
 	});
 	it('Dispatches setSortOrder for online mode', () => {
 		// given
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<OrderSelect mode="online" />
+				<OrderSelect context={context} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('radio', { name: 'Asc' }));
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.setSortOrder.type, payload: 'asc' });
-	});
-	it('Dispatches setSortOrder for offline mode', () => {
-		// given
-		const store = mockStore(mState());
-
-		// when
-		render(
-			<Provider store={store}>
-				<OrderSelect mode="offline" />
-			</Provider>
-		);
-		fireEvent.click(screen.getByRole('radio', { name: 'Asc' }));
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.setSortOrder.type, payload: 'asc' });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.updateContext.type,
+			payload: { context, data: { sortOrder: 'asc' } },
+		});
 	});
 });

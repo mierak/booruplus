@@ -68,41 +68,41 @@ const loadingState = createSlice({
 			state.isMostFavoritedTagsLoading = false;
 		});
 		// Online Search Form
-		builder.addCase(thunks.onlineSearchForm.fetchPosts.pending, (state) => {
+		builder.addCase(thunks.onlineSearches.fetchPosts.pending, (state) => {
 			state.isSearchDisabled = true;
 			state.isFetchingPosts = true;
 		});
-		builder.addCase(thunks.onlineSearchForm.fetchMorePosts.pending, (state) => {
+		builder.addCase(thunks.onlineSearches.fetchMorePosts.pending, (state) => {
 			state.isSearchDisabled = true;
 		});
-		builder.addCase(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled, (state) => {
+		builder.addCase(thunks.onlineSearches.checkPostsAgainstDb.fulfilled, (state) => {
 			state.isSearchDisabled = false;
 			state.isFetchingPosts = false;
 		});
-		builder.addCase(thunks.onlineSearchForm.checkPostsAgainstDb.rejected, (state) => {
+		builder.addCase(thunks.onlineSearches.checkPostsAgainstDb.rejected, (state) => {
 			state.isSearchDisabled = false;
 			state.isFetchingPosts = false;
 		});
-		builder.addCase(thunks.onlineSearchForm.fetchPosts.rejected, (state) => {
+		builder.addCase(thunks.onlineSearches.fetchPosts.rejected, (state) => {
 			state.isSearchDisabled = false;
 			state.isFetchingPosts = false;
 		});
-		builder.addCase(thunks.onlineSearchForm.fetchMorePosts.rejected, (state) => {
+		builder.addCase(thunks.onlineSearches.fetchMorePosts.rejected, (state) => {
 			state.isSearchDisabled = false;
 		});
 		// Downloaded Search Form
-		builder.addCase(thunks.downloadedSearchForm.fetchPosts.pending, (state) => {
+		builder.addCase(thunks.offlineSearches.fetchPosts.pending, (state) => {
 			state.isSearchDisabled = true;
 			state.isFetchingPosts = true;
 		});
-		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.pending, (state) => {
+		builder.addCase(thunks.offlineSearches.fetchMorePosts.pending, (state) => {
 			state.isSearchDisabled = true;
 		});
-		builder.addCase(thunks.downloadedSearchForm.fetchPosts.fulfilled, (state) => {
+		builder.addCase(thunks.offlineSearches.fetchPosts.fulfilled, (state) => {
 			state.isSearchDisabled = false;
 			state.isFetchingPosts = false;
 		});
-		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.fulfilled, (state) => {
+		builder.addCase(thunks.offlineSearches.fetchMorePosts.fulfilled, (state) => {
 			state.isSearchDisabled = false;
 			state.isFetchingPosts = false;
 		});

@@ -13,14 +13,14 @@ import SavedSearches from './SavedSearches';
 import Favorites from './Favorites';
 import Tags from './Tags';
 import Dashboard from './Dashboard';
-import SearchResults from './SearchResults';
+import Searches from './Searches';
 
 import 'ant-design-pro/dist/ant-design-pro.css';
 import '../css/index.css';
 import CheckLaterQueue from './CheckLaterQueue';
 import { parseVersion } from '@util/utils';
 import { getLatestAppVersion } from '@service/apiService';
-import NewVersionNotificationModalBody from '@components/NewVersionNotificationModalBody';
+import NewVersionNotificationModalBody from '@components/layout/modals/NewVersionNotificationModalBody';
 
 const Page: React.FunctionComponent = () => {
 	const [hydrated, setHydrated] = useState(false);
@@ -78,8 +78,8 @@ const Page: React.FunctionComponent = () => {
 		switch (activeView) {
 			case 'dashboard':
 				return <Dashboard />;
-			case 'search-results':
-				return <SearchResults />;
+			case 'searches':
+				return <Searches />;
 			case 'image':
 				return <ImageView />;
 			case 'saved-searches':

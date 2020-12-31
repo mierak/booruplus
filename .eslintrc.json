@@ -8,6 +8,7 @@
 		"plugin:react/recommended",
 		"plugin:@typescript-eslint/eslint-recommended",
 		"plugin:@typescript-eslint/recommended",
+		"plugin:import/typescript",
 		"plugin:react-hooks/recommended",
 		"prettier"
 	],
@@ -27,10 +28,16 @@
 	"settings": {
 		"react": {
 			"version": "16.12.0"
+		},
+		"import/resolver": {
+			"typescript": {}
 		}
 	},
-	"plugins": ["react", "@typescript-eslint"],
+	"plugins": ["react", "@typescript-eslint", "import"],
 	"rules": {
+		"import/no-duplicates": "error",
+		"import/no-cycle": "error",
+		"import/namespace": "error",
 		"indent": [
 			0,
 			"tab",
@@ -62,6 +69,8 @@
 		"react/prop-types": "off",
 		"@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "[_]" }],
 		"react/no-unescaped-entities": 1,
-		"no-console": "warn"
+		"no-console": "warn",
+		"no-shadow": "off",
+		"@typescript-eslint/no-shadow": ["error"]
 	}
 }

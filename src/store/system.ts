@@ -1,28 +1,26 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { View, SearchMode, PostsContext } from './types';
+import type { View, PostsContext } from './types';
+
+import { initPostsContext } from './commonActions';
 import * as thunks from './thunks';
 
 export type SystemState = {
 	activeView: View;
-	imageViewContext: PostsContext;
-	searchMode: SearchMode;
-	isSearchFormDrawerVsibile: boolean;
-	isDownloadedSearchFormDrawerVisible: boolean;
+	imageViewContext: PostsContext | string;
+	activeSearchTab: PostsContext | string;
 	isTasksDrawerVisible: boolean;
 	isTagsPopoverVisible: boolean;
 	isImageViewThumbnailsCollapsed: boolean;
 	isFavoritesDirectoryTreeCollapsed: boolean;
 	isTagOptionsLoading: boolean;
 	isTagTableLoading: boolean;
-}
+};
 
 export const initialState: SystemState = {
 	activeView: 'dashboard',
-	searchMode: 'online',
-	imageViewContext: 'posts',
-	isSearchFormDrawerVsibile: false,
-	isDownloadedSearchFormDrawerVisible: false,
+	imageViewContext: 'default',
+	activeSearchTab: 'default',
 	isTasksDrawerVisible: false,
 	isTagsPopoverVisible: false,
 	isImageViewThumbnailsCollapsed: true,
@@ -35,22 +33,13 @@ const systemSlice = createSlice({
 	name: 'system',
 	initialState: initialState,
 	reducers: {
-		setActiveView: (state, action: PayloadAction<View | { view: View; context: PostsContext }>): void => {
+		setActiveView: (state, action: PayloadAction<View | { view: View; context: PostsContext | string }>): void => {
 			if (typeof action.payload === 'string') {
 				state.activeView = action.payload;
 			} else {
 				state.activeView = action.payload.view;
 				state.imageViewContext = action.payload.context;
 			}
-		},
-		setSearchMode: (state, action: PayloadAction<SearchMode>): void => {
-			state.searchMode = action.payload;
-		},
-		setSearchFormDrawerVisible: (state, action: PayloadAction<boolean>): void => {
-			state.isSearchFormDrawerVsibile = action.payload;
-		},
-		setDownloadedSearchFormDrawerVisible: (state, action: PayloadAction<boolean>): void => {
-			state.isDownloadedSearchFormDrawerVisible = action.payload;
 		},
 		setTasksDrawerVisible: (state, action: PayloadAction<boolean>): void => {
 			state.isTasksDrawerVisible = action.payload;
@@ -64,28 +53,30 @@ const systemSlice = createSlice({
 		toggleFavoritesDirectoryTreeCollapsed: (state): void => {
 			state.isFavoritesDirectoryTreeCollapsed = !state.isFavoritesDirectoryTreeCollapsed;
 		},
+		setActiveSearchTab: (state, action: PayloadAction<string>): void => {
+			state.activeSearchTab = action.payload;
+		},
 	},
 	extraReducers: (builder) => {
-		// Online Search Form
-		builder.addCase(thunks.onlineSearchForm.fetchPosts.pending, (state) => {
-			state.activeView = 'search-results';
-			state.isSearchFormDrawerVsibile = false;
-			state.isDownloadedSearchFormDrawerVisible = false;
+		builder.addCase(initPostsContext, (state, action) => {
+			state.activeSearchTab = action.payload.context;
 		});
-		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.pending, (state) => {
+		// Online Search Form
+		builder.addCase(thunks.onlineSearches.fetchPosts.pending, (state) => {
+			state.activeView = 'searches';
+		});
+		builder.addCase(thunks.onlineSearches.getTagsByPatternFromApi.pending, (state) => {
 			state.isTagOptionsLoading = true;
 		});
-		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.fulfilled, (state) => {
+		builder.addCase(thunks.onlineSearches.getTagsByPatternFromApi.fulfilled, (state) => {
 			state.isTagOptionsLoading = false;
 		});
-		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.rejected, (state) => {
+		builder.addCase(thunks.onlineSearches.getTagsByPatternFromApi.rejected, (state) => {
 			state.isTagOptionsLoading = false;
 		});
 		// Downloaded Search Form
-		builder.addCase(thunks.downloadedSearchForm.fetchPosts.pending, (state) => {
-			state.activeView = 'search-results';
-			state.isSearchFormDrawerVsibile = false;
-			state.isDownloadedSearchFormDrawerVisible = false;
+		builder.addCase(thunks.offlineSearches.fetchPosts.pending, (state) => {
+			state.activeView = 'searches';
 		});
 		// Tags
 		builder.addCase(thunks.tags.loadAllWithLimitAndOffset.pending, (state) => {
@@ -95,43 +86,26 @@ const systemSlice = createSlice({
 			state.isTagTableLoading = false;
 		});
 		builder.addCase(thunks.tags.searchTagOnline.pending, (state) => {
-			state.searchMode = 'online';
-			state.activeView = 'search-results';
+			state.activeView = 'searches';
 		});
 		builder.addCase(thunks.tags.searchTagOffline.pending, (state) => {
-			state.searchMode = 'online';
-			state.activeView = 'search-results';
+			state.activeView = 'searches';
 		});
 		// Saved Searches
 		builder.addCase(thunks.savedSearches.searchOnline.pending, (state) => {
-			state.searchMode = 'saved-search-online';
-			state.activeView = 'search-results';
+			state.activeView = 'searches';
 		});
 		builder.addCase(thunks.savedSearches.searchOffline.pending, (state) => {
-			state.searchMode = 'saved-search-offline';
-			state.activeView = 'search-results';
-		});
-		builder.addCase(thunks.savedSearches.saveSearch.fulfilled, (state) => {
-			if (state.searchMode === 'online') {
-				state.searchMode = 'saved-search-online';
-			} else if (state.searchMode === 'offline') {
-				state.searchMode = 'saved-search-offline';
-			}
-		});
-		builder.addCase(thunks.savedSearches.saveSearch.rejected, (state) => {
-			if (state.searchMode === 'online') {
-				state.searchMode = 'saved-search-online';
-			} else if (state.searchMode === 'offline') {
-				state.searchMode = 'saved-search-offline';
-			}
+			state.activeView = 'searches';
 		});
 		// Posts
 		builder.addCase(thunks.posts.downloadPosts.pending, (state) => {
 			state.isTasksDrawerVisible = true;
 		});
-		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state) => {
+		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state, action) => {
 			state.isTasksDrawerVisible = false;
-			state.activeView = 'search-results';
+			state.activeView = 'searches';
+			state.activeSearchTab = action.meta.arg.context;
 		});
 	},
 });

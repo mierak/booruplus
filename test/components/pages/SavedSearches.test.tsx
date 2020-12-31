@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { thunks, actions } from '../../../src/store';
-import { RootState, AppDispatch } from '../../../src/store/types';
+import type { RootState, AppDispatch, SearchContext } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mState } from '../../helpers/store.helper';
@@ -11,6 +11,7 @@ import SavedSearches from '../../../src/pages/SavedSearches';
 import '@testing-library/jest-dom';
 import { mTag, mSavedSearch, mSavedSearchPreview, mPost } from '../../helpers/test.helper';
 import moment from 'moment';
+import { generateTabContext } from '@util/utils';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -246,6 +247,13 @@ describe('pages/SavedSearches', () => {
 				},
 			})
 		);
+		const context = generateTabContext(Object.keys(store.getState().searchContexts));
+		const data: Partial<SearchContext> = {
+			mode: 'other',
+			selectedTags: savedSearches[0].tags,
+			excludedTags: savedSearches[0].excludedTags,
+			rating: savedSearches[0].rating,
+		};
 
 		// when
 		const { unmount } = render(
@@ -258,17 +266,18 @@ describe('pages/SavedSearches', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({ type: 'common/initPostsContext', payload: { context, data } });
 		expect(dispatchedActions).toContainMatchingAction({
 			type: actions.posts.setPosts.type,
-			payload: { data: posts, context: 'posts' },
+			payload: { data: posts, context },
 		});
 		expect(dispatchedActions).toContainMatchingAction({
 			type: actions.posts.setActivePostIndex.type,
-			payload: { data: 1, context: 'posts' },
+			payload: { data: 1, context },
 		});
 		expect(dispatchedActions).toContainMatchingAction({
 			type: actions.system.setActiveView.type,
-			payload: { view: 'image', context: 'posts' },
+			payload: { view: 'image', context },
 		});
 		unmount();
 	});

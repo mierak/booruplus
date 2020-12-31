@@ -1,8 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { TreeNode, ThunkApi } from '@store/types';
+import type { ThunkApi, TreeNode } from '@store/types';
+import type { Post } from '@appTypes/gelbooruTypes';
+
 import { db } from '@db';
-import { Post } from '@appTypes/gelbooruTypes';
 import { thunkLoggerFactory } from '@util/logger';
 import { thumbnailCache } from '@util/objectUrlCache';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { thunks, actions } from '../../../src/store';
+import { actions } from '../../../src/store';
 import { RootState, AppDispatch } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -13,14 +13,25 @@ import SubmitButton from '../../../src/components/search-form/SubmitButton';
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('search-from/SubmitButton', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+	const context = 'ctx';
+	const onSubmitSpy = jest.fn();
 	it('Renders correctly', () => {
 		// given
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<SubmitButton mode='online' />
+				<SubmitButton context={context} onSubmit={onSubmitSpy} />
 			</Provider>
 		);
 
@@ -35,25 +46,31 @@ describe('search-from/SubmitButton', () => {
 				loadingStates: {
 					isSearchDisabled: true,
 				},
+				searchContexts: {
+					[context]: {},
+				},
 			})
 		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<SubmitButton mode='online' />
+				<SubmitButton context={context} onSubmit={onSubmitSpy} />
 			</Provider>
 		);
 
 		// then
 		expect(screen.getByRole('button', { name: 'Search' })).toBeDisabled();
 	});
-	it('Dispatches getchPosts() for online mode when pressed', () => {
+	it('Calls onSubmit when pressed', () => {
 		// given
 		const store = mockStore(
 			mState({
 				loadingStates: {
 					isSearchDisabled: false,
+				},
+				searchContexts: {
+					[context]: {},
 				},
 			})
 		);
@@ -61,44 +78,23 @@ describe('search-from/SubmitButton', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SubmitButton mode='online' />
+				<SubmitButton context={context} onSubmit={onSubmitSpy} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button'));
 
 		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.onlineSearchForm.fetchPosts.pending.type });
-	});
-	it('Dispatches getchPosts() for offline mode when pressed', () => {
-		// given
-		const store = mockStore(
-			mState({
-				loadingStates: {
-					isSearchDisabled: false,
-				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<SubmitButton mode='offline' />
-			</Provider>
-		);
-		fireEvent.click(screen.getByRole('button'));
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.downloadedSearchForm.fetchPosts.pending.type });
+		expect(onSubmitSpy).toHaveBeenCalledTimes(1);
 	});
 	it('Renders PopConfirm when page is higher than 0 for online mode', () => {
 		// given
 		const page = 10;
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
-					page,
+				searchContexts: {
+					[context]: {
+						page,
+					},
 				},
 			})
 		);
@@ -106,29 +102,7 @@ describe('search-from/SubmitButton', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SubmitButton mode='online' />
-			</Provider>
-		);
-		fireEvent.click(screen.getByRole('button'));
-
-		// then
-		expect(screen.getByText(`Are you sure you want to start search from page ${page}?`)).not.toBeNull();
-	});
-	it('Renders Popconfirm when page is higher than 0 for offline mode', () => {
-		// given
-		const page = 10;
-		const store = mockStore(
-			mState({
-				downloadedSearchForm: {
-					page,
-				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<SubmitButton mode='offline' />
+				<SubmitButton context={context} onSubmit={onSubmitSpy} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button'));
@@ -141,8 +115,13 @@ describe('search-from/SubmitButton', () => {
 		const page = 10;
 		const store = mockStore(
 			mState({
-				downloadedSearchForm: {
-					page,
+				// loadingStates: {
+				// 	isSearchDisabled: false,
+				// },
+				searchContexts: {
+					[context]: {
+						page,
+					},
 				},
 			})
 		);
@@ -150,7 +129,7 @@ describe('search-from/SubmitButton', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SubmitButton mode='offline' />
+				<SubmitButton context={context} onSubmit={onSubmitSpy} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button'));
@@ -158,16 +137,21 @@ describe('search-from/SubmitButton', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).not.toContainMatchingAction({ type: actions.downloadedSearchForm.setPage.type, payload: 0 });
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.downloadedSearchForm.fetchPosts.pending.type });
+		expect(dispatchedActions).not.toContainMatchingAction({
+			type: actions.searchContexts.updateContext.type,
+			payload: { context, data: { page: 0 } },
+		});
+		expect(onSubmitSpy).toHaveBeenCalledTimes(1);
 	});
 	it('Sets page to 0 and calls fetch posts if Popconfirm is accepted', () => {
 		// given
 		const page = 10;
 		const store = mockStore(
 			mState({
-				downloadedSearchForm: {
-					page,
+				searchContexts: {
+					[context]: {
+						page,
+					},
 				},
 			})
 		);
@@ -175,7 +159,7 @@ describe('search-from/SubmitButton', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SubmitButton mode='offline' />
+				<SubmitButton context={context} onSubmit={onSubmitSpy} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button'));
@@ -183,7 +167,10 @@ describe('search-from/SubmitButton', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.setPage.type, payload: 0 });
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.downloadedSearchForm.fetchPosts.pending.type });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.updateContext.type,
+			payload: { context, data: { page: 0 } },
+		});
+		expect(onSubmitSpy).toHaveBeenCalledTimes(1);
 	});
 });

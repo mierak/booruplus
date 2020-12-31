@@ -14,13 +14,14 @@ import { mTag } from '../../helpers/test.helper';
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('search-from/SelectedTags', () => {
-	it('Renders correctly for online mode', () => {
+	const context = 'ctx';
+	it('Renders correctly', () => {
 		// given
 		const selectedTags = [mTag({ tag: 'selected1', id: 1 }), mTag({ tag: 'selected2', id: 2 })];
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
-					selectedTags,
+				searchContexts: {
+					[context]: { selectedTags },
 				},
 			})
 		);
@@ -28,66 +29,21 @@ describe('search-from/SelectedTags', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SelectedTags mode='online' />
+				<SelectedTags context={context} />
 			</Provider>
 		);
 
 		// then
 		expect(screen.getByText(selectedTags[0].tag)).not.toBeNull();
 		expect(screen.getByText(selectedTags[1].tag)).not.toBeNull();
-	});
-	it('Renders correctly for offline mode', () => {
-		// given
-		const selectedTags = [mTag({ tag: 'selected1', id: 1 }), mTag({ tag: 'selected2', id: 2 })];
-		const store = mockStore(
-			mState({
-				downloadedSearchForm: {
-					selectedTags,
-				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<SelectedTags mode='offline' />
-			</Provider>
-		);
-
-		// then
-		expect(screen.getByText(selectedTags[0].tag)).not.toBeNull();
-		expect(screen.getByText(selectedTags[1].tag)).not.toBeNull();
-	});
-	it('Removes tag correctly for offline mode', () => {
-		// given
-		const selectedTags = [mTag({ tag: 'selected1', id: 1 }), mTag({ tag: 'selected2', id: 2 })];
-		const store = mockStore(
-			mState({
-				downloadedSearchForm: {
-					selectedTags,
-				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<SelectedTags mode='offline' />
-			</Provider>
-		);
-		fireEvent.click(screen.getAllByRole('img', { name: 'close' })[0]);
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.removeTag.type, payload: selectedTags[0] });
 	});
 	it('Removes tag correctly for online mode', () => {
 		// given
 		const selectedTags = [mTag({ tag: 'selected1', id: 1 }), mTag({ tag: 'selected2', id: 2 })];
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
-					selectedTags,
+				searchContexts: {
+					[context]: { selectedTags },
 				},
 			})
 		);
@@ -95,72 +51,25 @@ describe('search-from/SelectedTags', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SelectedTags mode='online' />
+				<SelectedTags context={context} />
 			</Provider>
 		);
 		fireEvent.click(screen.getAllByRole('img', { name: 'close' })[0]);
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.removeTag.type, payload: selectedTags[0] });
-	});
-	it('Removes excluded tag and adds it to selected tags for online mode', () => {
-		// given
-		const tag = mTag({ id: 1, tag: 'excludedTag' });
-		const store = mockStore(mState());
-
-		// when
-		render(
-			<Provider store={store}>
-				<SelectedTags mode='online' />
-			</Provider>
-		);
-		const destination = screen.getByTestId('selected-tags-container');
-		const dropEvent = createEvent.drop(destination);
-		Object.defineProperty(dropEvent, 'dataTransfer', {
-			value: {
-				getData: (): string => JSON.stringify(tag),
-			},
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.removeTag.type,
+			payload: { context, data: selectedTags[0] },
 		});
-		fireEvent(destination, dropEvent);
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.removeExcludedTag.type, payload: tag });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.addTag.type, payload: tag });
 	});
-	it('Removes excluded tag and adds it to selected tags for offline mode', () => {
-		// given
-		const tag = mTag({ id: 1, tag: 'excludedTag' });
-		const store = mockStore(mState());
-
-		// when
-		render(
-			<Provider store={store}>
-				<SelectedTags mode='offline' />
-			</Provider>
-		);
-		const destination = screen.getByTestId('selected-tags-container');
-		const dropEvent = createEvent.drop(destination);
-		Object.defineProperty(dropEvent, 'dataTransfer', {
-			value: {
-				getData: (): string => JSON.stringify(tag),
-			},
-		});
-		fireEvent(destination, dropEvent);
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.removeExcludedTag.type, payload: tag });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.addTag.type, payload: tag });
-	});
-	it('Adds stringified tag to dataTransfer on drag start over tage', () => {
+	it('Removes excluded tag and adds it to selected tags', () => {
 		// given
 		const tag = mTag({ id: 1, tag: 'excludedTag' });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
-					selectedTags: [tag],
+				searchContexts: {
+					[context]: {},
 				},
 			})
 		);
@@ -168,7 +77,44 @@ describe('search-from/SelectedTags', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SelectedTags mode='online' />
+				<SelectedTags context={context} />
+			</Provider>
+		);
+		const destination = screen.getByTestId('selected-tags-container');
+		const dropEvent = createEvent.drop(destination);
+		Object.defineProperty(dropEvent, 'dataTransfer', {
+			value: {
+				getData: (): string => JSON.stringify(tag),
+			},
+		});
+		fireEvent(destination, dropEvent);
+
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.removeExcludedTag.type,
+			payload: { context, data: tag },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.addTag.type,
+			payload: { context, data: tag },
+		});
+	});
+	it('Adds stringified tag to dataTransfer on drag start over tage', () => {
+		// given
+		const tag = mTag({ id: 1, tag: 'excludedTag' });
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: { selectedTags: [tag] },
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<SelectedTags context={context} />
 			</Provider>
 		);
 		const source = screen.getByText(tag.tag);
@@ -189,8 +135,10 @@ describe('search-from/SelectedTags', () => {
 		const tag = mTag({ id: 1, tag: 'excludedTag' });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
-					selectedTags: [tag],
+				searchContexts: {
+					[context]: {
+						selectedTags: [tag],
+					},
 				},
 			})
 		);
@@ -198,7 +146,7 @@ describe('search-from/SelectedTags', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SelectedTags mode='online' />
+				<SelectedTags context={context} />
 			</Provider>
 		);
 		const source = screen.getByTestId('selected-tags-container');
@@ -218,8 +166,8 @@ describe('search-from/SelectedTags', () => {
 		const tag = mTag({ id: 1, tag: 'excludedTag' });
 		const store = mockStore(
 			mState({
-				downloadedSearchForm: {
-					selectedTags: [tag],
+				searchContexts: {
+					[context]: { selectedTags: [tag] },
 				},
 			})
 		);
@@ -227,7 +175,7 @@ describe('search-from/SelectedTags', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SelectedTags mode='offline' />
+				<SelectedTags context={context} />
 			</Provider>
 		);
 		const destination = screen.getByTestId('selected-tags-container');
@@ -242,12 +190,12 @@ describe('search-from/SelectedTags', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.downloadedSearchForm.removeExcludedTag.type,
-			payload: tag,
+			type: actions.searchContexts.removeExcludedTag.type,
+			payload: { context, data: tag },
 		});
 		expect(dispatchedActions).not.toContainMatchingAction({
-			type: actions.downloadedSearchForm.addTag.type,
-			payload: tag,
+			type: actions.searchContexts.addTag.type,
+			payload: { context, data: tag },
 		});
 	});
 });

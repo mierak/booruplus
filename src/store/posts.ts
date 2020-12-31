@@ -1,20 +1,27 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Post } from '@appTypes/gelbooruTypes';
+import type { Post } from '@appTypes/gelbooruTypes';
+import type { PostsContext, WithContext } from './types';
 
 import * as thunks from './thunks';
-import { PostsContext } from './types';
+import { deletePostsContext, initPostsContext } from './commonActions';
 
 type HoveredPost = {
 	visible: boolean;
 	post: Post | undefined;
 };
 
-type WithContext<T = null> = { context: PostsContext } & (T extends null ? unknown : { data: T });
-
 export type PostsState = {
-	selectedIndices: { [K in PostsContext]?: number };
-	posts: { [K in PostsContext]: Post[] };
+	selectedIndices: {
+		[K in PostsContext]?: number;
+	} & {
+		[key: string]: number | undefined;
+	};
+	posts: {
+		[K in PostsContext]: Post[];
+	} & {
+		[key: string]: Post[];
+	};
 	hoveredPost: HoveredPost;
 };
 
@@ -25,6 +32,7 @@ export const initialState: PostsState = {
 		favorites: [],
 		mostViewed: [],
 		checkLaterQueue: [],
+		default: [],
 	},
 	hoveredPost: {
 		visible: false,
@@ -73,8 +81,8 @@ const postsSlice = createSlice({
 			}
 
 			const isSelected = state.posts[ctx][index].selected;
-			const selectedIndexes = state.posts[ctx].reduce<number[]>((acc, post, index): number[] => {
-				return post.selected ? [...acc, index] : acc;
+			const selectedIndexes = state.posts[ctx].reduce<number[]>((acc, post, i): number[] => {
+				return post.selected ? [...acc, i] : acc;
 			}, []);
 
 			if (selectedIndexes.length === 0) {
@@ -121,7 +129,7 @@ const postsSlice = createSlice({
 			if (state.selectedIndices[ctx] !== undefined) {
 				const index =
 					state.selectedIndices[ctx] === 0
-						? state.posts.posts.length - 1
+						? state.posts[ctx].length - 1
 						: (state.selectedIndices[ctx] ?? state.posts[ctx].length) - 1;
 				state.selectedIndices[ctx] = index;
 			}
@@ -132,36 +140,46 @@ const postsSlice = createSlice({
 		},
 	},
 	extraReducers: (builder) => {
-		builder.addCase(thunks.onlineSearchForm.fetchPosts.pending, (state, _) => {
-			state.posts.posts = [];
-			state.selectedIndices.posts = undefined;
+		builder.addCase(initPostsContext, (state, action) => {
+			state.posts[action.payload.context] = [];
 		});
-		builder.addCase(thunks.downloadedSearchForm.fetchPosts.pending, (state) => {
-			state.posts.posts = [];
-			state.selectedIndices.posts = undefined;
+		builder.addCase(deletePostsContext, (state, action) => {
+			delete state.posts[action.payload.context];
+			delete state.selectedIndices[action.payload.context];
 		});
-		builder.addCase(thunks.onlineSearchForm.fetchMorePosts.fulfilled, (state, action) => {
-			const index = state.posts.posts.length - action.payload.length;
-			if (index < state.posts.posts.length && index >= 0) {
-				state.selectedIndices.posts = index;
+		builder.addCase(thunks.onlineSearches.fetchPosts.pending, (state, action) => {
+			state.posts[action.meta.arg.context] = [];
+			state.selectedIndices[action.meta.arg.context] = undefined;
+		});
+		builder.addCase(thunks.offlineSearches.fetchPosts.pending, (state, action) => {
+			state.posts[action.meta.arg.context] = [];
+			state.selectedIndices[action.meta.arg.context] = undefined;
+		});
+		builder.addCase(thunks.onlineSearches.fetchMorePosts.fulfilled, (state, action) => {
+			const context = action.meta.arg.context;
+			const index = state.posts[context].length - action.payload.length;
+			if (index < state.posts[context].length && index >= 0) {
+				state.selectedIndices[context] = index;
 			} else if (index < 0) {
-				state.selectedIndices.posts = 0;
-			} else if (index >= state.posts.posts.length) {
-				state.selectedIndices.posts = state.posts.posts.length - 1;
+				state.selectedIndices[context] = 0;
+			} else if (index >= state.posts[context].length) {
+				state.selectedIndices[context] = state.posts[context].length - 1;
 			}
 		});
-		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state) => {
-			state.posts.posts = [];
-			state.selectedIndices.posts = undefined;
+		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state, action) => {
+			const context = action.meta.arg.context;
+			state.posts[context] = [];
+			state.selectedIndices[context] = undefined;
 		});
 		builder.addCase(thunks.posts.fetchPostsByIds.fulfilled, (state, action) => {
+			const context = action.meta.arg.context;
 			for (const post of action.payload) {
-				state.posts.posts.push(post);
+				state.posts[context].push(post);
 			}
 		});
-		builder.addCase(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled, (state, action) => {
+		builder.addCase(thunks.onlineSearches.checkPostsAgainstDb.fulfilled, (state, action) => {
 			for (const post of action.payload) {
-				post.blacklisted !== 1 && state.posts.posts.push(post);
+				post.blacklisted !== 1 && state.posts[action.meta.arg.context].push(post);
 			}
 		});
 		builder.addCase(thunks.favorites.fetchPostsInDirectory.pending, (state) => {
@@ -174,22 +192,23 @@ const postsSlice = createSlice({
 		builder.addCase(thunks.favorites.removePostsFromActiveDirectory.fulfilled, (state, action) => {
 			state.posts.favorites = state.posts.favorites.filter((post) => !action.meta.arg.find((p) => p.id === post.id));
 		});
-		builder.addCase(thunks.downloadedSearchForm.fetchPosts.fulfilled, (state, action) => {
+		builder.addCase(thunks.offlineSearches.fetchPosts.fulfilled, (state, action) => {
 			for (const post of action.payload) {
-				state.posts.posts.push(post);
+				state.posts[action.meta.arg.context].push(post);
 			}
 		});
-		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.fulfilled, (state, action) => {
+		builder.addCase(thunks.offlineSearches.fetchMorePosts.fulfilled, (state, action) => {
+			const context = action.meta.arg.context;
 			for (const post of action.payload) {
-				state.posts.posts.push(post);
+				state.posts[context].push(post);
 			}
-			const index = state.posts.posts.length - action.payload.length;
-			if (index < state.posts.posts.length && index >= 0) {
-				state.selectedIndices.posts = index;
+			const index = state.posts[context].length - action.payload.length;
+			if (index < state.posts[context].length && index >= 0) {
+				state.selectedIndices[context] = index;
 			} else if (index < 0) {
-				state.selectedIndices.posts = 0;
-			} else if (index >= state.posts.posts.length) {
-				state.selectedIndices.posts = state.posts.posts.length - 1;
+				state.selectedIndices[context] = 0;
+			} else if (index >= state.posts[context].length) {
+				state.selectedIndices[context] = state.posts[context].length - 1;
 			}
 		});
 		builder.addCase(thunks.posts.blacklistPosts.fulfilled, (state, action) => {
@@ -198,8 +217,8 @@ const postsSlice = createSlice({
 			state.posts[context] = state.posts[context].filter((post) => !idsToRemove.includes(post.id));
 		});
 		builder.addCase(thunks.posts.downloadPost.fulfilled, (state, action) => {
-			const index = state.posts[action.meta.arg.context].findIndex((p) => p.id === action.payload.id);
 			const context = action.meta.arg.context;
+			const index = state.posts[context].findIndex((p) => p.id === action.payload.id);
 
 			if (index !== -1) {
 				state.posts[context][index] = { ...state.posts[context][index], downloaded: 1 };

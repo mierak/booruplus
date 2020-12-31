@@ -7,15 +7,15 @@ import { thunks } from '@store';
 
 import { isFilenameVideo, getImageExtensionFromFilename } from '@util/utils';
 
-import EmptyThumbnails from './EmptyThumbnails';
+import EmptyThumbnails from './thumbnails/EmptyThumbnails';
 import ControllableImage from './full-size-image/controllable-image/ControllableImage';
 import Video from './full-size-image/Video';
 import Gif from './full-size-image/Gif';
 
 type Props = {
 	className?: string;
-	context: PostsContext;
-}
+	context: PostsContext | string;
+};
 
 const Container = styled.div`
 	height: 100%;
@@ -59,34 +59,35 @@ const StyledEmptyThumbnails = styled(EmptyThumbnails)`
 	}
 `;
 
-const FullSizeImage: React.FunctionComponent<Props> = (props: Props) => {
+const FullSizeImage: React.FunctionComponent<Props> = ({ className, context }: Props) => {
 	const dispatch = useDispatch();
 
-	const index = useSelector((state: RootState) => state.posts.selectedIndices[props.context]);
+	const index = useSelector((state: RootState) => state.posts.selectedIndices[context]);
 	const post = useSelector(
-		(state: RootState) => (index !== undefined && state.posts.posts[props.context][index]) || undefined
+		(state: RootState) => (index !== undefined && state.posts.posts[context][index]) || undefined,
+		(first, second) => first?.id === second?.id
 	);
 
 	const renderImage = (): JSX.Element => {
 		if (post) {
 			if (isFilenameVideo(post.image)) {
-				return <StyledVideo post={post} />;
+				return <StyledVideo context={context} post={post} />;
 			} else if (getImageExtensionFromFilename(post.image) === 'gif') {
-				return <StyledGif post={post} />;
+				return <StyledGif context={context} post={post} />;
 			} else {
-				return <StyledControllableImage post={post} showControls />;
+				return <StyledControllableImage context={context} post={post} showControls />;
 			}
 		}
-		return <StyledEmptyThumbnails />;
+		return <StyledEmptyThumbnails context={context} />;
 	};
 
 	useEffect(() => {
 		if (post) {
-			dispatch(thunks.posts.incrementViewCount({ post, context: props.context }));
+			dispatch(thunks.posts.incrementViewCount({ post, context: context }));
 		}
-	}, [dispatch, post, props.context]);
+	}, [dispatch, post, context]);
 
-	return <Container className={props.className}>{renderImage()}</Container>;
+	return <Container className={className}>{renderImage()}</Container>;
 };
 
 export default FullSizeImage;

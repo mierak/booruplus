@@ -1,9 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
+import type { RatingCounts, TagHistory, FoundTags, NotFoundTags, ThunkApi } from '@store/types';
+import type { Tag, Post } from '@appTypes/gelbooruTypes';
+
 import { db } from '@db';
 import * as api from '@service/apiService';
-import { ThunkApi, RatingCounts, TagHistory, FoundTags, NotFoundTags } from '@store/types';
-import { Tag, Post } from '@appTypes/gelbooruTypes';
 import { thunkLoggerFactory } from '@util/logger';
 import { mostViewedCache } from '@util/objectUrlCache';
 
@@ -70,7 +71,9 @@ export const fetchMostFavoritedTags = createAsyncThunk<{ tag: Tag; count: number
 		const logger = thunkLogger.getActionLogger(fetchMostFavoritedTags);
 		logger.debug('Fetching all favorite tags with counts');
 		const tags = await db.favorites.getAllFavoriteTagsWithCounts();
-		const sorted = Object.entries(tags).sort((a, b) => b[1] - a[1]).slice(0, limit < 100 ? limit : 100);
+		const sorted = Object.entries(tags)
+			.sort((a, b) => b[1] - a[1])
+			.slice(0, limit < 100 ? limit : 100);
 
 		const notFoundTags: NotFoundTags[] = [];
 		const foundTags: FoundTags[] = [];

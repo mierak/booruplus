@@ -103,6 +103,7 @@ const MostViewedPosts: React.FunctionComponent = () => {
 	};
 
 	useEffect(() => {
+		let canceled = false;
 		(async (): Promise<void> => {
 			const promises = mostViewedPosts.map(async (post) => {
 				const url = await mostViewedLoader(post, true);
@@ -127,12 +128,19 @@ const MostViewedPosts: React.FunctionComponent = () => {
 				);
 			});
 			const posts = await Promise.all(promises);
-			setThumbs(posts);
+			!canceled && setThumbs(posts);
 		})();
+		return () => {
+			canceled = true;
+		};
 	}, [handleMostViewedImageClick, mostViewedPosts]);
 
 	return (
-		<StyledMostViewedCard title='Most Viewed Posts' size='small' extra={<ReloadOutlined onClick={handleReload} title='Reload' />}>
+		<StyledMostViewedCard
+			title='Most Viewed Posts'
+			size='small'
+			extra={<ReloadOutlined onClick={handleReload} title='Reload' />}
+		>
 			<StyledMostViewedGrid>
 				{mostViewedPosts.length > 0 ? thumbs : <StyledEmpty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
 			</StyledMostViewedGrid>

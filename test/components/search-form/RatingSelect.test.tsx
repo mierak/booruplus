@@ -12,14 +12,21 @@ import RatingSelect from '../../../src/components/search-form/RatingSelect';
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('search-form/RatingSelect', () => {
+	const context = 'ctx';
 	it('Renders correctly', async () => {
 		// given
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<RatingSelect mode="online" />
+				<RatingSelect context={context} />
 			</Provider>
 		);
 
@@ -28,12 +35,18 @@ describe('search-form/RatingSelect', () => {
 	});
 	it('Renders all Ratings when select box is opened', async () => {
 		// given
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<RatingSelect mode="online" open />
+				<RatingSelect context={context} open />
 			</Provider>
 		);
 
@@ -48,12 +61,18 @@ describe('search-form/RatingSelect', () => {
 	});
 	it('Dispatches setRating() for onlineSearchForm', async () => {
 		// given
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<RatingSelect mode='online' open />
+				<RatingSelect context={context} open />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('Explicit'));
@@ -61,28 +80,8 @@ describe('search-form/RatingSelect', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.setRating.type,
-			payload: 'explicit',
-		});
-		await waitFor(() => undefined);
-	});
-	it('Dispatches setRating() for downloadedSearchForm', async () => {
-		// given
-		const store = mockStore(mState());
-
-		// when
-		render(
-			<Provider store={store}>
-				<RatingSelect mode='offline' open />
-			</Provider>
-		);
-		fireEvent.click(screen.getByText('Explicit'));
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.downloadedSearchForm.setRating.type,
-			payload: 'explicit',
+			type: actions.searchContexts.updateContext.type,
+			payload: { context, data: { rating: 'explicit' } },
 		});
 		await waitFor(() => undefined);
 	});

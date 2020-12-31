@@ -15,10 +15,11 @@ import { act } from 'react-dom/test-utils';
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('settings/SettingsModal', () => {
+	const context = 'ctx';
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
-	it('Renders correctly for online mode', async () => {
+	it('Renders correctly', async () => {
 		// given
 		const tagOptions = [
 			mTag({ id: 1, tag: 'opt1', type: 'artist' }),
@@ -27,8 +28,10 @@ describe('settings/SettingsModal', () => {
 		];
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
-					tagOptions,
+				searchContexts: {
+					[context]: {
+						tagOptions,
+					},
 				},
 			})
 		);
@@ -36,7 +39,7 @@ describe('settings/SettingsModal', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<TagSearch mode='online' open />
+				<TagSearch context={context} open />
 			</Provider>
 		);
 
@@ -49,7 +52,7 @@ describe('settings/SettingsModal', () => {
 		expect(screen.getByText('opt3 | Count: 123')).not.toBeNull();
 		await waitFor(() => undefined);
 	});
-	it('Renders correctly for offline mode', async () => {
+	it('Dispatches addTag', async () => {
 		// given
 		const tagOptions = [
 			mTag({ id: 1, tag: 'opt1', type: 'artist' }),
@@ -58,8 +61,10 @@ describe('settings/SettingsModal', () => {
 		];
 		const store = mockStore(
 			mState({
-				downloadedSearchForm: {
-					tagOptions,
+				searchContexts: {
+					[context]: {
+						tagOptions,
+					},
 				},
 			})
 		);
@@ -67,38 +72,7 @@ describe('settings/SettingsModal', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<TagSearch mode='offline' open />
-			</Provider>
-		);
-
-		// then
-		expect(screen.getByText('Artist')).not.toBeNull();
-		expect(screen.getByText('Character')).not.toBeNull();
-		expect(screen.getByText('Metadata')).not.toBeNull();
-		expect(screen.getByText('opt1 | Count: 123')).not.toBeNull();
-		expect(screen.getByText('opt2 | Count: 123')).not.toBeNull();
-		expect(screen.getByText('opt3 | Count: 123')).not.toBeNull();
-		await waitFor(() => undefined);
-	});
-	it('Dispatches addTag for online mode', async () => {
-		// given
-		const tagOptions = [
-			mTag({ id: 1, tag: 'opt1', type: 'artist' }),
-			mTag({ id: 2, tag: 'opt2', type: 'character' }),
-			mTag({ id: 3, tag: 'opt3', type: 'metadata' }),
-		];
-		const store = mockStore(
-			mState({
-				onlineSearchForm: {
-					tagOptions,
-				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<TagSearch mode='online' open />
+				<TagSearch context={context} open />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('opt2 | Count: 123'));
@@ -106,49 +80,20 @@ describe('settings/SettingsModal', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.addTag.type,
-			payload: tagOptions[1],
-		});
-		await waitFor(() => undefined);
-	});
-	it('Dispatches addTag for offline mode', async () => {
-		// given
-		const tagOptions = [
-			mTag({ id: 1, tag: 'opt1', type: 'artist' }),
-			mTag({ id: 2, tag: 'opt2', type: 'character' }),
-			mTag({ id: 3, tag: 'opt3', type: 'metadata' }),
-		];
-		const store = mockStore(
-			mState({
-				downloadedSearchForm: {
-					tagOptions,
-				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<TagSearch mode='offline' open />
-			</Provider>
-		);
-		fireEvent.click(screen.getByText('opt2 | Count: 123'));
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.downloadedSearchForm.addTag.type,
-			payload: tagOptions[1],
+			type: actions.searchContexts.addTag.type,
+			payload: { context, data: tagOptions[1] },
 		});
 		await waitFor(() => undefined);
 	});
 
-	it('Calls useDebounce correct amount of times and dispatches search for online mode', async () => {
+	it('Calls useDebounce correct amount of times and dispatches search', async () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
-					tagOptions: [],
+				searchContexts: {
+					[context]: {
+						tagOptions: [],
+					},
 				},
 			})
 		);
@@ -157,7 +102,7 @@ describe('settings/SettingsModal', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<TagSearch mode='online' />
+				<TagSearch context={context} />
 			</Provider>
 		);
 		act(() => {
@@ -179,18 +124,22 @@ describe('settings/SettingsModal', () => {
 		const dispatchedActions = store.getActions();
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({
-				type: thunks.onlineSearchForm.getTagsByPatternFromApi.pending.type,
-				meta: { arg: 'asdf' },
+				type: thunks.onlineSearches.getTagsByPatternFromApi.pending.type,
+				meta: { arg: { context, pattern: 'asdf' } },
 			})
 		);
 		expect(debounceSpy).toBeCalledTimes(3);
 	});
-	it('Calls useDebounce correct amount of times and dispatches search for offline mode', async () => {
+
+	it('Calls useDebounce correct amount of times and dispatches offline search', async () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
-					tagOptions: [],
+				searchContexts: {
+					[context]: {
+						mode: 'offline',
+						tagOptions: [],
+					},
 				},
 			})
 		);
@@ -199,7 +148,7 @@ describe('settings/SettingsModal', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<TagSearch mode='offline' />
+				<TagSearch context={context} />
 			</Provider>
 		);
 		act(() => {
@@ -221,8 +170,8 @@ describe('settings/SettingsModal', () => {
 		const dispatchedActions = store.getActions();
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({
-				type: thunks.downloadedSearchForm.loadTagsByPattern.pending.type,
-				meta: { arg: 'asdf' },
+				type: thunks.offlineSearches.loadTagsByPattern.pending.type,
+				meta: { arg: { context, pattern: 'asdf' } },
 			})
 		);
 		expect(debounceSpy).toBeCalledTimes(3);
@@ -234,13 +183,16 @@ describe('settings/SettingsModal', () => {
 				system: {
 					isTagOptionsLoading: true,
 				},
+				searchContexts: {
+					[context]: {},
+				},
 			})
 		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<TagSearch mode='offline' open />
+				<TagSearch context={context} open />
 			</Provider>
 		);
 

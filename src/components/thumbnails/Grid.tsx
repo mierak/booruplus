@@ -13,7 +13,7 @@ import { actions } from '@store/';
 import CellRenderer from './CellRenderer';
 
 type Props = {
-	context: PostsContext;
+	context: PostsContext | string;
 	itemCount: number;
 	isSingleColumn?: boolean;
 	activeIndex?: number;
@@ -43,7 +43,7 @@ const innerElementType = forwardRef<HTMLDivElement, { style: CSSProperties; rest
 	// Hack to get context out of itemData
 	const children: { props: { data: { context: PostsContext } } }[] =
 		(rest.children as { props: { data: { context: PostsContext } } }[]) ?? [];
-	const context = children[0]?.props?.data?.context ?? 'posts';
+	const context = children[0]?.props?.data?.context ?? 'default';
 
 	const onClick = (event: React.MouseEvent): void => {
 		if (!event.ctrlKey && !event.shiftKey) {

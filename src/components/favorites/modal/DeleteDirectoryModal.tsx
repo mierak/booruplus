@@ -6,7 +6,7 @@ import { actions, thunks } from '@store';
 import { AppDispatch } from '@store/types';
 import { openNotificationWithIcon } from '@appTypes/components';
 
-import ModalFooter from './common/ModalFooter';
+import ModalFooter from '../../common/ModalFooter';
 import { DeleteDirectoryModalProps } from '@appTypes/modalTypes';
 
 const DeleteDirectoryModal: React.FunctionComponent<DeleteDirectoryModalProps> = ({ selectedNodeKey }) => {

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { Tag as AntTag, Card } from 'antd';
 
-import { RootState, SearchMode } from '@store/types';
+import { PostsContext, RootState } from '@store/types';
 import { actions } from '@store';
 
 import { Tag } from '@appTypes/gelbooruTypes';
@@ -19,20 +19,17 @@ const StyledCard = styled(Card)`
 `;
 
 type Props = {
-	mode: SearchMode;
-}
+	context: PostsContext | string;
+};
 
-const SelectedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
+const SelectedTags: React.FunctionComponent<Props> = ({ context }: Props) => {
 	const dispatch = useDispatch();
 
 	const theme = useSelector((state: RootState) => state.settings.theme);
-	const selectedTags = useSelector(
-		(state: RootState) => (mode === 'offline' && state.downloadedSearchForm.selectedTags) || state.onlineSearchForm.selectedTags
-	);
+	const selectedTags = useSelector((state: RootState) => state.searchContexts[context].selectedTags);
 
 	const handleTagClose = (tag: Tag): void => {
-		const removeTag = (mode === 'offline' && actions.downloadedSearchForm.removeTag) || actions.onlineSearchForm.removeTag;
-		dispatch(removeTag(tag));
+		dispatch(actions.searchContexts.removeTag({ context, data: tag }));
 	};
 
 	const handleDragStart = (event: React.DragEvent, tag: Tag): void => {
@@ -41,12 +38,9 @@ const SelectedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
 
 	const handleDrop = (event: React.DragEvent): void => {
 		const tag: Tag = JSON.parse(event.dataTransfer.getData('tag'));
-		const addTag = (mode === 'offline' && actions.downloadedSearchForm.addTag) || actions.onlineSearchForm.addTag;
-		const removeExcludedTag =
-			(mode === 'offline' && actions.downloadedSearchForm.removeExcludedTag) || actions.onlineSearchForm.removeExcludedTag;
-		dispatch(removeExcludedTag(tag));
+		dispatch(actions.searchContexts.removeExcludedTag({ context, data: tag }));
 		if (!selectedTags.some((t) => t.id === tag.id)) {
-			dispatch(addTag(tag));
+			dispatch(actions.searchContexts.addTag({ context, data: tag }));
 		}
 	};
 

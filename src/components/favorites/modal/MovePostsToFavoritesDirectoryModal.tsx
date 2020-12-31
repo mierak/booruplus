@@ -8,7 +8,7 @@ import { actions, thunks } from '@store';
 import { AppDispatch, TreeNode } from '@store/types';
 import { openNotificationWithIcon } from '@appTypes/components';
 
-import ModalFooter from './common/ModalFooter';
+import ModalFooter from '../../common/ModalFooter';
 import { MovePostsToFavoritesDirectoryModalProps } from '@appTypes/modalTypes';
 
 type Info = {

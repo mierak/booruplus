@@ -1,10 +1,10 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { Post } from '@appTypes/gelbooruTypes';
-import { IpcInvokeChannels, IpcSendChannels } from '@appTypes/processDto';
-import { thunkLoggerFactory } from '@util/logger';
+import type { Post } from '@appTypes/gelbooruTypes';
+import type { SearchContext, PostsContext, ThunkApi, WithContext } from '@store/types';
 
-import { PostsContext, ThunkApi } from '@store/types';
+import { thunkLoggerFactory } from '@util/logger';
+import { IpcInvokeChannels, IpcSendChannels } from '@appTypes/processDto';
 
 const thunkLogger = thunkLoggerFactory();
 
@@ -12,9 +12,15 @@ export const setFullscreenLoadingMaskState = createAction<string | { message: st
 	'loadingState/setFullscreenLoadingMaskMessage'
 );
 
+export const initPostsContext = createAction<WithContext<Partial<SearchContext>>>(
+	'common/initPostsContext'
+);
+
+export const deletePostsContext = createAction<{ context: PostsContext | string }>('common/deletePostsContext');
+
 export const exportPostsToDirectory = createAsyncThunk<
 	Post[],
-	{ type: 'all' | 'selected'; context: PostsContext } | Post[],
+	{ type: 'all' | 'selected'; context: PostsContext | string } | Post[],
 	ThunkApi
 >(
 	'posts/exportPostsToDirectory',

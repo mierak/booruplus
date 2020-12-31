@@ -8,6 +8,7 @@ import thunk from 'redux-thunk';
 import { mState } from '../helpers/store.helper';
 
 import TaskProgress from '../../src/components/TaskProgress';
+import { generateTabContext } from '@util/utils';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -225,6 +226,7 @@ describe('TaskProgress', () => {
 				},
 			})
 		);
+		const newContext = generateTabContext(Object.keys(store.getState().searchContexts));
 
 		// when
 		render(
@@ -238,7 +240,7 @@ describe('TaskProgress', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
 			type: thunks.posts.fetchPostsByIds.pending.type,
-			meta: { arg: store.getState().tasks.tasks[1].postIds },
+			meta: { arg: { context: newContext, ids: store.getState().tasks.tasks[1].postIds } },
 		});
 	});
 });

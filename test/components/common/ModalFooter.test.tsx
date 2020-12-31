@@ -1,12 +1,12 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { RootState, AppDispatch } from '../../../../../src/store/types';
+import { RootState, AppDispatch } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { mState } from '../../../../helpers/store.helper';
+import { mState } from '../../helpers/store.helper';
 
-import ModalFooter from '../../../../../src/components/favorites/modal/common/ModalFooter';
+import ModalFooter from '../../../src/components/common/ModalFooter';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 

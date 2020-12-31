@@ -2,7 +2,7 @@ import { doDatabaseMock } from '../helpers/database.mock';
 doDatabaseMock();
 import reducer, { actions, initialState, SystemState } from '../../src/store/system';
 import { thunks } from '../../src/store/';
-import { createAction } from '../helpers/test.helper';
+import { createAction, createPendingAction } from '../helpers/test.helper';
 
 describe('store/system', () => {
 	describe('reducers', () => {
@@ -16,39 +16,6 @@ describe('store/system', () => {
 
 			// then
 			expect(result.activeView).toBe(activeView);
-		});
-		it('Sets search mode', () => {
-			// given
-			const mode = 'offline';
-			const action = createAction(actions.setSearchMode.type, mode);
-
-			// when
-			const result = reducer(initialState, action);
-
-			// then
-			expect(result.searchMode).toBe(mode);
-		});
-		it('Sets search form drawer visible', () => {
-			// given
-			const visible = true;
-			const action = createAction(actions.setSearchFormDrawerVisible.type, visible);
-
-			// when
-			const result = reducer(initialState, action);
-
-			// then
-			expect(result.isSearchFormDrawerVsibile).toBe(visible);
-		});
-		it('Sets downloaded search form drawer visible', () => {
-			// given
-			const visible = true;
-			const action = createAction(actions.setDownloadedSearchFormDrawerVisible.type, visible);
-
-			// when
-			const result = reducer(initialState, action);
-
-			// then
-			expect(result.isDownloadedSearchFormDrawerVisible).toBe(visible);
 		});
 		it('Sets task drawer visible', () => {
 			// given
@@ -101,27 +68,23 @@ describe('store/system', () => {
 				describe('fetchPosts()', () => {
 					it('pending', () => {
 						// given
-						const action = createAction(thunks.onlineSearchForm.fetchPosts.pending.type);
+						const action = createAction(thunks.onlineSearches.fetchPosts.pending.type);
 						const state: SystemState = {
 							...initialState,
 							activeView: 'favorites',
-							isSearchFormDrawerVsibile: true,
-							isDownloadedSearchFormDrawerVisible: true,
 						};
 
 						// when
 						const result = reducer(state, action);
 
 						// then
-						expect(result.activeView).toBe('search-results');
-						expect(result.isSearchFormDrawerVsibile).toBe(false);
-						expect(result.isDownloadedSearchFormDrawerVisible).toBe(false);
+						expect(result.activeView).toBe('searches');
 					});
 				});
-				describe('getTagsByPattern()', () => {
+				describe('getTagsByPatternFromApi()', () => {
 					it('pending', () => {
 						// given
-						const action = createAction(thunks.onlineSearchForm.getTagsByPatternFromApi.pending.type);
+						const action = createAction(thunks.onlineSearches.getTagsByPatternFromApi.pending.type);
 						const state: SystemState = {
 							...initialState,
 							isTagOptionsLoading: false,
@@ -135,7 +98,7 @@ describe('store/system', () => {
 					});
 					it('fulfilled', () => {
 						// given
-						const action = createAction(thunks.onlineSearchForm.getTagsByPatternFromApi.fulfilled.type);
+						const action = createAction(thunks.onlineSearches.getTagsByPatternFromApi.fulfilled.type);
 						const state: SystemState = {
 							...initialState,
 							isTagOptionsLoading: true,
@@ -149,7 +112,7 @@ describe('store/system', () => {
 					});
 					it('rejected', () => {
 						// given
-						const action = createAction(thunks.onlineSearchForm.getTagsByPatternFromApi.rejected.type);
+						const action = createAction(thunks.onlineSearches.getTagsByPatternFromApi.rejected.type);
 						const state: SystemState = {
 							...initialState,
 							isTagOptionsLoading: true,
@@ -167,21 +130,17 @@ describe('store/system', () => {
 				describe('fetchPosts', () => {
 					it('pending', () => {
 						// given
-						const action = createAction(thunks.downloadedSearchForm.fetchPosts.pending.type);
+						const action = createAction(thunks.offlineSearches.fetchPosts.pending.type);
 						const state: SystemState = {
 							...initialState,
 							activeView: 'favorites',
-							isSearchFormDrawerVsibile: true,
-							isDownloadedSearchFormDrawerVisible: true,
 						};
 
 						// when
 						const result = reducer(state, action);
 
 						// then
-						expect(result.activeView).toBe('search-results');
-						expect(result.isSearchFormDrawerVsibile).toBe(false);
-						expect(result.isDownloadedSearchFormDrawerVisible).toBe(false);
+						expect(result.activeView).toBe('searches');
 					});
 				});
 			});
@@ -222,7 +181,6 @@ describe('store/system', () => {
 						const action = createAction(thunks.tags.searchTagOnline.pending.type);
 						const state: SystemState = {
 							...initialState,
-							searchMode: 'offline',
 							activeView: 'dashboard',
 						};
 
@@ -230,8 +188,7 @@ describe('store/system', () => {
 						const result = reducer(state, action);
 
 						// then
-						expect(result.searchMode).toBe('online');
-						expect(result.activeView).toBe('search-results');
+						expect(result.activeView).toBe('searches');
 					});
 				});
 				describe('searchOffline', () => {
@@ -240,7 +197,6 @@ describe('store/system', () => {
 						const action = createAction(thunks.tags.searchTagOffline.pending.type);
 						const state: SystemState = {
 							...initialState,
-							searchMode: 'offline',
 							activeView: 'dashboard',
 						};
 
@@ -248,8 +204,7 @@ describe('store/system', () => {
 						const result = reducer(state, action);
 
 						// then
-						expect(result.searchMode).toBe('online');
-						expect(result.activeView).toBe('search-results');
+						expect(result.activeView).toBe('searches');
 					});
 				});
 			});
@@ -260,7 +215,6 @@ describe('store/system', () => {
 						const action = createAction(thunks.savedSearches.searchOnline.pending.type);
 						const state: SystemState = {
 							...initialState,
-							searchMode: 'offline',
 							activeView: 'dashboard',
 						};
 
@@ -268,8 +222,7 @@ describe('store/system', () => {
 						const result = reducer(state, action);
 
 						// then
-						expect(result.searchMode).toBe('saved-search-online');
-						expect(result.activeView).toBe('search-results');
+						expect(result.activeView).toBe('searches');
 					});
 				});
 				describe('searchOffline()', () => {
@@ -278,7 +231,6 @@ describe('store/system', () => {
 						const action = createAction(thunks.savedSearches.searchOffline.pending.type);
 						const state: SystemState = {
 							...initialState,
-							searchMode: 'online',
 							activeView: 'dashboard',
 						};
 
@@ -286,38 +238,7 @@ describe('store/system', () => {
 						const result = reducer(state, action);
 
 						// then
-						expect(result.searchMode).toBe('saved-search-offline');
-						expect(result.activeView).toBe('search-results');
-					});
-				});
-				describe('saveSearch()', () => {
-					it.each(['online', 'offline'])('fulfilled when searchMode was %s', (searchMode) => {
-						// given
-						const action = createAction(thunks.savedSearches.saveSearch.fulfilled.type);
-						const state: SystemState = {
-							...initialState,
-							searchMode: searchMode as 'online' | 'offline',
-						};
-
-						// when
-						const result = reducer(state, action);
-
-						// then
-						expect(result.searchMode).toBe(searchMode === 'online' ? 'saved-search-online' : 'saved-search-offline');
-					});
-					it.each(['online', 'offline'])('rejected when searchMode was %s', (searchMode) => {
-						// given
-						const action = createAction(thunks.savedSearches.saveSearch.rejected.type);
-						const state: SystemState = {
-							...initialState,
-							searchMode: searchMode as 'online' | 'offline',
-						};
-
-						// when
-						const result = reducer(state, action);
-
-						// then
-						expect(result.searchMode).toBe(searchMode === 'online' ? 'saved-search-online' : 'saved-search-offline');
+						expect(result.activeView).toBe('searches');
 					});
 				});
 			});
@@ -341,7 +262,10 @@ describe('store/system', () => {
 				describe('fetchPostsById', () => {
 					it('pending', () => {
 						// given
-						const action = createAction(thunks.posts.fetchPostsByIds.pending.type);
+						const context = 'ctx';
+						const action = createPendingAction(thunks.posts.fetchPostsByIds.pending.type, {
+							arg: { context },
+						});
 						const state: SystemState = {
 							...initialState,
 							isTasksDrawerVisible: true,
@@ -353,7 +277,8 @@ describe('store/system', () => {
 
 						// then
 						expect(result.isTasksDrawerVisible).toBe(false);
-						expect(result.activeView).toBe('search-results');
+						expect(result.activeView).toBe('searches');
+						expect(result.activeSearchTab).toBe(context);
 					});
 				});
 			});

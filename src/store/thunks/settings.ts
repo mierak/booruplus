@@ -2,13 +2,14 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Modal } from 'antd';
 import * as Comlink from 'comlink';
 
+import type { ExportedData } from '@db/types';
+import type { Settings, ThunkApi } from '@store/types';
+
+import{ openNotificationWithIcon } from '@appTypes/components';
 import { db } from '@db';
-import { ExportedData } from '@db/types';
-import { Settings, ThunkApi } from '@store/types';
 import { IpcInvokeChannels, IpcListeners, IpcSendChannels } from '@appTypes/processDto';
 import { thunkLoggerFactory } from '@util/logger';
 import { formatPercentProgress } from '@util/utils';
-import { openNotificationWithIcon } from '@appTypes/components';
 
 import { setFullscreenLoadingMaskState } from '../commonActions';
 
@@ -104,7 +105,7 @@ export const exportImages = createAsyncThunk<boolean, void, ThunkApi>(
 			return false;
 		}
 
-		const progressUpdate = (_: unknown, { done, total }: { done: number; total: number }): void => {
+		const progressUpdate = (__: unknown, { done, total }: { done: number; total: number }): void => {
 			const percent = Math.floor((done / total) * 100);
 			dispatch(
 				setFullscreenLoadingMaskState({
@@ -130,7 +131,7 @@ export const importImages = createAsyncThunk<boolean, void, ThunkApi>(
 	async (_, { dispatch }): Promise<boolean> => {
 		const logger = thunkLogger.getActionLogger(importImages);
 
-		const progressUpdate = (_: unknown, { done, total }: { done: number; total: number }): void => {
+		const progressUpdate = (__: unknown, { done, total }: { done: number; total: number }): void => {
 			const percent = Math.floor((done / total) * 100);
 			dispatch(
 				setFullscreenLoadingMaskState({

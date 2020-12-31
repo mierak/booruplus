@@ -1,7 +1,7 @@
 import db from './database';
-import { FavoritesTreeNode } from './types';
 
-import { TreeNode } from '@store/types';
+import type { FavoritesTreeNode } from './types';
+import type { TreeNode } from '@store/types';
 
 export const addChildToNode = async (parentKey: number, title: string): Promise<number> => {
 	const parent = await db.favorites.get(parentKey);
@@ -56,12 +56,12 @@ export const getChildrenNodes = async (key: number): Promise<FavoritesTreeNode[]
 	const root = await db.favorites.get(key);
 	if (root) {
 		const children = await Promise.all(
-			root.childrenKeys.map(async (key) => {
-				const child = await db.favorites.get(key);
+			root.childrenKeys.map(async (k) => {
+				const child = await db.favorites.get(k);
 				if (child) {
 					return child;
 				} else {
-					throw new Error(`Child Root with key ${key} was not found in the database`);
+					throw new Error(`Child Root with key ${k} was not found in the database`);
 				}
 			})
 		);
@@ -85,8 +85,8 @@ export const getChildrenRecursively = async (key: number): Promise<TreeNode> => 
 			postIds: root.postIds,
 		};
 		const children: TreeNode[] = [];
-		for (const key of root.childrenKeys) {
-			children.push(await getChildrenRecursively(key));
+		for (const k of root.childrenKeys) {
+			children.push(await getChildrenRecursively(k));
 		}
 		treeNode.children = children;
 		return treeNode;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import TagSelectOption from '../../src/components/TagSelectOption';
-import { mTag } from '../helpers/test.helper';
+import TagSelectOption from '../../../src/components/search-form/TagSelectOption';
+import { mTag } from '../../helpers/test.helper';
 
 describe('TagSelectOption', () => {
 	it('Renders tag correctly', () => {

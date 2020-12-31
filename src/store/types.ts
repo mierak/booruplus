@@ -2,8 +2,6 @@ import { mainReducer, store } from '.';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
-import { Tag, Rating } from '@appTypes/gelbooruTypes';
-
 export type RootState = ReturnType<typeof mainReducer>;
 
 export type AppThunk<T = void> = ThunkAction<Promise<T>, RootState, unknown, Action<string>>;
@@ -20,20 +18,15 @@ export type ThunkApi<Rejected = void> = {
 	rejectValue: Rejected;
 };
 
-export type View =
-	| 'search-results'
-	| 'image'
-	| 'dashboard'
-	| 'saved-searches'
-	| 'favorites'
-	| 'tag-list'
-	| 'check-later';
+import type { Tag, Rating } from '@appTypes/gelbooruTypes';
+
+export type View = 'searches' | 'image' | 'dashboard' | 'saved-searches' | 'favorites' | 'tag-list' | 'check-later';
 
 export type Sort = 'date-downloaded' | 'date-uploaded' | 'rating' | 'resolution' | 'date-updated' | 'none';
 
 export type SortOrder = 'asc' | 'desc';
 
-export type SearchMode = 'online' | 'offline' | 'saved-search-offline' | 'saved-search-online';
+export type ContextMode = 'online' | 'offline' | 'other';
 
 export type OfflineOptions = {
 	blacklisted: boolean;
@@ -68,23 +61,6 @@ export type Settings = {
 		siderWidth: number | undefined;
 		expandedKeys: string[];
 	};
-};
-
-export type DownloadedSearchFormState = {
-	selectedTags: Tag[];
-	excludedTags: Tag[];
-	tagOptions: Tag[];
-	rating: Rating;
-	postLimit: number;
-	page: number;
-	sort: Sort;
-	sortOrder: SortOrder;
-	showNonBlacklisted: boolean;
-	showBlacklisted: boolean;
-	showFavorites: boolean;
-	showVideos: boolean;
-	showImages: boolean;
-	showGifs: boolean;
 };
 
 export type DownloadTaskState = {
@@ -135,4 +111,29 @@ export type NotFoundTags = {
 	count: number;
 };
 
-export type PostsContext = 'posts' | 'favorites' | 'mostViewed' | 'checkLaterQueue';
+export type SearchFormState = {
+	tabName: string;
+	mode: ContextMode;
+	savedSearchId?: number;
+	selectedTags: Tag[];
+	excludedTags: Tag[];
+	limit: number;
+	rating: Rating;
+	page: number;
+	tagOptions: Tag[];
+	sort: Sort;
+	sortOrder: SortOrder;
+};
+
+export type SearchContext = SearchFormState & {
+	showNonBlacklisted: boolean;
+	showBlacklisted: boolean;
+	showFavorites: boolean;
+	showVideos: boolean;
+	showImages: boolean;
+	showGifs: boolean;
+};
+
+export type PostsContext = 'favorites' | 'mostViewed' | 'checkLaterQueue';
+
+export type WithContext<T = null> = { context: PostsContext | string } & (T extends null ? unknown : { data: T });

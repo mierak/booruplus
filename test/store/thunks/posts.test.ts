@@ -146,13 +146,14 @@ describe('thunks/posts', () => {
 	describe('fetchPostsById()', () => {
 		it('Calls db with correct ids', async () => {
 			// given
+			const context = 'ctx';
 			const store = mockStore(initialState);
 			const postIds = [1, 2, 3, 4, 5];
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
 			mockedDb.posts.getBulk.mockResolvedValue(posts);
 
 			// when
-			await store.dispatch(thunks.fetchPostsByIds(postIds));
+			await store.dispatch(thunks.fetchPostsByIds({ context, ids: postIds }));
 
 			// then
 			const dispatchedActions = store.getActions();
@@ -468,32 +469,36 @@ describe('thunks/posts', () => {
 			const post = mPost({ id: 1, viewCount: 12345 });
 
 			// when
-			store.dispatch(thunks.incrementViewCount({post, context: 'favorites'}));
+			store.dispatch(thunks.incrementViewCount({ post, context: 'favorites' }));
 
 			// then
-			expect(mockedDb.posts.put).toBeCalledWith({...post, viewCount: post.viewCount + 1});
+			expect(mockedDb.posts.put).toBeCalledWith({ ...post, viewCount: post.viewCount + 1 });
 		});
 	});
 	describe('downloadWholeSearch()', () => {
 		it('Calls api with correct arguments correct number of times and dispatches downloadPosts', async () => {
 			// given
+			const context = 'ctx';
 			const selectedTags = [mTag({ tag: 'tag1' }), mTag({ tag: 'tag2' })];
 			const excludedTags = [mTag({ tag: 'tag3' }), mTag({ tag: 'tag4' })];
 			const rating = 'explicit';
 			const apiKey = 'api_key';
-			const store = mockStore({
-				...initialState,
-				onlineSearchForm: {
-					...initialState.onlineSearchForm,
-					selectedTags,
-					excludedTags,
-					rating,
-				},
-				settings: {
-					...initialState.settings,
-					apiKey,
-				},
-			});
+			const store = mockStore(
+				mState({
+					searchContexts: {
+						[context]: {
+							...initialState.searchContexts.default,
+							selectedTags,
+							excludedTags,
+							rating,
+						},
+					},
+					settings: {
+						...initialState.settings,
+						apiKey,
+					},
+				})
+			);
 			const options: PostSearchOptions = {
 				rating,
 				apiKey,
@@ -501,16 +506,16 @@ describe('thunks/posts', () => {
 				page: 0,
 			};
 			const posts = [mPost({ id: 0 }), mPost({ id: 1 }), mPost({ id: 2 })];
-			(getPostsForTags as jest.Mock).mockImplementation((_: string[], options: PostSearchOptions, _2: string[]) => {
-				const posts: Post[] = [];
-				if (options.page === 0) posts.push(mPost({ id: 0 }));
-				if (options.page === 1) posts.push(mPost({ id: 1 }));
-				if (options.page === 2) posts.push(mPost({ id: 2 }));
-				return Promise.resolve(posts);
+			(getPostsForTags as jest.Mock).mockImplementation((_: string[], opts: PostSearchOptions, _2: string[]) => {
+				const ps: Post[] = [];
+				if (opts.page === 0) ps.push(mPost({ id: 0 }));
+				if (opts.page === 1) ps.push(mPost({ id: 1 }));
+				if (opts.page === 2) ps.push(mPost({ id: 2 }));
+				return Promise.resolve(ps);
 			});
 
 			// when
-			await store.dispatch(thunks.downloadWholeSearch());
+			await store.dispatch(thunks.downloadWholeSearch({ context }));
 
 			// then
 			const dispatchedActions = store.getActions();

@@ -10,7 +10,7 @@ const thunkLogger = thunkLoggerFactory();
 type MyThunk = AsyncThunk<unknown, unknown, ThunkApi>;
 type ThunkType = {
 	[key: string]: unknown;
-}
+};
 
 const registerErrorLogger = (builder: ActionReducerMapBuilder<Record<string, unknown>>, action: MyThunk): void => {
 	builder.addCase(action.rejected, (_, result) => {
@@ -34,9 +34,9 @@ const errorsSlice = createSlice({
 	reducers: {},
 	extraReducers: (builder) => {
 		registerAllFunctions(thunks.dashboard, builder);
-		registerAllFunctions(thunks.downloadedSearchForm, builder);
+		registerAllFunctions(thunks.offlineSearches, builder);
 		registerAllFunctions(thunks.favorites, builder);
-		registerAllFunctions(thunks.onlineSearchForm, builder);
+		registerAllFunctions(thunks.onlineSearches, builder);
 		registerAllFunctions(thunks.posts, builder);
 		registerAllFunctions(thunks.savedSearches, builder);
 		registerAllFunctions(thunks.settings, builder);

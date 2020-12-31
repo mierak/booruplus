@@ -2,8 +2,7 @@ import { doDatabaseMock, mockedDb } from '../../helpers/database.mock';
 doDatabaseMock();
 jest.mock('antd');
 
-import { AppDispatch, Settings } from '@store/types';
-import { RootState } from '../../../src/store/types';
+import { AppDispatch, Settings, RootState } from '@store/types';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import * as thunks from '../../../src/store/thunks/settings';
@@ -173,7 +172,10 @@ describe('thunks/settings', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(ipcInvokeSpy.mock.calls).toContainEqual([IpcInvokeChannels.SAVE_EXPORTED_DATA, { data: JSON.stringify(data), filePath }]);
+			expect(ipcInvokeSpy.mock.calls).toContainEqual([
+				IpcInvokeChannels.SAVE_EXPORTED_DATA,
+				{ data: JSON.stringify(data), filePath },
+			]);
 			expect(dispatchedActions).toContainMatchingAction({ type: thunks.exportDatabase.fulfilled.type, payload: true });
 		});
 	});
@@ -229,7 +231,9 @@ describe('thunks/settings', () => {
 			// then
 			const dispatchedActions = store.getActions();
 			expect(ipcInvokeSpy).toBeCalledWith(IpcInvokeChannels.OPEN_IMPORT_DATA_DIALOG);
-			await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.importDatabase.fulfilled.type, payload: true }));
+			await waitFor(() =>
+				expect(dispatchedActions).toContainMatchingAction({ type: thunks.importDatabase.fulfilled.type, payload: true })
+			);
 			expect(mockedDb.common.clearAndRestoreDb).toBeCalledWith(data, expect.anything());
 		});
 	});

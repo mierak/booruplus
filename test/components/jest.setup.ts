@@ -1,8 +1,3 @@
-
-jest.mock('../../src/store/selectors', () => {
-	return jest.requireActual('../../src/store/selectors');
-});
-
 class Image {
 	constructor() {
 		setTimeout(() => {

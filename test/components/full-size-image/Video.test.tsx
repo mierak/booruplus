@@ -13,6 +13,8 @@ import { mPost } from '../../helpers/test.helper';
 import { getPostUrl } from '../../../src/service/webService';
 import { imageLoaderMock } from '../../helpers/imageBus.mock';
 import { IpcSendChannels } from '../../../src/types/processDto';
+import { actions } from '@store/';
+import { ActiveModal } from '@appTypes/modalTypes';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -30,11 +32,15 @@ describe('Video', () => {
 	});
 	it('Calls imageLoader, uses returned value and calls cleanup on unmount', async () => {
 		// given
+		const context = 'ctx';
 		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'], image: 'filename.webm', fileUrl: 'filename.webm' });
 		const store = mockStore(
 			mState({
 				settings: {
 					downloadMissingImages: false,
+				},
+				searchContexts: {
+					[context]: {},
 				},
 			})
 		);
@@ -42,7 +48,7 @@ describe('Video', () => {
 		// when
 		const { unmount } = render(
 			<Provider store={store}>
-				<Video post={post} />
+				<Video context={context} post={post} />
 			</Provider>
 		);
 
@@ -54,8 +60,15 @@ describe('Video', () => {
 	});
 	it('Creates action with open-in-browser IPC message', () => {
 		// given
+		const context = 'ctx';
 		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'], fileUrl: 'test_file_url.webm' });
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {},
+				},
+			})
+		);
 		const ipcSendSpy = jest.fn();
 		(global as any).api = {
 			send: ipcSendSpy,
@@ -64,7 +77,7 @@ describe('Video', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Video post={post} />
+				<Video context={context} post={post} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Open in browser' }));
@@ -74,13 +87,20 @@ describe('Video', () => {
 	});
 	it('Creates action that shows TagsPopover', () => {
 		// given
+		const context = 'ctx';
 		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'], fileUrl: 'test_file_url.webm' });
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<Video post={post} />
+				<Video context={context} post={post} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Show tags' }));
@@ -90,23 +110,64 @@ describe('Video', () => {
 	});
 	it('Creates action that copies link to clipboard', () => {
 		// given
+		const context = 'ctx';
 		const spy = jest.fn();
 		(window.clipboard as any) = {
 			writeText: spy,
 		};
 		const link = 'somelink123.jpg';
 		const post = mPost({ fileUrl: link });
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<Video post={post} />
+				<Video context={context} post={post} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Copy to clipboard' }));
 
 		// then
 		expect(spy).toHaveBeenCalledWith(link);
+	});
+	it('Creates action to add to favorites', () => {
+		// given
+		const context = 'ctx';
+		const spy = jest.fn();
+		(window.clipboard as any) = {
+			writeText: spy,
+		};
+		const link = 'somelink123.jpg';
+		const post = mPost({ fileUrl: link });
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {},
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<Video context={context} post={post} />
+			</Provider>
+		);
+		fireEvent.click(screen.getByRole('button', { name: 'Add to favorites' }));
+
+		// then
+		expect(store.getActions()).toContainMatchingAction({
+			type: actions.modals.showModal.type,
+			payload: {
+				modal: ActiveModal.ADD_POSTS_TO_FAVORITES,
+				modalState: { [ActiveModal.ADD_POSTS_TO_FAVORITES]: { context, postsToFavorite: [post] } },
+			},
+		});
 	});
 });

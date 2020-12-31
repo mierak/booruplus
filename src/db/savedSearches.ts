@@ -1,8 +1,9 @@
 import db from './database';
-import { SavedSearch, Rating, Tag, Post } from '@appTypes/gelbooruTypes';
+import type { SavedSearch, Rating, Tag, Post } from '@appTypes/gelbooruTypes';
+import type { SavedSearch as DbSavedSearch } from './types';
+
 import { compareTagArrays } from '@util/utils';
 
-import { SavedSearch as DbSavedSearch } from './types';
 
 const transformDbSavedSearchToSavedSearch = (savedSearch: DbSavedSearch): SavedSearch => {
 	const previews = savedSearch.previews.map((preview) => {
@@ -45,7 +46,11 @@ export const save = async (savedSearch: SavedSearch): Promise<number | undefined
  * @param excludedTags Tags excluded from Saved Search
  * @returns ID of newly created Saved Search or Saved Search instance if it already exists
  */
-export const createAndSave = async (rating: Rating, tags: Tag[], excludedTags: Tag[]): Promise<number | SavedSearch> => {
+export const createAndSave = async (
+	rating: Rating,
+	tags: Tag[],
+	excludedTags: Tag[]
+): Promise<number | SavedSearch> => {
 	// Check if SavedSearch with identical tags & excluded tags already exists
 	let foundSearch = undefined;
 	const allSearches = await db.savedSearches.toArray();
@@ -84,9 +89,10 @@ export const remove = async (savedSearch: SavedSearch): Promise<void> => {
 export const addPreviews = async (id: number, previews: { blob: Blob; post: Post }[]): Promise<void> => {
 	const searchFromDb = await db.savedSearches.get(id);
 	if (searchFromDb) {
-		const id = searchFromDb.previews.length > 0 ? searchFromDb.previews[searchFromDb.previews.length - 1].id + 1 : 0;
+		const previewId =
+			searchFromDb.previews.length > 0 ? searchFromDb.previews[searchFromDb.previews.length - 1].id + 1 : 0;
 		previews.forEach((preview, index) => {
-			searchFromDb.previews.push({ id: id + index, blob: preview.blob, post: preview.post });
+			searchFromDb.previews.push({ id: previewId + index, blob: preview.blob, post: preview.post });
 		});
 		db.savedSearches.put(searchFromDb);
 	} else {
