@@ -20,33 +20,21 @@ const setup = (): Enzyme.ReactWrapper => {
 describe('components', () => {
 	describe('Modals', () => {
 		it('Renders AddDirectoryModal', () => {
-			store.dispatch(
-				actions.showModal(ActiveModal.ADD_FAVORITES_DIRECTORY, {
-					selectedNodeKey: 1,
-				})
-			);
+			store.dispatch(actions.showModal(ActiveModal.ADD_FAVORITES_DIRECTORY, { selectedNodeKey: 1 }));
 			store.dispatch(actions.setVisible(true));
 			const wrapper = setup();
 
 			expect(wrapper.find('AddDirectoryModal')).toHaveLength(1);
 		});
 		it('Renders AddToFavorites', () => {
-			store.dispatch(
-				actions.showModal(ActiveModal.ADD_POSTS_TO_FAVORITES, {
-					postsToFavorite: [],
-				})
-			);
+			store.dispatch(actions.showModal(ActiveModal.ADD_POSTS_TO_FAVORITES, { postsToFavorite: [] }));
 			store.dispatch(actions.setVisible(true));
 			const wrapper = setup();
 
 			expect(wrapper.find('AddtoFavoritesModal')).toHaveLength(1);
 		});
 		it('Renders DeleteDirectoryModal', () => {
-			store.dispatch(
-				actions.showModal(ActiveModal.DELETE_FAVORITES_DIRECTORY, {
-					selectedNodeKey: 1,
-				})
-			);
+			store.dispatch(actions.showModal(ActiveModal.DELETE_FAVORITES_DIRECTORY, { selectedNodeKey: 1 }));
 			store.dispatch(actions.setVisible(true));
 			const wrapper = setup();
 
@@ -72,45 +60,28 @@ describe('components', () => {
 			expect(wrapper.find('SettingsModal')).toHaveLength(1);
 		});
 		it('Renders RenameDirectoryModal', () => {
-			store.dispatch(
-				actions.showModal(ActiveModal.RENAME_FAVORITES_DIRECTORY, {
-					targetDirectoryKey: 1,
-				})
-			);
+			store.dispatch(actions.showModal(ActiveModal.RENAME_FAVORITES_DIRECTORY, { targetDirectoryKey: 1 }));
 			store.dispatch(actions.setVisible(true));
 			const wrapper = setup();
 
 			expect(wrapper.find('RenameDirectoryModal')).toHaveLength(1);
 		});
 		it('Renders MovePostsToFavoritesDirectoryModal', () => {
-			store.dispatch(
-				actions.showModal(ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION, {
-					postsToMove: [],
-				})
-			);
+			store.dispatch(actions.showModal(ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION, { postsToMove: [] }));
 			store.dispatch(actions.setVisible(true));
 			const wrapper = setup();
 
 			expect(wrapper.find('MovePostsToFavoritesDirectoryModal')).toHaveLength(1);
 		});
 		it('Renders SearchFormModal', () => {
-			store.dispatch(
-				actions.showModal(ActiveModal.SEARCH_FORM, {
-					context: 'default',
-					previousTab: '',
-				})
-			);
+			store.dispatch(actions.showModal(ActiveModal.SEARCH_FORM, { context: 'default' }));
 			store.dispatch(actions.setVisible(true));
 			const wrapper = setup();
 
 			expect(wrapper.find('SearchFormModal')).toHaveLength(1);
 		});
 		it('Renders RenameTabModal', () => {
-			store.dispatch(
-				actions.showModal(ActiveModal.RENAME_TAB, {
-					context: 'default',
-				})
-			);
+			store.dispatch(actions.showModal(ActiveModal.RENAME_TAB, { context: 'default' }));
 			store.dispatch(actions.setVisible(true));
 			const wrapper = setup();
 

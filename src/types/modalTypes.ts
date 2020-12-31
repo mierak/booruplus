@@ -25,37 +25,36 @@ export type PerModalState = {
 	[ActiveModal.RENAME_TAB]: RenameTabProps;
 	[ActiveModal.SETTINGS]?: void;
 	[ActiveModal.NONE]?: void;
-}
+};
 
 export type AddDirectoryModalProps = {
 	selectedNodeKey: number;
-}
+};
 export type AddToFavoritesModalProps = {
 	postsToFavorite: Post[];
-}
+};
 export type AddToFavoritesModalContextProps = {
 	context: PostsContext | string;
 	type: 'all' | 'selected';
-}
+};
 export type DeleteDirectoryModalProps = {
 	selectedNodeKey: number;
-}
+};
 export type MovePostsToFavoritesDirectoryModalProps = {
 	postsToMove: Post[];
-}
+};
 export type MovePostsToDirectoryConfirmationModalProps = {
 	targetDirectoryKey: number;
 	postsToMove: Post[];
-}
+};
 export type RenameDirectoryModalProps = {
 	targetDirectoryKey: number;
-}
+};
 
 export type SearchFormModalProps = {
 	context: PostsContext | string;
-	previousTab: string;
-}
+};
 
 export type RenameTabProps = {
 	context: string;
-}
+};

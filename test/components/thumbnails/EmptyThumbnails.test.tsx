@@ -47,12 +47,7 @@ describe('EmptyThumbnails', () => {
 			type: actions.modals.showModal.type,
 			payload: {
 				modal: ActiveModal.SEARCH_FORM,
-				modalState: {
-					[ActiveModal.SEARCH_FORM]: {
-						context,
-						previousTab: '',
-					},
-				},
+				modalState: { [ActiveModal.SEARCH_FORM]: { context } },
 			},
 		});
 	});

@@ -23,7 +23,6 @@ const SearchFormModal: React.FunctionComponent<SearchFormModalProps> = (props) =
 	};
 
 	const handleClose = (): void => {
-		dispatch(actions.system.setActiveSearchTab(props.previousTab));
 		dispatch(deletePostsContext({ context: props.context }));
 		dispatch(actions.modals.setVisible(false));
 	};

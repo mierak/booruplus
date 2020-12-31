@@ -13,12 +13,11 @@ type Props = {
 
 const EmptyThumbnails: React.FunctionComponent<Props> = ({ className, context }) => {
 	const dispatch = useDispatch();
-	//! TODO previous tab
 	return (
 		<Empty className={className} description='No Posts To Show'>
 			<Button
 				onClick={(): void => {
-					dispatch(actions.modals.showModal(ActiveModal.SEARCH_FORM, { context, previousTab: '' }));
+					dispatch(actions.modals.showModal(ActiveModal.SEARCH_FORM, { context }));
 				}}
 			>
 				Open Search Form

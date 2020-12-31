@@ -11,7 +11,7 @@ const isProd = app.isPackaged;
 
 log.transports.console.useStyles = true;
 log.transports.console.format = '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{processType}] [{level}] - {text}';
-log.transports.file.maxSize = 5_242_880;
+log.transports.file.maxSize = 5242880;
 log.catchErrors({ showDialog: true });
 
 log.debug(`Starting app. Production mode is: ${isProd}`);
@@ -22,18 +22,20 @@ if (require('electron-squirrel-startup')) {
 
 let window: BrowserWindow;
 
-const lock = app.requestSingleInstanceLock();
+if (isProd) {
+	const lock = app.requestSingleInstanceLock();
 
-if (!lock) {
-	log.warn('Could not obtain single instance lock, trying to focus already running instance');
-	app.quit();
-} else {
-	app.on('second-instance', () => {
-		if (window && window.isMinimized()) {
-			window.restore();
-			window.focus();
-		}
-	});
+	if (!lock) {
+		log.warn('Could not obtain single instance lock, trying to focus already running instance');
+		app.quit();
+	} else {
+		app.on('second-instance', () => {
+			if (window && window.isMinimized()) {
+				window.restore();
+				window.focus();
+			}
+		});
+	}
 }
 
 app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');

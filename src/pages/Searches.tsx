@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { Spin, Tabs } from 'antd';
+import { Spin, Tabs as AntTabs } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
 import type { RootState, AppDispatch, PostsContext } from '@store/types';
@@ -127,21 +127,25 @@ const ThumbnailsListTabContent: React.FunctionComponent<{ context: PostsContext 
 const Searches: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const activeTab = useSelector((state: RootState) => state.system.activeSearchTab);
-
-	const ts = useSelector(
+	const { tabs, activeTab } = useSelector(
 		(state: RootState) => {
-			const contexts = Object.keys(state.onlineSearchForm);
-			return contexts
-				.filter((ctx) => state.onlineSearchForm[ctx].mode !== 'other')
-				.map((ctx) => {
-					const title = state.onlineSearchForm[ctx]?.tabName ?? '';
-					return {
-						title,
-						context: ctx,
-						mode: state.onlineSearchForm[ctx].mode,
-					};
-				});
+			const contexts = Object.keys(state.onlineSearchForm).filter((ctx) => state.onlineSearchForm[ctx].mode !== 'other');
+			const currentTab = state.system.activeSearchTab;
+
+			const tss = contexts.map((ctx) => {
+				const title = state.onlineSearchForm[ctx]?.tabName ?? '';
+				return {
+					title,
+					context: ctx,
+					mode: state.onlineSearchForm[ctx].mode,
+				};
+			});
+
+			if (contexts.includes(currentTab)) {
+				return { tabs: tss, activeTab: currentTab };
+			} else {
+				return { tabs: tss, activeTab: contexts.length ? contexts[contexts.length - 1] : undefined };
+			}
 		},
 		(first, second) => {
 			return JSON.stringify(first) === JSON.stringify(second);
@@ -175,57 +179,52 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 			title: 'Edit search parameters',
 			icon: 'edit-outlined',
 			onClick: (context) => {
-				dispatch(actions.modals.showModal(ActiveModal.SEARCH_FORM, { context, previousTab: activeTab }));
+				dispatch(actions.modals.showModal(ActiveModal.SEARCH_FORM, { context }));
 			},
 		},
 		{
 			key: 'close',
 			title: 'Close',
 			icon: 'close-outlined',
+			disabled: tabs.length <= 1,
 			onClick: (context) => {
 				dispatch(deletePostsContext({ context }));
-				dispatch(
-					actions.system.setActiveSearchTab([...ts].reverse().find((tab) => tab.context !== context)?.context ?? '')
-				);
 			},
 		},
 	];
 
 	return (
 		<Container className={props.className}>
-			<Tabs
+			<AntTabs
 				type='editable-card'
 				size='small'
 				activeKey={activeTab}
 				tabBarStyle={{ marginBottom: 0 }}
 				onEdit={(key, action) => {
 					if (action === 'add') {
-						const context = generateTabContext(ts.map((t) => t.context));
+						const context = generateTabContext(tabs.map((tab) => tab.context));
 						dispatch(initPostsContext({ context: context, data: { mode: 'online' } }));
-						dispatch(actions.modals.showModal(ActiveModal.SEARCH_FORM, { context, previousTab: activeTab }));
+						dispatch(actions.modals.showModal(ActiveModal.SEARCH_FORM, { context }));
 					} else {
 						dispatch(deletePostsContext({ context: key.toString() }));
-						dispatch(
-							actions.system.setActiveSearchTab([...ts].reverse().find((tab) => tab.context !== key.toString())?.context ?? '')
-						);
 					}
 				}}
 				onChange={(tab): void => {
 					dispatch(actions.system.setActiveSearchTab(tab));
 				}}
 			>
-				{ts.map((tab) => (
-					<Tabs.TabPane
-						closable={ts.length > 1}
+				{tabs.map((tab) => (
+					<AntTabs.TabPane
+						closable={tabs.length > 1}
 						key={tab.context}
 						tab={<SearchTab mode={tab.mode} title={tab.title} contextMenu={tabsContextMenu} context={tab.context} />}
 						style={{ height: '100vh' }}
 					>
 						<PageMenuHeader menu={<SearchResultsMenu context={tab.context} />} title='Image List' />
 						<ThumbnailsListTabContent context={tab.context} />
-					</Tabs.TabPane>
+					</AntTabs.TabPane>
 				))}
-			</Tabs>
+			</AntTabs>
 		</Container>
 	);
 };

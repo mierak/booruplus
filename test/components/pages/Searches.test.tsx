@@ -475,7 +475,7 @@ describe('pages/Searches', () => {
 				type: actions.modals.showModal.type,
 				payload: {
 					modal: ActiveModal.SEARCH_FORM,
-					modalState: { [ActiveModal.SEARCH_FORM]: { context: newContext, previousTab: context } },
+					modalState: { [ActiveModal.SEARCH_FORM]: { context: newContext } },
 				},
 			});
 		});
@@ -510,10 +510,6 @@ describe('pages/Searches', () => {
 				type: 'common/deletePostsContext',
 				payload: { context },
 			});
-			expect(dispatchedActions).toContainMatchingAction({
-				type: actions.system.setActiveSearchTab.type,
-				payload: 'secondContext',
-			});
 		});
 		it('Clicking tab switchest to it', () => {
 			// given
@@ -546,6 +542,33 @@ describe('pages/Searches', () => {
 				type: actions.system.setActiveSearchTab.type,
 				payload: 'secondContext',
 			});
+		});
+		it('Activates last tab if current active tab is not found in current tab list', () => {
+			// given
+			const store = mockStore(
+				mState({
+					system: {
+						activeSearchTab: 'noexisto',
+					},
+					onlineSearchForm: {
+						[context]: {},
+						secondContext: { selectedTags: [mTag({ tag: 'switchhere' })] },
+					},
+					posts: {
+						posts: mPostsPostsState({ [context]: [], secondContext: [mPost({ downloaded: 0 })] }),
+					},
+				})
+			);
+
+			// when
+			render(
+				<Provider store={store}>
+					<Searches />
+				</Provider>
+			);
+
+			// then
+			expect(screen.getAllByRole('img', { name: 'download' })).toHaveLength(2);
 		});
 	});
 });

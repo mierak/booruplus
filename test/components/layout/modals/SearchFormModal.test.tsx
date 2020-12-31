@@ -30,13 +30,12 @@ describe('SearchFormModal', () => {
 	});
 	it('Renders correctly', () => {
 		// given
-		const prevTab = '';
 		const store = mockStore(state);
 
 		// when
 		render(
 			<Provider store={store}>
-				<SearchFormModal context={context} previousTab={prevTab} />
+				<SearchFormModal context={context} />
 			</Provider>
 		);
 
@@ -49,13 +48,12 @@ describe('SearchFormModal', () => {
 	});
 	it('Switches tabs corrrectly', () => {
 		// given
-		const prevTab = '';
 		const store = mockStore(state);
 
 		// when
 		render(
 			<Provider store={store}>
-				<SearchFormModal context={context} previousTab={prevTab} />
+				<SearchFormModal context={context} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('Offline Search'));
@@ -74,13 +72,12 @@ describe('SearchFormModal', () => {
 	});
 	it('Submit hides modal, switches context and fetches posts', () => {
 		// given
-		const prevTab = '';
 		const store = mockStore(state);
 
 		// when
 		render(
 			<Provider store={store}>
-				<SearchFormModal context={context} previousTab={prevTab} />
+				<SearchFormModal context={context} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('Offline Search'));
@@ -100,13 +97,12 @@ describe('SearchFormModal', () => {
 	});
 	it('Submit hides modal, deletes context and switches to previous tab on close', () => {
 		// given
-		const prevTab = '';
 		const store = mockStore(state);
 
 		// when
 		render(
 			<Provider store={store}>
-				<SearchFormModal context={context} previousTab={prevTab} />
+				<SearchFormModal context={context} />
 			</Provider>
 		);
 		fireEvent.click(screen.getAllByRole('button', { name: 'Close' })[1]);
@@ -114,18 +110,16 @@ describe('SearchFormModal', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.setVisible.type, payload: false });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setActiveSearchTab.type, payload: prevTab });
 		expect(dispatchedActions).toContainMatchingAction({ type: 'common/deletePostsContext', payload: { context } });
 	});
 	it('Dispatches clear() when CLear button is pressed', () => {
 		// given
-		const prevTab = '';
 		const store = mockStore(mState(state));
 
 		// when
 		render(
 			<Provider store={store}>
-				<SearchFormModal context={context} previousTab={prevTab} />
+				<SearchFormModal context={context} />
 			</Provider>
 		);
 		fireEvent.click(screen.getByRole('button', { name: 'Clear' }));

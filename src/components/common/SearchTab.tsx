@@ -35,7 +35,12 @@ const SearchTab: React.FunctionComponent<Props> = ({ mode, title, contextMenu, c
 	const menu = (
 		<Menu>
 			{contextMenu?.map((action) => (
-				<Menu.Item icon={getIcon(action.icon)} key={action.key} onClick={() => context && action.onClick(context, mode)}>
+				<Menu.Item
+					disabled={action.disabled}
+					icon={getIcon(action.icon)}
+					key={action.key}
+					onClick={() => context && action.onClick(context, mode)}
+				>
 					{action.title}
 				</Menu.Item>
 			))}
