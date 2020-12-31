@@ -8,6 +8,7 @@ import { RootState, AppDispatch } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import * as thunks from '../../../src/store/thunks/savedSearches';
+import * as searchContexts from '../../../src/store/thunks/searchContexts';
 import * as onlineSearchFormThunk from '../../../src/store/thunks/onlineSearches';
 import * as downloadedSearchFormThunk from '../../../src/store/thunks/offlineSearches';
 import { mSavedSearch, mTag, mPost } from '../../helpers/test.helper';
@@ -33,7 +34,7 @@ jest.mock('antd', () => {
 });
 import { getThumbnailUrl } from '../../../src/service/webService';
 import { SavedSearchAlreadyExistsError } from '@errors/savedSearchError';
-import { generateTabContext } from '@util/utils';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 describe('thunks/savedSearches', () => {
 	const context = 'ctx';
@@ -145,7 +146,7 @@ describe('thunks/savedSearches', () => {
 				tags: mockSearch.tags,
 				excludedTags: mockSearch.excludedTags,
 			};
-			const newContext = generateTabContext(Object.keys(store.getState().searchContexts));
+			const newContext = unwrapResult(await store.dispatch(searchContexts.generateSearchContext()));
 
 			// when
 			await store.dispatch(thunks.searchOnline(savedSearch));
@@ -188,7 +189,7 @@ describe('thunks/savedSearches', () => {
 				tags: mockSearch.tags,
 				excludedTags: mockSearch.excludedTags,
 			};
-			const newContext = generateTabContext(Object.keys(store.getState().searchContexts));
+			const newContext = unwrapResult(await store.dispatch(searchContexts.generateSearchContext()));
 
 			// when
 			await store.dispatch(thunks.searchOffline(savedSearch));

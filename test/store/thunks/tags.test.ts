@@ -8,6 +8,7 @@ import type { RootState, AppDispatch, SearchContext } from '../../../src/store/t
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import * as thunks from '../../../src/store/thunks/tags';
+import * as searchContexts from '../../../src/store/thunks/searchContexts';
 import * as downloadedSearchFormThunk from '../../../src/store/thunks/offlineSearches';
 import * as onlineSearchFormThunk from '../../../src/store/thunks/onlineSearches';
 import { mTag } from '../../helpers/test.helper';
@@ -25,7 +26,7 @@ jest.mock('../../../src/service/apiService', () => {
 	};
 });
 import { getTagsByNames } from '../../../src/service/apiService';
-import { generateTabContext } from '@util/utils';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 describe('thunks/tags', () => {
 	beforeEach(() => {
@@ -94,7 +95,7 @@ describe('thunks/tags', () => {
 				})
 			);
 			const tag = mTag({ tag: 'tag1' });
-			const context = generateTabContext(Object.keys(store.getState().searchContexts));
+			const context = unwrapResult(await store.dispatch(searchContexts.generateSearchContext()));
 			const data: Partial<SearchContext> = {
 				mode: 'online',
 				selectedTags: [tag],
@@ -124,7 +125,7 @@ describe('thunks/tags', () => {
 				})
 			);
 			const tag = mTag({ tag: 'tag1' });
-			const context = generateTabContext(Object.keys(store.getState().searchContexts));
+			const context = unwrapResult(await store.dispatch(searchContexts.generateSearchContext()));
 			const data: Partial<SearchContext> = {
 				mode: 'offline',
 				selectedTags: [tag],

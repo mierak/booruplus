@@ -15,7 +15,7 @@ import { mPost, mTag } from '../../helpers/test.helper';
 import * as utils from '../../../src/types/components';
 import { thumbnailLoaderMock, deleteImageMock } from '../../helpers/imageBus.mock';
 import { ActiveModal } from '@appTypes/modalTypes';
-import { generateTabContext } from '@util/utils';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -440,7 +440,7 @@ describe('pages/Searches', () => {
 		});
 	});
 	describe('Tabs', () => {
-		it('Initializes context and shows search form modal on new tab click', () => {
+		it('Initializes context and shows search form modal on new tab click', async () => {
 			// given
 			const store = mockStore(
 				mState({
@@ -455,7 +455,7 @@ describe('pages/Searches', () => {
 					},
 				})
 			);
-			const newContext = generateTabContext(Object.keys(store.getState().searchContexts));
+			const newContext = unwrapResult(await store.dispatch(thunks.searchContexts.generateSearchContext()));
 
 			// when
 			render(
@@ -467,10 +467,12 @@ describe('pages/Searches', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(dispatchedActions).toContainMatchingAction({
-				type: 'common/initPostsContext',
-				payload: { context: newContext, data: { mode: 'online' } },
-			});
+			await waitFor(() =>
+				expect(dispatchedActions).toContainMatchingAction({
+					type: 'common/initPostsContext',
+					payload: { context: newContext, data: { mode: 'online' } },
+				})
+			);
 			expect(dispatchedActions).toContainMatchingAction({
 				type: actions.modals.showModal.type,
 				payload: {

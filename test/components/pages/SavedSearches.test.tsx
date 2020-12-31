@@ -11,7 +11,7 @@ import SavedSearches from '../../../src/pages/SavedSearches';
 import '@testing-library/jest-dom';
 import { mTag, mSavedSearch, mSavedSearchPreview, mPost } from '../../helpers/test.helper';
 import moment from 'moment';
-import { generateTabContext } from '@util/utils';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -247,7 +247,7 @@ describe('pages/SavedSearches', () => {
 				},
 			})
 		);
-		const context = generateTabContext(Object.keys(store.getState().searchContexts));
+		const context = unwrapResult(await store.dispatch(thunks.searchContexts.generateSearchContext()));
 		const data: Partial<SearchContext> = {
 			mode: 'other',
 			selectedTags: savedSearches[0].tags,
@@ -266,7 +266,9 @@ describe('pages/SavedSearches', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: 'common/initPostsContext', payload: { context, data } });
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({ type: 'common/initPostsContext', payload: { context, data } })
+		);
 		expect(dispatchedActions).toContainMatchingAction({
 			type: actions.posts.setPosts.type,
 			payload: { data: posts, context },

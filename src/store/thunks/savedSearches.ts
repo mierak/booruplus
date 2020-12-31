@@ -1,4 +1,4 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, unwrapResult } from '@reduxjs/toolkit';
 import moment from 'moment';
 
 import type { PostsContext, SearchContext, ThunkApi, RejectWithValue } from '@store/types';
@@ -12,19 +12,19 @@ import { NoActiveSavedSearchError, SavedSearchAlreadyExistsError } from '@errors
 import { initPostsContext } from '../commonActions';
 import * as downloadedSearchFormThunk from './offlineSearches';
 import * as onlineSearchFormThunk from './onlineSearches';
-import { generateTabContext } from '@util/utils';
+import * as searchContextsThunk from './searchContexts';
 
 const thunkLogger = thunkLoggerFactory();
 
 export const searchOnline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi>(
 	'savedSearches/searchOnline',
-	async (savedSearch, { getState, dispatch }): Promise<SavedSearch> => {
+	async (savedSearch, { dispatch }): Promise<SavedSearch> => {
 		const logger = thunkLogger.getActionLogger(searchOnline);
 		const clone = { ...savedSearch };
 		clone.lastSearched = moment().valueOf();
 		logger.debug('Updating last searched to', clone.lastSearched);
 		db.savedSearches.save(clone);
-		const context = generateTabContext(Object.keys(getState().searchContexts));
+		const context = unwrapResult(await dispatch(searchContextsThunk.generateSearchContext()));
 		const data: Partial<SearchContext> = {
 			mode: 'online',
 			savedSearchId: savedSearch.id,
@@ -40,13 +40,13 @@ export const searchOnline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi>
 
 export const searchOffline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi>(
 	'savedSearches/searchOffline',
-	async (savedSearch, { getState, dispatch }): Promise<SavedSearch> => {
+	async (savedSearch, { dispatch }): Promise<SavedSearch> => {
 		const logger = thunkLogger.getActionLogger(searchOffline);
 		const clone = { ...savedSearch };
 		clone.lastSearched = moment().valueOf();
 		logger.debug('Updating last searched to', clone.lastSearched);
 		db.savedSearches.save(clone);
-		const context = generateTabContext(Object.keys(getState().searchContexts));
+		const context = unwrapResult(await dispatch(searchContextsThunk.generateSearchContext()));
 		const data: Partial<SearchContext> = {
 			mode: 'offline',
 			savedSearchId: savedSearch.id,

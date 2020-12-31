@@ -7,5 +7,6 @@ import * as settings from './settings';
 import * as tags from './tags';
 import * as tasks from './tasks';
 import * as favorites from './favorites';
+import * as searchContexts from './searchContexts';
 
-export { onlineSearches, offlineSearches, dashboard, posts, savedSearches, settings, tags, tasks, favorites };
+export { onlineSearches, offlineSearches, dashboard, posts, savedSearches, settings, tags, tasks, favorites, searchContexts };

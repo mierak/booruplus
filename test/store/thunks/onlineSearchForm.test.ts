@@ -23,7 +23,7 @@ import { mState } from '../../helpers/store.helper';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
-describe('thunks/onlineSearchForm', () => {
+describe('thunks/onlineSearches', () => {
 	const context = 'ctx';
 	describe('postApiOptions()', () => {
 		it('Constructs object correctly', () => {

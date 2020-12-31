@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
+import { unwrapResult } from '@reduxjs/toolkit';
 import { Spin, Tabs as AntTabs } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
@@ -13,7 +14,6 @@ import { Post } from '@appTypes/gelbooruTypes';
 import { ActiveModal } from '@appTypes/modalTypes';
 import PageMenuHeader from '@components/common/PageMenuHeader';
 import SearchResultsMenu from '@components/common/SearchResultsMenu';
-import { generateTabContext } from '@util/utils';
 import { deletePostsContext, initPostsContext } from '../store/commonActions';
 import SearchTab from '@components/common/SearchTab';
 
@@ -200,9 +200,9 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 				size='small'
 				activeKey={activeTab}
 				tabBarStyle={{ marginBottom: 0 }}
-				onEdit={(key, action) => {
+				onEdit={async (key, action) => {
 					if (action === 'add') {
-						const context = generateTabContext(tabs.map((tab) => tab.context));
+						const context = unwrapResult(await dispatch(thunks.searchContexts.generateSearchContext()));
 						dispatch(initPostsContext({ context: context, data: { mode: 'online' } }));
 						dispatch(actions.modals.showModal(ActiveModal.SEARCH_FORM, { context }));
 					} else {

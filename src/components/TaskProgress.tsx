@@ -1,12 +1,12 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { unwrapResult } from '@reduxjs/toolkit';
 import { Button, Progress, Popover } from 'antd';
 import moment from 'moment';
 
 import { RootState, Task, AppDispatch } from '@store/types';
 import { thunks } from '@store';
 import { initPostsContext } from '../store/commonActions';
-import { generateTabContext } from '@util/utils';
 
 type Props = {
 	className?: string;
@@ -17,21 +17,6 @@ const TaskProgress: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
 	const task = useSelector((state: RootState) => state.tasks.tasks[props.taskId]);
-	const tabs = useSelector(
-		(state: RootState) => {
-			const contexts = Object.keys(state.searchContexts);
-			return contexts.map((ctx) => {
-				const title = state.searchContexts[ctx]?.selectedTags[0]?.tag ?? 'New Tab';
-				return {
-					title,
-					context: ctx,
-				};
-			});
-		},
-		(first, second) => {
-			return JSON.stringify(first) === JSON.stringify(second);
-		}
-	);
 
 	const momentFormat = 'DD/MM/YYYY, HH:mm:ss';
 
@@ -51,8 +36,8 @@ const TaskProgress: React.FunctionComponent<Props> = (props: Props) => {
 		}
 	};
 
-	const handleOpen = (): void => {
-		const context = generateTabContext(tabs.map((tab) => tab.context));
+	const handleOpen = async (): Promise<void> => {
+		const context = unwrapResult(await dispatch(thunks.searchContexts.generateSearchContext()));
 		dispatch(initPostsContext({ context: context, data: { mode: 'online' } }));
 		dispatch(thunks.posts.fetchPostsByIds({context, ids: task.postIds}));
 	};

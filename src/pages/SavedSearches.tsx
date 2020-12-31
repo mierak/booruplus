@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { unwrapResult } from '@reduxjs/toolkit';
 import styled from 'styled-components';
 import { Table, Tag, Row, Col, Card, Popconfirm, Tooltip, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
@@ -7,7 +8,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { actions, thunks } from '@store';
 import { RootState, AppDispatch, SearchContext } from '@store/types';
 import { SavedSearch, Tag as GelbooruTag } from '@appTypes/gelbooruTypes';
-import { generateTabContext, getTagColor } from '@util/utils';
+import { getTagColor } from '@util/utils';
 import moment from 'moment';
 import { openNotificationWithIcon } from '@appTypes/components';
 import { initPostsContext } from '../store/commonActions';
@@ -65,7 +66,6 @@ const StyledPreviewsContainer = styled.div`
 const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const savedSearches = useSelector((state: RootState) => state.savedSearches.savedSearches);
-	const contexts = useSelector((state: RootState) => Object.keys(state.searchContexts));
 
 	useEffect(() => {
 		dispatch(thunks.savedSearches.loadSavedSearchesFromDb());
@@ -168,11 +168,11 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 		];
 	};
 
-	const onPreviewClick = (record: SavedSearch, postId: number): void => {
+	const onPreviewClick = async (record: SavedSearch, postId: number): Promise<void> => {
 		const posts = record.previews.map((preview) => preview.post);
 		const index = posts.findIndex((post) => post.id === postId);
 		if (index >= 0) {
-			const context = generateTabContext(contexts);
+			const context = unwrapResult(await dispatch(thunks.searchContexts.generateSearchContext()));
 			const data: Partial<SearchContext> = {
 				mode: 'other',
 				selectedTags: record.tags,
@@ -195,7 +195,7 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 							<StyledPreviewImage
 								src={preview.objectUrl}
 								data-testid='preview-image'
-								onClick={(): void => onPreviewClick(record, preview.post.id)}
+								onClick={(): Promise<void> => onPreviewClick(record, preview.post.id)}
 							/>
 						</StyledCard>
 					);

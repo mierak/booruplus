@@ -1,4 +1,4 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, unwrapResult } from '@reduxjs/toolkit';
 
 import type { AppThunk, SearchContext, ThunkApi } from '@store/types';
 import type { Tag, TagType } from '@appTypes/gelbooruTypes';
@@ -6,10 +6,10 @@ import type { Tag, TagType } from '@appTypes/gelbooruTypes';
 import { db } from '@db';
 import * as api from '@service/apiService';
 import { thunkLoggerFactory } from '@util/logger';
-import { generateTabContext } from '@util/utils';
 
 import * as onlineSearchFormThunk from './onlineSearches';
 import * as downloadedSearchFormThunk from './offlineSearches';
+import * as searchContextsThunk from './searchContexts';
 import { initPostsContext } from '../commonActions';
 
 const thunkLogger = thunkLoggerFactory();
@@ -66,9 +66,9 @@ export const loadByPatternFromDb = createAsyncThunk<Tag[], string, ThunkApi>(
 
 export const searchTagOnline = createAsyncThunk<Tag, Tag, ThunkApi>(
 	'tags/searchOnline',
-	async (tag, { getState, dispatch }): Promise<Tag> => {
+	async (tag, { dispatch }): Promise<Tag> => {
 		thunkLogger.getActionLogger(searchTagOnline);
-		const context = generateTabContext(Object.keys(getState().searchContexts));
+		const context = unwrapResult(await dispatch(searchContextsThunk.generateSearchContext()));
 		const data: Partial<SearchContext> = {
 			mode: 'online',
 			selectedTags: [tag],
@@ -81,9 +81,9 @@ export const searchTagOnline = createAsyncThunk<Tag, Tag, ThunkApi>(
 
 export const searchTagOffline = createAsyncThunk<Tag, Tag, ThunkApi>(
 	'tags/searchOffline',
-	async (tag, { getState, dispatch }): Promise<Tag> => {
+	async (tag, { dispatch }): Promise<Tag> => {
 		thunkLogger.getActionLogger(searchTagOffline);
-		const context = generateTabContext(Object.keys(getState().searchContexts));
+		const context = unwrapResult(await dispatch(searchContextsThunk.generateSearchContext()));
 		const data: Partial<SearchContext> = {
 			mode: 'offline',
 			selectedTags: [tag],

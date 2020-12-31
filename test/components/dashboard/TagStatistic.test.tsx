@@ -9,7 +9,7 @@ import { mState } from '../../helpers/store.helper';
 import { mTag } from '../../helpers/test.helper';
 import { initPostsContext } from '../../../src/store/commonActions';
 import TagStatistic from '../../../src/components/dashboard/TagStatistic';
-import { generateTabContext } from '@util/utils';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -162,7 +162,7 @@ describe('TagStatistic', () => {
 		const dispatchedActions = mStore.getActions();
 		expect(dispatchedActions[0]).toMatchObject({ type: thunks.dashboard.fetchMostSearchedTags.pending.type });
 	});
-	it('Renders actions and calls correct functions when clicked', () => {
+	it('Renders actions and calls correct functions when clicked', async () => {
 		// given
 		const tag = { tag: mTag({ tag: 'tag1' }), count: 1, date: '' };
 		const mStore = mockStore(
@@ -181,7 +181,7 @@ describe('TagStatistic', () => {
 		);
 		fireEvent.click(screen.getByText('Online'));
 		fireEvent.click(screen.getByText('Offline'));
-		const context = generateTabContext(Object.keys(mStore.getState().searchContexts));
+		const context = unwrapResult(await mStore.dispatch(thunks.searchContexts.generateSearchContext()));
 		const dataOnline: Partial<SearchContext> = {
 			mode: 'online',
 			selectedTags: [tag.tag],

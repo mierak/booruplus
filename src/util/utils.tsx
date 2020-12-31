@@ -265,9 +265,3 @@ export const parseVersion = (version: string): Version => {
 	const isNewerThan = (v: Version): boolean => compare(v) > 0;
 	return { compare, isNewerThan, major: res[0], minor: res[1], patch: res[2] };
 };
-
-//! TODO find a better way
-export const generateTabContext = (tabs: string[]): string => {
-	const lastTabNumber = Math.max(...tabs.map((tab) => Number(tab.match(/\d+/)?.[0] ?? 0)));
-	return `tab${lastTabNumber + 1}`;
-};

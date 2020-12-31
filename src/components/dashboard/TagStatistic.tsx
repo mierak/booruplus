@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { unwrapResult } from '@reduxjs/toolkit';
 import styled from 'styled-components';
 import { Table, Card, Tag as AntTag } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
@@ -7,7 +8,7 @@ import { ReloadOutlined } from '@ant-design/icons';
 import { thunks } from '@store';
 import { TagHistory, AppDispatch, RootState, SearchContext } from '@store/types';
 
-import { generateTabContext, getTagColor } from '@util/utils';
+import { getTagColor } from '@util/utils';
 import { initPostsContext } from '../../store/commonActions';
 
 type Props = {
@@ -36,7 +37,6 @@ const maxTagLength = 25;
 const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const allContexts = useSelector((state: RootState) => Object.keys(state.searchContexts));
 	const settings = useSelector((state: RootState) => state.settings.dashboard);
 	const dataSource = useSelector((state: RootState) =>
 		type === 'most-searched' ? state.dashboard.mostSearchedTags : state.dashboard.mostFavoritedTags
@@ -69,8 +69,8 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 		return (
 			<div>
 				<a
-					onClick={(): void => {
-						const context = generateTabContext(allContexts);
+					onClick={async (): Promise<void> => {
+						const context = unwrapResult(await dispatch(thunks.searchContexts.generateSearchContext()));
 						const data: Partial<SearchContext> = {
 							mode: 'online',
 							selectedTags: [record.tag],
@@ -83,8 +83,8 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 				</a>
 				<span> </span>
 				<a
-					onClick={(): void => {
-						const context = generateTabContext(allContexts);
+					onClick={async (): Promise<void> => {
+						const context = unwrapResult(await dispatch(thunks.searchContexts.generateSearchContext()));
 						const data: Partial<SearchContext> = {
 							mode: 'offline',
 							selectedTags: [record.tag],

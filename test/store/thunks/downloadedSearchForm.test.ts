@@ -12,7 +12,7 @@ import { Tag } from '@appTypes/gelbooruTypes';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
-describe('thunks/downloadedSearchForm', () => {
+describe('thunks/offlineSearches', () => {
 	describe('getFilterOptions()', () => {
 		it('Constructs object correctly', () => {
 			// given
