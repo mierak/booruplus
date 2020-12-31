@@ -28,7 +28,6 @@ export type PostsState = {
 export const initialState: PostsState = {
 	selectedIndices: {},
 	posts: {
-		posts: [],
 		favorites: [],
 		mostViewed: [],
 		checkLaterQueue: [],
@@ -144,8 +143,13 @@ const postsSlice = createSlice({
 			state.posts[action.payload.context] = [];
 		});
 		builder.addCase(deletePostsContext, (state, action) => {
-			delete state.posts[action.payload.context];
-			delete state.selectedIndices[action.payload.context];
+			const contexts = Object.keys(state.posts).filter(
+				(ctx) => ctx !== 'favorites' && ctx !== 'mostViewed' && ctx !== 'checkLaterQueue'
+			);
+			if (contexts.length > 1) {
+				delete state.posts[action.payload.context];
+				delete state.selectedIndices[action.payload.context];
+			}
 		});
 		builder.addCase(thunks.onlineSearches.fetchPosts.pending, (state, action) => {
 			state.posts[action.meta.arg.context] = [];

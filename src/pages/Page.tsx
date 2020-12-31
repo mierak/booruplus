@@ -68,7 +68,7 @@ const Page: React.FunctionComponent = () => {
 					width: 600,
 					title: 'New version available',
 					content: <NewVersionNotificationModalBody data={response} />,
-					icon: undefined
+					icon: undefined,
 				});
 			}
 		})();

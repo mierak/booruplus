@@ -22,7 +22,7 @@ const SearchFormModal: React.FunctionComponent<SearchFormModalProps> = (props) =
 	};
 
 	const handleClose = (): void => {
-		dispatch(deletePostsContext({ context: props.context }));
+		props.deleteOnClose && dispatch(deletePostsContext({ context: props.context }));
 		dispatch(actions.modals.setVisible(false));
 	};
 

@@ -102,7 +102,7 @@ describe('SearchFormModal', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<SearchFormModal context={context} />
+				<SearchFormModal context={context} deleteOnClose />
 			</Provider>
 		);
 		fireEvent.click(screen.getAllByRole('button', { name: 'Close' })[1]);
@@ -111,6 +111,23 @@ describe('SearchFormModal', () => {
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.setVisible.type, payload: false });
 		expect(dispatchedActions).toContainMatchingAction({ type: 'common/deletePostsContext', payload: { context } });
+	});
+	it('Submit hides modal, and does not delete context without deleteOnClose prop', () => {
+		// given
+		const store = mockStore(state);
+
+		// when
+		render(
+			<Provider store={store}>
+				<SearchFormModal context={context} />
+			</Provider>
+		);
+		fireEvent.click(screen.getAllByRole('button', { name: 'Close' })[1]);
+
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.setVisible.type, payload: false });
+		expect(dispatchedActions).not.toContainMatchingAction({ type: 'common/deletePostsContext', payload: { context } });
 	});
 	it('Dispatches clear() when CLear button is pressed', () => {
 		// given

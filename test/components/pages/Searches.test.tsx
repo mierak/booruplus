@@ -477,7 +477,7 @@ describe('pages/Searches', () => {
 				type: actions.modals.showModal.type,
 				payload: {
 					modal: ActiveModal.SEARCH_FORM,
-					modalState: { [ActiveModal.SEARCH_FORM]: { context: newContext } },
+					modalState: { [ActiveModal.SEARCH_FORM]: { context: newContext, deleteOnClose: true } },
 				},
 			});
 		});

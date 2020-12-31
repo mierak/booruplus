@@ -122,7 +122,7 @@ describe('store/searcContexts', () => {
 		expect(result).toStrictEqual(initialState);
 	});
 	describe('extraReducers', () => {
-		it('Inits posts context', () => {
+		it('Inits search context', () => {
 			// given
 			const action = createFulfilledAction('common/initPostsContext', { context: defaultCtx });
 
@@ -132,7 +132,21 @@ describe('store/searcContexts', () => {
 			// then
 			expect(result).toStrictEqual(initialState);
 		});
-		it('deletes posts context', () => {
+		it('deletes search context', () => {
+			// given
+			const someCtx = 'someCtx';
+			const action = createFulfilledAction('common/deletePostsContext', { context: someCtx });
+
+			// when
+			const result = reducer(
+				{ ...initialState, [someCtx]: initialState.default, second: { ...initialState.default, mode: 'online' } },
+				action
+			);
+
+			// then
+			expect(result).toStrictEqual({ ...initialState, second: { ...initialState.default, mode: 'online' } });
+		});
+		it('Does not delete search context when its the last one', () => {
 			// given
 			const someCtx = 'someCtx';
 			const action = createFulfilledAction('common/deletePostsContext', { context: someCtx });

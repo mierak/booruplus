@@ -75,7 +75,8 @@ const searchContextsSlice = createSlice({
 			state[action.payload.context] = { ...defaultValues, ...action.payload.data };
 		});
 		builder.addCase(deletePostsContext, (state, action) => {
-			delete state[action.payload.context];
+			const contexts = Object.keys(state).filter((ctx) => state[ctx].mode !== 'other');
+			contexts.length > 1 && delete state[action.payload.context];
 		});
 		builder.addCase(thunks.onlineSearches.getTagsByPatternFromApi.fulfilled, (state, action) => {
 			state[action.meta.arg.context].tagOptions = action.payload;

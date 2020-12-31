@@ -408,13 +408,31 @@ describe('store/posts', () => {
 
 			// when
 			const result = reducer(
-				{ ...initialState, posts: mPostsPostsState({ [context]: [] }), selectedIndices: { [context]: 123 } },
+				{
+					...initialState,
+					posts: mPostsPostsState({ [context]: [], second: [] }),
+					selectedIndices: { [context]: 123, second: 1 },
+				},
 				action
 			);
 
 			// then
 			expect(result.posts[context]).toBeUndefined();
 			expect(result.selectedIndices[context]).toBeUndefined();
+		});
+		it('Does not delete posts context when its the last one', () => {
+			// given
+			const action = createAction('common/deletePostsContext', { context });
+
+			// when
+			const result = reducer(
+				{ ...initialState, posts: mPostsPostsState({ [context]: [] }), selectedIndices: { [context]: 123 } },
+				action
+			);
+
+			// then
+			expect(result.posts[context]).toMatchObject([]);
+			expect(result.selectedIndices[context]).toBe(123);
 		});
 		it('Resets state when online fetchPosts is pending', () => {
 			// given

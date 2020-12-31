@@ -1,7 +1,7 @@
 {
 	"name": "Lolinizer",
 	"productName": "Lolinizer",
-	"version": "0.1.8-BETA",
+	"version": "0.2.0-BETA",
 	"description": "My Electron application description",
 	"main": ".webpack/main",
 	"scripts": {

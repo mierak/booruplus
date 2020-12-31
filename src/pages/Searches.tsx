@@ -204,7 +204,7 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 					if (action === 'add') {
 						const context = unwrapResult(await dispatch(thunks.searchContexts.generateSearchContext()));
 						dispatch(initPostsContext({ context: context, data: { mode: 'online' } }));
-						dispatch(actions.modals.showModal(ActiveModal.SEARCH_FORM, { context }));
+						dispatch(actions.modals.showModal(ActiveModal.SEARCH_FORM, { context, deleteOnClose: true }));
 					} else {
 						dispatch(deletePostsContext({ context: key.toString() }));
 					}

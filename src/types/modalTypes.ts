@@ -53,6 +53,7 @@ export type RenameDirectoryModalProps = {
 
 export type SearchFormModalProps = {
 	context: PostsContext | string;
+	deleteOnClose?: boolean;
 };
 
 export type RenameTabProps = {
