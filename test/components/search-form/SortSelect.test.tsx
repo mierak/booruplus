@@ -17,7 +17,7 @@ describe('search-form/SortSelect', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -37,7 +37,7 @@ describe('search-form/SortSelect', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -62,7 +62,7 @@ describe('search-form/SortSelect', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -79,7 +79,7 @@ describe('search-form/SortSelect', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.updateContext.type,
+			type: actions.searchContexts.updateContext.type,
 			payload: { context, data: { sort: 'rating' } },
 		});
 		await waitFor(() => undefined);

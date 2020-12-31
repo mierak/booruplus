@@ -20,7 +20,7 @@ describe('search-from/SelectedTags', () => {
 		const selectedTags = [mTag({ tag: 'selected1', id: 1 }), mTag({ tag: 'selected2', id: 2 })];
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: { selectedTags },
 				},
 			})
@@ -42,7 +42,7 @@ describe('search-from/SelectedTags', () => {
 		const selectedTags = [mTag({ tag: 'selected1', id: 1 }), mTag({ tag: 'selected2', id: 2 })];
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: { selectedTags },
 				},
 			})
@@ -59,7 +59,7 @@ describe('search-from/SelectedTags', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.removeTag.type,
+			type: actions.searchContexts.removeTag.type,
 			payload: { context, data: selectedTags[0] },
 		});
 	});
@@ -68,7 +68,7 @@ describe('search-from/SelectedTags', () => {
 		const tag = mTag({ id: 1, tag: 'excludedTag' });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -92,11 +92,11 @@ describe('search-from/SelectedTags', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.removeExcludedTag.type,
+			type: actions.searchContexts.removeExcludedTag.type,
 			payload: { context, data: tag },
 		});
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.addTag.type,
+			type: actions.searchContexts.addTag.type,
 			payload: { context, data: tag },
 		});
 	});
@@ -105,7 +105,7 @@ describe('search-from/SelectedTags', () => {
 		const tag = mTag({ id: 1, tag: 'excludedTag' });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: { selectedTags: [tag] },
 				},
 			})
@@ -135,7 +135,7 @@ describe('search-from/SelectedTags', () => {
 		const tag = mTag({ id: 1, tag: 'excludedTag' });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						selectedTags: [tag],
 					},
@@ -166,7 +166,7 @@ describe('search-from/SelectedTags', () => {
 		const tag = mTag({ id: 1, tag: 'excludedTag' });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: { selectedTags: [tag] },
 				},
 			})
@@ -190,11 +190,11 @@ describe('search-from/SelectedTags', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.removeExcludedTag.type,
+			type: actions.searchContexts.removeExcludedTag.type,
 			payload: { context, data: tag },
 		});
 		expect(dispatchedActions).not.toContainMatchingAction({
-			type: actions.onlineSearchForm.addTag.type,
+			type: actions.searchContexts.addTag.type,
 			payload: { context, data: tag },
 		});
 	});

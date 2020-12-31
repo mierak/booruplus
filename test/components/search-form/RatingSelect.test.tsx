@@ -17,7 +17,7 @@ describe('search-form/RatingSelect', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -37,7 +37,7 @@ describe('search-form/RatingSelect', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -63,7 +63,7 @@ describe('search-form/RatingSelect', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -80,7 +80,7 @@ describe('search-form/RatingSelect', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.updateContext.type,
+			type: actions.searchContexts.updateContext.type,
 			payload: { context, data: { rating: 'explicit' } },
 		});
 		await waitFor(() => undefined);

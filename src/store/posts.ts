@@ -147,15 +147,15 @@ const postsSlice = createSlice({
 			delete state.posts[action.payload.context];
 			delete state.selectedIndices[action.payload.context];
 		});
-		builder.addCase(thunks.onlineSearchForm.fetchPosts.pending, (state, action) => {
+		builder.addCase(thunks.onlineSearches.fetchPosts.pending, (state, action) => {
 			state.posts[action.meta.arg.context] = [];
 			state.selectedIndices[action.meta.arg.context] = undefined;
 		});
-		builder.addCase(thunks.downloadedSearchForm.fetchPosts.pending, (state, action) => {
+		builder.addCase(thunks.offlineSearches.fetchPosts.pending, (state, action) => {
 			state.posts[action.meta.arg.context] = [];
 			state.selectedIndices[action.meta.arg.context] = undefined;
 		});
-		builder.addCase(thunks.onlineSearchForm.fetchMorePosts.fulfilled, (state, action) => {
+		builder.addCase(thunks.onlineSearches.fetchMorePosts.fulfilled, (state, action) => {
 			const context = action.meta.arg.context;
 			const index = state.posts[context].length - action.payload.length;
 			if (index < state.posts[context].length && index >= 0) {
@@ -177,7 +177,7 @@ const postsSlice = createSlice({
 				state.posts[context].push(post);
 			}
 		});
-		builder.addCase(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled, (state, action) => {
+		builder.addCase(thunks.onlineSearches.checkPostsAgainstDb.fulfilled, (state, action) => {
 			for (const post of action.payload) {
 				post.blacklisted !== 1 && state.posts[action.meta.arg.context].push(post);
 			}
@@ -192,12 +192,12 @@ const postsSlice = createSlice({
 		builder.addCase(thunks.favorites.removePostsFromActiveDirectory.fulfilled, (state, action) => {
 			state.posts.favorites = state.posts.favorites.filter((post) => !action.meta.arg.find((p) => p.id === post.id));
 		});
-		builder.addCase(thunks.downloadedSearchForm.fetchPosts.fulfilled, (state, action) => {
+		builder.addCase(thunks.offlineSearches.fetchPosts.fulfilled, (state, action) => {
 			for (const post of action.payload) {
 				state.posts[action.meta.arg.context].push(post);
 			}
 		});
-		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.fulfilled, (state, action) => {
+		builder.addCase(thunks.offlineSearches.fetchMorePosts.fulfilled, (state, action) => {
 			const context = action.meta.arg.context;
 			for (const post of action.payload) {
 				state.posts[context].push(post);

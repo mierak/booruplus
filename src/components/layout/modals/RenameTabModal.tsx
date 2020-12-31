@@ -12,7 +12,7 @@ const RenameTabModal: React.FunctionComponent<RenameTabProps> = ({ context }) =>
 	const [text, setText] = React.useState('');
 
 	const onConfirm = () => {
-		dispatch(actions.onlineSearchForm.updateContext({ context, data: { tabName: text } }));
+		dispatch(actions.searchContexts.updateContext({ context, data: { tabName: text } }));
 		setText('');
         dispatch(actions.modals.setVisible(false));
 	};

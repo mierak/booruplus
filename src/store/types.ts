@@ -125,7 +125,7 @@ export type SearchFormState = {
 	sortOrder: SortOrder;
 };
 
-export type DownloadedSearchFormState = SearchFormState & {
+export type SearchContext = SearchFormState & {
 	showNonBlacklisted: boolean;
 	showBlacklisted: boolean;
 	showFavorites: boolean;

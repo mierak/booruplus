@@ -26,10 +26,10 @@ const ExcludedTags: React.FunctionComponent<Props> = ({ context }: Props) => {
 	const dispatch = useDispatch();
 
 	const theme = useSelector((state: RootState) => state.settings.theme);
-	const excludededTags = useSelector((state: RootState) => state.onlineSearchForm[context].excludedTags);
+	const excludededTags = useSelector((state: RootState) => state.searchContexts[context].excludedTags);
 
 	const handleTagClose = (tag: Tag): void => {
-		dispatch(actions.onlineSearchForm.removeExcludedTag({ context, data: tag }));
+		dispatch(actions.searchContexts.removeExcludedTag({ context, data: tag }));
 	};
 
 	const handleDragStart = (event: React.DragEvent, tag: Tag): void => {
@@ -39,9 +39,9 @@ const ExcludedTags: React.FunctionComponent<Props> = ({ context }: Props) => {
 	const handleDrop = (event: React.DragEvent): void => {
 		const tag: Tag = JSON.parse(event.dataTransfer.getData('tag'));
 		if (!excludededTags.some((t) => t.id === tag.id)) {
-			dispatch(actions.onlineSearchForm.addExcludedTag({ context, data: tag }));
+			dispatch(actions.searchContexts.addExcludedTag({ context, data: tag }));
 		}
-		dispatch(actions.onlineSearchForm.removeTag({ context, data: tag }));
+		dispatch(actions.searchContexts.removeTag({ context, data: tag }));
 	};
 
 	const allowDrop = (event: React.DragEvent): void => {

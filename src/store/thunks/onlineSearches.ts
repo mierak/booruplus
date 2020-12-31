@@ -12,12 +12,12 @@ const thunkLogger = thunkLoggerFactory();
 
 export const getPostApiOptions = (state: RootState, context: string, incrementPage?: boolean): PostSearchOptions => {
 	return {
-		limit: state.onlineSearchForm[context].limit,
-		page: incrementPage ? state.onlineSearchForm[context].page + 1 : state.onlineSearchForm[context].page,
-		rating: state.onlineSearchForm[context].rating,
+		limit: state.searchContexts[context].limit,
+		page: incrementPage ? state.searchContexts[context].page + 1 : state.searchContexts[context].page,
+		rating: state.searchContexts[context].rating,
 		apiKey: state.settings.apiKey,
-		sort: state.onlineSearchForm[context].sort,
-		sortOrder: state.onlineSearchForm[context].sortOrder,
+		sort: state.searchContexts[context].sort,
+		sortOrder: state.searchContexts[context].sortOrder,
 	};
 };
 
@@ -44,8 +44,8 @@ export const fetchPosts = createAsyncThunk<Post[], { context: PostsContext | str
 		const getState = thunkApi.getState;
 
 		const options = getPostApiOptions(getState(), context);
-		const excludedTagString = getState().onlineSearchForm[context].excludedTags.map((tag) => tag.tag);
-		const tagsString = getState().onlineSearchForm[context].selectedTags.map((tag) => tag.tag);
+		const excludedTagString = getState().searchContexts[context].excludedTags.map((tag) => tag.tag);
+		const tagsString = getState().searchContexts[context].selectedTags.map((tag) => tag.tag);
 
 		logger.debug(
 			`Fetching posts from api. Selected Tags: [${tagsString}]. Excluded Tags: [${excludedTagString}]. API Options:`,
@@ -57,7 +57,7 @@ export const fetchPosts = createAsyncThunk<Post[], { context: PostsContext | str
 		const posts = await api.getPostsForTags(tagsString, options, excludedTagString);
 
 		logger.debug(`Saving search to history for tags [${tagsString}]`);
-		db.tagSearchHistory.saveSearch(getState().onlineSearchForm[context].selectedTags);
+		db.tagSearchHistory.saveSearch(getState().searchContexts[context].selectedTags);
 		await dispatch(checkPostsAgainstDb({ posts, context }));
 
 		return posts;
@@ -80,8 +80,8 @@ export const fetchMorePosts = createAsyncThunk<Post[], { context: PostsContext |
 		const getState = thunkApi.getState;
 
 		const options = getPostApiOptions(getState(), context, true);
-		const excludedTagString = getState().onlineSearchForm[context].excludedTags.map((tag) => tag.tag);
-		const tagsString = getState().onlineSearchForm[context].selectedTags.map((tag) => tag.tag);
+		const excludedTagString = getState().searchContexts[context].excludedTags.map((tag) => tag.tag);
+		const tagsString = getState().searchContexts[context].selectedTags.map((tag) => tag.tag);
 
 		logger.debug(
 			`Fetching posts from api. Selected Tags: [${tagsString}]. Excluded Tags: [${excludedTagString}]. API Options:`,

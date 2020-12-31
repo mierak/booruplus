@@ -14,10 +14,10 @@ type Props = {
 
 const RatingSelect: React.FunctionComponent<Props> = ({ open, context }: Props) => {
 	const dispatch = useDispatch();
-	const rating = useSelector((state: RootState) => state.onlineSearchForm[context].rating);
+	const rating = useSelector((state: RootState) => state.searchContexts[context].rating);
 
 	const handleRatingSelect = (data: Rating): void => {
-		dispatch(actions.onlineSearchForm.updateContext({ context, data: { rating: data } }));
+		dispatch(actions.searchContexts.updateContext({ context, data: { rating: data } }));
 	};
 
 	return (

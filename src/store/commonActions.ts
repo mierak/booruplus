@@ -1,7 +1,7 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 
 import type { Post } from '@appTypes/gelbooruTypes';
-import type { DownloadedSearchFormState, PostsContext, ThunkApi, WithContext } from '@store/types';
+import type { SearchContext, PostsContext, ThunkApi, WithContext } from '@store/types';
 
 import { thunkLoggerFactory } from '@util/logger';
 import { IpcInvokeChannels, IpcSendChannels } from '@appTypes/processDto';
@@ -12,7 +12,7 @@ export const setFullscreenLoadingMaskState = createAction<string | { message: st
 	'loadingState/setFullscreenLoadingMaskMessage'
 );
 
-export const initPostsContext = createAction<WithContext<Partial<DownloadedSearchFormState>>>(
+export const initPostsContext = createAction<WithContext<Partial<SearchContext>>>(
 	'common/initPostsContext'
 );
 

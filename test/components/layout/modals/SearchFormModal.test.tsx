@@ -16,7 +16,7 @@ const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 describe('SearchFormModal', () => {
 	const context = 'ctx';
 	const state = mState({
-		onlineSearchForm: {
+		searchContexts: {
 			[context]: {
 				mode: 'online',
 				page: 0,
@@ -62,11 +62,11 @@ describe('SearchFormModal', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.updateContext.type,
+			type: actions.searchContexts.updateContext.type,
 			payload: { context, data: { mode: 'offline' } },
 		});
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.updateContext.type,
+			type: actions.searchContexts.updateContext.type,
 			payload: { context, data: { mode: 'online' } },
 		});
 	});
@@ -86,12 +86,12 @@ describe('SearchFormModal', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.updateContext.type,
+			type: actions.searchContexts.updateContext.type,
 			payload: { context, data: { mode: 'offline' } },
 		});
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.modals.setVisible.type, payload: false });
 		expect(dispatchedActions).toContainMatchingAction({
-			type: thunks.onlineSearchForm.fetchPosts.pending.type,
+			type: thunks.onlineSearches.fetchPosts.pending.type,
 			meta: { arg: { context } },
 		});
 	});
@@ -126,7 +126,7 @@ describe('SearchFormModal', () => {
 
 		// then
 		expect(store.getActions()).toContainMatchingAction({
-			type: actions.onlineSearchForm.clear.type,
+			type: actions.searchContexts.clear.type,
 			payload: { context },
 		});
 	});

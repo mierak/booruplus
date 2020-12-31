@@ -12,7 +12,7 @@ type Props = {
 const PageSelect: React.FunctionComponent<Props> = ({ context }: Props) => {
 	const dispatch = useDispatch();
 
-	const page = useSelector((state: RootState) => state.onlineSearchForm[context].page);
+	const page = useSelector((state: RootState) => state.searchContexts[context].page);
 
 	const handlePageChange = (value: number | string | undefined): void => {
 		let data: number;
@@ -23,7 +23,7 @@ const PageSelect: React.FunctionComponent<Props> = ({ context }: Props) => {
 		} else {
 			return;
 		}
-		dispatch(actions.onlineSearchForm.updateContext({ context, data: { page: data } }));
+		dispatch(actions.searchContexts.updateContext({ context, data: { page: data } }));
 	};
 
 	return (

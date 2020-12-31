@@ -12,7 +12,7 @@ type Props = {
 const PostCountSelect: React.FunctionComponent<Props> = ({ context }: Props) => {
 	const dispatch = useDispatch();
 
-	const postLimit = useSelector((state: RootState) => state.onlineSearchForm[context].limit);
+	const postLimit = useSelector((state: RootState) => state.searchContexts[context].limit);
 
 	const handlePostCountChange = (value: number | string | undefined): void => {
 		let data: number;
@@ -23,7 +23,7 @@ const PostCountSelect: React.FunctionComponent<Props> = ({ context }: Props) => 
 		} else {
 			return;
 		}
-		dispatch(actions.onlineSearchForm.updateContext({ context, data: { limit: data } }));
+		dispatch(actions.searchContexts.updateContext({ context, data: { limit: data } }));
 	};
 
 	return (

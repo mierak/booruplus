@@ -26,10 +26,10 @@ const SelectedTags: React.FunctionComponent<Props> = ({ context }: Props) => {
 	const dispatch = useDispatch();
 
 	const theme = useSelector((state: RootState) => state.settings.theme);
-	const selectedTags = useSelector((state: RootState) => state.onlineSearchForm[context].selectedTags);
+	const selectedTags = useSelector((state: RootState) => state.searchContexts[context].selectedTags);
 
 	const handleTagClose = (tag: Tag): void => {
-		dispatch(actions.onlineSearchForm.removeTag({ context, data: tag }));
+		dispatch(actions.searchContexts.removeTag({ context, data: tag }));
 	};
 
 	const handleDragStart = (event: React.DragEvent, tag: Tag): void => {
@@ -38,9 +38,9 @@ const SelectedTags: React.FunctionComponent<Props> = ({ context }: Props) => {
 
 	const handleDrop = (event: React.DragEvent): void => {
 		const tag: Tag = JSON.parse(event.dataTransfer.getData('tag'));
-		dispatch(actions.onlineSearchForm.removeExcludedTag({ context, data: tag }));
+		dispatch(actions.searchContexts.removeExcludedTag({ context, data: tag }));
 		if (!selectedTags.some((t) => t.id === tag.id)) {
-			dispatch(actions.onlineSearchForm.addTag({ context, data: tag }));
+			dispatch(actions.searchContexts.addTag({ context, data: tag }));
 		}
 	};
 

@@ -62,20 +62,20 @@ const systemSlice = createSlice({
 			state.activeSearchTab = action.payload.context;
 		});
 		// Online Search Form
-		builder.addCase(thunks.onlineSearchForm.fetchPosts.pending, (state) => {
+		builder.addCase(thunks.onlineSearches.fetchPosts.pending, (state) => {
 			state.activeView = 'searches';
 		});
-		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.pending, (state) => {
+		builder.addCase(thunks.onlineSearches.getTagsByPatternFromApi.pending, (state) => {
 			state.isTagOptionsLoading = true;
 		});
-		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.fulfilled, (state) => {
+		builder.addCase(thunks.onlineSearches.getTagsByPatternFromApi.fulfilled, (state) => {
 			state.isTagOptionsLoading = false;
 		});
-		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.rejected, (state) => {
+		builder.addCase(thunks.onlineSearches.getTagsByPatternFromApi.rejected, (state) => {
 			state.isTagOptionsLoading = false;
 		});
 		// Downloaded Search Form
-		builder.addCase(thunks.downloadedSearchForm.fetchPosts.pending, (state) => {
+		builder.addCase(thunks.offlineSearches.fetchPosts.pending, (state) => {
 			state.activeView = 'searches';
 		});
 		// Tags

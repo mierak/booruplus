@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { RootState, AppDispatch } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
@@ -49,7 +49,7 @@ describe('common/SearchTab', () => {
 		const context = 'ctx';
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						selectedTags: [mTag({ tag: 'shouldbetitle' }), mTag({ tag: 'shouldnotbetitle' })],
 					},
@@ -72,7 +72,7 @@ describe('common/SearchTab', () => {
 		const context = 'ctx';
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})

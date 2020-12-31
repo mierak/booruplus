@@ -18,7 +18,7 @@ describe('search-form/LoadMoreButton', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -38,7 +38,7 @@ describe('search-form/LoadMoreButton', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 				loadingStates: {
@@ -61,7 +61,7 @@ describe('search-form/LoadMoreButton', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						mode: 'online',
 					},
@@ -79,13 +79,13 @@ describe('search-form/LoadMoreButton', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.onlineSearchForm.fetchMorePosts.pending.type });
+		expect(dispatchedActions).toContainMatchingAction({ type: thunks.onlineSearches.fetchMorePosts.pending.type });
 	});
 	it('Dispatches fetchMorePosts() for offline mode', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						mode: 'offline',
 					},
@@ -103,6 +103,6 @@ describe('search-form/LoadMoreButton', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: thunks.downloadedSearchForm.fetchMorePosts.pending.type });
+		expect(dispatchedActions).toContainMatchingAction({ type: thunks.offlineSearches.fetchMorePosts.pending.type });
 	});
 });

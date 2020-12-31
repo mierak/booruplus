@@ -226,7 +226,7 @@ describe('TaskProgress', () => {
 				},
 			})
 		);
-		const newContext = generateTabContext(Object.keys(store.getState().onlineSearchForm));
+		const newContext = generateTabContext(Object.keys(store.getState().searchContexts));
 
 		// when
 		render(

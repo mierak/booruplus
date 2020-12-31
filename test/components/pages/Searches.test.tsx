@@ -30,7 +30,7 @@ describe('pages/Searches', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 				system: {
@@ -57,7 +57,7 @@ describe('pages/Searches', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						savedSearchId: 123,
 					},
@@ -83,7 +83,7 @@ describe('pages/Searches', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						savedSearchId: 123,
 					},
@@ -116,7 +116,7 @@ describe('pages/Searches', () => {
 		];
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 				system: {
@@ -151,7 +151,7 @@ describe('pages/Searches', () => {
 		];
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: { savedSearchId: 123 },
 				},
 				system: {
@@ -182,7 +182,7 @@ describe('pages/Searches', () => {
 		];
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 				system: {
@@ -219,7 +219,7 @@ describe('pages/Searches', () => {
 		];
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 				system: {
@@ -265,7 +265,7 @@ describe('pages/Searches', () => {
 		];
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 				system: {
@@ -302,7 +302,7 @@ describe('pages/Searches', () => {
 		];
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 				system: {
@@ -343,7 +343,7 @@ describe('pages/Searches', () => {
 		];
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: { savedSearchId },
 				},
 				system: {
@@ -381,7 +381,7 @@ describe('pages/Searches', () => {
 				loadingStates: {
 					isFetchingPosts: true,
 				},
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 				system: {
@@ -409,7 +409,7 @@ describe('pages/Searches', () => {
 		const rating = 'explicit';
 		mockedDb.savedSearches.createAndSave.mockResolvedValueOnce(id);
 		const state = mState({
-			onlineSearchForm: {
+			searchContexts: {
 				[context]: {
 					rating,
 					selectedTags: tags,
@@ -447,7 +447,7 @@ describe('pages/Searches', () => {
 					system: {
 						activeSearchTab: context,
 					},
-					onlineSearchForm: {
+					searchContexts: {
 						[context]: {},
 					},
 					posts: {
@@ -455,7 +455,7 @@ describe('pages/Searches', () => {
 					},
 				})
 			);
-			const newContext = generateTabContext(Object.keys(store.getState().onlineSearchForm));
+			const newContext = generateTabContext(Object.keys(store.getState().searchContexts));
 
 			// when
 			render(
@@ -486,7 +486,7 @@ describe('pages/Searches', () => {
 					system: {
 						activeSearchTab: context,
 					},
-					onlineSearchForm: {
+					searchContexts: {
 						[context]: {},
 						secondContext: {},
 					},
@@ -518,7 +518,7 @@ describe('pages/Searches', () => {
 					system: {
 						activeSearchTab: context,
 					},
-					onlineSearchForm: {
+					searchContexts: {
 						[context]: {},
 						secondContext: { selectedTags: [mTag({ tag: 'switchhere' })] },
 					},
@@ -550,7 +550,7 @@ describe('pages/Searches', () => {
 					system: {
 						activeSearchTab: 'noexisto',
 					},
-					onlineSearchForm: {
+					searchContexts: {
 						[context]: {},
 						secondContext: { selectedTags: [mTag({ tag: 'switchhere' })] },
 					},

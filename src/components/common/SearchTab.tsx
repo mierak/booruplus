@@ -19,7 +19,7 @@ type Props = {
 const SearchTab: React.FunctionComponent<Props> = ({ mode, title, contextMenu, context }) => {
 	const { selectedTags, excludedTags, page, rating, mode: searchMode } = useSelector((state: RootState) => {
 		if (context) {
-			const slice = state.onlineSearchForm[context];
+			const slice = state.searchContexts[context];
 			return {
 				selectedTags: slice.selectedTags,
 				excludedTags: slice.excludedTags,

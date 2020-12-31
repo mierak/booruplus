@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { thunks } from '../../../src/store';
-import { RootState, AppDispatch, DownloadedSearchFormState } from '../../../src/store/types';
+import { RootState, AppDispatch, SearchContext } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mState } from '../../helpers/store.helper';
@@ -181,12 +181,12 @@ describe('TagStatistic', () => {
 		);
 		fireEvent.click(screen.getByText('Online'));
 		fireEvent.click(screen.getByText('Offline'));
-		const context = generateTabContext(Object.keys(mStore.getState().onlineSearchForm));
-		const dataOnline: Partial<DownloadedSearchFormState> = {
+		const context = generateTabContext(Object.keys(mStore.getState().searchContexts));
+		const dataOnline: Partial<SearchContext> = {
 			mode: 'online',
 			selectedTags: [tag.tag],
 		};
-		const dataOffline: Partial<DownloadedSearchFormState> = {
+		const dataOffline: Partial<SearchContext> = {
 			mode: 'offline',
 			selectedTags: [tag.tag],
 		};
@@ -202,11 +202,11 @@ describe('TagStatistic', () => {
 			payload: { context, data: dataOffline },
 		});
 		expect(dispatchedActions).toContainMatchingAction({
-			type: thunks.onlineSearchForm.fetchPosts.pending.type,
+			type: thunks.onlineSearches.fetchPosts.pending.type,
 			meta: { arg: { context } },
 		});
 		expect(dispatchedActions).toContainMatchingAction({
-			type: thunks.downloadedSearchForm.fetchPosts.pending.type,
+			type: thunks.offlineSearches.fetchPosts.pending.type,
 			meta: { arg: { context } },
 		});
 	});

@@ -28,7 +28,7 @@ describe('settings/SettingsModal', () => {
 		];
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						tagOptions,
 					},
@@ -61,7 +61,7 @@ describe('settings/SettingsModal', () => {
 		];
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						tagOptions,
 					},
@@ -80,7 +80,7 @@ describe('settings/SettingsModal', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.addTag.type,
+			type: actions.searchContexts.addTag.type,
 			payload: { context, data: tagOptions[1] },
 		});
 		await waitFor(() => undefined);
@@ -90,7 +90,7 @@ describe('settings/SettingsModal', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						tagOptions: [],
 					},
@@ -124,7 +124,7 @@ describe('settings/SettingsModal', () => {
 		const dispatchedActions = store.getActions();
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({
-				type: thunks.onlineSearchForm.getTagsByPatternFromApi.pending.type,
+				type: thunks.onlineSearches.getTagsByPatternFromApi.pending.type,
 				meta: { arg: { context, pattern: 'asdf' } },
 			})
 		);
@@ -135,7 +135,7 @@ describe('settings/SettingsModal', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						mode: 'offline',
 						tagOptions: [],
@@ -170,7 +170,7 @@ describe('settings/SettingsModal', () => {
 		const dispatchedActions = store.getActions();
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({
-				type: thunks.downloadedSearchForm.loadTagsByPattern.pending.type,
+				type: thunks.offlineSearches.loadTagsByPattern.pending.type,
 				meta: { arg: { context, pattern: 'asdf' } },
 			})
 		);
@@ -183,7 +183,7 @@ describe('settings/SettingsModal', () => {
 				system: {
 					isTagOptionsLoading: true,
 				},
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})

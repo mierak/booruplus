@@ -2,10 +2,10 @@ import { Action, AnyAction, combineReducers, Dispatch, Middleware, MiddlewareAPI
 import { configureStore } from '@reduxjs/toolkit';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 
-import onlineSearchFormReducer, {
-	actions as onlineSearchForm,
-	initialState as onlineSearchFormInitialState,
-} from './onlineSearchForm';
+import searchContextsReducer, {
+	actions as searchContexts,
+	initialState as searchContextsState,
+} from './searchContexts';
 import postsReducer, { actions as posts, initialState as postsInitialState } from './posts';
 import systemReducer, { actions as system, initialState as systemInitialState } from './system';
 import savedSearchesReducer, {
@@ -30,7 +30,7 @@ export const mainReducer = combineReducers({
 	posts: postsReducer,
 	savedSearches: savedSearchesReducer,
 	tags: tagsReducer,
-	onlineSearchForm: onlineSearchFormReducer,
+	searchContexts: searchContextsReducer,
 	settings: settingsReducer,
 	dashboard: dashboardReducer,
 	tasks: tasksReducer,
@@ -44,7 +44,7 @@ export const initialState = {
 	posts: postsInitialState,
 	savedSearches: savedSearchesInitialState,
 	tags: tagsInitialState,
-	onlineSearchForm: onlineSearchFormInitialState,
+	searchContexts: searchContextsState,
 	settings: settingsInitialState,
 	dashboard: dashboardInitialState,
 	tasks: tasksInitialState,
@@ -56,7 +56,7 @@ export const initialState = {
 export const actions = {
 	posts,
 	system,
-	onlineSearchForm,
+	searchContexts,
 	savedSearches,
 	tags,
 	settings,

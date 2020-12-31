@@ -5,7 +5,7 @@ import { initialState } from '../../../src/store';
 import { RootState, AppDispatch } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import * as thunks from '../../../src/store/thunks/onlineSearchForm';
+import * as thunks from '../../../src/store/thunks/onlineSearches';
 import { mPost, mTag } from '../../helpers/test.helper';
 
 jest.mock('../../../src/service/apiService', () => {
@@ -31,9 +31,9 @@ describe('thunks/onlineSearchForm', () => {
 			const store = mockStore(
 				mState({
 					settings: { ...initialState.settings, apiKey: 'api_key' },
-					onlineSearchForm: {
+					searchContexts: {
 						[context]: {
-							...initialState.onlineSearchForm.default,
+							...initialState.searchContexts.default,
 							limit: 20,
 							page: 5,
 							rating: 'explicit',
@@ -50,7 +50,7 @@ describe('thunks/onlineSearchForm', () => {
 			const nonIncrementedResult = thunks.getPostApiOptions(state, context, false);
 
 			// then
-			const searchFormState = state.onlineSearchForm[context];
+			const searchFormState = state.searchContexts[context];
 			expect(incrementedResult.apiKey).toBe(state.settings.apiKey);
 			expect(incrementedResult.limit).toBe(searchFormState.limit);
 			expect(incrementedResult.page).toBe(searchFormState.page + 1);
@@ -114,8 +114,8 @@ describe('thunks/onlineSearchForm', () => {
 			const excludedTags = [mTag({ tag: 'excluded_tag1' }), mTag({ tag: 'excluded_tag2' })];
 			const store = mockStore(
 				mState({
-					onlineSearchForm: {
-						[context]: { ...initialState.onlineSearchForm.default, selectedTags, excludedTags },
+					searchContexts: {
+						[context]: { ...initialState.searchContexts.default, selectedTags, excludedTags },
 					},
 				})
 			);
@@ -149,8 +149,8 @@ describe('thunks/onlineSearchForm', () => {
 			const excludedTags = [mTag({ tag: 'excluded_tag1' }), mTag({ tag: 'excluded_tag2' })];
 			const store = mockStore(
 				mState({
-					onlineSearchForm: {
-						[context]: { ...initialState.onlineSearchForm.default, selectedTags, excludedTags },
+					searchContexts: {
+						[context]: { ...initialState.searchContexts.default, selectedTags, excludedTags },
 					},
 				})
 			);

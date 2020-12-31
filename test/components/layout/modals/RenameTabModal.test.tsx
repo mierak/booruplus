@@ -19,7 +19,7 @@ describe('SearchFormModal', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -42,7 +42,7 @@ describe('SearchFormModal', () => {
 		const newName = 'test tab name';
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -61,7 +61,7 @@ describe('SearchFormModal', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.updateContext.type,
+			type: actions.searchContexts.updateContext.type,
 			payload: {
 				context,
 				data: { tabName: newName },
@@ -74,7 +74,7 @@ describe('SearchFormModal', () => {
 		const newName = 'test tab name';
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -92,7 +92,7 @@ describe('SearchFormModal', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.updateContext.type,
+			type: actions.searchContexts.updateContext.type,
 			payload: {
 				context,
 				data: { tabName: newName },
@@ -104,7 +104,7 @@ describe('SearchFormModal', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})

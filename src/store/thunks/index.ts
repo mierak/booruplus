@@ -1,5 +1,5 @@
-import * as onlineSearchForm from './onlineSearchForm';
-import * as downloadedSearchForm from './downloadedSearchForm';
+import * as onlineSearches from './onlineSearches';
+import * as offlineSearches from './offlineSearches';
 import * as dashboard from './dashboard';
 import * as posts from './posts';
 import * as savedSearches from './savedSearches';
@@ -8,4 +8,4 @@ import * as tags from './tags';
 import * as tasks from './tasks';
 import * as favorites from './favorites';
 
-export { onlineSearchForm, downloadedSearchForm, dashboard, posts, savedSearches, settings, tags, tasks, favorites };
+export { onlineSearches, offlineSearches, dashboard, posts, savedSearches, settings, tags, tasks, favorites };

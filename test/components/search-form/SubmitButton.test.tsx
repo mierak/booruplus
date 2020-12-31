@@ -22,7 +22,7 @@ describe('search-from/SubmitButton', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -46,7 +46,7 @@ describe('search-from/SubmitButton', () => {
 				loadingStates: {
 					isSearchDisabled: true,
 				},
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -69,7 +69,7 @@ describe('search-from/SubmitButton', () => {
 				loadingStates: {
 					isSearchDisabled: false,
 				},
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -91,7 +91,7 @@ describe('search-from/SubmitButton', () => {
 		const page = 10;
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						page,
 					},
@@ -118,7 +118,7 @@ describe('search-from/SubmitButton', () => {
 				// loadingStates: {
 				// 	isSearchDisabled: false,
 				// },
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						page,
 					},
@@ -138,7 +138,7 @@ describe('search-from/SubmitButton', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).not.toContainMatchingAction({
-			type: actions.onlineSearchForm.updateContext.type,
+			type: actions.searchContexts.updateContext.type,
 			payload: { context, data: { page: 0 } },
 		});
 		expect(onSubmitSpy).toHaveBeenCalledTimes(1);
@@ -148,7 +148,7 @@ describe('search-from/SubmitButton', () => {
 		const page = 10;
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						page,
 					},
@@ -168,7 +168,7 @@ describe('search-from/SubmitButton', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.updateContext.type,
+			type: actions.searchContexts.updateContext.type,
 			payload: { context, data: { page: 0 } },
 		});
 		expect(onSubmitSpy).toHaveBeenCalledTimes(1);

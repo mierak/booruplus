@@ -20,7 +20,7 @@ type Props = {
 };
 
 const SearchForm: React.FunctionComponent<Props> = ({ context, className }) => {
-	const mode = useSelector((state: RootState) => state.onlineSearchForm[context].mode);
+	const mode = useSelector((state: RootState) => state.searchContexts[context].mode);
 
 	return (
 		<Form labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} layout='horizontal' className={className}>

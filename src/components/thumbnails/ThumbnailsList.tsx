@@ -46,7 +46,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const postCount = useSelector((state: RootState) => state.posts.posts[props.context]?.length ?? 0);
 	const activePostIndex = useSelector((state: RootState) => state.posts.selectedIndices[props.context]);
 	const useImageHover = useSelector((state: RootState) => state.settings.imageHover);
-	const contextMode = useSelector((state: RootState) => state.onlineSearchForm[props.context].mode);
+	const contextMode = useSelector((state: RootState) => state.searchContexts[props.context].mode);
 
 	useEffect(() => {
 		const handleKeyPress = (event: KeyboardEvent): void => {

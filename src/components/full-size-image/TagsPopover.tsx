@@ -57,7 +57,7 @@ const TagsPopover: React.FunctionComponent<Props> = ({ tags, context }: Props) =
 		};
 
 		const handleAddToCurrent = (): void => {
-			dispatch(actions.onlineSearchForm.addTag({ context, data: record }));
+			dispatch(actions.searchContexts.addTag({ context, data: record }));
 		};
 
 		return [

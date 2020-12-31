@@ -36,7 +36,7 @@ describe('ThumbnailsList', () => {
 				posts: {
 					posts: { [context]: posts },
 				},
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -62,7 +62,7 @@ describe('ThumbnailsList', () => {
 				posts: {
 					posts: { posts, favorites: [] },
 				},
-				onlineSearchForm: {
+				searchContexts: {
 					posts: {},
 				},
 			})
@@ -102,7 +102,7 @@ describe('ThumbnailsList', () => {
 				posts: {
 					posts: { posts: [], favorites: [] },
 				},
-				onlineSearchForm: {
+				searchContexts: {
 					posts: {},
 				},
 			})
@@ -126,7 +126,7 @@ describe('ThumbnailsList', () => {
 				posts: {
 					posts: { posts: [], favorites: [] },
 				},
-				onlineSearchForm: {
+				searchContexts: {
 					posts: {},
 				},
 			})
@@ -149,7 +149,7 @@ describe('ThumbnailsList', () => {
 				posts: {
 					posts: { posts },
 				},
-				onlineSearchForm: {
+				searchContexts: {
 					posts: {
 						mode: 'other',
 					},
@@ -174,7 +174,7 @@ describe('ThumbnailsList', () => {
 				posts: {
 					posts: { posts, favorites: [] },
 				},
-				onlineSearchForm: {
+				searchContexts: {
 					posts: {},
 				},
 			})

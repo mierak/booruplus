@@ -13,7 +13,7 @@ const Checkboxes: React.FunctionComponent<Props> = ({ context }) => {
 	const dispatch = useDispatch();
 
 	const checkboxes = useSelector((state: RootState) => {
-		const slice = state.onlineSearchForm[context];
+		const slice = state.searchContexts[context];
 		if ('showImages' in slice) {
 			return {
 				showNonBlacklisted: slice.showNonBlacklisted,
@@ -34,22 +34,22 @@ const Checkboxes: React.FunctionComponent<Props> = ({ context }) => {
 	): void => {
 		switch (checkbox) {
 			case 'non-blacklisted':
-				dispatch(actions.onlineSearchForm.updateContext({ context, data: { showNonBlacklisted: !showNonBlacklisted } }));
+				dispatch(actions.searchContexts.updateContext({ context, data: { showNonBlacklisted: !showNonBlacklisted } }));
 				break;
 			case 'blacklisted':
-				dispatch(actions.onlineSearchForm.updateContext({ context, data: { showBlacklisted: !showBlacklisted } }));
+				dispatch(actions.searchContexts.updateContext({ context, data: { showBlacklisted: !showBlacklisted } }));
 				break;
 			case 'favorites':
-				dispatch(actions.onlineSearchForm.updateContext({ context, data: { showFavorites: !showFavorites } }));
+				dispatch(actions.searchContexts.updateContext({ context, data: { showFavorites: !showFavorites } }));
 				break;
 			case 'gifs':
-				dispatch(actions.onlineSearchForm.updateContext({ context, data: { showGifs: !showGifs } }));
+				dispatch(actions.searchContexts.updateContext({ context, data: { showGifs: !showGifs } }));
 				break;
 			case 'images':
-				dispatch(actions.onlineSearchForm.updateContext({ context, data: { showImages: !showImages } }));
+				dispatch(actions.searchContexts.updateContext({ context, data: { showImages: !showImages } }));
 				break;
 			case 'videos':
-				dispatch(actions.onlineSearchForm.updateContext({ context, data: { showVideos: !showVideos } }));
+				dispatch(actions.searchContexts.updateContext({ context, data: { showVideos: !showVideos } }));
 				break;
 		}
 	};

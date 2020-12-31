@@ -37,7 +37,7 @@ describe('pages/ImageView', () => {
 				system: {
 					imageViewContext: context,
 				},
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})

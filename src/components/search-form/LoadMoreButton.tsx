@@ -10,19 +10,19 @@ type Props = {
 	context: PostsContext | string;
 };
 
-type LoadMoreType = typeof thunks.onlineSearchForm.fetchMorePosts | typeof thunks.downloadedSearchForm.fetchMorePosts;
+type LoadMoreType = typeof thunks.onlineSearches.fetchMorePosts | typeof thunks.offlineSearches.fetchMorePosts;
 
 const LoadMoreButton: React.FunctionComponent<Props> = ({ className, context }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const isSearchDisabled = useSelector((state: RootState) => state.loadingStates.isSearchDisabled);
-	const searchMode = useSelector((state: RootState) => state.onlineSearchForm[context].mode);
+	const searchMode = useSelector((state: RootState) => state.searchContexts[context].mode);
 
 	const getLoadMore = (): LoadMoreType | undefined => {
 		switch (searchMode) {
 			case 'online':
-				return thunks.onlineSearchForm.fetchMorePosts;
+				return thunks.onlineSearches.fetchMorePosts;
 			case 'offline':
-				return thunks.downloadedSearchForm.fetchMorePosts;
+				return thunks.offlineSearches.fetchMorePosts;
 		}
 	};
 

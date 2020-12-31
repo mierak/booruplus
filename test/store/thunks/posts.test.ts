@@ -485,9 +485,9 @@ describe('thunks/posts', () => {
 			const apiKey = 'api_key';
 			const store = mockStore(
 				mState({
-					onlineSearchForm: {
+					searchContexts: {
 						[context]: {
-							...initialState.onlineSearchForm.default,
+							...initialState.searchContexts.default,
 							selectedTags,
 							excludedTags,
 							rating,

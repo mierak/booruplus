@@ -419,7 +419,7 @@ describe('store/posts', () => {
 		it('Resets state when online fetchPosts is pending', () => {
 			// given
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-			const action = createPendingAction(thunks.onlineSearchForm.fetchPosts.pending.type, { arg: { context } });
+			const action = createPendingAction(thunks.onlineSearches.fetchPosts.pending.type, { arg: { context } });
 			const state: PostsState = {
 				...initialState,
 				posts: mPostsPostsState({ [context]: posts }),
@@ -436,7 +436,7 @@ describe('store/posts', () => {
 		it('Resets state when offline fetchPosts is pending', () => {
 			// given
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-			const action = createPendingAction(thunks.downloadedSearchForm.fetchPosts.pending.type, { arg: { context } });
+			const action = createPendingAction(thunks.offlineSearches.fetchPosts.pending.type, { arg: { context } });
 			const state: PostsState = {
 				...initialState,
 				posts: mPostsPostsState({ [context]: posts }),
@@ -527,7 +527,7 @@ describe('store/posts', () => {
 		it('Adds posts when online fetchPosts - checkPostsAgainstDb is fulfilled', () => {
 			// given
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-			const action = createFulfilledAction(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled.type, posts, {
+			const action = createFulfilledAction(thunks.onlineSearches.checkPostsAgainstDb.fulfilled.type, posts, {
 				arg: { context },
 			});
 			const state: PostsState = {
@@ -545,7 +545,7 @@ describe('store/posts', () => {
 		it('Adds posts when offline fetchPosts is fulfilled', () => {
 			// given
 			const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-			const action = createFulfilledAction(thunks.downloadedSearchForm.fetchPosts.fulfilled.type, posts, {
+			const action = createFulfilledAction(thunks.offlineSearches.fetchPosts.fulfilled.type, posts, {
 				arg: { context },
 			});
 			const state: PostsState = {
@@ -564,7 +564,7 @@ describe('store/posts', () => {
 			it('Adds posts when offline fetchMorePosts is fulfilled', () => {
 				// given
 				const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
-				const action = createFulfilledAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts, {
+				const action = createFulfilledAction(thunks.offlineSearches.fetchMorePosts.fulfilled.type, posts, {
 					arg: { context },
 				});
 				const state: PostsState = {
@@ -583,7 +583,7 @@ describe('store/posts', () => {
 				// given
 				const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
 				const currentPosts = [mPost({ id: 4 }), mPost({ id: 5 }), mPost({ id: 6 })];
-				const action = createFulfilledAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts, {
+				const action = createFulfilledAction(thunks.offlineSearches.fetchMorePosts.fulfilled.type, posts, {
 					arg: { context },
 				});
 				const state: PostsState = {
@@ -602,7 +602,7 @@ describe('store/posts', () => {
 				// given
 				const posts: Post[] = [];
 				const currentPosts = [mPost({ id: 4 }), mPost({ id: 5 }), mPost({ id: 6 })];
-				const action = createFulfilledAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts, {
+				const action = createFulfilledAction(thunks.offlineSearches.fetchMorePosts.fulfilled.type, posts, {
 					arg: { context },
 				});
 				const state: PostsState = {
@@ -621,7 +621,7 @@ describe('store/posts', () => {
 				// given
 				const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
 				const currentPosts: Post[] = [];
-				const action = createFulfilledAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, posts, {
+				const action = createFulfilledAction(thunks.offlineSearches.fetchMorePosts.fulfilled.type, posts, {
 					arg: { context },
 				});
 				const state: PostsState = {
@@ -642,10 +642,10 @@ describe('store/posts', () => {
 				// given
 				const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
 				const currentPosts = [mPost({ id: 4 }), mPost({ id: 5 }), mPost({ id: 6 })];
-				const checkAction = createFulfilledAction(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled.type, posts, {
+				const checkAction = createFulfilledAction(thunks.onlineSearches.checkPostsAgainstDb.fulfilled.type, posts, {
 					arg: { context },
 				});
-				const action = createFulfilledAction(thunks.onlineSearchForm.fetchMorePosts.fulfilled.type, posts, {
+				const action = createFulfilledAction(thunks.onlineSearches.fetchMorePosts.fulfilled.type, posts, {
 					arg: { context },
 				});
 				const state: PostsState = {
@@ -664,7 +664,7 @@ describe('store/posts', () => {
 				// given
 				const posts: Post[] = [];
 				const currentPosts = [mPost({ id: 4 }), mPost({ id: 5 }), mPost({ id: 6 })];
-				const action = createFulfilledAction(thunks.onlineSearchForm.fetchMorePosts.fulfilled.type, posts, {
+				const action = createFulfilledAction(thunks.onlineSearches.fetchMorePosts.fulfilled.type, posts, {
 					arg: { context },
 				});
 				const state: PostsState = {
@@ -683,7 +683,7 @@ describe('store/posts', () => {
 				// given
 				const posts = [mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 })];
 				const currentPosts: Post[] = [];
-				const action = createFulfilledAction(thunks.onlineSearchForm.fetchMorePosts.fulfilled.type, posts, {
+				const action = createFulfilledAction(thunks.onlineSearches.fetchMorePosts.fulfilled.type, posts, {
 					arg: { context },
 				});
 				const state: PostsState = {

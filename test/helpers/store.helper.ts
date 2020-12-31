@@ -1,6 +1,8 @@
-import { initialState } from '../../src/store';
-import { PostsContext, RootState, Settings, DownloadedSearchFormState } from '@store/types';
+import { PostsContext, RootState, SearchContext, Settings } from '@store/types';
+import { SearchContextsState } from '@store/searchContexts';
 import { PostsState } from '@store/posts';
+import { Post } from '@appTypes/gelbooruTypes';
+import { initialState } from '../../src/store';
 import { DashboardState } from '@store/dashboard';
 import { FavoritesState } from '@store/favorites';
 import { LoadingStates } from '@store/loadingStates';
@@ -9,8 +11,6 @@ import { SystemState } from '@store/system';
 import { SavedSearchesState } from '@store/savedSearches';
 import { TagsState } from '@store/tags';
 import Modals from '@store/modals';
-import { Post } from '@appTypes/gelbooruTypes';
-import { OnlineSearchFormState } from '@store/onlineSearchForm';
 
 type DeepPartial<T> = {
 	[P in keyof T]?: DeepPartial<T[P]>;
@@ -58,25 +58,22 @@ const mDashboardState = (ds?: Partial<DashboardState>): DashboardState => {
 	};
 };
 
-type SearchFormState = {
-	[K in PostsContext]: DownloadedSearchFormState;
-} & { [key: string]: Partial<DownloadedSearchFormState> };
-const mOnlineSearchFormState = (ds?: Partial<SearchFormState>): OnlineSearchFormState => {
+const mSearchContextsState = (ds?: { [key: string]: Partial<SearchContext> }): SearchContextsState => {
 	if (ds) {
-		const newObj: OnlineSearchFormState = {
-			checkLaterQueue: { ...initialState.onlineSearchForm.default, mode: 'other' },
-			favorites: { ...initialState.onlineSearchForm.default, mode: 'other' },
-			mostViewed: { ...initialState.onlineSearchForm.default, mode: 'other' },
+		const newObj: SearchContextsState = {
+			checkLaterQueue: { ...initialState.searchContexts.default, mode: 'other' },
+			favorites: { ...initialState.searchContexts.default, mode: 'other' },
+			mostViewed: { ...initialState.searchContexts.default, mode: 'other' },
 		};
 		for (const [key, value] of Object.entries(ds)) {
 			newObj[key] = {
-				...initialState.onlineSearchForm.default,
+				...initialState.searchContexts.default,
 				...value,
 			};
 		}
 		return newObj;
 	}
-	return { ...initialState.onlineSearchForm };
+	return { ...initialState.searchContexts };
 };
 
 const mFavoritesState = (fs?: Partial<FavoritesState>): FavoritesState => {
@@ -170,7 +167,7 @@ const mModalsState = (ms?: Partial<ReturnType<typeof Modals>>): ReturnType<typeo
 
 type PartialRootState = {
 	dashboard?: Partial<DashboardState>;
-	onlineSearchForm?: Partial<SearchFormState>;
+	searchContexts?: { [key: string]: Partial<SearchContext> };
 	favorites?: Partial<FavoritesState>;
 	loadingStates?: Partial<LoadingStates>;
 	tasks?: Partial<TasksState>;
@@ -185,7 +182,7 @@ type PartialRootState = {
 export const mState = (state?: PartialRootState): RootState => {
 	return {
 		dashboard: mDashboardState(state?.dashboard),
-		onlineSearchForm: mOnlineSearchFormState(state?.onlineSearchForm),
+		searchContexts: mSearchContextsState(state?.searchContexts),
 		favorites: mFavoritesState(state?.favorites),
 		loadingStates: mLoadingStates(state?.loadingStates),
 		tasks: mTasksState(state?.tasks),

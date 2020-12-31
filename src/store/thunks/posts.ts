@@ -234,14 +234,14 @@ export const downloadWholeSearch = createAsyncThunk<void, { context: PostsContex
 		const logger = thunkLogger.getActionLogger(downloadWholeSearch);
 
 		const state = thunkApi.getState();
-		const tags = state.onlineSearchForm[context].selectedTags;
-		const excludedTags = state.onlineSearchForm[context].excludedTags;
+		const tags = state.searchContexts[context].selectedTags;
+		const excludedTags = state.searchContexts[context].excludedTags;
 		const tagsString = tags.map((tag) => tag.tag);
 		const excludedTagString = excludedTags.map((tag) => tag.tag);
 		const options: PostSearchOptions = {
 			limit: 100,
 			page: 0,
-			rating: state.onlineSearchForm[context].rating,
+			rating: state.searchContexts[context].rating,
 			apiKey: state.settings.apiKey,
 		};
 

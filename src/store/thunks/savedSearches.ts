@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import moment from 'moment';
 
-import type { PostsContext, DownloadedSearchFormState, ThunkApi, RejectWithValue } from '@store/types';
+import type { PostsContext, SearchContext, ThunkApi, RejectWithValue } from '@store/types';
 import type { Rating, SavedSearch, Tag, Post } from '@appTypes/gelbooruTypes';
 
 import { db } from '@db';
@@ -10,8 +10,8 @@ import { thunkLoggerFactory } from '@util/logger';
 import { NoActiveSavedSearchError, SavedSearchAlreadyExistsError } from '@errors/savedSearchError';
 
 import { initPostsContext } from '../commonActions';
-import * as downloadedSearchFormThunk from './downloadedSearchForm';
-import * as onlineSearchFormThunk from './onlineSearchForm';
+import * as downloadedSearchFormThunk from './offlineSearches';
+import * as onlineSearchFormThunk from './onlineSearches';
 import { generateTabContext } from '@util/utils';
 
 const thunkLogger = thunkLoggerFactory();
@@ -24,8 +24,8 @@ export const searchOnline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi>
 		clone.lastSearched = moment().valueOf();
 		logger.debug('Updating last searched to', clone.lastSearched);
 		db.savedSearches.save(clone);
-		const context = generateTabContext(Object.keys(getState().onlineSearchForm));
-		const data: Partial<DownloadedSearchFormState> = {
+		const context = generateTabContext(Object.keys(getState().searchContexts));
+		const data: Partial<SearchContext> = {
 			mode: 'online',
 			savedSearchId: savedSearch.id,
 			selectedTags: savedSearch.tags,
@@ -46,8 +46,8 @@ export const searchOffline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi
 		clone.lastSearched = moment().valueOf();
 		logger.debug('Updating last searched to', clone.lastSearched);
 		db.savedSearches.save(clone);
-		const context = generateTabContext(Object.keys(getState().onlineSearchForm));
-		const data: Partial<DownloadedSearchFormState> = {
+		const context = generateTabContext(Object.keys(getState().searchContexts));
+		const data: Partial<SearchContext> = {
 			mode: 'offline',
 			savedSearchId: savedSearch.id,
 			selectedTags: savedSearch.tags,

@@ -1,11 +1,11 @@
 import { doDatabaseMock } from '../helpers/database.mock';
 doDatabaseMock();
-import reducer, { actions, initialState } from '../../src/store/onlineSearchForm';
-import { thunks } from '../../src/store/';
+import reducer, { actions, initialState } from '../../src/store/searchContexts';
+import { thunks } from '../../src/store';
 import { createAction, mTag, createPendingAction, createFulfilledAction } from '../helpers/test.helper';
-import { DownloadedSearchFormState } from '@store/types';
+import { SearchContext } from '@store/types';
 
-describe('store/onlineSearchForm', () => {
+describe('store/searcContexts', () => {
 	const defaultCtx = 'default';
 	it('Adds tag', () => {
 		//given
@@ -67,7 +67,7 @@ describe('store/onlineSearchForm', () => {
 	});
 	describe('Updates context', () => {
 		//given
-		const state: DownloadedSearchFormState = {
+		const state: SearchContext = {
 			tabName: '',
 			mode: 'offline',
 			excludedTags: [],
@@ -96,7 +96,7 @@ describe('store/onlineSearchForm', () => {
 	it('Clear reset to initialState', () => {
 		//given
 		const action = createAction(actions.clear.type, { context: defaultCtx });
-		const state: DownloadedSearchFormState = {
+		const state: SearchContext = {
 			tabName: '',
 			mode: 'offline',
 			excludedTags: [],
@@ -146,7 +146,7 @@ describe('store/onlineSearchForm', () => {
 		it('Sets tag options when getTagsByPatternFromApi is fullfiled', () => {
 			// given
 			const tags = [mTag({ tag: 'tag1' })];
-			const action = createFulfilledAction(thunks.onlineSearchForm.getTagsByPatternFromApi.fulfilled.type, tags, {
+			const action = createFulfilledAction(thunks.onlineSearches.getTagsByPatternFromApi.fulfilled.type, tags, {
 				arg: { context: defaultCtx },
 			});
 
@@ -158,7 +158,7 @@ describe('store/onlineSearchForm', () => {
 		});
 		it('Increments page on online fetchMorePosts', () => {
 			//given
-			const action = createFulfilledAction(thunks.onlineSearchForm.fetchMorePosts.fulfilled.type, undefined, {
+			const action = createFulfilledAction(thunks.onlineSearches.fetchMorePosts.fulfilled.type, undefined, {
 				arg: { context: defaultCtx },
 			});
 
@@ -171,7 +171,7 @@ describe('store/onlineSearchForm', () => {
 		it('Sets tag options on loadTagsByPattern fulfilled', () => {
 			//given
 			const tags = [mTag({ tag: 'tag1' })];
-			const action = createFulfilledAction(thunks.downloadedSearchForm.loadTagsByPattern.fulfilled.type, tags, {
+			const action = createFulfilledAction(thunks.offlineSearches.loadTagsByPattern.fulfilled.type, tags, {
 				arg: { context: defaultCtx },
 			});
 
@@ -183,7 +183,7 @@ describe('store/onlineSearchForm', () => {
 		});
 		it('Increases page on offline fetchMorePosts', () => {
 			//given
-			const action = createPendingAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type, {
+			const action = createPendingAction(thunks.offlineSearches.fetchMorePosts.fulfilled.type, {
 				arg: { context: defaultCtx },
 			});
 

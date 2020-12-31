@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import type { FilterOptions } from '@db/types';
-import type { DownloadedSearchFormState, PostsContext, ThunkApi } from '@store/types';
+import type { SearchContext, PostsContext, ThunkApi } from '@store/types';
 import type { Tag, Post } from '@appTypes/gelbooruTypes';
 
 import { db } from '@db';
@@ -10,7 +10,7 @@ import { thumbnailCache } from '@util/objectUrlCache';
 
 const thunkLogger = thunkLoggerFactory();
 
-export const getFilterOptions = (state: DownloadedSearchFormState): FilterOptions => {
+export const getFilterOptions = (state: SearchContext): FilterOptions => {
 	return {
 		blacklisted: state.showBlacklisted,
 		nonBlacklisted: state.showNonBlacklisted,
@@ -40,7 +40,7 @@ export const fetchPosts = createAsyncThunk<Post[], { context: PostsContext | str
 	async ({ context }, thunkApi): Promise<Post[]> => {
 		thumbnailCache.revokeAll();
 		const logger = thunkLogger.getActionLogger(fetchPosts);
-		const state = thunkApi.getState().onlineSearchForm[context];
+		const state = thunkApi.getState().searchContexts[context];
 		if (!('showImages' in state)) {
 			return [];
 		}
@@ -73,7 +73,7 @@ export const fetchMorePosts = createAsyncThunk<Post[], { context: PostsContext |
 	'downloadedSearchForm/fetchMorePosts',
 	async ({ context }, thunkApi): Promise<Post[]> => {
 		const logger = thunkLogger.getActionLogger(fetchMorePosts);
-		const state = thunkApi.getState().onlineSearchForm[context];
+		const state = thunkApi.getState().searchContexts[context];
 		if (!('showImages' in state)) {
 			return [];
 		}

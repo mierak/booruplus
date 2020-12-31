@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { thunks, actions } from '../../../src/store';
-import type { RootState, AppDispatch, DownloadedSearchFormState } from '../../../src/store/types';
+import type { RootState, AppDispatch, SearchContext } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mState } from '../../helpers/store.helper';
@@ -247,8 +247,8 @@ describe('pages/SavedSearches', () => {
 				},
 			})
 		);
-		const context = generateTabContext(Object.keys(store.getState().onlineSearchForm));
-		const data: Partial<DownloadedSearchFormState> = {
+		const context = generateTabContext(Object.keys(store.getState().searchContexts));
+		const data: Partial<SearchContext> = {
 			mode: 'other',
 			selectedTags: savedSearches[0].tags,
 			excludedTags: savedSearches[0].excludedTags,

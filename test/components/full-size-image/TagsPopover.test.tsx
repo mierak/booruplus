@@ -149,7 +149,7 @@ describe('TagsPopover', () => {
 
 		// then
 		expect(store.getActions()).toContainMatchingAction({
-			type: actions.onlineSearchForm.addTag.type,
+			type: actions.searchContexts.addTag.type,
 			payload: { context, data: tags[1] },
 		});
 	});

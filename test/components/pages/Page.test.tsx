@@ -58,7 +58,7 @@ describe('pages/Dashboard', () => {
 					activeView: 'searches',
 					activeSearchTab: context,
 				},
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 				posts: {

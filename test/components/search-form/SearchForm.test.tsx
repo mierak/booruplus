@@ -18,7 +18,7 @@ describe('SearchForm', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						mode: 'online',
 						page: 12,
@@ -59,7 +59,7 @@ describe('SearchForm', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						mode: 'offline',
 						page: 12,

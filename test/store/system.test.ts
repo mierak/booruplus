@@ -68,7 +68,7 @@ describe('store/system', () => {
 				describe('fetchPosts()', () => {
 					it('pending', () => {
 						// given
-						const action = createAction(thunks.onlineSearchForm.fetchPosts.pending.type);
+						const action = createAction(thunks.onlineSearches.fetchPosts.pending.type);
 						const state: SystemState = {
 							...initialState,
 							activeView: 'favorites',
@@ -84,7 +84,7 @@ describe('store/system', () => {
 				describe('getTagsByPatternFromApi()', () => {
 					it('pending', () => {
 						// given
-						const action = createAction(thunks.onlineSearchForm.getTagsByPatternFromApi.pending.type);
+						const action = createAction(thunks.onlineSearches.getTagsByPatternFromApi.pending.type);
 						const state: SystemState = {
 							...initialState,
 							isTagOptionsLoading: false,
@@ -98,7 +98,7 @@ describe('store/system', () => {
 					});
 					it('fulfilled', () => {
 						// given
-						const action = createAction(thunks.onlineSearchForm.getTagsByPatternFromApi.fulfilled.type);
+						const action = createAction(thunks.onlineSearches.getTagsByPatternFromApi.fulfilled.type);
 						const state: SystemState = {
 							...initialState,
 							isTagOptionsLoading: true,
@@ -112,7 +112,7 @@ describe('store/system', () => {
 					});
 					it('rejected', () => {
 						// given
-						const action = createAction(thunks.onlineSearchForm.getTagsByPatternFromApi.rejected.type);
+						const action = createAction(thunks.onlineSearches.getTagsByPatternFromApi.rejected.type);
 						const state: SystemState = {
 							...initialState,
 							isTagOptionsLoading: true,
@@ -130,7 +130,7 @@ describe('store/system', () => {
 				describe('fetchPosts', () => {
 					it('pending', () => {
 						// given
-						const action = createAction(thunks.downloadedSearchForm.fetchPosts.pending.type);
+						const action = createAction(thunks.offlineSearches.fetchPosts.pending.type);
 						const state: SystemState = {
 							...initialState,
 							activeView: 'favorites',

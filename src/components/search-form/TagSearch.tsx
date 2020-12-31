@@ -28,18 +28,18 @@ const TagSearch: React.FunctionComponent<Props> = ({ open, context }: Props) => 
 	const [value, setValue] = useState('');
 	const isLoadingTags = useSelector((state: RootState) => state.system.isTagOptionsLoading);
 
-	const options = useSelector((state: RootState): Tag[] => state.onlineSearchForm[context].tagOptions);
+	const options = useSelector((state: RootState): Tag[] => state.searchContexts[context].tagOptions);
 
 	const load = useSelector((state: RootState) => {
-		const mode = state.onlineSearchForm[context].mode;
+		const mode = state.searchContexts[context].mode;
 		if (mode === 'online') {
-			return thunks.onlineSearchForm.getTagsByPatternFromApi;
+			return thunks.onlineSearches.getTagsByPatternFromApi;
 		} else {
-			return thunks.downloadedSearchForm.loadTagsByPattern;
+			return thunks.offlineSearches.loadTagsByPattern;
 		}
 	});
-	const clear = actions.onlineSearchForm.clearTagOptions;
-	const addTag = actions.onlineSearchForm.addTag;
+	const clear = actions.searchContexts.clearTagOptions;
+	const addTag = actions.searchContexts.addTag;
 
 	const debounced = useDebounce(value, 300);
 

@@ -4,12 +4,12 @@ import { enableFetchMocks } from 'jest-fetch-mock';
 enableFetchMocks();
 
 import { initialState } from '../../../src/store';
-import type { RootState, AppDispatch, DownloadedSearchFormState } from '../../../src/store/types';
+import type { RootState, AppDispatch, SearchContext } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import * as thunks from '../../../src/store/thunks/tags';
-import * as downloadedSearchFormThunk from '../../../src/store/thunks/downloadedSearchForm';
-import * as onlineSearchFormThunk from '../../../src/store/thunks/onlineSearchForm';
+import * as downloadedSearchFormThunk from '../../../src/store/thunks/offlineSearches';
+import * as onlineSearchFormThunk from '../../../src/store/thunks/onlineSearches';
 import { mTag } from '../../helpers/test.helper';
 import { mState } from '../../helpers/store.helper';
 import { Tag } from '@appTypes/gelbooruTypes';
@@ -88,14 +88,14 @@ describe('thunks/tags', () => {
 			// given
 			const store = mockStore(
 				mState({
-					onlineSearchForm: {
+					searchContexts: {
 						['1']: {},
 					},
 				})
 			);
 			const tag = mTag({ tag: 'tag1' });
-			const context = generateTabContext(Object.keys(store.getState().onlineSearchForm));
-			const data: Partial<DownloadedSearchFormState> = {
+			const context = generateTabContext(Object.keys(store.getState().searchContexts));
+			const data: Partial<SearchContext> = {
 				mode: 'online',
 				selectedTags: [tag],
 			};
@@ -118,14 +118,14 @@ describe('thunks/tags', () => {
 			// given
 			const store = mockStore(
 				mState({
-					onlineSearchForm: {
+					searchContexts: {
 						['1']: {},
 					},
 				})
 			);
 			const tag = mTag({ tag: 'tag1' });
-			const context = generateTabContext(Object.keys(store.getState().onlineSearchForm));
-			const data: Partial<DownloadedSearchFormState> = {
+			const context = generateTabContext(Object.keys(store.getState().searchContexts));
+			const data: Partial<SearchContext> = {
 				mode: 'offline',
 				selectedTags: [tag],
 			};

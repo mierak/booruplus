@@ -2,10 +2,10 @@ import { doDatabaseMock, mockedDb } from '../../helpers/database.mock';
 doDatabaseMock();
 
 import { initialState } from '../../../src/store';
-import { RootState, AppDispatch, DownloadedSearchFormState } from '@store/types';
+import { RootState, AppDispatch, SearchContext } from '@store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import * as thunks from '../../../src/store/thunks/downloadedSearchForm';
+import * as thunks from '../../../src/store/thunks/offlineSearches';
 import { mPost, mTag } from '../../helpers/test.helper';
 import { mState } from '../../helpers/store.helper';
 import { Tag } from '@appTypes/gelbooruTypes';
@@ -16,7 +16,7 @@ describe('thunks/downloadedSearchForm', () => {
 	describe('getFilterOptions()', () => {
 		it('Constructs object correctly', () => {
 			// given
-			const downloadedSearchFormState: DownloadedSearchFormState = {
+			const downloadedSearchFormState: SearchContext = {
 				tabName: '',
 				mode: 'online',
 				page: 5,
@@ -85,9 +85,9 @@ describe('thunks/downloadedSearchForm', () => {
 			const excludedTags = [mTag({ tag: 'excluded_tag1' }), mTag({ tag: 'excluded_tag2' })];
 			const store = mockStore(
 				mState({
-					onlineSearchForm: {
+					searchContexts: {
 						[context]: {
-							...initialState.onlineSearchForm.default,
+							...initialState.searchContexts.default,
 							selectedTags,
 							excludedTags,
 						},
@@ -103,7 +103,7 @@ describe('thunks/downloadedSearchForm', () => {
 			// then
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.posts.getForTagsWithOptions).toBeCalledWith(
-				thunks.getFilterOptions(store.getState().onlineSearchForm[context]),
+				thunks.getFilterOptions(store.getState().searchContexts[context]),
 				selectedTags.map((tag) => tag.tag),
 				excludedTags.map((tag) => tag.tag)
 			);
@@ -118,9 +118,9 @@ describe('thunks/downloadedSearchForm', () => {
 			const excludedTags: Tag[] = [];
 			const store = mockStore(
 				mState({
-					onlineSearchForm: {
+					searchContexts: {
 						[context]: {
-							...initialState.onlineSearchForm.default,
+							...initialState.searchContexts.default,
 							selectedTags,
 							excludedTags,
 						},
@@ -136,7 +136,7 @@ describe('thunks/downloadedSearchForm', () => {
 			// then
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.posts.getAllWithOptions).toBeCalledWith(
-				thunks.getFilterOptions(store.getState().onlineSearchForm[context])
+				thunks.getFilterOptions(store.getState().searchContexts[context])
 			);
 			expect(mockedDb.tagSearchHistory.saveSearch).toBeCalledWith(selectedTags);
 			expect(dispatchedActions[0]).toMatchObject({ type: 'downloadedSearchForm/fetchPosts/pending', payload: undefined });
@@ -151,9 +151,9 @@ describe('thunks/downloadedSearchForm', () => {
 			const excludedTags = [mTag({ tag: 'excluded_tag1' }), mTag({ tag: 'excluded_tag2' })];
 			const store = mockStore(
 				mState({
-					onlineSearchForm: {
+					searchContexts: {
 						[context]: {
-							...initialState.onlineSearchForm.default,
+							...initialState.searchContexts.default,
 							selectedTags,
 							excludedTags,
 						},
@@ -169,7 +169,7 @@ describe('thunks/downloadedSearchForm', () => {
 			// then
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.posts.getForTagsWithOptions).toBeCalledWith(
-				thunks.getFilterOptions(store.getState().onlineSearchForm[context]),
+				thunks.getFilterOptions(store.getState().searchContexts[context]),
 				selectedTags.map((tag) => tag.tag),
 				excludedTags.map((tag) => tag.tag)
 			);
@@ -190,9 +190,9 @@ describe('thunks/downloadedSearchForm', () => {
 			const excludedTags: Tag[] = [];
 			const store = mockStore(
 				mState({
-					onlineSearchForm: {
+					searchContexts: {
 						[context]: {
-							...initialState.onlineSearchForm.default,
+							...initialState.searchContexts.default,
 							selectedTags,
 							excludedTags,
 						},
@@ -208,7 +208,7 @@ describe('thunks/downloadedSearchForm', () => {
 			// then
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.posts.getAllWithOptions).toBeCalledWith(
-				thunks.getFilterOptions(store.getState().onlineSearchForm[context])
+				thunks.getFilterOptions(store.getState().searchContexts[context])
 			);
 			expect(mockedDb.tagSearchHistory.saveSearch).toBeCalledWith(selectedTags);
 			expect(dispatchedActions[0]).toMatchObject({

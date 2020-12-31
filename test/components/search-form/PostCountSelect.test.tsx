@@ -17,7 +17,7 @@ describe('search-form/PostCountSelect', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						limit: 50,
 					},
@@ -39,7 +39,7 @@ describe('search-form/PostCountSelect', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {
 						limit: 50,
 					},
@@ -58,7 +58,7 @@ describe('search-form/PostCountSelect', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.onlineSearchForm.updateContext.type,
+			type: actions.searchContexts.updateContext.type,
 			payload: { context, data: { limit: 51 } },
 		});
 	});

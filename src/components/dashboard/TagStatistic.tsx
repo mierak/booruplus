@@ -5,7 +5,7 @@ import { Table, Card, Tag as AntTag } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 
 import { thunks } from '@store';
-import { TagHistory, AppDispatch, RootState, DownloadedSearchFormState } from '@store/types';
+import { TagHistory, AppDispatch, RootState, SearchContext } from '@store/types';
 
 import { generateTabContext, getTagColor } from '@util/utils';
 import { initPostsContext } from '../../store/commonActions';
@@ -36,7 +36,7 @@ const maxTagLength = 25;
 const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const allContexts = useSelector((state: RootState) => Object.keys(state.onlineSearchForm));
+	const allContexts = useSelector((state: RootState) => Object.keys(state.searchContexts));
 	const settings = useSelector((state: RootState) => state.settings.dashboard);
 	const dataSource = useSelector((state: RootState) =>
 		type === 'most-searched' ? state.dashboard.mostSearchedTags : state.dashboard.mostFavoritedTags
@@ -71,12 +71,12 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 				<a
 					onClick={(): void => {
 						const context = generateTabContext(allContexts);
-						const data: Partial<DownloadedSearchFormState> = {
+						const data: Partial<SearchContext> = {
 							mode: 'online',
 							selectedTags: [record.tag],
 						};
 						dispatch(initPostsContext({ context, data }));
-						dispatch(thunks.onlineSearchForm.fetchPosts({ context }));
+						dispatch(thunks.onlineSearches.fetchPosts({ context }));
 					}}
 				>
 					Online
@@ -85,12 +85,12 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 				<a
 					onClick={(): void => {
 						const context = generateTabContext(allContexts);
-						const data: Partial<DownloadedSearchFormState> = {
+						const data: Partial<SearchContext> = {
 							mode: 'offline',
 							selectedTags: [record.tag],
 						};
 						dispatch(initPostsContext({ context, data }));
-						dispatch(thunks.downloadedSearchForm.fetchPosts({ context }));
+						dispatch(thunks.offlineSearches.fetchPosts({ context }));
 					}}
 					style={{ float: 'right' }}
 				>

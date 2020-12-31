@@ -16,11 +16,11 @@ const { Option } = Select;
 const SortSelect: React.FunctionComponent<Props> = ({ context, open, className }) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const value = useSelector((state: RootState) => state.onlineSearchForm[context].sort);
-	const mode = useSelector((state: RootState) => state.onlineSearchForm[context].mode);
+	const value = useSelector((state: RootState) => state.searchContexts[context].sort);
+	const mode = useSelector((state: RootState) => state.searchContexts[context].mode);
 
 	const handleChange = (sort: Sort): void => {
-		dispatch(actions.onlineSearchForm.updateContext({ context, data: { sort } }));
+		dispatch(actions.searchContexts.updateContext({ context, data: { sort } }));
 	};
 
 	const renderOptions = (): React.ReactNode => {

@@ -19,9 +19,9 @@ const TaskProgress: React.FunctionComponent<Props> = (props: Props) => {
 	const task = useSelector((state: RootState) => state.tasks.tasks[props.taskId]);
 	const tabs = useSelector(
 		(state: RootState) => {
-			const contexts = Object.keys(state.onlineSearchForm);
+			const contexts = Object.keys(state.searchContexts);
 			return contexts.map((ctx) => {
-				const title = state.onlineSearchForm[ctx]?.selectedTags[0]?.tag ?? 'New Tab';
+				const title = state.searchContexts[ctx]?.selectedTags[0]?.tag ?? 'New Tab';
 				return {
 					title,
 					context: ctx,

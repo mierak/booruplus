@@ -13,12 +13,12 @@ type Props = {
 const SubmitButton: React.FunctionComponent<Props> = ({ context, onSubmit }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const stateSlice = useSelector((state: RootState) => state.onlineSearchForm[context]);
+	const stateSlice = useSelector((state: RootState) => state.searchContexts[context]);
 	const isDisabled = stateSlice.page === 0;
 	const isSearchButtonDisabled = useSelector((state: RootState) => state.loadingStates.isSearchDisabled);
 
 	const handleCancel = (): void => {
-		dispatch(actions.onlineSearchForm.updateContext({ context, data: { page: 0 } }));
+		dispatch(actions.searchContexts.updateContext({ context, data: { page: 0 } }));
 		onSubmit();
 	};
 

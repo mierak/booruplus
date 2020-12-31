@@ -8,8 +8,8 @@ import { RootState, AppDispatch } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import * as thunks from '../../../src/store/thunks/savedSearches';
-import * as onlineSearchFormThunk from '../../../src/store/thunks/onlineSearchForm';
-import * as downloadedSearchFormThunk from '../../../src/store/thunks/downloadedSearchForm';
+import * as onlineSearchFormThunk from '../../../src/store/thunks/onlineSearches';
+import * as downloadedSearchFormThunk from '../../../src/store/thunks/offlineSearches';
 import { mSavedSearch, mTag, mPost } from '../../helpers/test.helper';
 import { mState } from '../../helpers/store.helper';
 
@@ -132,7 +132,7 @@ describe('thunks/savedSearches', () => {
 			// given
 			const store = mockStore(
 				mState({
-					onlineSearchForm: {
+					searchContexts: {
 						['1']: {},
 					},
 				})
@@ -145,7 +145,7 @@ describe('thunks/savedSearches', () => {
 				tags: mockSearch.tags,
 				excludedTags: mockSearch.excludedTags,
 			};
-			const newContext = generateTabContext(Object.keys(store.getState().onlineSearchForm));
+			const newContext = generateTabContext(Object.keys(store.getState().searchContexts));
 
 			// when
 			await store.dispatch(thunks.searchOnline(savedSearch));
@@ -175,7 +175,7 @@ describe('thunks/savedSearches', () => {
 			// given
 			const store = mockStore(
 				mState({
-					onlineSearchForm: {
+					searchContexts: {
 						['1']: {},
 					},
 				})
@@ -188,7 +188,7 @@ describe('thunks/savedSearches', () => {
 				tags: mockSearch.tags,
 				excludedTags: mockSearch.excludedTags,
 			};
-			const newContext = generateTabContext(Object.keys(store.getState().onlineSearchForm));
+			const newContext = generateTabContext(Object.keys(store.getState().searchContexts));
 
 			// when
 			await store.dispatch(thunks.searchOffline(savedSearch));

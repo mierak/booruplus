@@ -1,18 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import type { Tag } from '@appTypes/gelbooruTypes';
-import type { DownloadedSearchFormState, PostsContext, WithContext } from './types';
+import type { SearchContext as SearchContext, PostsContext, WithContext } from './types';
 
 import * as thunks from './thunks';
 import { deletePostsContext, initPostsContext } from './commonActions';
 
-export type OnlineSearchFormState = {
-	[K in PostsContext]: DownloadedSearchFormState;
+export type SearchContextsState = {
+	[K in PostsContext]: SearchContext;
 } & {
-	[key: string]: DownloadedSearchFormState;
+	[key: string]: SearchContext;
 };
 
-const defaultValues: DownloadedSearchFormState = {
+const defaultValues: SearchContext = {
 	tabName: '',
 	mode: 'online',
 	selectedTags: [],
@@ -31,15 +31,15 @@ const defaultValues: DownloadedSearchFormState = {
 	showVideos: true,
 };
 
-export const initialState: OnlineSearchFormState = {
+export const initialState: SearchContextsState = {
 	default: defaultValues,
 	checkLaterQueue: { ...defaultValues, mode: 'other' },
 	favorites: { ...defaultValues, mode: 'other' },
 	mostViewed: { ...defaultValues, mode: 'other' },
 };
 
-const searchFormSlice = createSlice({
-	name: 'searchForm',
+const searchContextsSlice = createSlice({
+	name: 'searchContexts',
 	initialState: initialState,
 	reducers: {
 		addTag: (state, action: PayloadAction<WithContext<Tag>>): void => {
@@ -63,10 +63,10 @@ const searchFormSlice = createSlice({
 		clearTagOptions: (state, action: PayloadAction<WithContext>): void => {
 			state[action.payload.context].tagOptions = [];
 		},
-		clear: (state, action: PayloadAction<WithContext>): OnlineSearchFormState => {
+		clear: (state, action: PayloadAction<WithContext>): SearchContextsState => {
 			return { ...state, [action.payload.context]: defaultValues };
 		},
-		updateContext: (state, action: PayloadAction<WithContext<Partial<DownloadedSearchFormState>>>): void => {
+		updateContext: (state, action: PayloadAction<WithContext<Partial<SearchContext>>>): void => {
 			state[action.payload.context] = { ...state[action.payload.context], ...action.payload.data };
 		},
 	},
@@ -77,16 +77,16 @@ const searchFormSlice = createSlice({
 		builder.addCase(deletePostsContext, (state, action) => {
 			delete state[action.payload.context];
 		});
-		builder.addCase(thunks.onlineSearchForm.getTagsByPatternFromApi.fulfilled, (state, action) => {
+		builder.addCase(thunks.onlineSearches.getTagsByPatternFromApi.fulfilled, (state, action) => {
 			state[action.meta.arg.context].tagOptions = action.payload;
 		});
-		builder.addCase(thunks.onlineSearchForm.fetchMorePosts.fulfilled, (state, action) => {
+		builder.addCase(thunks.onlineSearches.fetchMorePosts.fulfilled, (state, action) => {
 			state[action.meta.arg.context].page = state[action.meta.arg.context].page + 1;
 		});
-		builder.addCase(thunks.downloadedSearchForm.loadTagsByPattern.fulfilled, (state, action) => {
+		builder.addCase(thunks.offlineSearches.loadTagsByPattern.fulfilled, (state, action) => {
 			state[action.meta.arg.context].tagOptions = action.payload;
 		});
-		builder.addCase(thunks.downloadedSearchForm.fetchMorePosts.fulfilled, (state, action) => {
+		builder.addCase(thunks.offlineSearches.fetchMorePosts.fulfilled, (state, action) => {
 			state[action.meta.arg.context].page = state[action.meta.arg.context].page + 1;
 		});
 		builder.addCase(thunks.savedSearches.saveSearch.fulfilled, (state, action) => {
@@ -95,6 +95,6 @@ const searchFormSlice = createSlice({
 	},
 });
 
-export const actions = searchFormSlice.actions;
+export const actions = searchContextsSlice.actions;
 
-export default searchFormSlice.reducer;
+export default searchContextsSlice.reducer;

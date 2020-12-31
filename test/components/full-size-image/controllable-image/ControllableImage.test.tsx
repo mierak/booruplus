@@ -45,7 +45,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 				settings: {
 					downloadMissingImages: false,
 				},
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -89,7 +89,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		const post = mPost({ fileUrl: 'url.jpg' });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -115,7 +115,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		const post = mPost({ fileUrl: 'url.jpg' });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -138,7 +138,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		const post = mPost({ fileUrl: 'url.jpg' });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -161,7 +161,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		const post = mPost({ fileUrl: 'url.jpg' });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -204,7 +204,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'], fileUrl: 'test_file_url.jpg' });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -231,7 +231,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		const post = mPost({ id: 123, tags: ['tag1', 'tag2', 'tag3'], fileUrl: 'test_file_url.jpg' });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -259,7 +259,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		const post = mPost({ fileUrl: link });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})
@@ -287,7 +287,7 @@ describe('full-size-image/controllabe-imabe/ControllableImage', () => {
 		const post = mPost({ fileUrl: link });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
+				searchContexts: {
 					[context]: {},
 				},
 			})

@@ -14,12 +14,11 @@ import SearchTab from '@components/common/SearchTab';
 
 const SearchFormModal: React.FunctionComponent<SearchFormModalProps> = (props) => {
 	const dispatch = useDispatch<AppDispatch>();
-	const activeTab = useSelector((state: RootState) => state.onlineSearchForm[props.context].mode);
-	const fetchPosts =
-		activeTab === 'online' ? thunks.onlineSearchForm.fetchPosts : thunks.downloadedSearchForm.fetchPosts;
+	const activeTab = useSelector((state: RootState) => state.searchContexts[props.context].mode);
+	const fetchPosts = activeTab === 'online' ? thunks.onlineSearches.fetchPosts : thunks.offlineSearches.fetchPosts;
 
 	const handleClear = (): void => {
-		dispatch(actions.onlineSearchForm.clear({ context: props.context }));
+		dispatch(actions.searchContexts.clear({ context: props.context }));
 	};
 
 	const handleClose = (): void => {
@@ -51,7 +50,7 @@ const SearchFormModal: React.FunctionComponent<SearchFormModalProps> = (props) =
 				activeKey={activeTab}
 				onChange={(key): void => {
 					dispatch(
-						actions.onlineSearchForm.updateContext({ context: props.context, data: { mode: key as 'online' | 'offline' } })
+						actions.searchContexts.updateContext({ context: props.context, data: { mode: key as 'online' | 'offline' } })
 					);
 				}}
 			>

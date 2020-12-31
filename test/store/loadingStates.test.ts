@@ -238,7 +238,7 @@ describe('store/loadingStates', () => {
 	});
 	it('Correctly changes state when online fetchPosts is initiated', () => {
 		// given
-		const action = createAction(thunks.onlineSearchForm.fetchPosts.pending.type);
+		const action = createAction(thunks.onlineSearches.fetchPosts.pending.type);
 		const state: LoadingStates = {
 			...initialState,
 			isSearchDisabled: false,
@@ -254,7 +254,7 @@ describe('store/loadingStates', () => {
 	});
 	it('Correctly changes state when online fetchPosts is rejected', () => {
 		// given
-		const action = createAction(thunks.onlineSearchForm.fetchPosts.rejected.type);
+		const action = createAction(thunks.onlineSearches.fetchPosts.rejected.type);
 		const state: LoadingStates = {
 			...initialState,
 			isSearchDisabled: true,
@@ -270,7 +270,7 @@ describe('store/loadingStates', () => {
 	});
 	it('Correctly changes state when online fetchMorePosts is initiated', () => {
 		// given
-		const action = createAction(thunks.onlineSearchForm.fetchMorePosts.pending.type);
+		const action = createAction(thunks.onlineSearches.fetchMorePosts.pending.type);
 		const state: LoadingStates = {
 			...initialState,
 			isSearchDisabled: false,
@@ -284,7 +284,7 @@ describe('store/loadingStates', () => {
 	});
 	it('Correctly changes state when online fetchMorePosts is rejected', () => {
 		// given
-		const action = createAction(thunks.onlineSearchForm.fetchMorePosts.rejected.type);
+		const action = createAction(thunks.onlineSearches.fetchMorePosts.rejected.type);
 		const state: LoadingStates = {
 			...initialState,
 			isSearchDisabled: true,
@@ -298,7 +298,7 @@ describe('store/loadingStates', () => {
 	});
 	it('Correctly changes state when offline fetchPosts is initiated', () => {
 		// given
-		const action = createAction(thunks.downloadedSearchForm.fetchPosts.pending.type);
+		const action = createAction(thunks.offlineSearches.fetchPosts.pending.type);
 		const state: LoadingStates = {
 			...initialState,
 			isSearchDisabled: false,
@@ -314,7 +314,7 @@ describe('store/loadingStates', () => {
 	});
 	it('Correctly changes state when offline fetchMorePosts is initiated', () => {
 		// given
-		const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.pending.type);
+		const action = createAction(thunks.offlineSearches.fetchMorePosts.pending.type);
 
 		// when
 		const result = reducer({ ...initialState, isSearchDisabled: true }, action);
@@ -324,7 +324,7 @@ describe('store/loadingStates', () => {
 	});
 	it('Correctly changes state when offline fetchPosts is fulfilled', () => {
 		// given
-		const action = createAction(thunks.downloadedSearchForm.fetchPosts.fulfilled.type);
+		const action = createAction(thunks.offlineSearches.fetchPosts.fulfilled.type);
 
 		// when
 		const result = reducer({ ...initialState, isSearchDisabled: true, isFetchingPosts: true }, action);
@@ -335,7 +335,7 @@ describe('store/loadingStates', () => {
 	});
 	it('Correctly changes state when offline fetchMorePosts is fulfilled', () => {
 		// given
-		const action = createAction(thunks.downloadedSearchForm.fetchMorePosts.fulfilled.type);
+		const action = createAction(thunks.offlineSearches.fetchMorePosts.fulfilled.type);
 
 		// when
 		const result = reducer({ ...initialState, isSearchDisabled: true, isFetchingPosts: true }, action);
@@ -346,7 +346,7 @@ describe('store/loadingStates', () => {
 	});
 	it('Correctly changes when checkPostsAgainstDb is fulfilled', () => {
 		// given
-		const action = createAction(thunks.onlineSearchForm.checkPostsAgainstDb.fulfilled.type);
+		const action = createAction(thunks.onlineSearches.checkPostsAgainstDb.fulfilled.type);
 		const state: LoadingStates = {
 			...initialState,
 			isSearchDisabled: true,
@@ -362,7 +362,7 @@ describe('store/loadingStates', () => {
 	});
 	it('Correctly changes when checkPostsAgainstDb is rejected', () => {
 		// given
-		const action = createAction(thunks.onlineSearchForm.checkPostsAgainstDb.rejected.type);
+		const action = createAction(thunks.onlineSearches.checkPostsAgainstDb.rejected.type);
 		const state: LoadingStates = {
 			...initialState,
 			isSearchDisabled: true,

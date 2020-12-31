@@ -43,7 +43,7 @@ const StyledSpin = styled(Spin)`
 const ThumbnailsListTabContent: React.FunctionComponent<{ context: PostsContext | string }> = ({ context }) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const isFetchingPosts = useSelector((state: RootState) => state.loadingStates.isFetchingPosts);
-	const savedSearchId = useSelector((state: RootState) => state.onlineSearchForm[context].savedSearchId);
+	const savedSearchId = useSelector((state: RootState) => state.searchContexts[context].savedSearchId);
 
 	if (isFetchingPosts) {
 		return <StyledSpin indicator={<LoadingOutlined style={{ fontSize: '64px' }} />} />;
@@ -129,15 +129,15 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 
 	const { tabs, activeTab } = useSelector(
 		(state: RootState) => {
-			const contexts = Object.keys(state.onlineSearchForm).filter((ctx) => state.onlineSearchForm[ctx].mode !== 'other');
+			const contexts = Object.keys(state.searchContexts).filter((ctx) => state.searchContexts[ctx].mode !== 'other');
 			const currentTab = state.system.activeSearchTab;
 
 			const tss = contexts.map((ctx) => {
-				const title = state.onlineSearchForm[ctx]?.tabName ?? '';
+				const title = state.searchContexts[ctx]?.tabName ?? '';
 				return {
 					title,
 					context: ctx,
-					mode: state.onlineSearchForm[ctx].mode,
+					mode: state.searchContexts[ctx].mode,
 				};
 			});
 
@@ -158,11 +158,11 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 			title: 'Reload from first page',
 			icon: 'reload-outlined',
 			onClick: (context, mode) => {
-				dispatch(actions.onlineSearchForm.updateContext({ context, data: { page: 0 } }));
+				dispatch(actions.searchContexts.updateContext({ context, data: { page: 0 } }));
 				if (mode === 'online') {
-					dispatch(thunks.onlineSearchForm.fetchPosts({ context }));
+					dispatch(thunks.onlineSearches.fetchPosts({ context }));
 				} else if (mode === 'offline') {
-					dispatch(thunks.downloadedSearchForm.fetchPosts({ context }));
+					dispatch(thunks.offlineSearches.fetchPosts({ context }));
 				}
 			},
 		},
