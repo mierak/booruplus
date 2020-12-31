@@ -21,7 +21,7 @@ const defaultValues: SearchContext = {
 	rating: 'any',
 	page: 0,
 	tagOptions: [],
-	sort: 'date-uploaded', //! TODO default to date-downloaded for offline search
+	sort: 'date-uploaded',
 	sortOrder: 'desc',
 	showBlacklisted: false,
 	showFavorites: true,

@@ -84,4 +84,60 @@ describe('search-form/SortSelect', () => {
 		});
 		await waitFor(() => undefined);
 	});
+	it('Switches sort from date-uploaded on offline mode', async () => {
+		// given
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {
+						mode: 'offline',
+						sort: 'date-uploaded',
+					},
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<SortSelect context={context} open />
+			</Provider>
+		);
+
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.updateContext.type,
+			payload: { context, data: { sort: 'date-downloaded' } },
+		});
+		await waitFor(() => undefined);
+	});
+	it('Switches sort from date-uploaded on offline mode', async () => {
+		// given
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {
+						mode: 'online',
+						sort: 'date-downloaded',
+					},
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<SortSelect context={context} open />
+			</Provider>
+		);
+
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.updateContext.type,
+			payload: { context, data: { sort: 'date-uploaded' } },
+		});
+		await waitFor(() => undefined);
+	});
 });

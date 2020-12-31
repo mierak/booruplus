@@ -19,6 +19,14 @@ const SortSelect: React.FunctionComponent<Props> = ({ context, open, className }
 	const value = useSelector((state: RootState) => state.searchContexts[context].sort);
 	const mode = useSelector((state: RootState) => state.searchContexts[context].mode);
 
+	React.useEffect(() => {
+		if (mode === 'offline' && value === 'date-uploaded') {
+			dispatch(actions.searchContexts.updateContext({ context, data: { sort: 'date-downloaded' } }));
+		} else if (mode === 'online' && value === 'date-downloaded') {
+			dispatch(actions.searchContexts.updateContext({ context, data: { sort: 'date-uploaded' } }));
+		}
+	}, [context, dispatch, mode, value]);
+
 	const handleChange = (sort: Sort): void => {
 		dispatch(actions.searchContexts.updateContext({ context, data: { sort } }));
 	};
@@ -53,7 +61,7 @@ const SortSelect: React.FunctionComponent<Props> = ({ context, open, className }
 	};
 
 	return (
-		<Select defaultValue={value} className={className} onChange={handleChange} open={open}>
+		<Select value={value} className={className} onChange={handleChange} open={open}>
 			{renderOptions()}
 		</Select>
 	);
