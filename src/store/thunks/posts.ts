@@ -150,13 +150,14 @@ export const downloadPosts = createAsyncThunk<
 
 		logger.debug(`Downloading ${params.posts.length} posts. Skipping already downloaded.`);
 		const downloadedPosts: Post[] = [];
+		const promises: Promise<unknown>[] = [];
 		for await (const post of params.posts) {
 			if (post.downloaded === 1) {
 				logger.debug(`Skipping post id ${post.id} because it is already downloaded.`, post.fileUrl);
 				skippedPostCount++;
 				continue;
 			}
-			thunkApi.dispatch(downloadPost({ post, taskId, context: params.context }));
+			promises.push(thunkApi.dispatch(downloadPost({ post, taskId, context: params.context })));
 			downloadedPosts.push(post);
 
 			tagsToSave.push(...post.tags);
@@ -170,6 +171,7 @@ export const downloadPosts = createAsyncThunk<
 				break;
 			}
 		}
+		await Promise.all(promises);
 		if (!canceled) {
 			logger.debug(
 				`${params.posts.length} posts given to download. ${downloadedPostCount} posts downloaded, ${skippedPostCount} posts skipped. Updating Task id ${taskId} to DB`

@@ -4,6 +4,8 @@
 - NEW FEATURE: Browser-like tabs for searches. You can now have multiple searches at once. Other features, like searching a specific tags or opening posts from download task now open in a new tab
 - Added simple update notification on app startup
 - Added Add to favorites button to fullsize image view
+- BUG FIX: Fixed posts sometimes saving with their selected status upon download
+- BUG FIX: Fixed download tasks showing incorrect progress
 
 ## 0.1.7 - Check later queue - 16.12.2020
 - NEW FEATURE: While browsing search results, you can now add images to a transient "Check Later" queue. A button will appear in the left menu where you can go through these images. This queue is cleared everytime you exit the application.

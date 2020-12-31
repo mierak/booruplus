@@ -224,7 +224,7 @@ describe('thunks/posts', () => {
 				},
 			});
 		});
-		it('Calls downloadPost() for each post', async () => {
+		it('Calls downloadPost() for each post and persists tasks after done', async () => {
 			// given
 			const posts = [
 				mPost({ id: 1, tags: ['tag1', 'tag2'], downloaded: 0 }),
@@ -253,6 +253,9 @@ describe('thunks/posts', () => {
 			expect(dispatchedActions[6]).toMatchObject({
 				type: thunks.downloadPost.pending.type,
 				meta: { arg: { post: posts[3] } },
+			});
+			expect(dispatchedActions[dispatchedActions.length - 1]).toMatchObject({
+				type: thunks.persistTask.fulfilled.type,
 			});
 		});
 		it('Skips post when it is already downloaded', async () => {

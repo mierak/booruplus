@@ -5,7 +5,6 @@ import type { FilterOptions } from './types';
 
 import { intersection, getRatingName, isExtensionVideo, toAscii } from '@util/utils';
 
-
 export const saveOrUpdateFromApi = async (post: Post): Promise<Post> => {
 	const clone: Post = { ...post };
 	const savedPost = await db.posts.get(clone.id);
@@ -40,7 +39,7 @@ export const bulkUpdateFromApi = async (posts: Post[]): Promise<Post[]> => {
 };
 
 export const put = async (post: Post): Promise<number> => {
-	return db.posts.put(post);
+	return db.posts.put({ ...post, selected: false });
 };
 
 export const bulkSave = async (posts: Post[]): Promise<number | void> => {
@@ -121,7 +120,7 @@ export const getAllWithOptions = async (options: FilterOptions): Promise<Post[]>
 	let posts = await db.posts.toArray();
 	if (!options.showFavorites) {
 		const allFavoriteIds = Array.from(new Set((await db.favorites.toArray()).flatMap((node) => node.postIds)));
-		posts = posts.filter(post => !allFavoriteIds.includes(post.id));
+		posts = posts.filter((post) => !allFavoriteIds.includes(post.id));
 	}
 	const filteredFirst = filterByDownloadedBlacklistedRating(posts, options);
 	const sorted = sortPosts(filteredFirst, options);
