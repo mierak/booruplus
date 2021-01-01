@@ -23,6 +23,7 @@ const Container = styled.div`
 	height: 100vh;
 	padding: 10px;
 	overflow-x: 'hidden';
+	overflow-y: auto;
 `;
 
 const StyledTag = styled(Tag)`
@@ -216,8 +217,8 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 				rowClassName={(_, index): string => (index % 2 === 0 ? 'table-row-light' : 'table-row-dark')}
 				expandable={{
 					rowExpandable: (record: SavedSearch): boolean => record.previews.length > 0,
+					expandedRowRender: renderPreviews,
 				}}
-				expandedRowRender={renderPreviews}
 				style={{ overflowX: 'hidden' }}
 			>
 				<Column title='Tags' dataIndex='tags' key='tagsCol' render={renderTags} filterDropdownVisible={true} />
