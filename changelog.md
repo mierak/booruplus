@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 - Now you are thinking with tabs - DATE
+## 0.2.0 - Now you are thinking with tabs - 1.1.2020
 - NEW FEATURE: Browser-like tabs for searches. You can now have multiple searches at once. Other features, like searching a specific tags or opening posts from download task now open in a new tab
 - Added simple update notification on app startup
 - Added Add to favorites button to fullsize image view
