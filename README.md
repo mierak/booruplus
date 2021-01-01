@@ -2,12 +2,13 @@
 Both an online and offline alternative to booru sites. Lets you view, download, organize and sort images.
 
 ## Download
-- Windows installer is available in the [releases page](https://github.com/mierak/booruplus/releases)
+- Windows installer is available in the [releases page](https://github.com/mierak/booruplus/releases) or via [direct link here](https://github.com/mierak/booruplus/releases/download/v0.2.0-BETA/Lolinizer-0.2.0-BETA.Setup.exe)
 - Linux binaries might be provided in the future.
 
 ## Features
 - Gallery with infinite loading, interactive file-like selection functionality(shift/ctrl+click).
 - Fully fledged image view with pan-scrolling, zoom and other features. Also plays videos.
+- Organize your searches with browser-like tabs.
 - Search for images by tags, be it a name of the character, anime, artist or just some stuff that is in the image.
     - Exclude tags from search by simply dragging them to the excluded section in the search form.
     - Various sorting option and filters available.
