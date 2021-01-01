@@ -1,11 +1,9 @@
 import { createSlice, AsyncThunk, ActionReducerMapBuilder } from '@reduxjs/toolkit';
 
-import { thunkLoggerFactory } from '@util/logger';
+import { getActionLogger } from '@util/logger';
 
 import * as thunks from './thunks';
 import { ThunkApi } from './types';
-
-const thunkLogger = thunkLoggerFactory();
 
 type MyThunk = AsyncThunk<unknown, unknown, ThunkApi>;
 type ThunkType = {
@@ -14,7 +12,7 @@ type ThunkType = {
 
 const registerErrorLogger = (builder: ActionReducerMapBuilder<Record<string, unknown>>, action: MyThunk): void => {
 	builder.addCase(action.rejected, (_, result) => {
-		thunkLogger.getActionLogger(action, { logPending: false }).error(result);
+		getActionLogger(action).error(result);
 	});
 };
 

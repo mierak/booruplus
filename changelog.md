@@ -4,6 +4,7 @@
 - NEW FEATURE: Browser-like tabs for searches. You can now have multiple searches at once. Other features, like searching a specific tags or opening posts from download task now open in a new tab
 - Added simple update notification on app startup
 - Added Add to favorites button to fullsize image view
+- Improved logging
 - BUG FIX: Fixed posts sometimes saving with their selected status upon download
 - BUG FIX: Fixed download tasks showing incorrect progress
 

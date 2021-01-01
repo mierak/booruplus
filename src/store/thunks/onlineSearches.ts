@@ -5,10 +5,8 @@ import type { PostsContext, RootState, ThunkApi } from '@store/types';
 
 import { db } from '@db';
 import * as api from '@service/apiService';
-import { thunkLoggerFactory } from '@util/logger';
+import { getActionLogger } from '@util/logger';
 import { thumbnailCache } from '@util/objectUrlCache';
-
-const thunkLogger = thunkLoggerFactory();
 
 export const getPostApiOptions = (state: RootState, context: string, incrementPage?: boolean): PostSearchOptions => {
 	return {
@@ -28,7 +26,7 @@ export const checkPostsAgainstDb = createAsyncThunk<
 >(
 	'onlineSearchForm/checkPostsAgainstDb',
 	async ({ posts }, _): Promise<Post[]> => {
-		const logger = thunkLogger.getActionLogger(checkPostsAgainstDb);
+		const logger = getActionLogger(checkPostsAgainstDb);
 		logger.debug(`Checking ${posts.length} posts against DB to save or update`);
 		const result = db.posts.bulkUpdateFromApi(posts);
 		return result;
@@ -39,7 +37,7 @@ export const fetchPosts = createAsyncThunk<Post[], { context: PostsContext | str
 	'onlineSearchForm/fetchPosts',
 	async ({ context }, thunkApi): Promise<Post[]> => {
 		thumbnailCache.revokeAll();
-		const logger = thunkLogger.getActionLogger(fetchPosts);
+		const logger = getActionLogger(fetchPosts);
 		const { dispatch } = thunkApi;
 		const getState = thunkApi.getState;
 
@@ -67,7 +65,7 @@ export const fetchPosts = createAsyncThunk<Post[], { context: PostsContext | str
 export const getTagsByPatternFromApi = createAsyncThunk<Tag[], { pattern: string; context: string }, ThunkApi>(
 	'onlineSearchForm/getTagsByPatternFromApi',
 	async ({ pattern }, thunkApi): Promise<Tag[]> => {
-		const logger = thunkLogger.getActionLogger(getTagsByPatternFromApi);
+		const logger = getActionLogger(getTagsByPatternFromApi);
 		logger.debug(`Gettings tags from API. Pattern: ${pattern}`);
 		return api.getTagsByPattern(pattern, thunkApi.getState().settings.apiKey);
 	}
@@ -76,7 +74,7 @@ export const getTagsByPatternFromApi = createAsyncThunk<Tag[], { pattern: string
 export const fetchMorePosts = createAsyncThunk<Post[], { context: PostsContext | string }, ThunkApi>(
 	'onlineSearchForm/fetchMorePosts',
 	async ({ context }, thunkApi): Promise<Post[]> => {
-		const logger = thunkLogger.getActionLogger(fetchMorePosts);
+		const logger = getActionLogger(fetchMorePosts);
 		const getState = thunkApi.getState;
 
 		const options = getPostApiOptions(getState(), context, true);

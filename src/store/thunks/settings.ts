@@ -8,17 +8,15 @@ import type { Settings, ThunkApi } from '@store/types';
 import{ openNotificationWithIcon } from '@appTypes/components';
 import { db } from '@db';
 import { IpcInvokeChannels, IpcListeners, IpcSendChannels } from '@appTypes/processDto';
-import { thunkLoggerFactory } from '@util/logger';
+import { getActionLogger } from '@util/logger';
 import { formatPercentProgress } from '@util/utils';
 
 import { setFullscreenLoadingMaskState } from '../commonActions';
 
-const thunkLogger = thunkLoggerFactory();
-
 export const loadSettings = createAsyncThunk<Settings, string | undefined, ThunkApi>(
 	'settings/load',
 	async (name): Promise<Settings> => {
-		const logger = thunkLogger.getActionLogger(loadSettings);
+		const logger = getActionLogger(loadSettings);
 		logger.debug(`Loading settings with name: ${name}`);
 		const settings = await db.settings.loadSettings(name);
 		if (!settings) {
@@ -46,7 +44,7 @@ export const loadSettings = createAsyncThunk<Settings, string | undefined, Thunk
 export const updateTheme = createAsyncThunk<'dark' | 'light', 'dark' | 'light', ThunkApi>(
 	'settings/update-theme',
 	async (theme, { getState }): Promise<'dark' | 'light'> => {
-		const logger = thunkLogger.getActionLogger(updateTheme);
+		const logger = getActionLogger(updateTheme);
 		const settings = { ...getState().settings };
 		settings.theme = theme;
 		logger.debug('Saving settings with name user', settings);
@@ -58,7 +56,7 @@ export const updateTheme = createAsyncThunk<'dark' | 'light', 'dark' | 'light', 
 export const saveSettings = createAsyncThunk<void, void, ThunkApi>(
 	'settings/save',
 	async (_, thunkApi): Promise<void> => {
-		const logger = thunkLogger.getActionLogger(saveSettings);
+		const logger = getActionLogger(saveSettings);
 		const settings = thunkApi.getState().settings;
 		logger.debug('Saving settings with name user', settings);
 		window.api.send(IpcSendChannels.SETTINGS_CHANGED, settings);
@@ -69,7 +67,7 @@ export const saveSettings = createAsyncThunk<void, void, ThunkApi>(
 export const exportDatabase = createAsyncThunk<boolean, void, ThunkApi>(
 	'settings/export-data',
 	async (_, { dispatch }): Promise<boolean> => {
-		const logger = thunkLogger.getActionLogger(exportDatabase);
+		const logger = getActionLogger(exportDatabase);
 		logger.debug('Opening data export dialog');
 		const filePath = await window.api.invoke(IpcInvokeChannels.OPEN_SELECT_EXPORT_FILE_LOCATION_DIALOG, 'data');
 
@@ -96,7 +94,7 @@ export const exportDatabase = createAsyncThunk<boolean, void, ThunkApi>(
 export const exportImages = createAsyncThunk<boolean, void, ThunkApi>(
 	'settings/exportImages',
 	async (_, { dispatch }): Promise<boolean> => {
-		const logger = thunkLogger.getActionLogger(exportImages);
+		const logger = getActionLogger(exportImages);
 		logger.debug('Opening data export dialog');
 		const filePath = await window.api.invoke(IpcInvokeChannels.OPEN_SELECT_EXPORT_FILE_LOCATION_DIALOG, 'images');
 
@@ -129,7 +127,7 @@ export const exportImages = createAsyncThunk<boolean, void, ThunkApi>(
 export const importImages = createAsyncThunk<boolean, void, ThunkApi>(
 	'settings/importImages',
 	async (_, { dispatch }): Promise<boolean> => {
-		const logger = thunkLogger.getActionLogger(importImages);
+		const logger = getActionLogger(importImages);
 
 		const progressUpdate = (__: unknown, { done, total }: { done: number; total: number }): void => {
 			const percent = Math.floor((done / total) * 100);
@@ -158,7 +156,7 @@ export const importImages = createAsyncThunk<boolean, void, ThunkApi>(
 export const importDatabase = createAsyncThunk<boolean, void, ThunkApi>(
 	'settings/import-data',
 	async (_, { dispatch }): Promise<boolean> => {
-		const logger = thunkLogger.getActionLogger(importDatabase);
+		const logger = getActionLogger(importDatabase);
 		logger.debug('Opening data import dialog');
 		dispatch(setFullscreenLoadingMaskState('Reading data from disk'));
 		const loadedData = await window.api.invoke(IpcInvokeChannels.OPEN_IMPORT_DATA_DIALOG);

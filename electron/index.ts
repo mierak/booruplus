@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 import log from 'electron-log';
 
@@ -12,6 +12,7 @@ const isProd = app.isPackaged;
 log.transports.console.useStyles = true;
 log.transports.console.format = '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{processType}] [{level}] - {text}';
 log.transports.file.maxSize = 5242880;
+log.transports.file.inspectOptions.maxArrayLength = 5;
 log.catchErrors({ showDialog: true });
 
 log.debug(`Starting app. Production mode is: ${isProd}`);
@@ -101,4 +102,8 @@ app.whenReady().then(() => {
 			.then((name) => log.debug(`Added Extension:  ${name}`))
 			.catch((err) => log.error('An error occurred: ', err));
 	}
+});
+
+ipcMain.handle('is-prod', () => {
+	return isProd;
 });

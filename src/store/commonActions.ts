@@ -3,10 +3,8 @@ import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import type { Post } from '@appTypes/gelbooruTypes';
 import type { SearchContext, PostsContext, ThunkApi, WithContext } from '@store/types';
 
-import { thunkLoggerFactory } from '@util/logger';
+import { getActionLogger } from '@util/logger';
 import { IpcInvokeChannels, IpcSendChannels } from '@appTypes/processDto';
-
-const thunkLogger = thunkLoggerFactory();
 
 export const setFullscreenLoadingMaskState = createAction<string | { message: string; progressPercent: number }>(
 	'loadingState/setFullscreenLoadingMaskMessage'
@@ -25,8 +23,9 @@ export const exportPostsToDirectory = createAsyncThunk<
 >(
 	'posts/exportPostsToDirectory',
 	async (param, thunkApi): Promise<Post[]> => {
-		const initialMessage = ` - exporting ${'context' in param ? param : 'Post[]'}`;
-		const logger = thunkLogger.getActionLogger(exportPostsToDirectory, { initialMessage });
+		const initialMessage = `exporting ${'context' in param ? param : 'Post[]'}`;
+		const logger = getActionLogger(exportPostsToDirectory);
+		logger.debug(initialMessage);
 		const folder = await window.api.invoke(IpcInvokeChannels.OPEN_SELECT_FOLDER_DIALOG);
 		if (!folder) {
 			logger.debug('Select folder dialog closed without selecting a directory. Cancelling.');

@@ -1,5 +1,5 @@
-import { Action, AnyAction, combineReducers, Dispatch, Middleware, MiddlewareAPI } from 'redux';
-import { configureStore } from '@reduxjs/toolkit';
+import { AnyAction, combineReducers, Dispatch, Middleware, MiddlewareAPI } from 'redux';
+import { configureStore, PayloadAction } from '@reduxjs/toolkit';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 
 import searchContextsReducer, {
@@ -73,10 +73,16 @@ export const thunks = {
 
 const loggerMiddleware: Middleware = <D extends Dispatch<AnyAction>, S>(api: MiddlewareAPI<D, S>) => {
 	return (next) => {
-		return <A extends Action<string>>(action: A): A => {
+		return <A extends PayloadAction<unknown, string> & { meta?: { arg?: unknown } }>(action: A): A => {
 			if (action.type.endsWith('rejected')) {
-				window.log.error(action);
+				window.log.error(`[${action.type}]`, action);
 				window.log.error('State before error', api.getState());
+			} else {
+				window.log.debug(
+					`[${action.type}]`,
+					...(action.payload ? ['-', 'Payload:', action.payload] : []),
+					...(action?.meta?.arg ? ['-', 'Arg:', action.meta.arg] : [])
+				);
 			}
 			return next(action);
 		};

@@ -2,14 +2,12 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import type { ThunkApi } from '@store/types';
 
-import { thunkLoggerFactory } from '@util/logger';
-
-const thunkLogger = thunkLoggerFactory();
+import { getActionLogger } from '@util/logger';
 
 export const generateSearchContext = createAsyncThunk<string, void, ThunkApi>(
 	'searchContexts/generate',
 	async (_, { getState }): Promise<string> => {
-		const logger = thunkLogger.getActionLogger(generateSearchContext);
+		const logger = getActionLogger(generateSearchContext);
 		const currentContexts = Object.keys(getState().searchContexts).filter(
 			(ctx) => getState().searchContexts[ctx].mode !== 'other'
 		);

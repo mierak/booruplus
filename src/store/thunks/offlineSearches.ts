@@ -5,10 +5,8 @@ import type { SearchContext, PostsContext, ThunkApi } from '@store/types';
 import type { Tag, Post } from '@appTypes/gelbooruTypes';
 
 import { db } from '@db';
-import { thunkLoggerFactory } from '@util/logger';
+import { getActionLogger } from '@util/logger';
 import { thumbnailCache } from '@util/objectUrlCache';
-
-const thunkLogger = thunkLoggerFactory();
 
 export const getFilterOptions = (state: SearchContext): FilterOptions => {
 	return {
@@ -29,7 +27,7 @@ export const getFilterOptions = (state: SearchContext): FilterOptions => {
 export const loadTagsByPattern = createAsyncThunk<Tag[], { pattern: string; context: string }, ThunkApi>(
 	'downloadedSearchForm/loadTagsByPattern',
 	async ({ pattern }): Promise<Tag[]> => {
-		const logger = thunkLogger.getActionLogger(loadTagsByPattern);
+		const logger = getActionLogger(loadTagsByPattern);
 		logger.debug('Getting tags with Pattern:', pattern);
 		return db.tags.getByPattern(pattern);
 	}
@@ -39,7 +37,7 @@ export const fetchPosts = createAsyncThunk<Post[], { context: PostsContext | str
 	'downloadedSearchForm/fetchPosts',
 	async ({ context }, thunkApi): Promise<Post[]> => {
 		thumbnailCache.revokeAll();
-		const logger = thunkLogger.getActionLogger(fetchPosts);
+		const logger = getActionLogger(fetchPosts);
 		const state = thunkApi.getState().searchContexts[context];
 		if (!('showImages' in state)) {
 			return [];
@@ -72,7 +70,7 @@ export const fetchPosts = createAsyncThunk<Post[], { context: PostsContext | str
 export const fetchMorePosts = createAsyncThunk<Post[], { context: PostsContext | string }, ThunkApi>(
 	'downloadedSearchForm/fetchMorePosts',
 	async ({ context }, thunkApi): Promise<Post[]> => {
-		const logger = thunkLogger.getActionLogger(fetchMorePosts);
+		const logger = getActionLogger(fetchMorePosts);
 		const state = thunkApi.getState().searchContexts[context];
 		if (!('showImages' in state)) {
 			return [];

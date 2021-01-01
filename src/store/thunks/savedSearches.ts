@@ -6,7 +6,7 @@ import type { Rating, SavedSearch, Tag, Post } from '@appTypes/gelbooruTypes';
 
 import { db } from '@db';
 import { getThumbnailUrl } from '@service/webService';
-import { thunkLoggerFactory } from '@util/logger';
+import { getActionLogger } from '@util/logger';
 import { NoActiveSavedSearchError, SavedSearchAlreadyExistsError } from '@errors/savedSearchError';
 
 import { initPostsContext } from '../commonActions';
@@ -14,12 +14,10 @@ import * as downloadedSearchFormThunk from './offlineSearches';
 import * as onlineSearchFormThunk from './onlineSearches';
 import * as searchContextsThunk from './searchContexts';
 
-const thunkLogger = thunkLoggerFactory();
-
 export const searchOnline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi>(
 	'savedSearches/searchOnline',
 	async (savedSearch, { dispatch }): Promise<SavedSearch> => {
-		const logger = thunkLogger.getActionLogger(searchOnline);
+		const logger = getActionLogger(searchOnline);
 		const clone = { ...savedSearch };
 		clone.lastSearched = moment().valueOf();
 		logger.debug('Updating last searched to', clone.lastSearched);
@@ -41,7 +39,7 @@ export const searchOnline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi>
 export const searchOffline = createAsyncThunk<SavedSearch, SavedSearch, ThunkApi>(
 	'savedSearches/searchOffline',
 	async (savedSearch, { dispatch }): Promise<SavedSearch> => {
-		const logger = thunkLogger.getActionLogger(searchOffline);
+		const logger = getActionLogger(searchOffline);
 		const clone = { ...savedSearch };
 		clone.lastSearched = moment().valueOf();
 		logger.debug('Updating last searched to', clone.lastSearched);
@@ -70,7 +68,7 @@ type NewSearchParams = {
 export const saveSearch = createAsyncThunk<SavedSearch, NewSearchParams, ThunkApi<SavedSearchAlreadyExistsError>>(
 	'savedSearches/save',
 	async (params, { rejectWithValue }): Promise<SavedSearch | RejectWithValue<SavedSearchAlreadyExistsError>> => {
-		const logger = thunkLogger.getActionLogger(saveSearch);
+		const logger = getActionLogger(saveSearch);
 		const result = await db.savedSearches.createAndSave(params.rating, params.tags, params.excludedTags);
 
 		if (typeof result !== 'number') {
@@ -96,7 +94,6 @@ export const saveSearch = createAsyncThunk<SavedSearch, NewSearchParams, ThunkAp
 export const remove = createAsyncThunk<number, SavedSearch, ThunkApi>(
 	'savedSearches/remove',
 	async (savedSearch): Promise<number> => {
-		thunkLogger.getActionLogger(remove, { initialMessage: 'Deleting Saved Search' });
 		await db.savedSearches.remove(savedSearch);
 		return savedSearch.id;
 	}
@@ -105,7 +102,6 @@ export const remove = createAsyncThunk<number, SavedSearch, ThunkApi>(
 export const loadSavedSearchesFromDb = createAsyncThunk<SavedSearch[], void, ThunkApi>(
 	'savedSearches/loadFromDb',
 	async (): Promise<SavedSearch[]> => {
-		thunkLogger.getActionLogger(loadSavedSearchesFromDb);
 		return db.savedSearches.getAll();
 	}
 );
@@ -117,7 +113,7 @@ export const addPreviewsToSavedSearch = createAsyncThunk<
 >(
 	'savedSearches/addPreviewsToActiveSavedSearch',
 	async ({ posts, savedSearchId }, { rejectWithValue }): Promise<number | RejectWithValue<NoActiveSavedSearchError>> => {
-		const logger = thunkLogger.getActionLogger(addPreviewsToSavedSearch);
+		const logger = getActionLogger(addPreviewsToSavedSearch);
 		if (savedSearchId === undefined) {
 			return rejectWithValue(new NoActiveSavedSearchError());
 		}
@@ -143,7 +139,7 @@ export const removePreview = createAsyncThunk<
 >(
 	'savedSearches/removePreview',
 	async (params): Promise<{ savedSearchId: number; previewId: number }> => {
-		const logger = thunkLogger.getActionLogger(removePreview);
+		const logger = getActionLogger(removePreview);
 		logger.debug(`Removing preview id ${params.previewId} from saved search id ${params.savedSearch.id}`);
 		db.savedSearches.removePreview(params.savedSearch, params.previewId);
 		return { savedSearchId: params.savedSearch.id, previewId: params.previewId };
