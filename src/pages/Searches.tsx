@@ -217,7 +217,9 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 					<AntTabs.TabPane
 						closable={tabs.length > 1}
 						key={tab.context}
-						tab={<SearchTab mode={tab.mode} title={tab.title} contextMenu={tabsContextMenu} context={tab.context} />}
+						tab={
+							<SearchTab hasTooltip mode={tab.mode} title={tab.title} contextMenu={tabsContextMenu} context={tab.context} />
+						}
 						style={{ height: '100vh' }}
 					>
 						<PageMenuHeader menu={<SearchResultsMenu context={tab.context} />} title='Image List' />

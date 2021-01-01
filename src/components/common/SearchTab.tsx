@@ -12,11 +12,12 @@ import { getIcon } from '@util/componentUtils';
 type Props = {
 	mode: ContextMode;
 	title: string;
+	hasTooltip?: boolean;
 	context?: string;
 	contextMenu?: TabAction[];
 };
 
-const SearchTab: React.FunctionComponent<Props> = ({ mode, title, contextMenu, context }) => {
+const SearchTab: React.FunctionComponent<Props> = ({ mode, title, contextMenu, context, hasTooltip }) => {
 	const { selectedTags, excludedTags, page, rating, mode: searchMode } = useSelector((state: RootState) => {
 		if (context) {
 			const slice = state.searchContexts[context];
@@ -46,7 +47,7 @@ const SearchTab: React.FunctionComponent<Props> = ({ mode, title, contextMenu, c
 			))}
 		</Menu>
 	);
-	const tooltip = (
+	const tooltip = hasTooltip && (
 		<>
 			<Row gutter={[8, 8]}>
 				<Col span={8}>Selected Tags:</Col>
