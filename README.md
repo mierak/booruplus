@@ -23,6 +23,7 @@ Both an online and offline alternative to booru sites. Lets you view, download, 
 - All the images are hosted on gelbooru.com. I own none of them.
 - This application is currenlty in beta phase. However, it is pretty stable and should not have many, if any serious flaws. Though, you might still encounter some bugs, or sub-optimal UX of elements.
 - Currently there is only one data source API. More might come in the future.
+- Unfortunately the app is not signed with a costly certificate. Thus it might get flagged as a malware/virus, this is a false positive and the app does not contain anything malicious. You can even build the app yourself by cloning this repo and running 'npm run make'.
 
 ## Shameless plug
 - This application is developed as a hobby at nights after a fulltime job. If you wish to support the development, buy me a coffee or just simply say thanks, you can do so via [this paypal link](https://paypal.me/mierakoj). All support is highly appreaciated!
