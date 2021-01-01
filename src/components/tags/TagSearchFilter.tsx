@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { Input, Space, Button } from 'antd';
 
-interface Props {
+type Props = {
 	onSearch(pattern: string): void;
 	confirm(): void;
 	visible: boolean;

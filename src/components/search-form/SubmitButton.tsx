@@ -2,43 +2,37 @@ import React from 'react';
 import { Popconfirm, Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { actions, thunks } from '@store';
-import { AppDispatch, RootState } from '@store/types';
+import { actions } from '@store';
+import { AppDispatch, PostsContext, RootState } from '@store/types';
 
-interface Props {
-	mode: 'online' | 'offline';
-}
+type Props = {
+	context: PostsContext | string;
+	onSubmit: () => void;
+};
 
-const SubmitButton: React.FunctionComponent<Props> = ({ mode }: Props) => {
+const SubmitButton: React.FunctionComponent<Props> = ({ context, onSubmit }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const state = useSelector((state: RootState) => (mode === 'online' ? state.onlineSearchForm : state.downloadedSearchForm));
-	const fetchPosts = mode === 'online' ? thunks.onlineSearchForm.fetchPosts : thunks.downloadedSearchForm.fetchPosts;
-	const setPage = mode === 'online' ? actions.onlineSearchForm.setPage : actions.downloadedSearchForm.setPage;
-	const isDisabled = state.page === 0;
+	const stateSlice = useSelector((state: RootState) => state.searchContexts[context]);
+	const isDisabled = stateSlice.page === 0;
 	const isSearchButtonDisabled = useSelector((state: RootState) => state.loadingStates.isSearchDisabled);
 
-	const handleSubmit = async (): Promise<void> => {
-		dispatch(actions.system.setSearchMode(mode));
-		dispatch(fetchPosts());
-	};
-
 	const handleCancel = (): void => {
-		dispatch(setPage(0));
-		handleSubmit();
+		dispatch(actions.searchContexts.updateContext({ context, data: { page: 0 } }));
+		onSubmit();
 	};
 
 	const handleConfim = (): void => {
-		handleSubmit();
+		onSubmit();
 	};
 
-	const submit = (): void => {
-		isDisabled && handleSubmit();
+	const handleSubmit = (): void => {
+		isDisabled && onSubmit();
 	};
 
 	const renderButton = (): JSX.Element => {
 		return (
-			<Button type='primary' onClick={submit} disabled={isSearchButtonDisabled}>
+			<Button type='primary' onClick={handleSubmit} disabled={isSearchButtonDisabled}>
 				Search
 			</Button>
 		);
@@ -47,8 +41,8 @@ const SubmitButton: React.FunctionComponent<Props> = ({ mode }: Props) => {
 	const renderPopConfirm = (child: JSX.Element): JSX.Element => {
 		return (
 			<Popconfirm
-				title={`Are you sure you want to start search from page ${state.page}?`}
-				cancelText={`Start from page ${state.page}`}
+				title={`Are you sure you want to start search from page ${stateSlice.page}?`}
+				cancelText={`Start from page ${stateSlice.page}`}
 				okText='Start from first page'
 				onCancel={handleConfim}
 				onConfirm={handleCancel}

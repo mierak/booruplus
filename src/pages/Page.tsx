@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Modal } from 'antd';
 
 import { RootState, AppDispatch } from '@store/types';
+import { globals } from '@/globals';
 import { thunks } from '@store';
 import LoadingMask from '@components/LoadingMask';
 import AppLayout from '@components/layout/Layout';
@@ -11,11 +13,14 @@ import SavedSearches from './SavedSearches';
 import Favorites from './Favorites';
 import Tags from './Tags';
 import Dashboard from './Dashboard';
-import SearchResults from './SearchResults';
+import Searches from './Searches';
 
 import 'ant-design-pro/dist/ant-design-pro.css';
 import '../css/index.css';
 import CheckLaterQueue from './CheckLaterQueue';
+import { parseVersion } from '@util/utils';
+import { getLatestAppVersion } from '@service/apiService';
+import NewVersionNotificationModalBody from '@components/layout/modals/NewVersionNotificationModalBody';
 
 const Page: React.FunctionComponent = () => {
 	const [hydrated, setHydrated] = useState(false);
@@ -49,12 +54,32 @@ const Page: React.FunctionComponent = () => {
 		}
 	}, [hydrated, theme]);
 
+	useEffect(() => {
+		if (!hydrated) return;
+		(async (): Promise<void> => {
+			const response = await getLatestAppVersion();
+			if (!response) return;
+
+			const newestVersion = parseVersion(response.tag_name);
+			const currentVersion = parseVersion(globals.VERSION);
+
+			if (newestVersion.isNewerThan(currentVersion)) {
+				Modal.info({
+					width: 600,
+					title: 'New version available',
+					content: <NewVersionNotificationModalBody data={response} />,
+					icon: undefined,
+				});
+			}
+		})();
+	}, [hydrated]);
+
 	const renderView = (): React.ReactNode => {
 		switch (activeView) {
 			case 'dashboard':
 				return <Dashboard />;
-			case 'search-results':
-				return <SearchResults />;
+			case 'searches':
+				return <Searches />;
 			case 'image':
 				return <ImageView />;
 			case 'saved-searches':

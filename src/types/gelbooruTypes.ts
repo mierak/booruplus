@@ -1,7 +1,7 @@
-import { Entity } from '@db/types';
-import { Sort, SortOrder } from '@store/types';
+import type { Entity } from '@db/types';
+import type { Sort, SortOrder } from '@store/types';
 
-export interface PostDto {
+export type PostDto = {
 	source: string;
 	directory: string;
 	hash: string;
@@ -24,7 +24,7 @@ export interface PostDto {
 	downloaded?: 0 | 1;
 }
 
-export interface Post extends Entity {
+export type Post = {
 	source: string;
 	directory: string;
 	hash: string;
@@ -47,13 +47,13 @@ export interface Post extends Entity {
 	selected: boolean;
 	extension: string;
 	viewCount: number;
-}
+} & Entity;
 
 export type TagType = 'copyright' | 'tag' | 'artist' | 'metadata' | 'character';
 
 export type Rating = 'any' | 'safe' | 'questionable' | 'explicit';
 
-export interface Tag extends Entity {
+export type Tag = {
 	id: number;
 	tag: string;
 	count: number;
@@ -62,17 +62,17 @@ export interface Tag extends Entity {
 	favoriteCount?: number;
 	blacklistedCount?: number;
 	downloadedCount?: number;
-}
+} & Entity;
 
 export type SavedSearchType = 'online' | 'offline';
 
-export interface SavedSearchPreview {
+export type SavedSearchPreview = {
 	id: number;
 	objectUrl: string;
 	post: Post;
 }
 
-export interface SavedSearch {
+export type SavedSearch = {
 	id: number;
 	tags: Tag[];
 	excludedTags: Tag[];
@@ -81,18 +81,24 @@ export interface SavedSearch {
 	previews: SavedSearchPreview[];
 }
 
-export interface PostTag {
+export type PostTag = {
 	id?: number;
 	postId: number;
 	tag: string;
 	post: Post;
 }
 
-export interface PostSearchOptions {
+export type PostSearchOptions = {
 	limit?: number;
 	rating?: Rating;
 	page?: number;
 	apiKey?: string;
 	sort?: Sort;
 	sortOrder?: SortOrder;
+}
+
+export type ReleaseResponse = {
+	assets: { browser_download_url: string }[];
+	tag_name: string;
+	body: string;
 }

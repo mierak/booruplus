@@ -5,7 +5,7 @@ import { Button, Popover } from 'antd';
 import { ImageControl } from '@appTypes/components';
 import { getIcon } from '@util/componentUtils';
 
-interface ContainerProps {
+type ContainerProps = {
 	count: number;
 }
 
@@ -19,7 +19,7 @@ const StyledControlsContainer = styled.div<ContainerProps>`
 	left: 25px;
 `;
 
-interface Props {
+type Props = {
 	actions: ImageControl[];
 }
 

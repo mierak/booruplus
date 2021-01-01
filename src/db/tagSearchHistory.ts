@@ -1,7 +1,7 @@
 import db from './database';
 
-import { Tag } from '@appTypes/gelbooruTypes';
-import { TagHistory } from '@store/types';
+import type { Tag } from '@appTypes/gelbooruTypes';
+import type { TagHistory } from '@store/types';
 
 export const saveSearch = async (tags: Tag[]): Promise<void> => {
 	const history = tags.map((tag) => {
@@ -14,15 +14,15 @@ export const getMostSearched = async (limit = 20): Promise<TagHistory[]> => {
 	const uniqueTags = await db.tagSearchHistory.orderBy('tag.tag').uniqueKeys();
 	const result = await Promise.all(
 		uniqueTags.map(async (tag) => {
-			const result = await db.tagSearchHistory
+			const res = await db.tagSearchHistory
 				.where('tag.tag')
 				.equals(tag)
 				.first();
 
-			if (result) {
+			if (res) {
 				return {
-					tag: result.tag,
-					date: result.date,
+					tag: res.tag,
+					date: res.date,
 					count: await db.tagSearchHistory
 						.where('tag.tag')
 						.equals(tag)
@@ -33,6 +33,6 @@ export const getMostSearched = async (limit = 20): Promise<TagHistory[]> => {
 			}
 		})
 	);
-	const filteredResult = result.filter((result): result is TagHistory => result !== undefined);
+	const filteredResult = result.filter((res): res is TagHistory => res !== undefined);
 	return filteredResult.sort((a, b) => b.count - a.count).slice(0, limit);
 };

@@ -8,11 +8,11 @@ import { imageCache } from '@util/objectUrlCache';
 import { previewLoader, getPreviewImageSize } from '@util/componentUtils';
 import { isFilenameVideo } from '@util/utils';
 
-interface Props {
+type Props = {
 	setImagePosition: () => void;
 }
 
-interface ImageProps {
+type ImageProps = {
 	$loaded: boolean;
 }
 

@@ -14,13 +14,16 @@ import { mTag } from '../../helpers/test.helper';
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('search-from/ExcludedTags', () => {
-	it('Renders correctly for online mode', () => {
+	it('Renders correctly', () => {
 		// given
+		const context = 'ctx';
 		const excludedTags = [mTag({ tag: 'excluded1', id: 1 }), mTag({ tag: 'excluded2', id: 2 })];
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
-					excludedTags,
+				searchContexts: {
+					[context]: {
+						excludedTags,
+					},
 				},
 			})
 		);
@@ -28,7 +31,7 @@ describe('search-from/ExcludedTags', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ExcludedTags mode='online' />
+				<ExcludedTags context={context} />
 			</Provider>
 		);
 
@@ -36,13 +39,16 @@ describe('search-from/ExcludedTags', () => {
 		expect(screen.getByText(excludedTags[0].tag)).not.toBeNull();
 		expect(screen.getByText(excludedTags[1].tag)).not.toBeNull();
 	});
-	it('Renders correctly for offline mode', () => {
+	it('Removes tag correctly', () => {
 		// given
+		const context = 'ctx';
 		const excludedTags = [mTag({ tag: 'excluded1', id: 1 }), mTag({ tag: 'excluded2', id: 2 })];
 		const store = mockStore(
 			mState({
-				downloadedSearchForm: {
-					excludedTags,
+				searchContexts: {
+					[context]: {
+						excludedTags,
+					},
 				},
 			})
 		);
@@ -50,29 +56,7 @@ describe('search-from/ExcludedTags', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ExcludedTags mode='offline' />
-			</Provider>
-		);
-
-		// then
-		expect(screen.getByText(excludedTags[0].tag)).not.toBeNull();
-		expect(screen.getByText(excludedTags[1].tag)).not.toBeNull();
-	});
-	it('Removes tag correctly for offline mode', () => {
-		// given
-		const excludedTags = [mTag({ tag: 'excluded1', id: 1 }), mTag({ tag: 'excluded2', id: 2 })];
-		const store = mockStore(
-			mState({
-				downloadedSearchForm: {
-					excludedTags,
-				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<ExcludedTags mode='offline' />
+				<ExcludedTags context={context} />
 			</Provider>
 		);
 		fireEvent.click(screen.getAllByRole('img', { name: 'close' })[0]);
@@ -80,17 +64,18 @@ describe('search-from/ExcludedTags', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.downloadedSearchForm.removeExcludedTag.type,
-			payload: excludedTags[0],
+			type: actions.searchContexts.removeExcludedTag.type,
+			payload: { context, data: excludedTags[0] },
 		});
 	});
-	it('Removes tag correctly for online mode', () => {
+	it('Removes selected tag and adds it to excluded tags', () => {
 		// given
-		const excludedTags = [mTag({ tag: 'excluded1', id: 1 }), mTag({ tag: 'excluded2', id: 2 })];
+		const context = 'ctx';
+		const tag = mTag({ id: 1, tag: 'tag1' });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
-					excludedTags,
+				searchContexts: {
+					[context]: {},
 				},
 			})
 		);
@@ -98,24 +83,7 @@ describe('search-from/ExcludedTags', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ExcludedTags mode='online' />
-			</Provider>
-		);
-		fireEvent.click(screen.getAllByRole('img', { name: 'close' })[0]);
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.removeExcludedTag.type, payload: excludedTags[0] });
-	});
-	it('Removes selected tag and adds it to excluded tags for online mode', () => {
-		// given
-		const tag = mTag({ id: 1, tag: 'tag1' });
-		const store = mockStore(mState());
-
-		// when
-		render(
-			<Provider store={store}>
-				<ExcludedTags mode='online' />
+				<ExcludedTags context={context} />
 			</Provider>
 		);
 		const destination = screen.getByTestId('excluded-tags-container');
@@ -129,41 +97,25 @@ describe('search-from/ExcludedTags', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.removeTag.type, payload: tag });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.addExcludedTag.type, payload: tag });
-	});
-	it('Removes selected tag and adds it to excluded tags for offline mode', () => {
-		// given
-		const tag = mTag({ id: 1, tag: 'tag1' });
-		const store = mockStore(mState());
-
-		// when
-		render(
-			<Provider store={store}>
-				<ExcludedTags mode='offline' />
-			</Provider>
-		);
-		const destination = screen.getByTestId('excluded-tags-container');
-		const dropEvent = createEvent.drop(destination);
-		Object.defineProperty(dropEvent, 'dataTransfer', {
-			value: {
-				getData: (): string => JSON.stringify(tag),
-			},
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.removeTag.type,
+			payload: { context, data: tag },
 		});
-		fireEvent(destination, dropEvent);
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.removeTag.type, payload: tag });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.addExcludedTag.type, payload: tag });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.addExcludedTag.type,
+			payload: { context, data: tag },
+		});
 	});
-	it('Adds stringified tag to dataTransfer on drag start over tage', () => {
+	it('Adds stringified tag to dataTransfer on drag start over tag', () => {
 		// given
+		const context = 'ctx';
 		const tag = mTag({ id: 1, tag: 'tag1' });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
-					excludedTags: [tag],
+				searchContexts: {
+					[context]: {
+						excludedTags: [tag],
+					},
 				},
 			})
 		);
@@ -171,7 +123,7 @@ describe('search-from/ExcludedTags', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ExcludedTags mode='online' />
+				<ExcludedTags context={context} />
 			</Provider>
 		);
 		const source = screen.getByText(tag.tag);
@@ -189,11 +141,14 @@ describe('search-from/ExcludedTags', () => {
 	});
 	it('Adds stringified tag to dataTransfer on drag start over tage', () => {
 		// given
+		const context = 'ctx';
 		const tag = mTag({ id: 1, tag: 'tag1' });
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
-					excludedTags: [tag],
+				searchContexts: {
+					[context]: {
+						excludedTags: [tag],
+					},
 				},
 			})
 		);
@@ -201,7 +156,7 @@ describe('search-from/ExcludedTags', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ExcludedTags mode='online' />
+				<ExcludedTags context={context} />
 			</Provider>
 		);
 		const source = screen.getByTestId('excluded-tags-container');
@@ -218,11 +173,14 @@ describe('search-from/ExcludedTags', () => {
 	});
 	it('Does not duplicate excluded tag on drag', () => {
 		// given
+		const context = 'ctx';
 		const tag = mTag({ id: 1, tag: 'excludedTag' });
 		const store = mockStore(
 			mState({
-				downloadedSearchForm: {
-					excludedTags: [tag],
+				searchContexts: {
+					[context]: {
+						excludedTags: [tag],
+					},
 				},
 			})
 		);
@@ -230,7 +188,7 @@ describe('search-from/ExcludedTags', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ExcludedTags mode='offline' />
+				<ExcludedTags context={context} />
 			</Provider>
 		);
 		const destination = screen.getByTestId('excluded-tags-container');
@@ -245,12 +203,12 @@ describe('search-from/ExcludedTags', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.downloadedSearchForm.removeTag.type,
-			payload: tag,
+			type: actions.searchContexts.removeTag.type,
+			payload: { context, data: tag },
 		});
 		expect(dispatchedActions).not.toContainMatchingAction({
-			type: actions.downloadedSearchForm.addExcludedTag.type,
-			payload: tag,
+			type: actions.searchContexts.addExcludedTag.type,
+			payload: { context, data: tag },
 		});
 	});
 });

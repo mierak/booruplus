@@ -1,40 +1,44 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { Button } from 'antd';
 
-import { AppDispatch, RootState, ThunkApi } from '@store/types';
+import { AppDispatch, PostsContext, RootState } from '@store/types';
 import { thunks } from '@store';
-import { Post } from '@appTypes/gelbooruTypes';
 
-interface Props {
+type Props = {
 	className?: string;
-}
+	context: PostsContext | string;
+};
 
-const LoadMoreButton: React.FunctionComponent<Props> = ({ className }: Props) => {
+type LoadMoreType = typeof thunks.onlineSearches.fetchMorePosts | typeof thunks.offlineSearches.fetchMorePosts;
+
+const LoadMoreButton: React.FunctionComponent<Props> = ({ className, context }: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const isSearchDisabled = useSelector((state: RootState) => state.loadingStates.isSearchDisabled);
-	const searchMode = useSelector((state: RootState) => state.system.searchMode);
+	const searchMode = useSelector((state: RootState) => state.searchContexts[context].mode);
 
-	const getLoadMore = (): (() => AsyncThunkAction<Post[], void, ThunkApi>) => {
+	const getLoadMore = (): LoadMoreType | undefined => {
 		switch (searchMode) {
 			case 'online':
-			case 'saved-search-online':
-				return thunks.onlineSearchForm.fetchMorePosts;
+				return thunks.onlineSearches.fetchMorePosts;
 			case 'offline':
-			case 'saved-search-offline':
-				return thunks.downloadedSearchForm.fetchMorePosts;
+				return thunks.offlineSearches.fetchMorePosts;
 		}
 	};
 
 	const handleLoadMore = async (): Promise<void> => {
 		const loadMore = getLoadMore();
 
-		loadMore && (await dispatch(loadMore()));
+		loadMore && (await dispatch(loadMore({ context })));
 	};
 
 	return (
-		<Button className={className} key='thumbnails-list-load-more-button' disabled={isSearchDisabled} onClick={handleLoadMore}>
+		<Button
+			className={className}
+			key='thumbnails-list-load-more-button'
+			disabled={isSearchDisabled}
+			onClick={handleLoadMore}
+		>
 			Load More
 		</Button>
 	);

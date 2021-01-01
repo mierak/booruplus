@@ -8,14 +8,14 @@ import { actions, thunks } from '@store';
 import { AppDispatch, RootState } from '@store/types';
 import { ActiveModal } from '@appTypes/modalTypes';
 
-interface PProps {
+type Props = {
 	x: number;
 	y: number;
 }
 
 type Actions = 'add' | 'delete' | 'rename' | 'mark-as-default' | 'move-selected' | 'move-all' | 'export-directory';
 
-const DummyContextMenuPositionerDiv = styled.div<PProps>`
+const DummyContextMenuPositionerDiv = styled.div<Props>`
 	position: absolute;
 	left: ${(props): number => props.x}px;
 	top: ${(props): number => props.y}px;
@@ -198,9 +198,9 @@ const SiderContent: React.FunctionComponent = () => {
 		}
 
 		if (treeContainerRef.current) {
-			const contextMenuActions: Actions[] = ['add', 'delete', 'rename', 'move-all', 'export-directory'];
-			if (posts.some((p) => p.selected)) contextMenuActions.push('move-selected');
-			setContextMenuActions(contextMenuActions);
+			const contextActions: Actions[] = ['add', 'delete', 'rename', 'move-all', 'export-directory'];
+			if (posts.some((p) => p.selected)) contextActions.push('move-selected');
+			setContextMenuActions(contextActions);
 			setAlign([info.event.clientX - treeContainerRef.current.getBoundingClientRect().x, info.event.clientY]);
 			info.node && setSelectedNodeKey(Number(info.node.key));
 		}

@@ -1,19 +1,17 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { TreeNode, ThunkApi } from '@store/types';
+import type { ThunkApi, TreeNode } from '@store/types';
+import type { Post } from '@appTypes/gelbooruTypes';
+
 import { db } from '@db';
-import { Post } from '@appTypes/gelbooruTypes';
-import { thunkLoggerFactory } from '@util/logger';
+import { getActionLogger } from '@util/logger';
 import { thumbnailCache } from '@util/objectUrlCache';
 
 import { exportPostsToDirectory } from '../commonActions';
 
-const thunkLogger = thunkLoggerFactory();
-
 export const fetchTreeData = createAsyncThunk<TreeNode, void, ThunkApi>(
 	'favorites/fetchTreeData',
 	async (): Promise<TreeNode> => {
-		thunkLogger.getActionLogger(fetchTreeData);
 		return db.favorites.getCompleteTree();
 	}
 );
@@ -22,7 +20,7 @@ export const fetchPostsInDirectory = createAsyncThunk<Post[], number | undefined
 	'favorites/fetchPostsInDirectory',
 	async (key: number | undefined, thunkApi): Promise<Post[]> => {
 		thumbnailCache.revokeAll();
-		const logger = thunkLogger.getActionLogger(fetchPostsInDirectory);
+		const logger = getActionLogger(fetchPostsInDirectory);
 		const keyWithDefault = key ?? thunkApi.getState().favorites.activeNodeKey;
 		logger.debug('Getting node without children for key:', keyWithDefault.toString());
 		const directory = await db.favorites.getNodeWithoutChildren(keyWithDefault);
@@ -33,7 +31,6 @@ export const fetchPostsInDirectory = createAsyncThunk<Post[], number | undefined
 export const fetchAllKeys = createAsyncThunk<string[], void, ThunkApi>(
 	'favorites/fetchAllKeys',
 	async (): Promise<string[]> => {
-		thunkLogger.getActionLogger(fetchAllKeys);
 		return db.favorites.getAllKeys();
 	}
 );
@@ -41,8 +38,7 @@ export const fetchAllKeys = createAsyncThunk<string[], void, ThunkApi>(
 export const addDirectory = createAsyncThunk<void, { parentKey: number; title: string }, ThunkApi>(
 	'favorites/addDirectory',
 	async (params, thunkApi): Promise<void> => {
-		const logger = thunkLogger.getActionLogger(addDirectory);
-		logger;
+		const logger = getActionLogger(addDirectory);
 		logger.debug('Adding new favorites directory. Parent key:', params.parentKey.toString(), 'Title:', params.title);
 		await db.favorites.addChildToNode(params.parentKey, params.title);
 		thunkApi.dispatch(fetchAllKeys());
@@ -53,7 +49,7 @@ export const addDirectory = createAsyncThunk<void, { parentKey: number; title: s
 export const renameDirectory = createAsyncThunk<void, { key: number; title: string }, ThunkApi>(
 	'favorites/renameDirectory',
 	async (params, thunkApi): Promise<void> => {
-		const logger = thunkLogger.getActionLogger(renameDirectory);
+		const logger = getActionLogger(renameDirectory);
 		logger.debug('Changing node title. Node key:', params.key.toString(), 'New Title:', params.title);
 		await db.favorites.changeNodeTitle(params.key, params.title);
 		thunkApi.dispatch(fetchAllKeys());
@@ -64,7 +60,7 @@ export const renameDirectory = createAsyncThunk<void, { key: number; title: stri
 export const deleteDirectoryAndChildren = createAsyncThunk<void, number, ThunkApi>(
 	'favorites/deleteDirectoryAndChildren',
 	async (key: number, thunkApi): Promise<void> => {
-		const logger = thunkLogger.getActionLogger(deleteDirectoryAndChildren);
+		const logger = getActionLogger(deleteDirectoryAndChildren);
 		logger.debug(`Deleting node with key ${key} and its children`);
 		await db.favorites.deleteNodeAndChildren(key);
 		thunkApi.dispatch(fetchAllKeys());
@@ -75,7 +71,7 @@ export const deleteDirectoryAndChildren = createAsyncThunk<void, number, ThunkAp
 export const addPostsToDirectory = createAsyncThunk<void, { posts: Post[]; key: string | number }, ThunkApi>(
 	'favorites/addPostsToDirectory',
 	async (params, thunkApi): Promise<void> => {
-		const logger = thunkLogger.getActionLogger(addPostsToDirectory);
+		const logger = getActionLogger(addPostsToDirectory);
 
 		const ids = params.posts.map((p) => p.id);
 		logger.debug(`Adding post ids ${ids.join(' ')} to directory key: ${params.key}`);
@@ -88,7 +84,7 @@ export const addPostsToDirectory = createAsyncThunk<void, { posts: Post[]; key: 
 export const removePostsFromActiveDirectory = createAsyncThunk<void, Post[], ThunkApi>(
 	'favorites/removePostFromActiveDirectory',
 	async (posts, thunkApi): Promise<void> => {
-		const logger = thunkLogger.getActionLogger(removePostsFromActiveDirectory);
+		const logger = getActionLogger(removePostsFromActiveDirectory);
 		const key = thunkApi.getState().favorites.activeNodeKey;
 
 		const ids = posts.map((p) => p.id);
@@ -101,7 +97,7 @@ export const removePostsFromActiveDirectory = createAsyncThunk<void, Post[], Thu
 export const exportDirectory = createAsyncThunk<Post[], { targetDirectoryKey: number }, ThunkApi>(
 	'favorites/exportDirectory',
 	async ({ targetDirectoryKey }, thunkApi): Promise<Post[]> => {
-		const logger = thunkLogger.getActionLogger(exportDirectory);
+		const logger = getActionLogger(exportDirectory);
 
 		const directory = await db.favorites.getNodeWithoutChildren(targetDirectoryKey);
 		logger.debug(`Retrieved directory containing ${directory.postIds.length} posts`);

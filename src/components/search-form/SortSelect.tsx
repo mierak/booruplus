@@ -2,40 +2,45 @@ import React from 'react';
 import { Select } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { AppDispatch, RootState, Sort } from '@store/types';
+import { AppDispatch, PostsContext, RootState, Sort } from '@store/types';
 import { actions } from '@store';
 
-interface Props {
+type Props = {
 	className?: string;
-	mode: 'online' | 'offline';
+	context: PostsContext | string;
 	open?: boolean;
-}
+};
 
 const { Option } = Select;
 
-const SortSelect: React.FunctionComponent<Props> = (props: Props) => {
+const SortSelect: React.FunctionComponent<Props> = ({ context, open, className }) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const value = useSelector((state: RootState) =>
-		props.mode === 'online' ? state.onlineSearchForm.sort : state.downloadedSearchForm.sort
-	);
+	const value = useSelector((state: RootState) => state.searchContexts[context].sort);
+	const mode = useSelector((state: RootState) => state.searchContexts[context].mode);
 
-	const onChange = props.mode === 'online' ? actions.onlineSearchForm.setSort : actions.downloadedSearchForm.setSort;
+	React.useEffect(() => {
+		if (mode === 'offline' && value === 'date-uploaded') {
+			dispatch(actions.searchContexts.updateContext({ context, data: { sort: 'date-downloaded' } }));
+		} else if (mode === 'online' && value === 'date-downloaded') {
+			dispatch(actions.searchContexts.updateContext({ context, data: { sort: 'date-uploaded' } }));
+		}
+	}, [context, dispatch, mode, value]);
 
-	const handleChange = (val: Sort): void => {
-		dispatch(onChange(val));
+	const handleChange = (sort: Sort): void => {
+		dispatch(actions.searchContexts.updateContext({ context, data: { sort } }));
 	};
 
 	const renderOptions = (): React.ReactNode => {
 		const options: JSX.Element[] = [];
-		if (props.mode === 'online') {
+		if (mode === 'online') {
 			options.push(
 				<Option key='select-option-date-uploaded' value='date-uploaded'>
 					Date Uploaded
 				</Option>
 			);
 		}
-		if (props.mode === 'offline') {
+		if (mode === 'offline') {
 			options.push(
 				<Option key='select-option-date-downloaded' value='date-downloaded'>
 					Date Downloaded
@@ -56,7 +61,7 @@ const SortSelect: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	return (
-		<Select defaultValue={value} className={props.className} onChange={handleChange} open={props.open}>
+		<Select value={value} className={className} onChange={handleChange} open={open}>
 			{renderOptions()}
 		</Select>
 	);

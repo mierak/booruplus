@@ -23,6 +23,7 @@ describe('pages/ImageView', () => {
 	});
 	it('Renders thumbnails sidebar and FullSizeImage correctly', () => {
 		// given
+		const context = 'ctx';
 		const posts = [
 			mPost({ id: 1, directory: 'dir1', hash: 'hash1', downloaded: 1 }),
 			mPost({ id: 2, directory: 'dir2', hash: 'hash2', downloaded: 1 }),
@@ -31,7 +32,13 @@ describe('pages/ImageView', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts: { posts, favorites: [] },
+					posts: { [context]: posts },
+				},
+				system: {
+					imageViewContext: context,
+				},
+				searchContexts: {
+					[context]: {},
 				},
 			})
 		);

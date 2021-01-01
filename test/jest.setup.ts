@@ -9,6 +9,13 @@ jest.mock('lodash', () => {
 		},
 	};
 });
+jest.mock('../src/globals', () => {
+	return {
+		globals: {
+			VERSION: '6.6.6'
+		}
+	};
+});
 import { log } from './helpers/window.mock';
 (global as any).log = log;
 

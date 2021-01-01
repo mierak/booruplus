@@ -9,7 +9,7 @@ import { RootState } from '@store/types';
 import ThumbnailsList from '@components/thumbnails/ThumbnailsList';
 import FullSizeImage from '@components/FullSizeImage';
 
-interface Props {
+type Props = {
 	className?: string;
 }
 

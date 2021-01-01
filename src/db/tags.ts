@@ -1,6 +1,6 @@
 import db from './database';
 
-import { Tag, TagType } from '@appTypes/gelbooruTypes';
+import type { Tag, TagType } from '@appTypes/gelbooruTypes';
 
 export const save = async (tag: Tag): Promise<number | void> => {
 	return db.tags.put(tag);
@@ -13,14 +13,14 @@ export const getAll = async (): Promise<Tag[]> => {
 	return db.tags.toArray();
 };
 
-interface Options {
+type LimitAndOffsetOptions = {
 	pattern?: string;
 	limit?: number;
 	offset?: number;
 	types?: TagType[];
 }
 
-export const getAllWithLimitAndOffset = async (options?: Options): Promise<Tag[]> => {
+export const getAllWithLimitAndOffset = async (options?: LimitAndOffsetOptions): Promise<Tag[]> => {
 	let res: Dexie.Collection<Tag, number> | undefined;
 	const result = db.tags;
 	if (options) {
@@ -73,7 +73,7 @@ export const getBlacklistedCount = async (tag: string): Promise<number> => {
 		.count();
 };
 
-interface BlacklistedAndDownloadedCounts {
+type BlacklistedAndDownloadedCounts = {
 	downloadedCounts: { [key: string]: number };
 	blacklistedCounts: { [key: string]: number };
 }
@@ -98,7 +98,7 @@ export const getByPattern = async (pattern: string): Promise<Tag[]> => {
 	return db.tags.filter((tag) => tag.tag.includes(pattern)).toArray();
 };
 
-interface Options {
+type Options = {
 	pattern?: string;
 	types?: TagType[];
 }

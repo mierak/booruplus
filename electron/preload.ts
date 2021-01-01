@@ -1,28 +1,48 @@
-import { clipboard, contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { clipboard, contextBridge, ipcRenderer } from 'electron';
 import log from 'electron-log';
 
-import { IpcChannels, SavePostDto } from '@appTypes/processDto';
-import { Post } from '@appTypes/gelbooruTypes';
+import { IpcSendChannels, IpcInvokeChannels, IpcListeners } from '@appTypes/processDto';
 
-contextBridge.exposeInMainWorld('api', {
-	send: <T>(channel: IpcChannels, data: T) => {
-		ipcRenderer.send(channel, data);
-	},
-	invoke: (channel: IpcChannels, data: Post | SavePostDto) => {
-		try {
-			return ipcRenderer.invoke(channel, data);
-		} catch (err) {
-			log.error('invoke error', err);
+const configureLogger = async () => {
+	log.transports.console.format = '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{processType}] [{level}] - {text}';
+	log.transports.file.maxSize = 5242880;
+	log.transports.file.inspectOptions.maxArrayLength = 5;
+	log.transports.file.inspectOptions.breakLength = Infinity;
+	log.transports.console.level = (await ipcRenderer.invoke('is-prod')) ? 'error' : 'silly';
+};
+
+const ipcSendChannels = Object.keys(IpcSendChannels);
+const ipcInvokeChannels = Object.keys(IpcInvokeChannels);
+const ipcListeners = Object.keys(IpcListeners);
+
+const api: typeof window.api = {
+	send: (channel, ...data) => {
+		if (ipcSendChannels.includes(channel)) {
+			ipcRenderer.send(channel, ...data);
 		}
 	},
-	on: (channel: IpcChannels, listener: (event: IpcRendererEvent, ...args: unknown[]) => void): void => {
-		log.debug('Added listener for channel', channel);
-		ipcRenderer.on(channel, listener);
+	invoke: (channel, ...data) => {
+		if (ipcInvokeChannels.includes(channel)) {
+			return ipcRenderer.invoke(channel, ...data);
+		}
+		return Promise.resolve();
 	},
-	removeListener: (channel: IpcChannels, listener: (event: IpcRendererEvent, ...args: unknown[]) => void) => {
-		log.debug('Removed listener for channel', channel);
-		ipcRenderer.removeListener(channel, listener);
+	on: (channel, listener): void => {
+		if (ipcListeners.includes(channel)) {
+			log.debug('Added listener for channel', channel);
+			ipcRenderer.on(channel, listener);
+		}
 	},
-});
+	removeListener: (channel, listener) => {
+		if (ipcListeners.includes(channel)) {
+			log.debug('Removed listener for channel', channel);
+			ipcRenderer.removeListener(channel, listener);
+		}
+	},
+};
+
+contextBridge.exposeInMainWorld('api', api);
 contextBridge.exposeInMainWorld('log', log.functions);
 contextBridge.exposeInMainWorld('clipboard', clipboard);
+
+configureLogger();

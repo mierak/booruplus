@@ -1,18 +1,16 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
+import type { RatingCounts, TagHistory, FoundTags, NotFoundTags, ThunkApi } from '@store/types';
+import type { Tag, Post } from '@appTypes/gelbooruTypes';
+
 import { db } from '@db';
 import * as api from '@service/apiService';
-import { ThunkApi, RatingCounts, TagHistory, FoundTags, NotFoundTags } from '@store/types';
-import { Tag, Post } from '@appTypes/gelbooruTypes';
-import { thunkLoggerFactory } from '@util/logger';
+import { getActionLogger } from '@util/logger';
 import { mostViewedCache } from '@util/objectUrlCache';
-
-const thunkLogger = thunkLoggerFactory();
 
 export const fetchDownloadedPostCount = createAsyncThunk<number, void, ThunkApi>(
 	'dashboard/fetchDownloadedPostCount',
 	async (): Promise<number> => {
-		thunkLogger.getActionLogger(fetchDownloadedPostCount);
 		return db.posts.getDownloadedCount();
 	}
 );
@@ -20,7 +18,6 @@ export const fetchDownloadedPostCount = createAsyncThunk<number, void, ThunkApi>
 export const fetchBlacklistedPostCount = createAsyncThunk<number, void, ThunkApi>(
 	'dashboard/fetchBlacklistedPostCount',
 	async (): Promise<number> => {
-		thunkLogger.getActionLogger(fetchBlacklistedPostCount);
 		return db.posts.getBlacklistedCount();
 	}
 );
@@ -28,7 +25,6 @@ export const fetchBlacklistedPostCount = createAsyncThunk<number, void, ThunkApi
 export const fetchFavoritePostCount = createAsyncThunk<number, void, ThunkApi>(
 	'dashboard/fetchFavoritePostCount',
 	async (): Promise<number> => {
-		thunkLogger.getActionLogger(fetchFavoritePostCount);
 		const postIds = await db.favorites.getlAllPostIds();
 		return postIds.length;
 	}
@@ -37,7 +33,6 @@ export const fetchFavoritePostCount = createAsyncThunk<number, void, ThunkApi>(
 export const fetchTagCount = createAsyncThunk<number, void, ThunkApi>(
 	'dashboard/fetchTagCount',
 	async (): Promise<number> => {
-		thunkLogger.getActionLogger(fetchTagCount);
 		return db.tags.getCount();
 	}
 );
@@ -45,7 +40,7 @@ export const fetchTagCount = createAsyncThunk<number, void, ThunkApi>(
 export const fetchRatingCounts = createAsyncThunk<RatingCounts, void, ThunkApi>(
 	'dashboard/fetchRatingCounts',
 	async (): Promise<RatingCounts> => {
-		const logger = thunkLogger.getActionLogger(fetchRatingCounts);
+		const logger = getActionLogger(fetchRatingCounts);
 		logger.debug('fetching safe count');
 		const safe = await db.posts.getCountForRating('safe');
 		logger.debug('fetching questionable count');
@@ -59,7 +54,6 @@ export const fetchRatingCounts = createAsyncThunk<RatingCounts, void, ThunkApi>(
 export const fetchMostSearchedTags = createAsyncThunk<TagHistory[], void, ThunkApi>(
 	'dashboard/fetchMostSearchedTags',
 	async (): Promise<TagHistory[]> => {
-		thunkLogger.getActionLogger(fetchMostSearchedTags);
 		return db.tagSearchHistory.getMostSearched();
 	}
 );
@@ -67,10 +61,12 @@ export const fetchMostSearchedTags = createAsyncThunk<TagHistory[], void, ThunkA
 export const fetchMostFavoritedTags = createAsyncThunk<{ tag: Tag; count: number }[], number | undefined, ThunkApi>(
 	'dashboard/fetchMostFavoritedTags',
 	async (limit = 20, thunkApi): Promise<{ tag: Tag; count: number }[]> => {
-		const logger = thunkLogger.getActionLogger(fetchMostFavoritedTags);
+		const logger = getActionLogger(fetchMostFavoritedTags);
 		logger.debug('Fetching all favorite tags with counts');
 		const tags = await db.favorites.getAllFavoriteTagsWithCounts();
-		const sorted = Object.entries(tags).sort((a, b) => b[1] - a[1]).slice(0, limit < 100 ? limit : 100);
+		const sorted = Object.entries(tags)
+			.sort((a, b) => b[1] - a[1])
+			.slice(0, limit < 100 ? limit : 100);
 
 		const notFoundTags: NotFoundTags[] = [];
 		const foundTags: FoundTags[] = [];
@@ -121,7 +117,7 @@ export const fetchMostViewedPosts = createAsyncThunk<Post[], number | undefined,
 	'dashboard/fetchMostViewedPosts',
 	async (limit = 20): Promise<Post[]> => {
 		mostViewedCache.revokeAll();
-		const logger = thunkLogger.getActionLogger(fetchMostViewedPosts);
+		const logger = getActionLogger(fetchMostViewedPosts);
 		logger.debug(`Fetching ${limit} most viewed posts from DB`);
 		return db.posts.getMostViewed(limit);
 	}

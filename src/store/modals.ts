@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ActiveModal, PerModalState } from '@appTypes/modalTypes';
 
-export interface ModalsState {
+export type ModalsState = {
 	activeModal: ActiveModal;
 	isVisible: boolean;
 	modalProps: {
 		[K in ActiveModal]: PerModalState[K];
 	};
-}
+};
 
 export const initialState: ModalsState = {
 	activeModal: ActiveModal.NONE,
@@ -19,6 +19,8 @@ export const initialState: ModalsState = {
 		[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]: { postsToMove: [], targetDirectoryKey: 1 },
 		[ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION]: { postsToMove: [] },
 		[ActiveModal.RENAME_FAVORITES_DIRECTORY]: { targetDirectoryKey: 1 },
+		[ActiveModal.SEARCH_FORM]: { context: 'default' },
+		[ActiveModal.RENAME_TAB]: { context: 'default' },
 		[ActiveModal.SETTINGS]: undefined,
 		[ActiveModal.NONE]: undefined,
 	},
@@ -44,11 +46,14 @@ const modalSlice = createSlice({
 });
 
 type ShowModalAction = ReturnType<typeof modalSlice.actions.showModal>;
-const showModal = <K extends ActiveModal>(modal: K, modalState: PerModalState[K]): ShowModalAction => {
+const showModal = <K extends ActiveModal>(
+	modal: K,
+	...modalState: PerModalState[K] extends void ? [] : [PerModalState[K]]
+): ShowModalAction => {
 	return modalSlice.actions.showModal({
 		modal,
 		modalState: {
-			[modal]: modalState,
+			[modal]: modalState[0],
 		},
 	});
 };

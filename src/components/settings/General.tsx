@@ -6,14 +6,9 @@ import { Form, Input, Button, Select, Checkbox, Modal } from 'antd';
 
 import { AppDispatch, RootState } from '@store/types';
 import { thunks, actions } from '@store';
-import { IpcChannels } from '@appTypes/processDto';
+import { IpcInvokeChannels, IpcSendChannels } from '@appTypes/processDto';
 
-interface SelectFolderDialogResponse {
-	canceled: boolean;
-	filePaths: string[];
-}
-
-interface ButtonProps {
+type ButtonProps = {
 	$isOffset?: boolean;
 	$wide?: boolean;
 }
@@ -38,16 +33,16 @@ const General: React.FunctionComponent = () => {
 
 	const handleThemeChange = (value: 'dark' | 'light'): void => {
 		dispatch(thunks.settings.updateTheme(value)).then(() => {
-			window.api.send(IpcChannels.THEME_CHANGED);
+			window.api.send(IpcSendChannels.THEME_CHANGED);
 		});
 	};
 
 	const handleOpenDirectory = (): void => {
-		window.api.send(IpcChannels.OPEN_PATH, imagesFolderPath);
+		window.api.send(IpcSendChannels.OPEN_PATH, imagesFolderPath);
 	};
 
 	const handleSelectDirectory = (): void => {
-		window.api.invoke<SelectFolderDialogResponse>(IpcChannels.OPEN_SELECT_IMAGES_FOLDER_DIALOG).then((response) => {
+		window.api.invoke(IpcInvokeChannels.OPEN_SELECT_IMAGES_FOLDER_DIALOG).then((response) => {
 			if (!response.canceled) {
 				dispatch(actions.settings.setImagesFolderPath(response.filePaths[0]));
 			}

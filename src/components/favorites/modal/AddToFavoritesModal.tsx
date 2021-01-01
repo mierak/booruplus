@@ -9,9 +9,9 @@ import { AppDispatch, RootState, TreeNode } from '@store/types';
 import { openNotificationWithIcon } from '@appTypes/components';
 import { AddToFavoritesModalContextProps, AddToFavoritesModalProps } from '@appTypes/modalTypes';
 
-import ModalFooter from './common/ModalFooter';
+import ModalFooter from '../../common/ModalFooter';
 
-interface Info {
+type Info = {
 	event: string;
 	selected: boolean;
 	node: EventDataNode;
@@ -19,7 +19,7 @@ interface Info {
 	nativeEvent: MouseEvent;
 }
 
-interface Props {
+type Props = {
 	treeData: TreeNode[] | undefined;
 	expandedKeys: string[];
 	data: AddToFavoritesModalProps | AddToFavoritesModalContextProps;

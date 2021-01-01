@@ -2,22 +2,21 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Modal } from 'antd';
 import * as Comlink from 'comlink';
 
+import type { ExportedData } from '@db/types';
+import type { Settings, ThunkApi } from '@store/types';
+
+import{ openNotificationWithIcon } from '@appTypes/components';
 import { db } from '@db';
-import { ExportedData } from '@db/types';
-import { Settings, ThunkApi } from '@store/types';
-import { IpcChannels, ExportDataDto } from '@appTypes/processDto';
-import { thunkLoggerFactory } from '@util/logger';
+import { IpcInvokeChannels, IpcListeners, IpcSendChannels } from '@appTypes/processDto';
+import { getActionLogger } from '@util/logger';
 import { formatPercentProgress } from '@util/utils';
-import { openNotificationWithIcon } from '@appTypes/components';
 
 import { setFullscreenLoadingMaskState } from '../commonActions';
-
-const thunkLogger = thunkLoggerFactory();
 
 export const loadSettings = createAsyncThunk<Settings, string | undefined, ThunkApi>(
 	'settings/load',
 	async (name): Promise<Settings> => {
-		const logger = thunkLogger.getActionLogger(loadSettings);
+		const logger = getActionLogger(loadSettings);
 		logger.debug(`Loading settings with name: ${name}`);
 		const settings = await db.settings.loadSettings(name);
 		if (!settings) {
@@ -33,10 +32,10 @@ export const loadSettings = createAsyncThunk<Settings, string | undefined, Thunk
 				content:
 					'It looks like this is your first time. Before you do anything you should consider changing path to application data in settings. Happy fapping!',
 			});
-			newSettings.imagesFolderPath = await window.api.invoke<string>(IpcChannels.GET_PICTURES_PATH);
+			newSettings.imagesFolderPath = await window.api.invoke(IpcInvokeChannels.GET_PICTURES_PATH);
 			db.settings.saveSettings({ name: 'user', values: newSettings });
 		}
-		window.api.send(IpcChannels.SETTINGS_CHANGED, newSettings);
+		window.api.send(IpcSendChannels.SETTINGS_CHANGED, newSettings);
 
 		return newSettings;
 	}
@@ -45,7 +44,7 @@ export const loadSettings = createAsyncThunk<Settings, string | undefined, Thunk
 export const updateTheme = createAsyncThunk<'dark' | 'light', 'dark' | 'light', ThunkApi>(
 	'settings/update-theme',
 	async (theme, { getState }): Promise<'dark' | 'light'> => {
-		const logger = thunkLogger.getActionLogger(updateTheme);
+		const logger = getActionLogger(updateTheme);
 		const settings = { ...getState().settings };
 		settings.theme = theme;
 		logger.debug('Saving settings with name user', settings);
@@ -57,10 +56,10 @@ export const updateTheme = createAsyncThunk<'dark' | 'light', 'dark' | 'light', 
 export const saveSettings = createAsyncThunk<void, void, ThunkApi>(
 	'settings/save',
 	async (_, thunkApi): Promise<void> => {
-		const logger = thunkLogger.getActionLogger(saveSettings);
+		const logger = getActionLogger(saveSettings);
 		const settings = thunkApi.getState().settings;
 		logger.debug('Saving settings with name user', settings);
-		window.api.send(IpcChannels.SETTINGS_CHANGED, settings);
+		window.api.send(IpcSendChannels.SETTINGS_CHANGED, settings);
 		await db.settings.saveSettings({ name: 'user', values: settings });
 	}
 );
@@ -68,9 +67,9 @@ export const saveSettings = createAsyncThunk<void, void, ThunkApi>(
 export const exportDatabase = createAsyncThunk<boolean, void, ThunkApi>(
 	'settings/export-data',
 	async (_, { dispatch }): Promise<boolean> => {
-		const logger = thunkLogger.getActionLogger(exportDatabase);
+		const logger = getActionLogger(exportDatabase);
 		logger.debug('Opening data export dialog');
-		const filePath = await window.api.invoke<string>(IpcChannels.OPEN_SELECT_EXPORT_FILE_LOCATION_DIALOG, 'data');
+		const filePath = await window.api.invoke(IpcInvokeChannels.OPEN_SELECT_EXPORT_FILE_LOCATION_DIALOG, 'data');
 
 		if (filePath) {
 			logger.debug('Getting all data from database');
@@ -83,7 +82,7 @@ export const exportDatabase = createAsyncThunk<boolean, void, ThunkApi>(
 
 			logger.debug('Sending exported data to main process to be saved');
 			dispatch(setFullscreenLoadingMaskState('Saving file'));
-			await window.api.invoke<ExportDataDto>(IpcChannels.SAVE_EXPORTED_DATA, { data: JSON.stringify(exportedData), filePath });
+			await window.api.invoke(IpcInvokeChannels.SAVE_EXPORTED_DATA, { data: JSON.stringify(exportedData), filePath });
 			return true;
 		} else {
 			logger.debug('Data export dialog closed without selecting a file');
@@ -95,16 +94,16 @@ export const exportDatabase = createAsyncThunk<boolean, void, ThunkApi>(
 export const exportImages = createAsyncThunk<boolean, void, ThunkApi>(
 	'settings/exportImages',
 	async (_, { dispatch }): Promise<boolean> => {
-		const logger = thunkLogger.getActionLogger(exportImages);
+		const logger = getActionLogger(exportImages);
 		logger.debug('Opening data export dialog');
-		const filePath = await window.api.invoke<string>(IpcChannels.OPEN_SELECT_EXPORT_FILE_LOCATION_DIALOG, 'images');
+		const filePath = await window.api.invoke(IpcInvokeChannels.OPEN_SELECT_EXPORT_FILE_LOCATION_DIALOG, 'images');
 
 		if (!filePath) {
 			logger.debug('Data export dialog closed without selecting a file');
 			return false;
 		}
 
-		const progressUpdate = (_: unknown, { done, total }: { done: number; total: number }): void => {
+		const progressUpdate = (__: unknown, { done, total }: { done: number; total: number }): void => {
 			const percent = Math.floor((done / total) * 100);
 			dispatch(
 				setFullscreenLoadingMaskState({
@@ -114,12 +113,12 @@ export const exportImages = createAsyncThunk<boolean, void, ThunkApi>(
 			);
 		};
 
-		window.api.on(IpcChannels.EXPORT_PROGRESS, progressUpdate);
+		window.api.on(IpcListeners.EXPORT_PROGRESS, progressUpdate);
 
 		logger.debug('Sending EXPORT_IMAGES to main process');
-		await window.api.invoke(IpcChannels.EXPORT_IMAGES, filePath);
+		await window.api.invoke(IpcInvokeChannels.EXPORT_IMAGES, filePath);
 
-		window.api.removeListener(IpcChannels.EXPORT_PROGRESS, progressUpdate);
+		window.api.removeListener(IpcListeners.EXPORT_PROGRESS, progressUpdate);
 		openNotificationWithIcon('success', 'Export finished', `Images successfuly exported to ${filePath}`);
 		return true;
 	}
@@ -128,9 +127,9 @@ export const exportImages = createAsyncThunk<boolean, void, ThunkApi>(
 export const importImages = createAsyncThunk<boolean, void, ThunkApi>(
 	'settings/importImages',
 	async (_, { dispatch }): Promise<boolean> => {
-		const logger = thunkLogger.getActionLogger(importImages);
+		const logger = getActionLogger(importImages);
 
-		const progressUpdate = (_: unknown, { done, total }: { done: number; total: number }): void => {
+		const progressUpdate = (__: unknown, { done, total }: { done: number; total: number }): void => {
 			const percent = Math.floor((done / total) * 100);
 			dispatch(
 				setFullscreenLoadingMaskState({
@@ -139,13 +138,17 @@ export const importImages = createAsyncThunk<boolean, void, ThunkApi>(
 				})
 			);
 		};
-		window.api.on(IpcChannels.IMPORT_PROGRESS, progressUpdate);
+		window.api.on(IpcListeners.IMPORT_PROGRESS, progressUpdate);
 
 		logger.debug('Sending IMPORT_IMAGES to main process');
-		await window.api.invoke(IpcChannels.IMPORT_IMAGES);
+		await window.api.invoke(IpcInvokeChannels.IMPORT_IMAGES);
 
-		window.api.removeListener(IpcChannels.IMPORT_PROGRESS, progressUpdate);
-		openNotificationWithIcon('success', 'Import finished', 'Images successfuly were successfuly imported to current data path');
+		window.api.removeListener(IpcListeners.IMPORT_PROGRESS, progressUpdate);
+		openNotificationWithIcon(
+			'success',
+			'Import finished',
+			'Images successfuly were successfuly imported to current data path'
+		);
 		return true;
 	}
 );
@@ -153,10 +156,10 @@ export const importImages = createAsyncThunk<boolean, void, ThunkApi>(
 export const importDatabase = createAsyncThunk<boolean, void, ThunkApi>(
 	'settings/import-data',
 	async (_, { dispatch }): Promise<boolean> => {
-		const logger = thunkLogger.getActionLogger(importDatabase);
+		const logger = getActionLogger(importDatabase);
 		logger.debug('Opening data import dialog');
 		dispatch(setFullscreenLoadingMaskState('Reading data from disk'));
-		const loadedData = await window.api.invoke<string>(IpcChannels.OPEN_IMPORT_DATA_DIALOG);
+		const loadedData = await window.api.invoke(IpcInvokeChannels.OPEN_IMPORT_DATA_DIALOG);
 		if (!loadedData) {
 			logger.debug('Data import dialog closed without selecting a file');
 			return false;

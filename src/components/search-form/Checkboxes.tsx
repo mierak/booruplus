@@ -2,38 +2,54 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Checkbox } from 'antd';
 
-import { RootState } from '@store/types';
+import { PostsContext, RootState } from '@store/types';
 import { actions } from '@store';
 
-const Checkboxes: React.FunctionComponent = () => {
+type Props = {
+	context: PostsContext | string;
+};
+
+const Checkboxes: React.FunctionComponent<Props> = ({ context }) => {
 	const dispatch = useDispatch();
 
-	const showNonBlacklisted = useSelector((state: RootState) => state.downloadedSearchForm.showNonBlacklisted);
-	const showBlacklisted = useSelector((state: RootState) => state.downloadedSearchForm.showBlacklisted);
-	const showFavorites = useSelector((state: RootState) => state.downloadedSearchForm.showFavorites);
-	const showVideos = useSelector((state: RootState) => state.downloadedSearchForm.showVideos);
-	const showImages = useSelector((state: RootState) => state.downloadedSearchForm.showImages);
-	const showGifs = useSelector((state: RootState) => state.downloadedSearchForm.showGifs);
+	const checkboxes = useSelector((state: RootState) => {
+		const slice = state.searchContexts[context];
+		if ('showImages' in slice) {
+			return {
+				showNonBlacklisted: slice.showNonBlacklisted,
+				showBlacklisted: slice.showBlacklisted,
+				showFavorites: slice.showFavorites,
+				showVideos: slice.showVideos,
+				showImages: slice.showImages,
+				showGifs: slice.showGifs,
+			};
+		}
+	});
 
-	const handleCheckboxChange = (checkbox: 'non-blacklisted' | 'blacklisted' | 'favorites' | 'images' | 'gifs' | 'videos'): void => {
+	if (!checkboxes) return null;
+	const { showBlacklisted, showFavorites, showGifs, showImages, showNonBlacklisted, showVideos } = checkboxes;
+
+	const handleCheckboxChange = (
+		checkbox: 'non-blacklisted' | 'blacklisted' | 'favorites' | 'images' | 'gifs' | 'videos'
+	): void => {
 		switch (checkbox) {
 			case 'non-blacklisted':
-				dispatch(actions.downloadedSearchForm.toggleShowNonBlacklisted());
+				dispatch(actions.searchContexts.updateContext({ context, data: { showNonBlacklisted: !showNonBlacklisted } }));
 				break;
 			case 'blacklisted':
-				dispatch(actions.downloadedSearchForm.toggleShowBlacklisted());
+				dispatch(actions.searchContexts.updateContext({ context, data: { showBlacklisted: !showBlacklisted } }));
 				break;
 			case 'favorites':
-				dispatch(actions.downloadedSearchForm.toggleShowFavorites());
+				dispatch(actions.searchContexts.updateContext({ context, data: { showFavorites: !showFavorites } }));
 				break;
 			case 'gifs':
-				dispatch(actions.downloadedSearchForm.toggleShowGifs());
+				dispatch(actions.searchContexts.updateContext({ context, data: { showGifs: !showGifs } }));
 				break;
 			case 'images':
-				dispatch(actions.downloadedSearchForm.toggleShowImages());
+				dispatch(actions.searchContexts.updateContext({ context, data: { showImages: !showImages } }));
 				break;
 			case 'videos':
-				dispatch(actions.downloadedSearchForm.toggleShowVideos());
+				dispatch(actions.searchContexts.updateContext({ context, data: { showVideos: !showVideos } }));
 				break;
 		}
 	};

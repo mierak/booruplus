@@ -1,19 +1,21 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { unwrapResult } from '@reduxjs/toolkit';
 import styled from 'styled-components';
 import { Table, Card, Tag as AntTag } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 
-import { actions, thunks } from '@store';
-import { TagHistory, AppDispatch, RootState } from '@store/types';
+import { thunks } from '@store';
+import { TagHistory, AppDispatch, RootState, SearchContext } from '@store/types';
 
 import { getTagColor } from '@util/utils';
+import { initPostsContext } from '../../store/commonActions';
 
-interface Props {
+type Props = {
 	className?: string;
 	type: 'most-searched' | 'most-favorited';
 	title: string;
-}
+};
 
 const StyledListCard = styled(Card)`
 	height: 273px;
@@ -40,7 +42,9 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 		type === 'most-searched' ? state.dashboard.mostSearchedTags : state.dashboard.mostFavoritedTags
 	);
 	const isLoading = useSelector((state: RootState) =>
-		type === 'most-searched' ? state.loadingStates.isMostSearchedTagsLoading : state.loadingStates.isMostFavoritedTagsLoading
+		type === 'most-searched'
+			? state.loadingStates.isMostSearchedTagsLoading
+			: state.loadingStates.isMostFavoritedTagsLoading
 	);
 
 	const handleReload = (): void => {
@@ -65,20 +69,28 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 		return (
 			<div>
 				<a
-					onClick={(): void => {
-						dispatch(actions.onlineSearchForm.setSelectedTags([record.tag]));
-						dispatch(thunks.onlineSearchForm.fetchPosts());
-						dispatch(actions.system.setActiveView('search-results'));
+					onClick={async (): Promise<void> => {
+						const context = unwrapResult(await dispatch(thunks.searchContexts.generateSearchContext()));
+						const data: Partial<SearchContext> = {
+							mode: 'online',
+							selectedTags: [record.tag],
+						};
+						dispatch(initPostsContext({ context, data }));
+						dispatch(thunks.onlineSearches.fetchPosts({ context }));
 					}}
 				>
 					Online
 				</a>
 				<span> </span>
 				<a
-					onClick={(): void => {
-						dispatch(actions.downloadedSearchForm.setSelectedTags([record.tag]));
-						dispatch(thunks.downloadedSearchForm.fetchPosts());
-						dispatch(actions.system.setActiveView('search-results'));
+					onClick={async (): Promise<void> => {
+						const context = unwrapResult(await dispatch(thunks.searchContexts.generateSearchContext()));
+						const data: Partial<SearchContext> = {
+							mode: 'offline',
+							selectedTags: [record.tag],
+						};
+						dispatch(initPostsContext({ context, data }));
+						dispatch(thunks.offlineSearches.fetchPosts({ context }));
 					}}
 					style={{ float: 'right' }}
 				>
@@ -89,12 +101,18 @@ const TagStatistic: React.FunctionComponent<Props> = ({ className, type, title }
 	};
 
 	const renderTag = (_text: unknown, record: TagHistory): React.ReactNode => {
-		const tagName = record.tag.tag.length <= maxTagLength ? record.tag.tag : `${record.tag.tag.substr(0, maxTagLength)}...`;
+		const tagName =
+			record.tag.tag.length <= maxTagLength ? record.tag.tag : `${record.tag.tag.substr(0, maxTagLength)}...`;
 		return <AntTag color={getTagColor(record.tag.type)}>{tagName}</AntTag>;
 	};
 
 	return (
-		<StyledListCard title={title} size='small' className={className} extra={<ReloadOutlined onClick={handleReload} title='Reload' />}>
+		<StyledListCard
+			title={title}
+			size='small'
+			className={className}
+			extra={<ReloadOutlined onClick={handleReload} title='Reload' />}
+		>
 			<Table
 				dataSource={!isLoading ? dataSource : undefined}
 				size='small'

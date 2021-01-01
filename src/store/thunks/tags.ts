@@ -1,20 +1,20 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, unwrapResult } from '@reduxjs/toolkit';
+
+import type { AppThunk, SearchContext, ThunkApi } from '@store/types';
+import type { Tag, TagType } from '@appTypes/gelbooruTypes';
 
 import { db } from '@db';
-import { AppThunk, ThunkApi } from '@store/types';
-import { Tag, TagType } from '@appTypes/gelbooruTypes';
 import * as api from '@service/apiService';
-import { thunkLoggerFactory } from '@util/logger';
+import { getActionLogger } from '@util/logger';
 
-import * as onlineSearchFormThunk from './onlineSearchForm';
-import * as downloadedSearchFormThunk from './downloadedSearchForm';
-
-const thunkLogger = thunkLoggerFactory();
+import * as onlineSearchFormThunk from './onlineSearches';
+import * as downloadedSearchFormThunk from './offlineSearches';
+import * as searchContextsThunk from './searchContexts';
+import { initPostsContext } from '../commonActions';
 
 export const loadAllTagsFromDb = createAsyncThunk<Tag[], void, ThunkApi>(
 	'tags/loadAllTagsFromDb',
 	async (): Promise<Tag[]> => {
-		thunkLogger.getActionLogger(loadAllTagsFromDb);
 		return await db.tags.getAll();
 	}
 );
@@ -22,7 +22,7 @@ export const loadAllTagsFromDb = createAsyncThunk<Tag[], void, ThunkApi>(
 export const getCount = createAsyncThunk<number, { pattern?: string; types?: TagType[] } | undefined, ThunkApi>(
 	'tags/getCount',
 	async (params): Promise<number> => {
-		const logger = thunkLogger.getActionLogger(getCount);
+		const logger = getActionLogger(getCount);
 		logger.debug(`Getting count for pattern: [${params?.pattern}] and tag types: [${params?.types?.join(' ')}]`);
 		return db.tags.getCount(params);
 	}
@@ -35,7 +35,7 @@ export const loadAllWithLimitAndOffset = createAsyncThunk<
 >(
 	'tags/loadAllWithLimitAndOffset',
 	async (params): Promise<Tag[]> => {
-		const logger = thunkLogger.getActionLogger(loadAllWithLimitAndOffset);
+		const logger = getActionLogger(loadAllWithLimitAndOffset);
 		logger.debug('Getting tags with options', JSON.stringify(params));
 
 		const tags = await db.tags.getAllWithLimitAndOffset(params);
@@ -55,7 +55,7 @@ export const loadAllWithLimitAndOffset = createAsyncThunk<
 export const loadByPatternFromDb = createAsyncThunk<Tag[], string, ThunkApi>(
 	'tags/loadByPatternFromDb',
 	async (pattern): Promise<Tag[]> => {
-		const logger = thunkLogger.getActionLogger(loadByPatternFromDb);
+		const logger = getActionLogger(loadByPatternFromDb);
 		logger.debug('Getting tags from DB with pattern', pattern);
 		return db.tags.getByPattern(pattern);
 	}
@@ -63,25 +63,35 @@ export const loadByPatternFromDb = createAsyncThunk<Tag[], string, ThunkApi>(
 
 export const searchTagOnline = createAsyncThunk<Tag, Tag, ThunkApi>(
 	'tags/searchOnline',
-	async (tag, thunkApi): Promise<Tag> => {
-		thunkLogger.getActionLogger(searchTagOnline);
-		await thunkApi.dispatch(onlineSearchFormThunk.fetchPosts());
+	async (tag, { dispatch }): Promise<Tag> => {
+		const context = unwrapResult(await dispatch(searchContextsThunk.generateSearchContext()));
+		const data: Partial<SearchContext> = {
+			mode: 'online',
+			selectedTags: [tag],
+		};
+		dispatch(initPostsContext({ context, data }));
+		await dispatch(onlineSearchFormThunk.fetchPosts({ context }));
 		return tag;
 	}
 );
 
 export const searchTagOffline = createAsyncThunk<Tag, Tag, ThunkApi>(
 	'tags/searchOffline',
-	async (tag, thunkApi): Promise<Tag> => {
-		thunkLogger.getActionLogger(searchTagOffline);
-		await thunkApi.dispatch(downloadedSearchFormThunk.fetchPosts());
+	async (tag, { dispatch }): Promise<Tag> => {
+		const context = unwrapResult(await dispatch(searchContextsThunk.generateSearchContext()));
+		const data: Partial<SearchContext> = {
+			mode: 'offline',
+			selectedTags: [tag],
+		};
+		dispatch(initPostsContext({ context, data }));
+		await dispatch(downloadedSearchFormThunk.fetchPosts({ context }));
 		return tag;
 	}
 );
 
 // TODO make into a proper Thunk - used only in TagsPopover
 export const fetchTags = (tags: string[]): AppThunk<Tag[]> => async (_, getState): Promise<Tag[]> => {
-	const logger = thunkLogger.getActionLogger({ typePrefix: 'fetchTags' });
+	const logger = getActionLogger({ typePrefix: 'fetchTags' });
 	logger.debug('Preparing to fetch', tags.length, 'tags');
 	try {
 		const tagsFromDb: Tag[] = [];

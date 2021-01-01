@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { thunks } from '../../src/store';
 import { RootState, AppDispatch } from '../../src/store/types';
@@ -8,6 +8,7 @@ import thunk from 'redux-thunk';
 import { mState } from '../helpers/store.helper';
 
 import TaskProgress from '../../src/components/TaskProgress';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -225,6 +226,7 @@ describe('TaskProgress', () => {
 				},
 			})
 		);
+		const newContext = unwrapResult(await store.dispatch(thunks.searchContexts.generateSearchContext()));
 
 		// when
 		render(
@@ -236,9 +238,11 @@ describe('TaskProgress', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({
-			type: thunks.posts.fetchPostsByIds.pending.type,
-			meta: { arg: store.getState().tasks.tasks[1].postIds },
-		});
+		await waitFor(() =>
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.posts.fetchPostsByIds.pending.type,
+				meta: { arg: { context: newContext, ids: store.getState().tasks.tasks[1].postIds } },
+			})
+		);
 	});
 });

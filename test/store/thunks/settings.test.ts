@@ -2,14 +2,13 @@ import { doDatabaseMock, mockedDb } from '../../helpers/database.mock';
 doDatabaseMock();
 jest.mock('antd');
 
-import { AppDispatch, Settings } from '@store/types';
-import { RootState } from '../../../src/store/types';
+import { AppDispatch, Settings, RootState } from '@store/types';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import * as thunks from '../../../src/store/thunks/settings';
 import { initialState } from '../../../src/store';
 import { mSettings, mFavoritesTreeNode, mTagHistory, mPost, mTag, mTask } from '../../helpers/test.helper';
-import { IpcChannels } from '../../../src/types/processDto';
+import { IpcInvokeChannels, IpcListeners, IpcSendChannels } from '../../../src/types/processDto';
 import { ExportedData } from '../../../src/db/types';
 import { waitFor } from '@testing-library/react';
 import { setFullscreenLoadingMaskState } from '../../../src/store/commonActions';
@@ -45,7 +44,7 @@ describe('thunks/settings', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(ipcSendSpy).toHaveBeenCalledWith(IpcChannels.SETTINGS_CHANGED, settings);
+			expect(ipcSendSpy).toHaveBeenCalledWith(IpcSendChannels.SETTINGS_CHANGED, settings);
 			expect(mockedDb.settings.loadSettings).toBeCalledTimes(1);
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.loadSettings.pending.type, payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({ type: thunks.loadSettings.fulfilled.type, payload: settings });
@@ -97,7 +96,7 @@ describe('thunks/settings', () => {
 				type: thunks.loadSettings.fulfilled.type,
 				payload: expectedSettings,
 			});
-			expect(ipcSendSpy).toHaveBeenCalledWith(IpcChannels.SETTINGS_CHANGED, expectedSettings);
+			expect(ipcSendSpy).toHaveBeenCalledWith(IpcSendChannels.SETTINGS_CHANGED, expectedSettings);
 			expect(mockedDb.settings.saveSettings).toHaveBeenCalledWith({ name: 'user', values: expectedSettings });
 		});
 	});
@@ -120,7 +119,7 @@ describe('thunks/settings', () => {
 			expect(mockedDb.settings.saveSettings).toHaveBeenCalledWith({ name: 'user', values: settings });
 			expect(dispatchedActions[0]).toMatchObject({ type: thunks.saveSettings.pending.type, payload: undefined });
 			expect(dispatchedActions[1]).toMatchObject({ type: thunks.saveSettings.fulfilled.type, payload: undefined });
-			expect(ipcSendSpy).toHaveBeenCalledWith(IpcChannels.SETTINGS_CHANGED, settings);
+			expect(ipcSendSpy).toHaveBeenCalledWith(IpcSendChannels.SETTINGS_CHANGED, settings);
 		});
 	});
 	describe('updateTheme()', () => {
@@ -155,7 +154,7 @@ describe('thunks/settings', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(ipcInvokeSpy).toBeCalledWith(IpcChannels.OPEN_SELECT_EXPORT_FILE_LOCATION_DIALOG, 'data');
+			expect(ipcInvokeSpy).toBeCalledWith(IpcInvokeChannels.OPEN_SELECT_EXPORT_FILE_LOCATION_DIALOG, 'data');
 			expect(dispatchedActions).toContainMatchingAction({ type: thunks.exportDatabase.fulfilled.type, payload: false });
 		});
 		it('Calls exportDb() and sends message to Ipc with exported data', async () => {
@@ -173,7 +172,10 @@ describe('thunks/settings', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(ipcInvokeSpy.mock.calls).toContainEqual([IpcChannels.SAVE_EXPORTED_DATA, { data: JSON.stringify(data), filePath }]);
+			expect(ipcInvokeSpy.mock.calls).toContainEqual([
+				IpcInvokeChannels.SAVE_EXPORTED_DATA,
+				{ data: JSON.stringify(data), filePath },
+			]);
 			expect(dispatchedActions).toContainMatchingAction({ type: thunks.exportDatabase.fulfilled.type, payload: true });
 		});
 	});
@@ -191,7 +193,7 @@ describe('thunks/settings', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(ipcInvokeSpy).toBeCalledWith(IpcChannels.OPEN_IMPORT_DATA_DIALOG);
+			expect(ipcInvokeSpy).toBeCalledWith(IpcInvokeChannels.OPEN_IMPORT_DATA_DIALOG);
 			expect(dispatchedActions).toContainMatchingAction({ type: thunks.importDatabase.fulfilled.type, payload: false });
 		});
 		it('Validates data and does not call importDb when data is missing any key', async () => {
@@ -209,7 +211,7 @@ describe('thunks/settings', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(ipcInvokeSpy).toBeCalledWith(IpcChannels.OPEN_IMPORT_DATA_DIALOG);
+			expect(ipcInvokeSpy).toBeCalledWith(IpcInvokeChannels.OPEN_IMPORT_DATA_DIALOG);
 			expect(dispatchedActions).toContainMatchingAction({ type: thunks.importDatabase.rejected.type });
 			expect(mockedDb.common.clearAndRestoreDb).toBeCalledTimes(0);
 		});
@@ -228,8 +230,10 @@ describe('thunks/settings', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(ipcInvokeSpy).toBeCalledWith(IpcChannels.OPEN_IMPORT_DATA_DIALOG);
-			await waitFor(() => expect(dispatchedActions).toContainMatchingAction({ type: thunks.importDatabase.fulfilled.type, payload: true }));
+			expect(ipcInvokeSpy).toBeCalledWith(IpcInvokeChannels.OPEN_IMPORT_DATA_DIALOG);
+			await waitFor(() =>
+				expect(dispatchedActions).toContainMatchingAction({ type: thunks.importDatabase.fulfilled.type, payload: true })
+			);
 			expect(mockedDb.common.clearAndRestoreDb).toBeCalledWith(data, expect.anything());
 		});
 	});
@@ -256,13 +260,13 @@ describe('thunks/settings', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(ipcInvokeSpy).toHaveBeenCalledWith(IpcChannels.OPEN_SELECT_EXPORT_FILE_LOCATION_DIALOG, 'images');
-			expect(ipcInvokeSpy).toHaveBeenCalledWith(IpcChannels.EXPORT_IMAGES, filePath);
+			expect(ipcInvokeSpy).toHaveBeenCalledWith(IpcInvokeChannels.OPEN_SELECT_EXPORT_FILE_LOCATION_DIALOG, 'images');
+			expect(ipcInvokeSpy).toHaveBeenCalledWith(IpcInvokeChannels.EXPORT_IMAGES, filePath);
 			expect(dispatchedActions).toContainMatchingAction({
 				type: thunks.exportImages.fulfilled.type,
 				payload: true,
 			});
-			expect(ipcRemoveListenerSpy).toHaveBeenCalledWith(IpcChannels.EXPORT_PROGRESS, callback);
+			expect(ipcRemoveListenerSpy).toHaveBeenCalledWith(IpcListeners.EXPORT_PROGRESS, callback);
 			expect(dispatchedActions).toContainMatchingAction({ type: setFullscreenLoadingMaskState.type });
 		});
 		it('Invokes Invokes SELECT_EXPORT_FILE_LOCATION and returns false if no path is returned', async () => {
@@ -308,12 +312,12 @@ describe('thunks/settings', () => {
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(ipcInvokeSpy).toHaveBeenCalledWith(IpcChannels.IMPORT_IMAGES);
+			expect(ipcInvokeSpy).toHaveBeenCalledWith(IpcInvokeChannels.IMPORT_IMAGES);
 			expect(dispatchedActions).toContainMatchingAction({
 				type: thunks.importImages.fulfilled.type,
 				payload: true,
 			});
-			expect(ipcRemoveListenerSpy).toHaveBeenCalledWith(IpcChannels.IMPORT_PROGRESS, callback);
+			expect(ipcRemoveListenerSpy).toHaveBeenCalledWith(IpcListeners.IMPORT_PROGRESS, callback);
 			expect(dispatchedActions).toContainMatchingAction({ type: setFullscreenLoadingMaskState.type });
 		});
 	});

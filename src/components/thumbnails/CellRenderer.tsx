@@ -8,12 +8,12 @@ import { PostsContext } from '@store/types';
 
 import Cell from './Cell';
 
-interface CellRendererProps {
+type CellRendererProps = {
 	columnIndex: number;
 	rowIndex: number;
 	style: React.CSSProperties;
 	data: {
-		context: PostsContext;
+		context: PostsContext | string;
 		renderLoadMore?: boolean;
 		rowCount: number;
 		columns: number;
@@ -24,7 +24,7 @@ interface CellRendererProps {
 		onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
 		onMouseMove?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
 	};
-}
+};
 
 const StyledLoadMoreButton = styled(LoadMoreButton)`
 	width: calc(100% - 10px);
@@ -53,7 +53,7 @@ const CellRenderer = (cellProps: CellRendererProps): React.ReactElement => {
 	if (cellProps.columnIndex === 0 && cellProps.data.renderLoadMore) {
 		return (
 			<div style={{ ...cellProps.style, width: '100%', height: '30px' }}>
-				<StyledLoadMoreButton />
+				<StyledLoadMoreButton context={cellProps.data.context} />
 			</div>
 		);
 	}

@@ -1,22 +1,22 @@
-import { Settings, Sort, SortOrder, Task } from '@store/types';
-import { Tag, Rating, Post } from '@appTypes/gelbooruTypes';
+import type { Settings, Sort, SortOrder, Task } from '@store/types';
+import type { Tag, Rating, Post } from '@appTypes/gelbooruTypes';
 
-export interface Entity {
+export type Entity = {
 	id: number;
 }
 
-export interface SettingsPair {
+export type SettingsPair = {
 	name: string;
 	values: Settings;
 }
 
-export interface SavedSearchPreview {
+export type SavedSearchPreview = {
 	id: number;
 	blob: Blob;
 	post: Post;
 }
 
-export interface SavedSearch {
+export type SavedSearch = {
 	id?: number;
 	tags: Tag[];
 	excludedTags: Tag[];
@@ -25,7 +25,7 @@ export interface SavedSearch {
 	previews: SavedSearchPreview[];
 }
 
-export interface SavedSearchWithB64Previews {
+export type SavedSearchWithB64Previews = {
 	id?: number;
 	tags: Tag[];
 	excludedTags: Tag[];
@@ -38,7 +38,7 @@ export interface SavedSearchWithB64Previews {
 	}[];
 }
 
-export interface FilterOptions {
+export type FilterOptions = {
 	blacklisted: boolean;
 	nonBlacklisted: boolean;
 	offset: number;
@@ -52,7 +52,7 @@ export interface FilterOptions {
 	showFavorites: boolean;
 }
 
-export interface FavoritesTreeNode {
+export type FavoritesTreeNode = {
 	title: string;
 	key?: number;
 	parentKey: number;
@@ -60,11 +60,11 @@ export interface FavoritesTreeNode {
 	postIds: number[];
 }
 
-export interface Counts {
+export type Counts = {
 	[key: string]: number;
 }
 
-export interface ExportedRawData {
+export type ExportedRawData = {
 	posts: Post[];
 	favorites: FavoritesTreeNode[];
 	settings: SettingsPair[];
@@ -77,7 +77,7 @@ export interface ExportedRawData {
 	savedSearches: SavedSearch[];
 }
 
-export interface ExportedData {
+export type ExportedData = {
 	posts: Post[];
 	favorites: FavoritesTreeNode[];
 	settings: SettingsPair[];

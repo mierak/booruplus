@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Tag } from '@appTypes/gelbooruTypes';
+import type { TagHistory, RatingCounts } from './types';
+import type { Tag } from '@appTypes/gelbooruTypes';
 
 import * as thunks from './thunks';
-import { TagHistory, RatingCounts } from './types';
 
 const log = window.log;
 
-export interface DashboardState {
+export type DashboardState = {
 	totalDownloadedPosts: number;
 	totalFavoritesPosts: number;
 	totalBlacklistedPosts: number;

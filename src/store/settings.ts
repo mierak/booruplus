@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { openNotificationWithIcon } from '@appTypes/components';
+import type { Settings } from './types';
 
-import { Settings } from './types';
+import { openNotificationWithIcon } from '@appTypes/components';
 import * as thunks from './thunks';
 
 const log = window.log;

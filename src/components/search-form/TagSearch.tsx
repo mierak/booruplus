@@ -5,36 +5,41 @@ import { SelectValue } from 'antd/lib/select';
 import { Select, Spin } from 'antd';
 
 import { actions, thunks } from '@store';
-import { RootState } from '@store/types';
+import { PostsContext, RootState } from '@store/types';
 
 import { Tag } from '@appTypes/gelbooruTypes';
 import { useDebounce } from '@hooks/useDebounce';
-import TagSelectOption from '@components/TagSelectOption';
+import TagSelectOption from '@components/search-form/TagSelectOption';
 
-interface Props {
-	mode: 'online' | 'offline';
+type Props = {
+	context: PostsContext | string;
 	open?: boolean;
-}
+};
 
 const StyledSpin = styled(Spin)`
 	margin: 50px 100px 50px auto;
 	width: 465px;
 `;
 
-const TagSearch: React.FunctionComponent<Props> = ({ mode, open }: Props) => {
+const TagSearch: React.FunctionComponent<Props> = ({ open, context }: Props) => {
 	const dispatch = useDispatch();
 
 	const [selectValue] = useState('');
 	const [value, setValue] = useState('');
 	const isLoadingTags = useSelector((state: RootState) => state.system.isTagOptionsLoading);
 
-	const options = useSelector(
-		(state: RootState): Tag[] => (mode === 'offline' && state.downloadedSearchForm.tagOptions) || state.onlineSearchForm.tagOptions
-	);
+	const options = useSelector((state: RootState): Tag[] => state.searchContexts[context].tagOptions);
 
-	const load = (mode === 'offline' && thunks.downloadedSearchForm.loadTagsByPattern) || thunks.onlineSearchForm.getTagsByPatternFromApi;
-	const clear = (mode === 'offline' && actions.downloadedSearchForm.clearTagOptions) || actions.onlineSearchForm.clearTagOptions;
-	const addTag = (mode === 'offline' && actions.downloadedSearchForm.addTag) || actions.onlineSearchForm.addTag;
+	const load = useSelector((state: RootState) => {
+		const mode = state.searchContexts[context].mode;
+		if (mode === 'online') {
+			return thunks.onlineSearches.getTagsByPatternFromApi;
+		} else {
+			return thunks.offlineSearches.loadTagsByPattern;
+		}
+	});
+	const clear = actions.searchContexts.clearTagOptions;
+	const addTag = actions.searchContexts.addTag;
 
 	const debounced = useDebounce(value, 300);
 
@@ -43,13 +48,13 @@ const TagSearch: React.FunctionComponent<Props> = ({ mode, open }: Props) => {
 	};
 
 	useEffect(() => {
-		debounced.length >= 2 && dispatch(load(debounced));
-		debounced.length < 2 && dispatch(clear());
-	}, [clear, debounced, dispatch, load]);
+		debounced.length >= 2 && dispatch(load({ context, pattern: debounced }));
+		debounced.length < 2 && dispatch(clear({ context }));
+	}, [clear, context, debounced, dispatch, load]);
 
 	const handleSelect = (e: SelectValue): void => {
 		const tag = options.find((t: Tag) => t.tag === e.toString());
-		tag && dispatch(addTag(tag));
+		tag && dispatch(addTag({ context, data: tag }));
 	};
 
 	const renderSelectOptions = (): JSX.Element[] => {
@@ -70,6 +75,7 @@ const TagSearch: React.FunctionComponent<Props> = ({ mode, open }: Props) => {
 			loading={isLoadingTags}
 			notFoundContent={isLoadingTags ? <StyledSpin tip='Fetching tags...' /> : null}
 			open={open}
+			autoFocus
 		>
 			{renderSelectOptions()}
 		</Select>

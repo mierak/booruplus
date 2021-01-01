@@ -13,7 +13,7 @@ const StyledPageHeader = styled(PageHeader)`
 	}
 `;
 
-interface Props {
+type Props = {
     className?: string;
     menu: React.ReactNode;
     title: string;

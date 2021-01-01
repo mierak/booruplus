@@ -5,7 +5,7 @@ import { Settings } from '@store/types';
 import { Post } from '@appTypes/gelbooruTypes';
 import { getPathProvider } from '../src/service/pathProviderService';
 
-export interface FileService {
+export type FileService = {
 	loadImage: (post: Post) => Promise<{ data: Buffer | undefined; post: Post }>;
 	loadThumbnail: (post: Post) => Promise<{ data: Buffer | undefined; post: Post }>;
 	saveImage: (post: Post, data: ArrayBuffer) => Promise<boolean>;
@@ -71,7 +71,7 @@ export const getFileService = (settings: Settings): FileService => {
 		try {
 			const data = fs.readFileSync(pathProvider.getImagePath(post));
 			log.debug(`ipcMain: image-loaded | id: ${post.id}`);
-			return { data: data, post };
+			return { data, post };
 		} catch (err) {
 			log.error('Could not load image.', pathProvider.getImagePath(post), err);
 			return { data: undefined, post };
@@ -81,7 +81,7 @@ export const getFileService = (settings: Settings): FileService => {
 	const loadThumbnail = async (post: Post): Promise<{ data: Buffer | undefined; post: Post }> => {
 		try {
 			const data = fs.readFileSync(pathProvider.getThumbnailPath(post));
-			return { data: data, post };
+			return { data, post };
 		} catch (err) {
 			log.error('Could not load thumbnail. Post id', post.id, err);
 			return { data: undefined, post };

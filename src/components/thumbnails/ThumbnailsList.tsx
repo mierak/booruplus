@@ -1,35 +1,34 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import PropTypes from 'prop-types';
 
-import { actions, postsSelector } from '@store';
+import { actions } from '@store';
 import { PostsContext, RootState, View } from '@store/types';
 import { CardAction, ContextMenu } from '@appTypes/components';
 import { Post } from '@appTypes/gelbooruTypes';
-import EmptyThumbnails from '@components/EmptyThumbnails';
+import EmptyThumbnails from '@components/thumbnails/EmptyThumbnails';
 
 import Grid from './Grid';
 import PreviewImage from './PreviewImage';
 
-interface Props {
+type Props = {
 	className?: string;
-	context: PostsContext;
+	context: PostsContext | string;
 	shouldShowLoadMoreButton?: boolean;
 	emptyDataLogoCentered?: boolean;
 	contextMenu?: ContextMenu[];
 	actions?: CardAction[];
 	hasHeader?: boolean;
 	singleColumn?: boolean;
-}
+};
 
 const Container = styled.div`
 	height: 100%;
 `;
 
-interface StyledEmptyThumbnailsProps {
+type StyledEmptyThumbnailsProps = {
 	centered?: boolean;
-}
+};
 
 const StyledEmptyThumbnails = styled(EmptyThumbnails)`
 	position: absolute;
@@ -44,9 +43,10 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const containerRef = React.useRef<HTMLDivElement>(null);
 	const mousePosition = React.useRef({ x: 0, y: 0 });
 	const isMouseOver = React.useRef<{ value: boolean; timeout?: number }>({ value: false });
-	const postCount = useSelector((state: RootState) => postsSelector(state, props.context).length);
+	const postCount = useSelector((state: RootState) => state.posts.posts[props.context]?.length ?? 0);
 	const activePostIndex = useSelector((state: RootState) => state.posts.selectedIndices[props.context]);
 	const useImageHover = useSelector((state: RootState) => state.settings.imageHover);
+	const contextMode = useSelector((state: RootState) => state.searchContexts[props.context].mode);
 
 	useEffect(() => {
 		const handleKeyPress = (event: KeyboardEvent): void => {
@@ -62,7 +62,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 					if (props.context === 'favorites') view = 'favorites';
 					else if (props.context === 'checkLaterQueue') view = 'check-later';
 					else if (props.context === 'mostViewed') view = 'dashboard';
-					else view = 'search-results';
+					else view = 'searches';
 					dispatch(actions.system.setActiveView(view));
 					break;
 				}
@@ -136,7 +136,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	return postCount <= 0 ? (
-		<StyledEmptyThumbnails centered={props.emptyDataLogoCentered} />
+		<StyledEmptyThumbnails centered={props.emptyDataLogoCentered} context={props.context} />
 	) : (
 		<Container ref={containerRef} onMouseMove={setMouse}>
 			<PreviewImage ref={hoverImageRef} setImagePosition={positionHoverImage} />
@@ -146,7 +146,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 				activeIndex={activePostIndex}
 				actions={props.actions}
 				isSingleColumn={props.singleColumn}
-				renderLoadMore={props.shouldShowLoadMoreButton && postCount > 0 && props.context === 'posts'}
+				renderLoadMore={contextMode !== 'other'}
 				headerHeight={props.hasHeader ? 72 : 0}
 				contextMenu={props.contextMenu}
 				onCellMouseEnter={!props.singleColumn && useImageHover ? onMouseEnter : undefined}
@@ -155,11 +155,6 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 			/>
 		</Container>
 	);
-};
-
-ThumbnailsList.propTypes = {
-	emptyDataLogoCentered: PropTypes.bool,
-	className: PropTypes.string,
 };
 
 export default React.memo(ThumbnailsList);

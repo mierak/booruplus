@@ -1,5 +1,5 @@
 import db from './database';
-import { ExportedData, ExportedRawData, SavedSearch, SavedSearchWithB64Previews } from './types';
+import type { ExportedData, ExportedRawData, SavedSearch, SavedSearchWithB64Previews } from './types';
 import { blobToBase64 } from '@util/utils';
 import Dexie from 'dexie';
 

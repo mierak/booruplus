@@ -24,6 +24,7 @@
 			"@components/*": ["src/components/*"],
 			"@pages/*": ["src/pages/*"],
 			"@errors/*": ["src/errors/*"],
+			"@/globals": ["src/globals"],
 			"*": ["node_modules/*"]
 		},
 		"strict": true,

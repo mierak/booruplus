@@ -12,12 +12,15 @@ import PageSelect from '../../../src/components/search-form/PageSelect';
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('search-form/PostCountSelect', () => {
-	it('Renders correctly for online mode', () => {
+	const context = 'ctx';
+	it('Renders correctly', () => {
 		// given
 		const store = mockStore(
 			mState({
-				onlineSearchForm: {
-					page: 11,
+				searchContexts: {
+					[context]: {
+						page: 11,
+					},
 				},
 			})
 		);
@@ -25,19 +28,21 @@ describe('search-form/PostCountSelect', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<PageSelect mode="online" />
+				<PageSelect context={context} />
 			</Provider>
 		);
 
 		// then
 		expect(screen.getByDisplayValue('11')).not.toBeNull();
 	});
-	it('Renders correctly for offline mode', () => {
+	it('Changes value on spinner button press', async () => {
 		// given
 		const store = mockStore(
 			mState({
-				downloadedSearchForm: {
-					page: 11,
+				searchContexts: {
+					[context]: {
+						page: 11,
+					},
 				},
 			})
 		);
@@ -45,55 +50,16 @@ describe('search-form/PostCountSelect', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<PageSelect mode="offline" />
-			</Provider>
-		);
-
-		// then
-		expect(screen.getByDisplayValue('11')).not.toBeNull();
-	});
-	it('Changes value on spinner button press for online mode', async () => {
-		// given
-		const store = mockStore(
-			mState({
-				onlineSearchForm: {
-					page: 11,
-				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<PageSelect mode="online" />
+				<PageSelect context={context} />
 			</Provider>
 		);
 		fireEvent.mouseDown(screen.getByRole('button', { name: 'Increase Value' }));
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.setPage.type, payload: 12 });
-	});
-	it('Changes value on spinner button press for offline mode', async () => {
-		// given
-		const store = mockStore(
-			mState({
-				downloadedSearchForm: {
-					page: 11,
-				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<PageSelect mode="offline" />
-			</Provider>
-		);
-		fireEvent.mouseDown(screen.getByRole('button', { name: 'Increase Value' }));
-
-		// then
-		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.setPage.type, payload: 12 });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.updateContext.type,
+			payload: { context, data: { page: 12 } },
+		});
 	});
 });

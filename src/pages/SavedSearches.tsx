@@ -1,21 +1,23 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { unwrapResult } from '@reduxjs/toolkit';
 import styled from 'styled-components';
 import { Table, Tag, Row, Col, Card, Popconfirm, Tooltip, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
 import { actions, thunks } from '@store';
-import { RootState, AppDispatch } from '@store/types';
+import { RootState, AppDispatch, SearchContext } from '@store/types';
 import { SavedSearch, Tag as GelbooruTag } from '@appTypes/gelbooruTypes';
 import { getTagColor } from '@util/utils';
 import moment from 'moment';
 import { openNotificationWithIcon } from '@appTypes/components';
+import { initPostsContext } from '../store/commonActions';
 
 const { Column } = Table;
 
-interface Props {
+type Props = {
 	className?: string;
-}
+};
 
 const Container = styled.div`
 	height: 100vh;
@@ -166,13 +168,21 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 		];
 	};
 
-	const onPreviewClick = (record: SavedSearch, postId: number): void => {
+	const onPreviewClick = async (record: SavedSearch, postId: number): Promise<void> => {
 		const posts = record.previews.map((preview) => preview.post);
 		const index = posts.findIndex((post) => post.id === postId);
 		if (index >= 0) {
-			dispatch(actions.posts.setPosts({ data: posts, context: 'posts' }));
-			dispatch(actions.posts.setActivePostIndex({ data: index, context: 'posts' }));
-			dispatch(actions.system.setActiveView({ view: 'image', context: 'posts' }));
+			const context = unwrapResult(await dispatch(thunks.searchContexts.generateSearchContext()));
+			const data: Partial<SearchContext> = {
+				mode: 'other',
+				selectedTags: record.tags,
+				excludedTags: record.excludedTags,
+				rating: record.rating,
+			};
+			dispatch(initPostsContext({ context, data }));
+			dispatch(actions.posts.setPosts({ data: posts, context }));
+			dispatch(actions.posts.setActivePostIndex({ data: index, context }));
+			dispatch(actions.system.setActiveView({ view: 'image', context }));
 		}
 	};
 
@@ -185,7 +195,7 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 							<StyledPreviewImage
 								src={preview.objectUrl}
 								data-testid='preview-image'
-								onClick={(): void => onPreviewClick(record, preview.post.id)}
+								onClick={(): Promise<void> => onPreviewClick(record, preview.post.id)}
 							/>
 						</StyledCard>
 					);

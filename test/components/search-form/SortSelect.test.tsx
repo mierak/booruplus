@@ -12,42 +12,41 @@ import SortSelect from '../../../src/components/search-form/SortSelect';
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('search-form/SortSelect', () => {
-	it('Renders correctly with online mode', () => {
+	const context = 'ctx';
+	it('Renders correctly', () => {
 		// given
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<SortSelect mode='online' />
+				<SortSelect context={context} />
 			</Provider>
 		);
 
 		// then
 		expect(screen.getByText('Date Uploaded')).not.toBeNull();
 	});
-	it('Renders correctly with offline mode', () => {
+	it('Renders all options when select box is opened', async () => {
 		// given
-		const store = mockStore(mState());
-
-		// when
-		render(
-			<Provider store={store}>
-				<SortSelect mode='offline' />
-			</Provider>
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {},
+				},
+			})
 		);
 
-		// then
-		expect(screen.getByText('Date Downloaded')).not.toBeNull();
-	});
-	it('Renders all options for online mode when select box is opened', async () => {
-		// given
-		const store = mockStore(mState());
-
 		// when
 		render(
 			<Provider store={store}>
-				<SortSelect mode='online' open />
+				<SortSelect context={context} open />
 			</Provider>
 		);
 
@@ -59,57 +58,86 @@ describe('search-form/SortSelect', () => {
 		expect(screen.getByText('Rating')).not.toBeNull();
 		await waitFor(() => undefined);
 	});
-	it('Renders all options for offline mode when select box is opened', async () => {
+	it('Dispatches setSort()', async () => {
 		// given
-		const store = mockStore(mState());
-
-		// when
-		render(
-			<Provider store={store}>
-				<SortSelect mode='offline' open />
-			</Provider>
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {},
+				},
+			})
 		);
 
-		// then
-		const anyOption = screen.getAllByText('Date Downloaded');
-		expect(anyOption[1]).not.toBeNull();
-		expect(anyOption).toHaveLength(2);
-		expect(screen.getByText('Date Updated')).not.toBeNull();
-		expect(screen.getByText('Rating')).not.toBeNull();
-		await waitFor(() => undefined);
-	});
-	it('Dispatches setSort() for onlineSearchForm', async () => {
-		// given
-		const store = mockStore(mState());
-
 		// when
 		render(
 			<Provider store={store}>
-				<SortSelect mode="online" open />
+				<SortSelect context={context} open />
 			</Provider>
 		);
 		fireEvent.click(screen.getByText('Rating'));
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.onlineSearchForm.setSort.type, payload: 'rating' });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.updateContext.type,
+			payload: { context, data: { sort: 'rating' } },
+		});
 		await waitFor(() => undefined);
 	});
-	it('Dispatches setSort() for downloadedSearchForm', async () => {
+	it('Switches sort from date-uploaded on offline mode', async () => {
 		// given
-		const store = mockStore(mState());
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {
+						mode: 'offline',
+						sort: 'date-uploaded',
+					},
+				},
+			})
+		);
 
 		// when
 		render(
 			<Provider store={store}>
-				<SortSelect mode="offline" open />
+				<SortSelect context={context} open />
 			</Provider>
 		);
-		fireEvent.click(screen.getByText('Rating'));
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.setSort.type, payload: 'rating' });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.updateContext.type,
+			payload: { context, data: { sort: 'date-downloaded' } },
+		});
+		await waitFor(() => undefined);
+	});
+	it('Switches sort from date-uploaded on offline mode', async () => {
+		// given
+		const store = mockStore(
+			mState({
+				searchContexts: {
+					[context]: {
+						mode: 'online',
+						sort: 'date-downloaded',
+					},
+				},
+			})
+		);
+
+		// when
+		render(
+			<Provider store={store}>
+				<SortSelect context={context} open />
+			</Provider>
+		);
+
+		// then
+		const dispatchedActions = store.getActions();
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.updateContext.type,
+			payload: { context, data: { sort: 'date-uploaded' } },
+		});
 		await waitFor(() => undefined);
 	});
 });

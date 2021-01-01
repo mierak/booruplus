@@ -15,15 +15,18 @@ const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 describe('search-from/Checkboxes', () => {
 	it('Renders correctly', () => {
 		// given
+		const context = 'ctx';
 		const store = mockStore(
 			mState({
-				downloadedSearchForm: {
-					showBlacklisted: true,
-					showFavorites: true,
-					showGifs: true,
-					showImages: true,
-					showNonBlacklisted: true,
-					showVideos: true,
+				searchContexts: {
+					[context]: {
+						showBlacklisted: true,
+						showFavorites: true,
+						showGifs: true,
+						showImages: true,
+						showNonBlacklisted: true,
+						showVideos: true,
+					},
 				},
 			})
 		);
@@ -31,7 +34,7 @@ describe('search-from/Checkboxes', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Checkboxes />
+				<Checkboxes context={context} />
 			</Provider>
 		);
 
@@ -45,15 +48,18 @@ describe('search-from/Checkboxes', () => {
 	});
 	it('Dispatches correct action', () => {
 		// given
+		const context = 'ctx';
 		const store = mockStore(
 			mState({
-				downloadedSearchForm: {
-					showBlacklisted: true,
-					showFavorites: true,
-					showGifs: true,
-					showImages: true,
-					showNonBlacklisted: true,
-					showVideos: true,
+				searchContexts: {
+					[context]: {
+						showBlacklisted: true,
+						showFavorites: true,
+						showGifs: true,
+						showImages: true,
+						showNonBlacklisted: true,
+						showVideos: true,
+					},
 				},
 			})
 		);
@@ -61,7 +67,7 @@ describe('search-from/Checkboxes', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<Checkboxes />
+				<Checkboxes context={context} />
 			</Provider>
 		);
 		const nonBlacklisted = screen.getByRole('checkbox', { name: 'Non-Blacklisted' });
@@ -79,11 +85,29 @@ describe('search-from/Checkboxes', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.toggleShowNonBlacklisted.type });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.toggleShowBlacklisted.type });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.toggleShowFavorites.type });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.toggleShowImages.type });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.toggleShowGifs.type });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.downloadedSearchForm.toggleShowVideos.type });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.updateContext.type,
+			payload: { context, data: { showNonBlacklisted: false } },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.updateContext.type,
+			payload: { context, data: { showBlacklisted: false } },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.updateContext.type,
+			payload: { context, data: { showFavorites: false } },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.updateContext.type,
+			payload: { context, data: { showImages: false } },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.updateContext.type,
+			payload: { context, data: { showGifs: false } },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.updateContext.type,
+			payload: { context, data: { showVideos: false } },
+		});
 	});
 });

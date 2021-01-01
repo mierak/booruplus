@@ -11,8 +11,8 @@ import { CardAction, ContextMenu } from '@appTypes/components';
 import { getThumbnailBorder, thumbnailLoader } from '@util/componentUtils';
 import { getActions, getDummyActions } from './util';
 
-interface Props {
-	context: PostsContext;
+type Props = {
+	context: PostsContext | string;
 	index: number;
 	contextMenu?: ContextMenu[];
 	actions?: CardAction[];
@@ -20,14 +20,14 @@ interface Props {
 	onMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
 	onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
 	onMouseMove?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
-}
+};
 
-interface CardProps {
+type CardProps = {
 	$isActive: string;
 	$theme: 'dark' | 'light';
 	$height: string;
 	$selected: boolean;
-}
+};
 
 const StyledCard = styled(Card)<CardProps>`
 	cursor: pointer;
@@ -111,7 +111,9 @@ const Thumbnail = (props: Props): React.ReactElement => {
 				$theme={theme}
 				$selected={post.selected}
 				actions={
-					props.actions && !props.isScrolling ? getActions({ actions: props.actions, post }) : getDummyActions(theme)
+					props.actions && !props.isScrolling
+						? getActions({ post, context: props.context, actions: props.actions })
+						: getDummyActions(theme)
 				}
 				$height={props.actions !== undefined ? '225px' : '197px'}
 			>

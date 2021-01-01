@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { actions } from '@store';
-import { AppDispatch, RootState } from '@store/types';
+import { AppDispatch, PostsContext, RootState } from '@store/types';
 import { imageLoader } from '@util/componentUtils';
 import { getPostUrl } from '@service/webService';
 
-import { IpcChannels } from '@appTypes/processDto';
+import { IpcSendChannels } from '@appTypes/processDto';
 import { ImageControl, openNotificationWithIcon } from '@appTypes/components';
 import { Post } from '@appTypes/gelbooruTypes';
 
@@ -15,11 +15,13 @@ import LoadingMask from '@components/LoadingMask';
 
 import TagsPopover from './TagsPopover';
 import ImageControls from './ImageControls';
+import { ActiveModal } from '@appTypes/modalTypes';
 
-interface Props {
+type Props = {
 	className?: string;
 	post: Post;
-}
+	context: PostsContext | string;
+};
 
 const Container = styled.div`
 	position: relative;
@@ -41,7 +43,7 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 	const imgRef = useRef<HTMLImageElement>(null);
 
 	const handleOpenWeb = (): void => {
-		window.api.send(IpcChannels.OPEN_IN_BROWSER, getPostUrl(props.post.id));
+		window.api.send(IpcSendChannels.OPEN_IN_BROWSER, getPostUrl(props.post.id));
 	};
 
 	const handleTagsPopoverVisibilityChange = (visible: boolean): void => {
@@ -80,7 +82,7 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 			key: 'image-control-show-tags',
 			tooltip: 'Show tags',
 			popOver: {
-				content: <TagsPopover tags={props.post.tags} />,
+				content: <TagsPopover context={props.context} tags={props.post.tags} />,
 				autoAdjustOverflow: true,
 				onVisibleChange: handleTagsPopoverVisibilityChange,
 				trigger: 'click',
@@ -96,8 +98,21 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 			icon: 'copy-outlined',
 			key: 'copy-to-clipboard',
 			tooltip: 'Copy to clipboard',
-			onClick: handleCopyToClipboard
-		}
+			onClick: handleCopyToClipboard,
+		},
+		{
+			icon: 'heart-outlined',
+			key: 'add-to-favorites',
+			tooltip: 'Add to favorites',
+			onClick: () => {
+				dispatch(
+					actions.modals.showModal(ActiveModal.ADD_POSTS_TO_FAVORITES, {
+						context: props.context,
+						postsToFavorite: [props.post],
+					})
+				);
+			},
+		},
 	];
 	return (
 		<Container className={props.className}>

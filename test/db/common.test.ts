@@ -5,7 +5,6 @@ import db from '../../src/db/database';
 import { mFavoritesTreeNode, mPost, mTag, mSettings, mTask, mTagHistory } from '../helpers/test.helper';
 import * as common from '../../src/db/common';
 import { SavedSearchWithB64Previews, SavedSearch, ExportedRawData, ExportedData } from '../../src/db/types';
-import 'jest-fetch-mock';
 import { enableFetchMocks } from 'jest-fetch-mock';
 import { blobToBase64 } from '../../src/util/utils';
 

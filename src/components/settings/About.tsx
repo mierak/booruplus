@@ -1,17 +1,18 @@
 import React from 'react';
 import { Col, Row } from 'antd';
-import { IpcChannels } from '@appTypes/processDto';
+import { IpcSendChannels } from '@appTypes/processDto';
+import { globals } from '@/globals';
 
 const About: React.FunctionComponent = () => {
 	const firstColWidth = 4;
 	const openInBrowser = (url: string): void => {
-		window.api.send(IpcChannels.OPEN_IN_BROWSER, url);
+		window.api.send(IpcSendChannels.OPEN_IN_BROWSER, url);
 	};
 	return (
 		<>
 			<Row gutter={[10, 10]}>
 				<Col lg={firstColWidth}>Version:</Col>
-				<Col>0.1.7-BETA</Col>
+				<Col>{globals.VERSION}</Col>
 			</Row>
 			<Row gutter={[10, 10]}>
 				<Col lg={firstColWidth}>Github:</Col>

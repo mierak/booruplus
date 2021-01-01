@@ -4,13 +4,15 @@ import { enableFetchMocks } from 'jest-fetch-mock';
 enableFetchMocks();
 
 import { initialState } from '../../../src/store';
-import { RootState, AppDispatch } from '../../../src/store/types';
+import type { RootState, AppDispatch, SearchContext } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import * as thunks from '../../../src/store/thunks/tags';
-import * as downloadedSearchFormThunk from '../../../src/store/thunks/downloadedSearchForm';
-import * as onlineSearchFormThunk from '../../../src/store/thunks/onlineSearchForm';
+import * as searchContexts from '../../../src/store/thunks/searchContexts';
+import * as downloadedSearchFormThunk from '../../../src/store/thunks/offlineSearches';
+import * as onlineSearchFormThunk from '../../../src/store/thunks/onlineSearches';
 import { mTag } from '../../helpers/test.helper';
+import { mState } from '../../helpers/store.helper';
 import { Tag } from '@appTypes/gelbooruTypes';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
@@ -24,6 +26,7 @@ jest.mock('../../../src/service/apiService', () => {
 	};
 });
 import { getTagsByNames } from '../../../src/service/apiService';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 describe('thunks/tags', () => {
 	beforeEach(() => {
@@ -84,39 +87,64 @@ describe('thunks/tags', () => {
 	describe('searchTagOnline()', () => {
 		it('Dispatches correct actions', async () => {
 			// given
-			const store = mockStore(initialState);
+			const store = mockStore(
+				mState({
+					searchContexts: {
+						['1']: {},
+					},
+				})
+			);
 			const tag = mTag({ tag: 'tag1' });
+			const context = unwrapResult(await store.dispatch(searchContexts.generateSearchContext()));
+			const data: Partial<SearchContext> = {
+				mode: 'online',
+				selectedTags: [tag],
+			};
 
 			// when
 			await store.dispatch(thunks.searchTagOnline(tag));
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(dispatchedActions[0]).toMatchObject({ type: thunks.searchTagOnline.pending.type, payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({
+			expect(dispatchedActions).toContainMatchingAction({ type: thunks.searchTagOnline.pending.type, payload: undefined });
+			expect(dispatchedActions).toContainMatchingAction({
 				type: onlineSearchFormThunk.fetchPosts.pending.type,
 				payload: undefined,
 			});
+			expect(dispatchedActions).toContainMatchingAction({ type: 'common/initPostsContext', payload: { context, data } });
 		});
 	});
 	describe('searchTagOffline()', () => {
 		it('Dispatches correct actions', async () => {
 			// given
-			const store = mockStore(initialState);
+			const store = mockStore(
+				mState({
+					searchContexts: {
+						['1']: {},
+					},
+				})
+			);
 			const tag = mTag({ tag: 'tag1' });
+			const context = unwrapResult(await store.dispatch(searchContexts.generateSearchContext()));
+			const data: Partial<SearchContext> = {
+				mode: 'offline',
+				selectedTags: [tag],
+			};
 
 			// when
 			await store.dispatch(thunks.searchTagOffline(tag));
 
 			// then
 			const dispatchedActions = store.getActions();
-			expect(dispatchedActions[0]).toMatchObject({ type: thunks.searchTagOffline.pending.type, payload: undefined });
-			expect(dispatchedActions[1]).toMatchObject({
+			expect(dispatchedActions).toContainMatchingAction({
+				type: thunks.searchTagOffline.pending.type,
+				payload: undefined,
+			});
+			expect(dispatchedActions).toContainMatchingAction({
 				type: downloadedSearchFormThunk.fetchPosts.pending.type,
 				payload: undefined,
 			});
-			expect(dispatchedActions[2]).toMatchObject({ type: downloadedSearchFormThunk.fetchPosts.fulfilled.type });
-			expect(dispatchedActions[3]).toMatchObject({ type: thunks.searchTagOffline.fulfilled.type, payload: tag });
+			expect(dispatchedActions).toContainMatchingAction({ type: 'common/initPostsContext', payload: { context, data } });
 		});
 	});
 	describe('loadAllWithLimitAndOffset()', () => {

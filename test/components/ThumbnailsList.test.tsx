@@ -16,6 +16,7 @@ import { thumbnailLoaderMock } from '../helpers/imageBus.mock';
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
 describe('ThumbnailsList', () => {
+	const context = 'ctx';
 	const posts = [
 		mPost({ id: 1, directory: 'dir1', hash: 'hash1' }),
 		mPost({ id: 2, directory: 'dir2', hash: 'hash2' }),
@@ -33,7 +34,10 @@ describe('ThumbnailsList', () => {
 		const store = mockStore(
 			mState({
 				posts: {
-					posts: { posts, favorites: [] },
+					posts: { [context]: posts },
+				},
+				searchContexts: {
+					[context]: {},
 				},
 			})
 		);
@@ -41,7 +45,7 @@ describe('ThumbnailsList', () => {
 		// when
 		render(
 			<Provider store={store}>
-				<ThumbnailsList shouldShowLoadMoreButton context='posts' />
+				<ThumbnailsList shouldShowLoadMoreButton context={context} />
 			</Provider>
 		);
 
@@ -57,6 +61,9 @@ describe('ThumbnailsList', () => {
 			mState({
 				posts: {
 					posts: { posts, favorites: [] },
+				},
+				searchContexts: {
+					posts: {},
 				},
 			})
 		);
@@ -95,6 +102,9 @@ describe('ThumbnailsList', () => {
 				posts: {
 					posts: { posts: [], favorites: [] },
 				},
+				searchContexts: {
+					posts: {},
+				},
 			})
 		);
 
@@ -116,25 +126,8 @@ describe('ThumbnailsList', () => {
 				posts: {
 					posts: { posts: [], favorites: [] },
 				},
-			})
-		);
-
-		// when
-		render(
-			<Provider store={store}>
-				<ThumbnailsList context='posts' />
-			</Provider>
-		);
-
-		// then
-		expect(screen.queryByText('Load More')).toBeNull();
-	});
-	it('Does not render Load More button when search mode is favorites', () => {
-		//given
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts, favorites: [] },
+				searchContexts: {
+					posts: {},
 				},
 			})
 		);
@@ -149,12 +142,17 @@ describe('ThumbnailsList', () => {
 		// then
 		expect(screen.queryByText('Load More')).toBeNull();
 	});
-	it('Does not render Load More button when search mode is open-download', () => {
+	it('Does not render Load More button when mode is other', () => {
 		//given
 		const store = mockStore(
 			mState({
 				posts: {
-					posts: { posts, favorites: [] },
+					posts: { posts },
+				},
+				searchContexts: {
+					posts: {
+						mode: 'other',
+					},
 				},
 			})
 		);
@@ -175,6 +173,9 @@ describe('ThumbnailsList', () => {
 			mState({
 				posts: {
 					posts: { posts, favorites: [] },
+				},
+				searchContexts: {
+					posts: {},
 				},
 			})
 		);

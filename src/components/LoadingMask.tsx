@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 
 import { RootState } from '@store/types';
 
-interface Props {
+type Props = {
 	className?: string;
 	visible: boolean;
 	delay?: number;
@@ -14,7 +14,7 @@ interface Props {
 	opacity?: number;
 }
 
-interface ContainerProps {
+type ContainerProps = {
 	fullscreen?: boolean;
 	opacity?: number;
 }
@@ -63,14 +63,18 @@ const LoadingMask: React.FunctionComponent<Props> = (props: Props) => {
 	const delay = props.delay ?? 300;
 
 	useEffect(() => {
+		let canceled = false;
 		if (!props.visible) {
 			timeoutHandle !== undefined && clearTimeout(timeoutHandle.current);
 			setVisible(false);
 		} else {
 			timeoutHandle.current = setTimeout(() => {
-				setVisible(true);
+				!canceled && setVisible(true);
 			}, delay);
 		}
+		return (): void => {
+			canceled = true;
+		};
 	}, [delay, props.visible]);
 
 	const renderMask = (): JSX.Element => {

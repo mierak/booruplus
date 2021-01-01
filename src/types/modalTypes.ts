@@ -1,5 +1,5 @@
-import { PostsContext } from '@store/types';
-import { Post } from './gelbooruTypes';
+import type { PostsContext } from '@store/types';
+import type { Post } from './gelbooruTypes';
 
 export enum ActiveModal {
 	NONE = 'NONE',
@@ -9,40 +9,53 @@ export enum ActiveModal {
 	DELETE_FAVORITES_DIRECTORY = 'DELETE_FAVORITES_DIRECTORY',
 	MOVE_POSTS_TO_DIRECTORY_CONFIRMATION = 'MOVE_POSTS_TO_DIRECTORY_CONFIRMATION',
 	MOVE_POSTS_TO_DIRECTORY_SELECTION = 'MOVE_POSTS_TO_DIRECTORY_SELECTION',
+	SEARCH_FORM = 'SEARCH_FORM',
+	RENAME_TAB = 'RENAME_TAB',
 	SETTINGS = 'SETTINGS',
 }
 
-export interface PerModalState {
+export type PerModalState = {
 	[ActiveModal.ADD_POSTS_TO_FAVORITES]: AddToFavoritesModalProps | AddToFavoritesModalContextProps;
 	[ActiveModal.ADD_FAVORITES_DIRECTORY]: AddDirectoryModalProps;
 	[ActiveModal.RENAME_FAVORITES_DIRECTORY]: RenameDirectoryModalProps;
 	[ActiveModal.DELETE_FAVORITES_DIRECTORY]: DeleteDirectoryModalProps;
 	[ActiveModal.MOVE_POSTS_TO_DIRECTORY_CONFIRMATION]: MovePostsToDirectoryConfirmationModalProps;
 	[ActiveModal.MOVE_POSTS_TO_DIRECTORY_SELECTION]: MovePostsToFavoritesDirectoryModalProps;
-	[ActiveModal.SETTINGS]?: undefined;
-	[ActiveModal.NONE]?: undefined;
-}
+	[ActiveModal.SEARCH_FORM]: SearchFormModalProps;
+	[ActiveModal.RENAME_TAB]: RenameTabProps;
+	[ActiveModal.SETTINGS]?: void;
+	[ActiveModal.NONE]?: void;
+};
 
-export interface AddDirectoryModalProps {
+export type AddDirectoryModalProps = {
 	selectedNodeKey: number;
-}
-export interface AddToFavoritesModalProps {
+};
+export type AddToFavoritesModalProps = {
 	postsToFavorite: Post[];
-}
-export interface AddToFavoritesModalContextProps {
-	context: PostsContext;
+};
+export type AddToFavoritesModalContextProps = {
+	context: PostsContext | string;
 	type: 'all' | 'selected';
-}
-export interface DeleteDirectoryModalProps {
+};
+export type DeleteDirectoryModalProps = {
 	selectedNodeKey: number;
-}
-export interface MovePostsToFavoritesDirectoryModalProps {
+};
+export type MovePostsToFavoritesDirectoryModalProps = {
 	postsToMove: Post[];
-}
-export interface MovePostsToDirectoryConfirmationModalProps {
+};
+export type MovePostsToDirectoryConfirmationModalProps = {
 	targetDirectoryKey: number;
 	postsToMove: Post[];
-}
-export interface RenameDirectoryModalProps {
+};
+export type RenameDirectoryModalProps = {
 	targetDirectoryKey: number;
-}
+};
+
+export type SearchFormModalProps = {
+	context: PostsContext | string;
+	deleteOnClose?: boolean;
+};
+
+export type RenameTabProps = {
+	context: string;
+};

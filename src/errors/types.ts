@@ -1,13 +1,13 @@
-import { IconType } from 'antd/lib/notification';
+import type { IconType } from 'antd/lib/notification';
 import { showErrorNotification } from './errorNotificationRegistry';
 
 export type ErrorWithNotificationConstructor = new (...args: never[]) => ErrorWithNotification;
 
-export interface ErrorInstance {
+export type ErrorInstance = {
 	constructor: ErrorWithNotificationConstructor;
 }
 
-export interface ErrorNotification {
+export type ErrorNotification = {
 	icon?: IconType;
 	title: string;
 	message: string;

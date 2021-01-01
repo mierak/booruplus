@@ -13,6 +13,10 @@ import {
 	ClockCircleOutlined,
 	LoadingOutlined,
 	CopyOutlined,
+	ReloadOutlined,
+	EditOutlined,
+	DashOutlined,
+	DisconnectOutlined,
 } from '@ant-design/icons';
 
 import { Icon } from '@appTypes/components';
@@ -49,7 +53,15 @@ export const getIcon = (icon: Icon, onClick?: (() => void) | undefined): React.R
 		case 'clock-circle-outlined':
 			return <ClockCircleOutlined onClick={onClick} />;
 		case 'copy-outlined':
-			return <CopyOutlined onClick={onClick}/>;
+			return <CopyOutlined onClick={onClick} />;
+		case 'reload-outlined':
+			return <ReloadOutlined onClick={onClick} />;
+		case 'disconnected-outlined':
+			return <DisconnectOutlined onClick={onClick} />;
+		case 'edit-outlined':
+			return <EditOutlined onClick={onClick} />;
+		case 'dash-outlined':
+			return <DashOutlined onClick={onClick} />;
 		case 'loading-outlined':
 			return <LoadingOutlined />;
 	}
@@ -65,10 +77,10 @@ export const getThumbnailBorder = (active: string, theme: 'dark' | 'light', sele
 	}
 	return 'dashed 1px black';
 };
-interface SetImageSizeParams {
+type SetImageSizeParams = {
 	post: Post;
 	windowSize: { width: number; height: number };
-}
+};
 
 export const getPreviewImageSize = ({ post, windowSize }: SetImageSizeParams): { width: number; height: number } => {
 	const ratio = post.width / post.height;
@@ -95,7 +107,7 @@ export const getPreviewImageSize = ({ post, windowSize }: SetImageSizeParams): {
 	}
 };
 
-interface LoaderParams {
+type LoaderParams = {
 	post: Post;
 	downloadMissing: boolean;
 	cache: ImageCache;
@@ -104,7 +116,7 @@ interface LoaderParams {
 	ignoreDownloadedStatus?: boolean;
 	loadFunction: (post: Post) => Promise<SuccessfulLoadPostResponse>;
 	saveCallback: (post: Post) => void;
-}
+};
 
 const loader = ({
 	post,
@@ -133,7 +145,7 @@ const loader = ({
 
 		loadFunction(post)
 			.then((result) => {
-				const objectUrl = URL.createObjectURL(new Blob([result.data]));
+				const objectUrl = URL.createObjectURL(result.data);
 				cache.add(objectUrl, post.id);
 				shouldLog && log.debug('Post was found and loaded successfuly, ObjectURL:', objectUrl);
 				resolve(objectUrl);
@@ -196,7 +208,7 @@ export const previewLoader = (post: Post): Promise<string | undefined> => {
 			} else {
 				loadImage(post)
 					.then((result) => {
-						const objectUrl = URL.createObjectURL(new Blob([result.data]));
+						const objectUrl = URL.createObjectURL(result.data);
 						imageCache.add(objectUrl, post.id);
 						resolve(objectUrl);
 					})

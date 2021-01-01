@@ -1,27 +1,32 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { Post } from '@appTypes/gelbooruTypes';
-import { IpcChannels } from '@appTypes/processDto';
-import { thunkLoggerFactory } from '@util/logger';
+import type { Post } from '@appTypes/gelbooruTypes';
+import type { SearchContext, PostsContext, ThunkApi, WithContext } from '@store/types';
 
-import { PostsContext, ThunkApi } from '@store/types';
-
-const thunkLogger = thunkLoggerFactory();
+import { getActionLogger } from '@util/logger';
+import { IpcInvokeChannels, IpcSendChannels } from '@appTypes/processDto';
 
 export const setFullscreenLoadingMaskState = createAction<string | { message: string; progressPercent: number }>(
 	'loadingState/setFullscreenLoadingMaskMessage'
 );
 
+export const initPostsContext = createAction<WithContext<Partial<SearchContext>>>(
+	'common/initPostsContext'
+);
+
+export const deletePostsContext = createAction<{ context: PostsContext | string }>('common/deletePostsContext');
+
 export const exportPostsToDirectory = createAsyncThunk<
 	Post[],
-	{ type: 'all' | 'selected'; context: PostsContext } | Post[],
+	{ type: 'all' | 'selected'; context: PostsContext | string } | Post[],
 	ThunkApi
 >(
 	'posts/exportPostsToDirectory',
 	async (param, thunkApi): Promise<Post[]> => {
-		const initialMessage = ` - exporting ${'context' in param ? param : 'Post[]'}`;
-		const logger = thunkLogger.getActionLogger(exportPostsToDirectory, { initialMessage });
-		const folder = await window.api.invoke<string>(IpcChannels.OPEN_SELECT_FOLDER_DIALOG);
+		const initialMessage = `exporting ${'context' in param ? param : 'Post[]'}`;
+		const logger = getActionLogger(exportPostsToDirectory);
+		logger.debug(initialMessage);
+		const folder = await window.api.invoke(IpcInvokeChannels.OPEN_SELECT_FOLDER_DIALOG);
 		if (!folder) {
 			logger.debug('Select folder dialog closed without selecting a directory. Cancelling.');
 			return [];
@@ -45,7 +50,7 @@ export const exportPostsToDirectory = createAsyncThunk<
 		}
 		logger.debug(`Exporting ${posts.length} posts.`);
 
-		window.api.send(IpcChannels.EXPORT_POSTS, { path: folder, posts });
+		window.api.send(IpcSendChannels.EXPORT_POSTS, { path: folder, posts });
 
 		return posts;
 	}

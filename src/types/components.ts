@@ -1,6 +1,8 @@
-import { Post } from './gelbooruTypes';
 import { IconType } from 'antd/lib/notification';
 import { notification } from 'antd';
+
+import type { Post } from './gelbooruTypes';
+import type { ContextMode, PostsContext } from '@store/types';
 
 export type Icon =
 	| 'heart-outlined'
@@ -15,24 +17,36 @@ export type Icon =
 	| 'global-outlined'
 	| 'clock-circle-outlined'
 	| 'loading-outlined'
-	| 'copy-outlined';
+	| 'copy-outlined'
+	| 'reload-outlined'
+	| 'edit-outlined'
+	| 'dash-outlined'
+	| 'disconnected-outlined';
 
-export interface ContextMenu {
+export type ContextMenu = {
 	title: string;
 	key: string;
 	action(post: Post): void;
-}
+};
 
-export interface CardAction {
+export type CardAction = {
 	icon: Icon;
 	key: string;
 	tooltip: string;
-	onClick: (post: Post) => void;
+	onClick: (post: Post, context: PostsContext | string) => void;
 	popConfirm?: { title: string; okText: string; cancelText: string };
 	condition?: (post: Post) => boolean;
-}
+};
 
-export interface ImageControl {
+export type TabAction = {
+	key: string;
+	title: string;
+	icon: Icon;
+	disabled?: boolean;
+	onClick: (context: string, mode: ContextMode) => void;
+};
+
+export type ImageControl = {
 	key: string;
 	icon: Icon;
 	tooltip: string;
@@ -43,9 +57,14 @@ export interface ImageControl {
 		autoAdjustOverflow: boolean;
 		onVisibleChange: (visible: boolean) => void;
 	};
-}
+};
 
-export const openNotificationWithIcon = (type: IconType, title: string, description: string, duration?: number): void => {
+export const openNotificationWithIcon = (
+	type: IconType,
+	title: string,
+	description: string,
+	duration?: number
+): void => {
 	notification[type]({
 		message: title,
 		description: description,

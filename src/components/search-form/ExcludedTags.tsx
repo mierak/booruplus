@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { Tag as AntTag, Card } from 'antd';
 
-import { RootState } from '@store/types';
+import { PostsContext, RootState } from '@store/types';
 import { actions } from '@store';
 
 import { Tag } from '@appTypes/gelbooruTypes';
@@ -18,21 +18,18 @@ const StyledCard = styled(Card)`
 	}
 `;
 
-interface Props {
-	mode: 'online' | 'offline';
-}
+type Props = {
+	context: PostsContext | string;
+};
 
-const ExcludedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
+const ExcludedTags: React.FunctionComponent<Props> = ({ context }: Props) => {
 	const dispatch = useDispatch();
 
 	const theme = useSelector((state: RootState) => state.settings.theme);
-	const excludededTags = useSelector(
-		(state: RootState) => mode === 'offline' ? state.downloadedSearchForm.excludedTags : state.onlineSearchForm.excludedTags
-	);
+	const excludededTags = useSelector((state: RootState) => state.searchContexts[context].excludedTags);
 
 	const handleTagClose = (tag: Tag): void => {
-		const removeTag = mode === 'offline' ? actions.downloadedSearchForm.removeExcludedTag : actions.onlineSearchForm.removeExcludedTag;
-		dispatch(removeTag(tag));
+		dispatch(actions.searchContexts.removeExcludedTag({ context, data: tag }));
 	};
 
 	const handleDragStart = (event: React.DragEvent, tag: Tag): void => {
@@ -41,12 +38,10 @@ const ExcludedTags: React.FunctionComponent<Props> = ({ mode }: Props) => {
 
 	const handleDrop = (event: React.DragEvent): void => {
 		const tag: Tag = JSON.parse(event.dataTransfer.getData('tag'));
-		const removeTag = mode === 'offline' ? actions.downloadedSearchForm.removeTag : actions.onlineSearchForm.removeTag;
-		const addExcludedTag = mode === 'offline' ? actions.downloadedSearchForm.addExcludedTag : actions.onlineSearchForm.addExcludedTag;
 		if (!excludededTags.some((t) => t.id === tag.id)) {
-			dispatch(addExcludedTag(tag));
+			dispatch(actions.searchContexts.addExcludedTag({ context, data: tag }));
 		}
-		dispatch(removeTag(tag));
+		dispatch(actions.searchContexts.removeTag({ context, data: tag }));
 	};
 
 	const allowDrop = (event: React.DragEvent): void => {

@@ -6,7 +6,6 @@ import {
 	UnorderedListOutlined,
 	HeartOutlined,
 	TagsOutlined,
-	FormOutlined,
 	SaveOutlined,
 	SettingOutlined,
 	DownloadOutlined,
@@ -15,17 +14,17 @@ import {
 
 import { actions } from '@store';
 import { RootState, View } from '@store/types';
-import Modals from '@components/Modals';
+import Modals from '@components/layout/Modals';
 import { ActiveModal } from '@appTypes/modalTypes';
 
 import Drawers from './Drawers';
 
 const { Content, Sider } = Layout;
 
-interface Props {
+type Props = {
 	children?: React.ReactNode;
 	className?: string;
-}
+};
 
 const NavigationMenu: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
@@ -34,14 +33,6 @@ const NavigationMenu: React.FunctionComponent = () => {
 
 	const handleMenuClick = (view: View): void => {
 		dispatch(actions.system.setActiveView(view));
-	};
-
-	const handleSearchFormDrawerOpen = (): void => {
-		dispatch(actions.system.setSearchFormDrawerVisible(true));
-	};
-
-	const handleDownloadedSearchFormDrawerOpen = (): void => {
-		dispatch(actions.system.setDownloadedSearchFormDrawerVisible(true));
 	};
 
 	const handleTasksDrawerOpen = (): void => {
@@ -54,9 +45,9 @@ const NavigationMenu: React.FunctionComponent = () => {
 				<DashboardOutlined />
 				<span>Dashboard</span>
 			</Menu.Item>
-			<Menu.Item key='search-results' onClick={(): void => handleMenuClick('search-results')}>
+			<Menu.Item key='searches' onClick={(): void => handleMenuClick('searches')}>
 				<UnorderedListOutlined />
-				<span>Search Results</span>
+				<span>Search</span>
 			</Menu.Item>
 			<Menu.Item key='saved-searches' onClick={(): void => handleMenuClick('saved-searches')}>
 				<SaveOutlined />
@@ -70,14 +61,6 @@ const NavigationMenu: React.FunctionComponent = () => {
 				<TagsOutlined />
 				<span>Tag List</span>
 			</Menu.Item>
-			<Menu.Item key='online-search-drawer' onClick={handleSearchFormDrawerOpen}>
-				<FormOutlined />
-				<span>Online Search</span>
-			</Menu.Item>
-			<Menu.Item key='offline-search-drawer' onClick={handleDownloadedSearchFormDrawerOpen}>
-				<FormOutlined />
-				<span>Offline Search</span>
-			</Menu.Item>
 			<Menu.Item key='tasks' onClick={handleTasksDrawerOpen}>
 				<DownloadOutlined />
 				<span>Downloads</span>
@@ -85,7 +68,7 @@ const NavigationMenu: React.FunctionComponent = () => {
 			<Menu.Item
 				key='settings'
 				onClick={(): void => {
-					dispatch(actions.modals.showModal(ActiveModal.SETTINGS, undefined));
+					dispatch(actions.modals.showModal(ActiveModal.SETTINGS));
 				}}
 			>
 				<SettingOutlined />

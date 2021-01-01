@@ -1,13 +1,15 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { thunks, actions } from '../../../src/store';
-import { RootState, AppDispatch } from '../../../src/store/types';
+import { thunks } from '../../../src/store';
+import { RootState, AppDispatch, SearchContext } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mState } from '../../helpers/store.helper';
-import TagStatistic from '../../../src/components/dashboard/TagStatistic';
 import { mTag } from '../../helpers/test.helper';
+import { initPostsContext } from '../../../src/store/commonActions';
+import TagStatistic from '../../../src/components/dashboard/TagStatistic';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 
@@ -160,12 +162,13 @@ describe('TagStatistic', () => {
 		const dispatchedActions = mStore.getActions();
 		expect(dispatchedActions[0]).toMatchObject({ type: thunks.dashboard.fetchMostSearchedTags.pending.type });
 	});
-	it('Renders actions and calls correct functions when clicked', () => {
+	it('Renders actions and calls correct functions when clicked', async () => {
 		// given
+		const tag = { tag: mTag({ tag: 'tag1' }), count: 1, date: '' };
 		const mStore = mockStore(
 			mState({
 				dashboard: {
-					mostSearchedTags: [{ tag: mTag({ tag: 'tag1' }), count: 1, date: '' }],
+					mostSearchedTags: [tag],
 				},
 			})
 		);
@@ -178,15 +181,34 @@ describe('TagStatistic', () => {
 		);
 		fireEvent.click(screen.getByText('Online'));
 		fireEvent.click(screen.getByText('Offline'));
+		const context = unwrapResult(await mStore.dispatch(thunks.searchContexts.generateSearchContext()));
+		const dataOnline: Partial<SearchContext> = {
+			mode: 'online',
+			selectedTags: [tag.tag],
+		};
+		const dataOffline: Partial<SearchContext> = {
+			mode: 'offline',
+			selectedTags: [tag.tag],
+		};
 
 		// then
 		const dispatchedActions = mStore.getActions();
-		expect(dispatchedActions[0]).toMatchObject({ type: actions.onlineSearchForm.setSelectedTags.type });
-		expect(dispatchedActions[1]).toMatchObject({ type: thunks.onlineSearchForm.fetchPosts.pending.type });
-		expect(dispatchedActions[2]).toMatchObject({ type: actions.system.setActiveView.type, payload: 'search-results' });
-		expect(dispatchedActions[3]).toMatchObject({ type: actions.downloadedSearchForm.setSelectedTags.type });
-		expect(dispatchedActions[4]).toMatchObject({ type: thunks.downloadedSearchForm.fetchPosts.pending.type });
-		expect(dispatchedActions[5]).toMatchObject({ type: actions.system.setActiveView.type, payload: 'search-results' });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: initPostsContext.type,
+			payload: { context, data: dataOnline },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: initPostsContext.type,
+			payload: { context, data: dataOffline },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: thunks.onlineSearches.fetchPosts.pending.type,
+			meta: { arg: { context } },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: thunks.offlineSearches.fetchPosts.pending.type,
+			meta: { arg: { context } },
+		});
 	});
 	it('Puts ellipsis at the end of tags longer than 25 characters', () => {
 		// given

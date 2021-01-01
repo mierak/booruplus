@@ -15,10 +15,10 @@ import TypeSearchFilter from '@components/tags/TypeSearchFilter';
 
 const { Column } = Table;
 
-interface Props {
+type Props = {
 	className?: string;
 	tagsPerPage?: number;
-}
+};
 
 const Container = styled.div`
 	height: 100vh;
@@ -33,7 +33,7 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 	const tagsLoading = useSelector((state: RootState) => state.system.isTagTableLoading);
 
 	const [tagsCount, setTagsCount] = useState(0);
-	const [pattern, setPattern] = useState('');
+	const [currentPattern, setCurrentPattern] = useState('');
 	const [selectedTypes, setSelectedTypes] = useState<TagType[]>(['artist', 'character', 'copyright', 'metadata', 'tag']);
 	const [page, setPage] = useState<number>(1);
 	const [tagsPerPage, setTagsPerPage] = useState(props.tagsPerPage ?? 15);
@@ -61,15 +61,29 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 
 	useEffect(() => {
 		setPage(1);
-		dispatch(thunks.tags.getCount({ pattern, types: selectedTypes }))
+		dispatch(thunks.tags.getCount({ pattern: currentPattern, types: selectedTypes }))
 			.then(unwrapResult)
 			.then((result) => setTagsCount(result));
-		dispatch(thunks.tags.loadAllWithLimitAndOffset({ limit: tagsPerPage, offset: 0, pattern, types: selectedTypes }));
-	}, [dispatch, pattern, selectedTypes, tagsPerPage]);
+		dispatch(
+			thunks.tags.loadAllWithLimitAndOffset({
+				limit: tagsPerPage,
+				offset: 0,
+				pattern: currentPattern,
+				types: selectedTypes,
+			})
+		);
+	}, [dispatch, currentPattern, selectedTypes, tagsPerPage]);
 
 	const handleChangePage = (p: number): void => {
 		setPage(p);
-		dispatch(thunks.tags.loadAllWithLimitAndOffset({ limit: tagsPerPage, offset: (p - 1) * tagsPerPage, pattern, types: selectedTypes }));
+		dispatch(
+			thunks.tags.loadAllWithLimitAndOffset({
+				limit: tagsPerPage,
+				offset: (p - 1) * tagsPerPage,
+				pattern: currentPattern,
+				types: selectedTypes,
+			})
+		);
 	};
 
 	const handleOnlineSearch = (tag: Tag): void => {
@@ -81,11 +95,17 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const tagSearchFilterOnSearch = (pattern: string): void => {
-		setPattern(pattern);
+		setCurrentPattern(pattern);
 	};
 
 	const renderTagSearchFilterDropdown = (dropdownProps: FilterDropdownProps): React.ReactNode => {
-		return <TagSearchFilter onSearch={tagSearchFilterOnSearch} confirm={dropdownProps.confirm} visible={dropdownProps.visible} />;
+		return (
+			<TagSearchFilter
+				onSearch={tagSearchFilterOnSearch}
+				confirm={dropdownProps.confirm}
+				visible={dropdownProps.visible}
+			/>
+		);
 	};
 
 	const typeSearchFilterOnSearch = (types: TagType[]): void => {
@@ -143,8 +163,20 @@ const Tags: React.FunctionComponent<Props> = (props: Props) => {
 				rowClassName={(_record, index): string => (index % 2 === 0 ? 'table-row-light' : 'table-row-dark')}
 			>
 				<Column title='Id' dataIndex='id' width={100} />
-				<Column title='Tag' dataIndex='tag' ellipsis filterIcon={<SearchOutlined />} filterDropdown={renderTagSearchFilterDropdown} />
-				<Column title='Type' dataIndex='type' width={100} filterDropdown={renderTypeSearchFilterDropdown} render={renderTag} />
+				<Column
+					title='Tag'
+					dataIndex='tag'
+					ellipsis
+					filterIcon={<SearchOutlined />}
+					filterDropdown={renderTagSearchFilterDropdown}
+				/>
+				<Column
+					title='Type'
+					dataIndex='type'
+					width={100}
+					filterDropdown={renderTypeSearchFilterDropdown}
+					render={renderTag}
+				/>
 				<Column title='Count' dataIndex='count' width={100} />
 				<Column title='Favorites Count' dataIndex='favoriteCount' />
 				<Column title='Blacklisted Count' dataIndex='blacklistedCount' />

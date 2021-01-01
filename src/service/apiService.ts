@@ -1,8 +1,9 @@
-import { Post, PostDto, Tag, PostSearchOptions } from '@appTypes/gelbooruTypes';
+import { Post, PostDto, Tag, PostSearchOptions, ReleaseResponse } from '@appTypes/gelbooruTypes';
 import { delay, escapeTag, postParser } from '@util/utils';
 import { GELBOORU_URL } from './webService';
 import { getApiLogger } from '@util/logger';
 
+export const GITHUB_LATEST_RELEASE_ENDPOINT = 'https://api.github.com/repos/mierak/booruplus/releases/latest';
 export const BASE_URL = `${GELBOORU_URL}/index.php?page=dapi&q=index&json=1`;
 export const BASE_TAG_URL = `${BASE_URL}&s=tag`;
 export const BASE_POST_URL = `${BASE_URL}&s=post`;
@@ -117,4 +118,18 @@ export const getTagsByPattern = async (pattern: string, apiKey?: string): Promis
 
 	const tags: Tag[] = await response.json();
 	return tags;
+};
+
+export const getLatestAppVersion = async (): Promise<ReleaseResponse | undefined> => {
+	try {
+		const response = await fetch(GITHUB_LATEST_RELEASE_ENDPOINT, {
+			headers: {
+				Accept: 'application/vnd.github.v3+json',
+			},
+		});
+		const json: ReleaseResponse = await response.json();
+		return json;
+	} catch (err) {
+		window.log.error('Error while checking for updates. Could not get releases.', err);
+	}
 };

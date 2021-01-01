@@ -128,14 +128,14 @@ export const mSavedSearchPreview = (p?: Partial<SavedSearchPreview>): SavedSearc
 	};
 };
 
-export const createAction = (type: string, payload?: any): AnyAction => {
+export const createAction = (type: string, payload?: unknown): AnyAction => {
 	return { type, payload };
 };
 
-export const createPendingAction = (type: string, meta?: any): AnyAction => {
+export const createPendingAction = (type: string, meta?: unknown): AnyAction => {
 	return { type, meta };
 };
 
-export const createFulfilledAction = (type: string, payload?: any, meta?: any): AnyAction => {
+export const createFulfilledAction = (type: string, payload?: unknown, meta?: unknown): AnyAction => {
 	return { type, payload, meta };
 };

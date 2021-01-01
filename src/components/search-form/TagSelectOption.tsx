@@ -4,7 +4,7 @@ import { Tag } from 'antd';
 import { Tag as GelbooruTag } from '@appTypes/gelbooruTypes';
 import { getTagColor, capitalize } from '@util/utils';
 
-interface Props {
+type Props = {
 	tag: GelbooruTag;
 }
 

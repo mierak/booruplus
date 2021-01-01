@@ -9,7 +9,7 @@ import RatingDistributionsChart from '@components/dashboard/RatingDistributionsC
 import MostViewedPosts from '@components/dashboard/MostViewedPosts';
 import TagStatistic from '@components/dashboard/TagStatistic';
 
-interface Props {
+type Props = {
 	className?: string;
 }
 
