@@ -69,7 +69,7 @@ export type SavedSearchType = 'online' | 'offline';
 export type SavedSearchPreview = {
 	id: number;
 	objectUrl: string;
-	post: Post;
+	postId: number;
 }
 
 export type SavedSearch = {

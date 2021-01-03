@@ -90,8 +90,8 @@ describe('thunks/savedSearches', () => {
 			// then
 			const dispatchedActions = store.getActions();
 			expect(mockedDb.savedSearches.addPreviews).toBeCalledWith(savedSearch.id, [
-				{ post, blob },
-				{ post: post2, blob },
+				{ postId: post.id, blob },
+				{ postId: post2.id, blob },
 			]);
 			expect(fetchMock.mock.calls.length).toBe(3);
 			expect(fetchMock.mock.calls[1][0]).toEqual(url);

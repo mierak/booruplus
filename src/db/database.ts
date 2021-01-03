@@ -107,6 +107,18 @@ class Database extends Dexie {
 					ss.lastSearched = moment(ss.lastSearched).valueOf();
 				});
 		});
+		this.version(22).upgrade((tx) => {
+			return tx
+				.table('savedSearches')
+				.toCollection()
+				.modify((ss) => {
+					ss.previews = ss.previews.map((preview: { postId: number; post?: { id: number } }) => {
+						preview.postId = preview.post?.id ?? 0;
+						delete preview.post;
+						return preview;
+					});
+				});
+		});
 		this.tagSearchHistory = this.table('tagSearchHistory');
 		this.settings = this.table('settings');
 		this.posts = this.table('posts');

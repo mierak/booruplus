@@ -1,16 +1,15 @@
 import db from './database';
-import type { SavedSearch, Rating, Tag, Post } from '@appTypes/gelbooruTypes';
+import type { SavedSearch, Rating, Tag } from '@appTypes/gelbooruTypes';
 import type { SavedSearch as DbSavedSearch } from './types';
 
 import { compareTagArrays } from '@util/utils';
-
 
 const transformDbSavedSearchToSavedSearch = (savedSearch: DbSavedSearch): SavedSearch => {
 	const previews = savedSearch.previews.map((preview) => {
 		return {
 			id: preview.id,
 			objectUrl: URL.createObjectURL(preview.blob),
-			post: preview.post,
+			postId: preview.postId,
 		};
 	});
 	return {
@@ -86,13 +85,13 @@ export const remove = async (savedSearch: SavedSearch): Promise<void> => {
 	db.savedSearches.delete(savedSearch.id);
 };
 
-export const addPreviews = async (id: number, previews: { blob: Blob; post: Post }[]): Promise<void> => {
+export const addPreviews = async (id: number, previews: { blob: Blob; postId: number }[]): Promise<void> => {
 	const searchFromDb = await db.savedSearches.get(id);
 	if (searchFromDb) {
 		const previewId =
 			searchFromDb.previews.length > 0 ? searchFromDb.previews[searchFromDb.previews.length - 1].id + 1 : 0;
 		previews.forEach((preview, index) => {
-			searchFromDb.previews.push({ id: previewId + index, blob: preview.blob, post: preview.post });
+			searchFromDb.previews.push({ id: previewId + index, blob: preview.blob, postId: preview.postId });
 		});
 		db.savedSearches.put(searchFromDb);
 	} else {

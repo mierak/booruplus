@@ -27,7 +27,10 @@ describe('db/savedSearches', () => {
 	});
 	it('Pushes previews to search before resaving if search with the same id was found in db', async () => {
 		// given
-		const savedSearch = mSavedSearch({ id: 123, previews: [mSavedSearchPreview({ id: 1 }), mSavedSearchPreview({ id: 2 })] });
+		const savedSearch = mSavedSearch({
+			id: 123,
+			previews: [mSavedSearchPreview({ id: 1 }), mSavedSearchPreview({ id: 2 })],
+		});
 		const getSpy = jest.spyOn(db.savedSearches, 'get');
 		const putSpy = jest.spyOn(db.savedSearches, 'put');
 		getSpy.mockResolvedValueOnce(savedSearch);
@@ -64,7 +67,7 @@ describe('db/savedSearches', () => {
 			const shouldThrow = async (): Promise<void> => {
 				await addPreviews(
 					savedSearch.id,
-					posts.map((post) => ({ post, blob }))
+					posts.map((post) => ({ postId: post.id, blob }))
 				);
 			};
 
@@ -87,7 +90,7 @@ describe('db/savedSearches', () => {
 					{
 						id: 5,
 						blob,
-						post,
+						postId: post.id,
 					},
 				],
 			};
@@ -96,17 +99,17 @@ describe('db/savedSearches', () => {
 
 			// when
 			await addPreviews(savedSearch.id, [
-				{ blob, post },
-				{ blob, post: post2 },
+				{ blob, postId: post.id },
+				{ blob, postId: post2.id },
 			]);
 
 			// then
 			expect(putSpy).toBeCalledWith({
 				...savedSearch,
 				previews: [
-					{ id: 5, blob, post },
-					{ id: 6, blob, post },
-					{ id: 7, blob, post: post2 },
+					{ id: 5, blob, postId: post.id },
+					{ id: 6, blob, postId: post.id },
+					{ id: 7, blob, postId: post2.id },
 				],
 			});
 			getSpy.mockClear();
@@ -128,12 +131,12 @@ describe('db/savedSearches', () => {
 			putSpy.mockImplementation();
 
 			// when
-			await addPreviews(savedSearch.id, [{ blob, post }]);
+			await addPreviews(savedSearch.id, [{ blob, postId: post.id }]);
 
 			// then
 			expect(putSpy).toBeCalledWith({
 				...savedSearch,
-				previews: [{ id: 0, blob, post }],
+				previews: [{ id: 0, blob, postId: post.id }],
 			});
 			getSpy.mockClear();
 			putSpy.mockClear();
@@ -169,17 +172,17 @@ describe('db/savedSearches', () => {
 				{
 					id: 0,
 					blob,
-					post,
+					postId: post.id,
 				},
 				{
 					id: 1,
 					blob,
-					post,
+					postId: post.id,
 				},
 				{
 					id: 2,
 					blob,
-					post,
+					postId: post.id,
 				},
 			];
 			const dbSavedSearch: DbSavedSearch = {
@@ -211,17 +214,17 @@ describe('db/savedSearches', () => {
 				{
 					id: 1,
 					blob: blob1,
-					post,
+					postId: post.id,
 				},
 				{
 					id: 2,
 					blob: blob2,
-					post,
+					postId: post.id,
 				},
 				{
 					id: 3,
 					blob: blob3,
-					post,
+					postId: post.id,
 				},
 			];
 			const dbSavedSearches: DbSavedSearch[] = [{ ...mSavedSearch({ id: 1 }), previews }];

@@ -232,9 +232,9 @@ describe('pages/SavedSearches', () => {
 				rating: 'any',
 				lastSearched: 123456,
 				previews: [
-					mSavedSearchPreview({ id: 1, objectUrl: 'url1', post: posts[0] }),
-					mSavedSearchPreview({ id: 2, objectUrl: 'url2', post: posts[1] }),
-					mSavedSearchPreview({ id: 3, objectUrl: 'url3', post: posts[2] }),
+					mSavedSearchPreview({ id: 1, objectUrl: 'url1', postId: posts[0].id }),
+					mSavedSearchPreview({ id: 2, objectUrl: 'url2', postId: posts[1].id }),
+					mSavedSearchPreview({ id: 3, objectUrl: 'url3', postId: posts[2].id }),
 				],
 			}),
 			mSavedSearch({ id: 2, excludedTags: [mTag({ id: 2, tag: 'tag2' })] }),
@@ -249,6 +249,7 @@ describe('pages/SavedSearches', () => {
 		);
 		const context = unwrapResult(await store.dispatch(thunks.searchContexts.generateSearchContext()));
 		const data: Partial<SearchContext> = {
+			disposable: true,
 			mode: 'other',
 			selectedTags: savedSearches[0].tags,
 			excludedTags: savedSearches[0].excludedTags,
@@ -270,16 +271,12 @@ describe('pages/SavedSearches', () => {
 			expect(dispatchedActions).toContainMatchingAction({ type: 'common/initPostsContext', payload: { context, data } })
 		);
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.posts.setPosts.type,
-			payload: { data: posts, context },
-		});
-		expect(dispatchedActions).toContainMatchingAction({
 			type: actions.posts.setActivePostIndex.type,
 			payload: { data: 1, context },
 		});
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.system.setActiveView.type,
-			payload: { view: 'image', context },
+			type: thunks.posts.fetchPostsByIds.pending.type,
+			meta: { arg: { context, ids: posts.map((p) => p.id) } },
 		});
 		unmount();
 	});

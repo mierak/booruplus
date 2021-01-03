@@ -122,7 +122,7 @@ export const addPreviewsToSavedSearch = createAsyncThunk<
 			const previewUrl = getThumbnailUrl(post.directory, post.hash);
 			logger.debug('Creating blob from URL', previewUrl);
 			const blob = await (await fetch(previewUrl)).blob();
-			return { blob, post };
+			return { blob, postId: post.id };
 		});
 
 		const previews = await Promise.all(promises);

@@ -124,7 +124,7 @@ export const mSavedSearchPreview = (p?: Partial<SavedSearchPreview>): SavedSearc
 	return {
 		id: p?.id ?? 123,
 		objectUrl: p?.objectUrl ?? 'object_url',
-		post: p?.post ?? mPost(),
+		postId: p?.postId ?? mPost().id,
 	};
 };
 

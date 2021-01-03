@@ -3,18 +3,18 @@ import type { Tag, Rating, Post } from '@appTypes/gelbooruTypes';
 
 export type Entity = {
 	id: number;
-}
+};
 
 export type SettingsPair = {
 	name: string;
 	values: Settings;
-}
+};
 
 export type SavedSearchPreview = {
 	id: number;
 	blob: Blob;
-	post: Post;
-}
+	postId: number;
+};
 
 export type SavedSearch = {
 	id?: number;
@@ -23,7 +23,7 @@ export type SavedSearch = {
 	rating: Rating;
 	lastSearched?: number;
 	previews: SavedSearchPreview[];
-}
+};
 
 export type SavedSearchWithB64Previews = {
 	id?: number;
@@ -34,9 +34,9 @@ export type SavedSearchWithB64Previews = {
 	previews: {
 		id: number;
 		data: string;
-		post: Post;
+		postId: number;
 	}[];
-}
+};
 
 export type FilterOptions = {
 	blacklisted: boolean;
@@ -50,7 +50,7 @@ export type FilterOptions = {
 	showImages: boolean;
 	showGifs: boolean;
 	showFavorites: boolean;
-}
+};
 
 export type FavoritesTreeNode = {
 	title: string;
@@ -58,11 +58,11 @@ export type FavoritesTreeNode = {
 	parentKey: number;
 	childrenKeys: number[];
 	postIds: number[];
-}
+};
 
 export type Counts = {
 	[key: string]: number;
-}
+};
 
 export type ExportedRawData = {
 	posts: Post[];
@@ -75,7 +75,7 @@ export type ExportedRawData = {
 	}[];
 	tasks: Task[];
 	savedSearches: SavedSearch[];
-}
+};
 
 export type ExportedData = {
 	posts: Post[];
@@ -88,4 +88,4 @@ export type ExportedData = {
 	}[];
 	tasks: Task[];
 	savedSearches: SavedSearchWithB64Previews[];
-}
+};

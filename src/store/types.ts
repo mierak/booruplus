@@ -111,7 +111,7 @@ export type NotFoundTags = {
 	count: number;
 };
 
-export type SearchFormState = {
+export type SearchContext = {
 	tabName: string;
 	mode: ContextMode;
 	savedSearchId?: number;
@@ -123,15 +123,13 @@ export type SearchFormState = {
 	tagOptions: Tag[];
 	sort: Sort;
 	sortOrder: SortOrder;
-};
-
-export type SearchContext = SearchFormState & {
 	showNonBlacklisted: boolean;
 	showBlacklisted: boolean;
 	showFavorites: boolean;
 	showVideos: boolean;
 	showImages: boolean;
 	showGifs: boolean;
+	disposable?: boolean;
 };
 
 export type PostsContext = 'favorites' | 'mostViewed' | 'checkLaterQueue';

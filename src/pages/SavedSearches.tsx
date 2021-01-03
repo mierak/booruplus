@@ -170,20 +170,20 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const onPreviewClick = async (record: SavedSearch, postId: number): Promise<void> => {
-		const posts = record.previews.map((preview) => preview.post);
-		const index = posts.findIndex((post) => post.id === postId);
+		const postIds = record.previews.map((preview) => preview.postId);
+		const index = postIds.findIndex((id) => id === postId);
 		if (index >= 0) {
 			const context = unwrapResult(await dispatch(thunks.searchContexts.generateSearchContext()));
 			const data: Partial<SearchContext> = {
+				disposable: true,
 				mode: 'other',
 				selectedTags: record.tags,
 				excludedTags: record.excludedTags,
 				rating: record.rating,
 			};
 			dispatch(initPostsContext({ context, data }));
-			dispatch(actions.posts.setPosts({ data: posts, context }));
 			dispatch(actions.posts.setActivePostIndex({ data: index, context }));
-			dispatch(actions.system.setActiveView({ view: 'image', context }));
+			dispatch(thunks.posts.fetchPostsByIds({ context, ids: postIds }));
 		}
 	};
 
@@ -196,7 +196,7 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 							<StyledPreviewImage
 								src={preview.objectUrl}
 								data-testid='preview-image'
-								onClick={(): Promise<void> => onPreviewClick(record, preview.post.id)}
+								onClick={(): Promise<void> => onPreviewClick(record, preview.postId)}
 							/>
 						</StyledCard>
 					);

@@ -52,7 +52,7 @@ describe('db/common', () => {
 						{
 							id: 1,
 							data: mcIcon,
-							post,
+							postId: post.id,
 						},
 					],
 				},
@@ -66,7 +66,7 @@ describe('db/common', () => {
 						{
 							id: 1,
 							data: mcIcon,
-							post,
+							postId: post.id,
 						},
 					],
 				},
@@ -94,8 +94,8 @@ describe('db/common', () => {
 					tags: [mTag({ tag: 'tag1' })],
 					excludedTags: [],
 					previews: [
-						{ id: 1, blob, post },
-						{ id: 2, blob, post },
+						{ id: 1, blob, postId: post.id },
+						{ id: 2, blob, postId: post.id },
 					],
 				},
 				{
@@ -105,8 +105,8 @@ describe('db/common', () => {
 					tags: [mTag({ tag: 'tag2' })],
 					excludedTags: [],
 					previews: [
-						{ id: 1, blob, post },
-						{ id: 2, blob, post },
+						{ id: 1, blob, postId: post.id },
+						{ id: 2, blob, postId: post.id },
 					],
 				},
 			];
