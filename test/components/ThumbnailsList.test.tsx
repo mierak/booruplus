@@ -31,16 +31,7 @@ describe('ThumbnailsList', () => {
 	});
 	it('Renders correctly', async () => {
 		//given
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { [context]: posts },
-				},
-				searchContexts: {
-					[context]: {},
-				},
-			})
-		);
+		const store = mockStore(mState({ searchContexts: { [context]: { posts } } }));
 
 		// when
 		render(
@@ -57,16 +48,7 @@ describe('ThumbnailsList', () => {
 		//given
 		const arrowRightKeyCode = 39;
 		const arrowLeftKeyCode = 37;
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts, favorites: [] },
-				},
-				searchContexts: {
-					posts: {},
-				},
-			})
-		);
+		const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 		const addMap: { [key: string]: (event: Partial<KeyboardEvent>) => void } = {};
 		const removeMap: { [key: string]: (event: Partial<KeyboardEvent>) => void } = {};
 		const addEventListener = jest.fn((event: string, cb: any): void => {
@@ -89,24 +71,21 @@ describe('ThumbnailsList', () => {
 
 		// then
 		const dispatchedActions = store.getActions();
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.posts.nextPost.type });
-		expect(dispatchedActions).toContainMatchingAction({ type: actions.posts.previousPost.type });
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.nextPost.type,
+			payload: { context: 'posts' },
+		});
+		expect(dispatchedActions).toContainMatchingAction({
+			type: actions.searchContexts.previousPost.type,
+			payload: { context: 'posts' },
+		});
 		expect(removeEventListener).not.toHaveBeenCalledWith('keydown', removeMap['keydown'], true);
 		unmount();
 		expect(removeEventListener).toHaveBeenCalledWith('keydown', removeMap['keydown'], true);
 	});
 	it('Renders no data when there are no posts to show', () => {
 		//given
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts: [], favorites: [] },
-				},
-				searchContexts: {
-					posts: {},
-				},
-			})
-		);
+		const store = mockStore(mState({ searchContexts: { posts: {} } }));
 
 		// when
 		render(
@@ -121,16 +100,7 @@ describe('ThumbnailsList', () => {
 	});
 	it('Does not render Load More button when there are no posts', () => {
 		//given
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts: [], favorites: [] },
-				},
-				searchContexts: {
-					posts: {},
-				},
-			})
-		);
+		const store = mockStore(mState({ searchContexts: { posts: {} } }));
 
 		// when
 		render(
@@ -144,18 +114,7 @@ describe('ThumbnailsList', () => {
 	});
 	it('Does not render Load More button when mode is other', () => {
 		//given
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts },
-				},
-				searchContexts: {
-					posts: {
-						mode: 'other',
-					},
-				},
-			})
-		);
+		const store = mockStore(mState({ searchContexts: { posts: { posts, mode: 'other' } } }));
 
 		// when
 		render(
@@ -169,16 +128,7 @@ describe('ThumbnailsList', () => {
 	});
 	it('Hovering and waiting over thumbnail and leaving hover dispatches setHoveredPost', async () => {
 		//given
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts, favorites: [] },
-				},
-				searchContexts: {
-					posts: {},
-				},
-			})
-		);
+		const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 
 		// when
 		render(
@@ -189,7 +139,7 @@ describe('ThumbnailsList', () => {
 		userEvent.hover(screen.getAllByTestId('thumbnail-image')[0]);
 		await waitFor(() =>
 			expect(store.getActions()).toContainMatchingAction({
-				type: actions.posts.setHoveredPost.type,
+				type: actions.system.setHoveredPost.type,
 				payload: { post: posts[0], visible: true },
 			})
 		);
@@ -199,7 +149,7 @@ describe('ThumbnailsList', () => {
 		const dispatchedActions = store.getActions();
 		await waitFor(() =>
 			expect(dispatchedActions).toContainMatchingAction({
-				type: actions.posts.setHoveredPost.type,
+				type: actions.system.setHoveredPost.type,
 				payload: { post: undefined, visible: false },
 			})
 		);

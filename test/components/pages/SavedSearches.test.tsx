@@ -249,7 +249,6 @@ describe('pages/SavedSearches', () => {
 		);
 		const context = unwrapResult(await store.dispatch(thunks.searchContexts.generateSearchContext()));
 		const data: Partial<SearchContext> = {
-			disposable: true,
 			mode: 'other',
 			selectedTags: savedSearches[0].tags,
 			excludedTags: savedSearches[0].excludedTags,
@@ -271,8 +270,8 @@ describe('pages/SavedSearches', () => {
 			expect(dispatchedActions).toContainMatchingAction({ type: 'common/initPostsContext', payload: { context, data } })
 		);
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.posts.setActivePostIndex.type,
-			payload: { data: 1, context },
+			type: actions.searchContexts.updateContext.type,
+			payload: { data: { selectedIndex: 1 }, context },
 		});
 		expect(dispatchedActions).toContainMatchingAction({
 			type: thunks.posts.fetchPostsByIds.pending.type,

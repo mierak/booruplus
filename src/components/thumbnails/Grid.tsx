@@ -47,7 +47,7 @@ const innerElementType = forwardRef<HTMLDivElement, { style: CSSProperties; rest
 
 	const onClick = (event: React.MouseEvent): void => {
 		if (!event.ctrlKey && !event.shiftKey) {
-			dispatch(actions.posts.unselectAllPosts({ context: context }));
+			dispatch(actions.searchContexts.unselectAllPosts({ context: context }));
 		}
 	};
 	return (

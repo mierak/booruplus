@@ -155,15 +155,7 @@ describe('favorites/modal/AddToFavoritesModal', () => {
 	it('Works with context data', async () => {
 		// given
 		const postsToMove = [mPost({ id: 1 }), mPost({ id: 3 }), mPost({ id: 5 }), mPost({ id: 7 }), mPost({ id: 9 })];
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: {
-						favorites: postsToMove,
-					},
-				},
-			})
-		);
+		const store = mockStore(mState({ searchContexts: { favorites: { posts: postsToMove } } }));
 
 		// when
 		render(

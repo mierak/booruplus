@@ -1,7 +1,5 @@
-import { PostsContext, RootState, SearchContext, Settings } from '@store/types';
+import { RootState, SearchContext, Settings } from '@store/types';
 import { SearchContextsState } from '@store/searchContexts';
-import { PostsState } from '@store/posts';
-import { Post } from '@appTypes/gelbooruTypes';
 import { initialState } from '../../src/store';
 import { DashboardState } from '@store/dashboard';
 import { FavoritesState } from '@store/favorites';
@@ -14,35 +12,6 @@ import Modals from '@store/modals';
 
 type DeepPartial<T> = {
 	[P in keyof T]?: DeepPartial<T[P]>;
-};
-
-export const mPostsPostsState = (ps?: DeepPartial<{ [key: string]: Post[] }>): { [K in PostsContext]: Post[] } => {
-	return {
-		...ps,
-		favorites: (ps?.favorites as Post[]) ?? initialState.posts.posts.posts,
-		mostViewed: (ps?.mostViewed as Post[]) ?? initialState.posts.posts.mostViewed,
-		checkLaterQueue: (ps?.checkLaterQueue as Post[]) ?? initialState.posts.posts.checkLaterQueue,
-	};
-};
-
-const mHoveredPostState = (
-	hp?: DeepPartial<{ post: Post | undefined; visible: boolean }>
-): { post: Post | undefined; visible: boolean } => {
-	return {
-		post: (hp?.post as Post) ?? initialState.posts.hoveredPost.post,
-		visible: hp?.visible ?? initialState.posts.hoveredPost.visible,
-	};
-};
-
-const mPostsState = (ps?: DeepPartial<PostsState>): PostsState => {
-	return {
-		selectedIndices: ps?.selectedIndices ?? {
-			posts: ps?.selectedIndices?.posts ?? initialState.posts.selectedIndices.posts,
-			favorites: ps?.selectedIndices?.favorites ?? initialState.posts.selectedIndices.favorites,
-		},
-		posts: mPostsPostsState(ps?.posts),
-		hoveredPost: mHoveredPostState(ps?.hoveredPost),
-	};
 };
 
 const mDashboardState = (ds?: Partial<DashboardState>): DashboardState => {
@@ -61,9 +30,9 @@ const mDashboardState = (ds?: Partial<DashboardState>): DashboardState => {
 const mSearchContextsState = (ds?: { [key: string]: Partial<SearchContext> }): SearchContextsState => {
 	if (ds) {
 		const newObj: SearchContextsState = {
-			checkLaterQueue: { ...initialState.searchContexts.default, mode: 'other' },
-			favorites: { ...initialState.searchContexts.default, mode: 'other' },
-			mostViewed: { ...initialState.searchContexts.default, mode: 'other' },
+			checkLaterQueue: { ...initialState.searchContexts.default, mode: 'system' },
+			favorites: { ...initialState.searchContexts.default, mode: 'system' },
+			mostViewed: { ...initialState.searchContexts.default, mode: 'system' },
 		};
 		for (const [key, value] of Object.entries(ds)) {
 			newObj[key] = {
@@ -171,7 +140,6 @@ type PartialRootState = {
 	favorites?: Partial<FavoritesState>;
 	loadingStates?: Partial<LoadingStates>;
 	tasks?: Partial<TasksState>;
-	posts?: DeepPartial<PostsState>;
 	settings?: DeepPartial<Settings>;
 	system?: Partial<SystemState>;
 	savedSearches?: Partial<SavedSearchesState>;
@@ -186,7 +154,6 @@ export const mState = (state?: PartialRootState): RootState => {
 		favorites: mFavoritesState(state?.favorites),
 		loadingStates: mLoadingStates(state?.loadingStates),
 		tasks: mTasksState(state?.tasks),
-		posts: mPostsState(state?.posts),
 		settings: mSettingsState(state?.settings),
 		system: mSystemState(state?.system),
 		savedSearches: mSavedSearchesState(state?.savedSearches),

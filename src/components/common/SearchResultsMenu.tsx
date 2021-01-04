@@ -55,12 +55,17 @@ const SearchResultsMenu: React.FunctionComponent<Props> = ({ context }) => {
 		});
 	};
 
-	const selectedTags = useSelector((state: RootState) => state.searchContexts[context].selectedTags);
-	const excludedTags = useSelector((state: RootState) => state.searchContexts[context].excludedTags);
-	const rating = useSelector((state: RootState) => state.searchContexts[context].rating);
-	const isDisabled = useSelector((state: RootState) => state.posts.posts[context].length <= 0);
-	const savedSearchId = useSelector((state: RootState) => state.searchContexts[context].savedSearchId);
-	const posts = useSelector((state: RootState) => state.posts.posts[context] ?? []);
+	const { selectedTags, excludedTags, rating, isDisabled, savedSearchId, posts } = useSelector((state: RootState) => {
+		const ctx = state.searchContexts[context];
+		return {
+			selectedTags: ctx.selectedTags,
+			excludedTags: ctx.excludedTags,
+			rating: ctx.rating,
+			isDisabled: ctx.posts.length <= 0,
+			savedSearchId: ctx.savedSearchId,
+			posts: ctx.posts,
+		};
+	});
 
 	const handleDownloadWholeSearch = async (): Promise<void> => {
 		const m = showModal({

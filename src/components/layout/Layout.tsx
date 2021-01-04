@@ -29,7 +29,7 @@ type Props = {
 const NavigationMenu: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const activeView = useSelector((state: RootState) => state.system.activeView);
-	const isQueueEmpty = useSelector((state: RootState) => !state.posts.posts.checkLaterQueue.length);
+	const isQueueEmpty = useSelector((state: RootState) => !state.searchContexts.checkLaterQueue.posts.length);
 
 	const handleMenuClick = (view: View): void => {
 		dispatch(actions.system.setActiveView(view));

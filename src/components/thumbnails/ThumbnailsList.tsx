@@ -43,8 +43,8 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const containerRef = React.useRef<HTMLDivElement>(null);
 	const mousePosition = React.useRef({ x: 0, y: 0 });
 	const isMouseOver = React.useRef<{ value: boolean; timeout?: number }>({ value: false });
-	const postCount = useSelector((state: RootState) => state.posts.posts[props.context]?.length ?? 0);
-	const activePostIndex = useSelector((state: RootState) => state.posts.selectedIndices[props.context]);
+	const postCount = useSelector((state: RootState) => state.searchContexts[props.context].posts?.length ?? 0);
+	const activePostIndex = useSelector((state: RootState) => state.searchContexts[props.context].selectedIndex);
 	const useImageHover = useSelector((state: RootState) => state.settings.imageHover);
 	const contextMode = useSelector((state: RootState) => state.searchContexts[props.context].mode);
 
@@ -52,10 +52,10 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 		const handleKeyPress = (event: KeyboardEvent): void => {
 			switch (event.keyCode) {
 				case 39:
-					dispatch(actions.posts.nextPost({ context: props.context }));
+					dispatch(actions.searchContexts.nextPost({ context: props.context }));
 					break;
 				case 37:
-					dispatch(actions.posts.previousPost({ context: props.context }));
+					dispatch(actions.searchContexts.previousPost({ context: props.context }));
 					break;
 				case 8: {
 					let view: View;
@@ -72,7 +72,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 
 		return (): void => {
 			window.removeEventListener('keydown', handleKeyPress, true);
-			dispatch(actions.posts.setHoveredPost({ post: undefined, visible: false }));
+			dispatch(actions.system.setHoveredPost({ post: undefined, visible: false }));
 		};
 	}, [dispatch, props.context]);
 
@@ -114,14 +114,14 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	const onMouseEnter = (_: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post): void => {
 		isMouseOver.current.timeout = setTimeout(() => {
 			isMouseOver.current.value = true;
-			dispatch(actions.posts.setHoveredPost({ post: post, visible: true }));
+			dispatch(actions.system.setHoveredPost({ post: post, visible: true }));
 		}, 500);
 	};
 
 	const onMouseLeave = (_: React.MouseEvent<HTMLDivElement, MouseEvent>, __: Post): void => {
 		isMouseOver.current.timeout && clearTimeout(isMouseOver.current.timeout);
 		if (isMouseOver.current.value) {
-			dispatch(actions.posts.setHoveredPost({ post: undefined, visible: false }));
+			dispatch(actions.system.setHoveredPost({ post: undefined, visible: false }));
 			isMouseOver.current.value = false;
 		}
 	};
@@ -146,7 +146,7 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 				activeIndex={activePostIndex}
 				actions={props.actions}
 				isSingleColumn={props.singleColumn}
-				renderLoadMore={contextMode !== 'other'}
+				renderLoadMore={contextMode !== 'system' && contextMode !== 'other'}
 				headerHeight={props.hasHeader ? 72 : 0}
 				contextMenu={props.contextMenu}
 				onCellMouseEnter={!props.singleColumn && useImageHover ? onMouseEnter : undefined}

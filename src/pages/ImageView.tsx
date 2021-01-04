@@ -11,7 +11,7 @@ import FullSizeImage from '@components/FullSizeImage';
 
 type Props = {
 	className?: string;
-}
+};
 
 const Container = styled(Layout)`
 	width: 100%;
@@ -34,7 +34,7 @@ const ImageView: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch();
 
 	const thumbnailsListvisible = useSelector((state: RootState) => state.system.isImageViewThumbnailsCollapsed);
-	const context = useSelector((state: RootState) => state.system.imageViewContext);
+	const context = useSelector((state: RootState) => state.system.activeSearchTab);
 	const theme = useSelector((state: RootState) => state.settings.theme);
 
 	return (

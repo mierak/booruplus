@@ -1,13 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import type { View, PostsContext } from './types';
+import type { Post } from '@appTypes/gelbooruTypes';
 
 import { initPostsContext } from './commonActions';
 import * as thunks from './thunks';
 
+type HoveredPost = {
+	visible: boolean;
+	post: Post | undefined;
+};
+
 export type SystemState = {
 	activeView: View;
-	imageViewContext: PostsContext | string;
 	activeSearchTab: PostsContext | string;
 	isTasksDrawerVisible: boolean;
 	isTagsPopoverVisible: boolean;
@@ -15,11 +20,11 @@ export type SystemState = {
 	isFavoritesDirectoryTreeCollapsed: boolean;
 	isTagOptionsLoading: boolean;
 	isTagTableLoading: boolean;
+	hoveredPost: HoveredPost;
 };
 
 export const initialState: SystemState = {
 	activeView: 'dashboard',
-	imageViewContext: 'default',
 	activeSearchTab: 'default',
 	isTasksDrawerVisible: false,
 	isTagsPopoverVisible: false,
@@ -27,6 +32,10 @@ export const initialState: SystemState = {
 	isFavoritesDirectoryTreeCollapsed: false,
 	isTagOptionsLoading: false,
 	isTagTableLoading: false,
+	hoveredPost: {
+		visible: false,
+		post: undefined,
+	},
 };
 
 const systemSlice = createSlice({
@@ -38,7 +47,7 @@ const systemSlice = createSlice({
 				state.activeView = action.payload;
 			} else {
 				state.activeView = action.payload.view;
-				state.imageViewContext = action.payload.context;
+				state.activeSearchTab = action.payload.context;
 			}
 		},
 		setTasksDrawerVisible: (state, action: PayloadAction<boolean>): void => {
@@ -55,6 +64,10 @@ const systemSlice = createSlice({
 		},
 		setActiveSearchTab: (state, action: PayloadAction<string>): void => {
 			state.activeSearchTab = action.payload;
+		},
+		setHoveredPost: (state, action: PayloadAction<Partial<HoveredPost>>): void => {
+			state.hoveredPost.post = action.payload.post;
+			action.payload.visible !== undefined && (state.hoveredPost.visible = action.payload.visible);
 		},
 	},
 	extraReducers: (builder) => {

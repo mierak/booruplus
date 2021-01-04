@@ -32,13 +32,7 @@ describe('Thumbnail', () => {
 	it('Renders correctly', async () => {
 		// given
 		const index = 2;
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts, favorites: [] },
-				},
-			})
-		);
+		const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 
 		// when
 		render(
@@ -53,13 +47,7 @@ describe('Thumbnail', () => {
 	it('Dispatches setActivePostIndex() and setActiveView() when thumbnail is clicked', () => {
 		// given
 		const index = 2;
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts, favorites: [] },
-				},
-			})
-		);
+		const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 
 		// when
 		render(
@@ -72,8 +60,8 @@ describe('Thumbnail', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.posts.setActivePostIndex.type,
-			payload: { data: index, context: 'posts' },
+			type: actions.searchContexts.updateContext.type,
+			payload: { data: { selectedIndex: index }, context: 'posts' },
 		});
 		expect(dispatchedActions).toContainMatchingAction({
 			type: actions.system.setActiveView.type,
@@ -83,13 +71,7 @@ describe('Thumbnail', () => {
 	it('Dispatches setPostSelected() when thumbnail is ctrl clicked', () => {
 		// given
 		const index = 2;
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts, favorites: [] },
-				},
-			})
-		);
+		const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 
 		// when
 		render(
@@ -102,20 +84,14 @@ describe('Thumbnail', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.posts.setPostSelected.type,
+			type: actions.searchContexts.setPostSelected.type,
 			payload: { data: { post: posts[index], selected: !posts[index].selected }, context: 'posts' },
 		});
 	});
 	it('Dispatches selectMultiplePosts() when thumbnail is shift clicked', () => {
 		// given
 		const index = 2;
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts, favorites: [] },
-				},
-			})
-		);
+		const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 
 		// when
 		render(
@@ -128,20 +104,14 @@ describe('Thumbnail', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.posts.selectMultiplePosts.type,
+			type: actions.searchContexts.selectMultiplePosts.type,
 			payload: { data: index, context: 'posts' },
 		});
 	});
 	it('Renders action without popconfirm', async () => {
 		// given
 		const index = 2;
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts, favorites: [] },
-				},
-			})
-		);
+		const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 		const onClick = jest.fn();
 		const cardActions: utils.CardAction[] = [
 			{
@@ -167,16 +137,12 @@ describe('Thumbnail', () => {
 	it('Show spinner when async action is processing', async () => {
 		// given
 		const index = 2;
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts, favorites: [] },
-				},
+		const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
+		const onClick = jest.fn().mockResolvedValue(
+			new Promise((resolve) => {
+				setTimeout(resolve(null), 500);
 			})
 		);
-		const onClick = jest.fn().mockResolvedValue(new Promise(resolve => {
-			setTimeout(resolve(null), 500);
-		}));
 		const cardActions: utils.CardAction[] = [
 			{
 				onClick,
@@ -202,13 +168,7 @@ describe('Thumbnail', () => {
 	it('Renders action with popconfirm', async () => {
 		// given
 		const index = 2;
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts, favorites: [] },
-				},
-			})
-		);
+		const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 		const onClick = jest.fn();
 		const title = 'popconfirm title';
 		const cardActions: utils.CardAction[] = [
@@ -242,13 +202,7 @@ describe('Thumbnail', () => {
 	it('Does not render action when condition is not met', async () => {
 		// given
 		const index = 3;
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts, favorites: [] },
-				},
-			})
-		);
+		const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 		const onClick = jest.fn();
 		const title = 'popconfirm title';
 		const cardActions: utils.CardAction[] = [
@@ -279,13 +233,7 @@ describe('Thumbnail', () => {
 	it('Renders No Data when post is undefined', async () => {
 		// given
 		const index = 123;
-		const store = mockStore(
-			mState({
-				posts: {
-					posts: { posts, favorites: [] },
-				},
-			})
-		);
+		const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 		const onClick = jest.fn();
 		const cardActions: utils.CardAction[] = [
 			{
@@ -312,13 +260,7 @@ describe('Thumbnail', () => {
 		it('onMouseEnter()', () => {
 			//given
 			const onMouseEnter = jest.fn();
-			const store = mockStore(
-				mState({
-					posts: {
-						posts: { posts, favorites: [] },
-					},
-				})
-			);
+			const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 
 			// when
 			render(
@@ -334,13 +276,7 @@ describe('Thumbnail', () => {
 		it('onMouseLeave()', () => {
 			//given
 			const onMouseLeave = jest.fn();
-			const store = mockStore(
-				mState({
-					posts: {
-						posts: { posts, favorites: [] },
-					},
-				})
-			);
+			const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 
 			// when
 			render(
@@ -357,13 +293,7 @@ describe('Thumbnail', () => {
 		it('onMouseMove()', () => {
 			//given
 			const onMouseMove = jest.fn();
-			const store = mockStore(
-				mState({
-					posts: {
-						posts: { posts, favorites: [] },
-					},
-				})
-			);
+			const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 
 			// when
 			render(

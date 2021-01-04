@@ -64,11 +64,11 @@ const Thumbnail = (props: Props): React.ReactElement => {
 
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 	const post = useSelector((state: RootState) =>
-		props.index >= 0 && props.index < state.posts.posts[props.context].length
-			? state.posts.posts[props.context][props.index]
+		props.index >= 0 && props.index < state.searchContexts[props.context].posts.length
+			? state.searchContexts[props.context].posts[props.index]
 			: undefined
 	);
-	const isActive = useSelector((state: RootState) => props.index === state.posts.selectedIndices[props.context]);
+	const isActive = useSelector((state: RootState) => props.index === state.searchContexts[props.context].selectedIndex);
 	const theme = useSelector((state: RootState) => state.settings.theme);
 	const downloadMissingImage = useSelector((state: RootState) => state.settings.downloadMissingImages);
 
@@ -94,12 +94,14 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	const handleThumbnailClick = (event: React.MouseEvent): void => {
 		event.stopPropagation();
 		if (event.ctrlKey) {
-			dispatch(actions.posts.setPostSelected({ data: { post: post, selected: !post.selected }, context: props.context }));
+			dispatch(
+				actions.searchContexts.setPostSelected({ data: { post: post, selected: !post.selected }, context: props.context })
+			);
 		} else if (event.shiftKey) {
-			dispatch(actions.posts.selectMultiplePosts({ data: props.index, context: props.context }));
+			dispatch(actions.searchContexts.selectMultiplePosts({ data: props.index, context: props.context }));
 		} else {
 			activeView !== 'image' && dispatch(actions.system.setActiveView({ view: 'image', context: props.context }));
-			dispatch(actions.posts.setActivePostIndex({ data: props.index, context: props.context }));
+			dispatch(actions.searchContexts.updateContext({ data: { selectedIndex: props.index }, context: props.context }));
 		}
 	};
 

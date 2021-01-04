@@ -42,7 +42,7 @@ const StyledEmpty = styled(Empty)`
 const PreviewImage = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
 	const containerRef = React.useRef<HTMLDivElement>(null);
 	const imageRef = React.useRef<HTMLImageElement>(null);
-	const hoveredPost = useSelector((state: RootState) => state.posts.hoveredPost);
+	const hoveredPost = useSelector((state: RootState) => state.system.hoveredPost);
 	const [windowSize, setWindowSize] = React.useState({ width: 0, height: 0 });
 	const [isEmpty, setEmpty] = React.useState(false);
 

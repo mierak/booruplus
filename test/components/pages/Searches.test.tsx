@@ -7,7 +7,7 @@ import { thunks, actions } from '../../../src/store';
 import { RootState, AppDispatch } from '../../../src/store/types';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { mPostsPostsState, mState } from '../../helpers/store.helper';
+import { mState } from '../../helpers/store.helper';
 
 import Searches from '../../../src/pages/Searches';
 import '@testing-library/jest-dom';
@@ -36,7 +36,6 @@ describe('pages/Searches', () => {
 				system: {
 					activeSearchTab: context,
 				},
-				posts: { posts: mPostsPostsState({ [context]: [] }) },
 			})
 		);
 
@@ -65,7 +64,6 @@ describe('pages/Searches', () => {
 				system: {
 					activeSearchTab: context,
 				},
-				posts: { posts: mPostsPostsState({ [context]: [] }) },
 			})
 		);
 
@@ -91,7 +89,6 @@ describe('pages/Searches', () => {
 				system: {
 					activeSearchTab: context,
 				},
-				posts: { posts: mPostsPostsState({ [context]: [] }) },
 			})
 		);
 
@@ -117,12 +114,11 @@ describe('pages/Searches', () => {
 		const store = mockStore(
 			mState({
 				searchContexts: {
-					[context]: {},
+					[context]: { posts },
 				},
 				system: {
 					activeSearchTab: context,
 				},
-				posts: { posts: mPostsPostsState({ [context]: posts }) },
 			})
 		);
 
@@ -152,12 +148,11 @@ describe('pages/Searches', () => {
 		const store = mockStore(
 			mState({
 				searchContexts: {
-					[context]: { savedSearchId: 123 },
+					[context]: { savedSearchId: 123, posts },
 				},
 				system: {
 					activeSearchTab: context,
 				},
-				posts: { posts: mPostsPostsState({ [context]: posts }) },
 			})
 		);
 
@@ -183,12 +178,11 @@ describe('pages/Searches', () => {
 		const store = mockStore(
 			mState({
 				searchContexts: {
-					[context]: {},
+					[context]: { posts },
 				},
 				system: {
 					activeSearchTab: context,
 				},
-				posts: { posts: mPostsPostsState({ [context]: posts }) },
 			})
 		);
 
@@ -220,12 +214,11 @@ describe('pages/Searches', () => {
 		const store = mockStore(
 			mState({
 				searchContexts: {
-					[context]: {},
+					[context]: { posts },
 				},
 				system: {
 					activeSearchTab: context,
 				},
-				posts: { posts: mPostsPostsState({ [context]: posts }) },
 			})
 		);
 		const notificationMock = jest.spyOn(utils, 'openNotificationWithIcon').mockImplementation();
@@ -266,12 +259,11 @@ describe('pages/Searches', () => {
 		const store = mockStore(
 			mState({
 				searchContexts: {
-					[context]: {},
+					[context]: { posts },
 				},
 				system: {
 					activeSearchTab: context,
 				},
-				posts: { posts: mPostsPostsState({ [context]: posts }) },
 			})
 		);
 
@@ -286,7 +278,7 @@ describe('pages/Searches', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.posts.addPosts.type,
+			type: actions.searchContexts.addPosts.type,
 			payload: { data: posts[4], context: 'checkLaterQueue' },
 		});
 		expect(await screen.findAllByRole('img', { name: 'download' })).toHaveLength(4);
@@ -303,12 +295,11 @@ describe('pages/Searches', () => {
 		const store = mockStore(
 			mState({
 				searchContexts: {
-					[context]: {},
+					[context]: { posts },
 				},
 				system: {
 					activeSearchTab: context,
 				},
-				posts: { posts: mPostsPostsState({ [context]: posts }) },
 			})
 		);
 
@@ -344,12 +335,11 @@ describe('pages/Searches', () => {
 		const store = mockStore(
 			mState({
 				searchContexts: {
-					[context]: { savedSearchId },
+					[context]: { savedSearchId, posts },
 				},
 				system: {
 					activeSearchTab: context,
 				},
-				posts: { posts: mPostsPostsState({ [context]: posts }) },
 			})
 		);
 		const notificationMock = jest.spyOn(utils, 'openNotificationWithIcon').mockImplementation();
@@ -387,7 +377,6 @@ describe('pages/Searches', () => {
 				system: {
 					activeSearchTab: context,
 				},
-				posts: { posts: mPostsPostsState({ [context]: [] }) },
 			})
 		);
 
@@ -414,12 +403,12 @@ describe('pages/Searches', () => {
 					rating,
 					selectedTags: tags,
 					excludedTags: eTags,
+					posts: [mPost()],
 				},
 			},
 			system: {
 				activeSearchTab: context,
 			},
-			posts: { posts: mPostsPostsState({ [context]: [mPost()] }) },
 		});
 		const store = mockStore(state);
 
@@ -449,9 +438,6 @@ describe('pages/Searches', () => {
 					},
 					searchContexts: {
 						[context]: {},
-					},
-					posts: {
-						posts: mPostsPostsState({ [context]: [] }),
 					},
 				})
 			);
@@ -492,9 +478,6 @@ describe('pages/Searches', () => {
 						[context]: {},
 						secondContext: {},
 					},
-					posts: {
-						posts: mPostsPostsState({ [context]: [] }),
-					},
 				})
 			);
 
@@ -524,9 +507,6 @@ describe('pages/Searches', () => {
 						[context]: {},
 						secondContext: { selectedTags: [mTag({ tag: 'switchhere' })] },
 					},
-					posts: {
-						posts: mPostsPostsState({ [context]: [] }),
-					},
 				})
 			);
 
@@ -554,10 +534,7 @@ describe('pages/Searches', () => {
 					},
 					searchContexts: {
 						[context]: {},
-						secondContext: { selectedTags: [mTag({ tag: 'switchhere' })] },
-					},
-					posts: {
-						posts: mPostsPostsState({ [context]: [], secondContext: [mPost({ downloaded: 0 })] }),
+						secondContext: { selectedTags: [mTag({ tag: 'switchhere' })], posts: [mPost({ downloaded: 0 })] },
 					},
 				})
 			);

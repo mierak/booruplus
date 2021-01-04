@@ -108,7 +108,7 @@ const ThumbnailsListTabContent: React.FunctionComponent<{ context: PostsContext 
 				tooltip: 'Check Later',
 				icon: 'clock-circle-outlined',
 				onClick: (post: Post): void => {
-					dispatch(actions.posts.addPosts({ data: post, context: 'checkLaterQueue' }));
+					dispatch(actions.searchContexts.addPosts({ data: post, context: 'checkLaterQueue' }));
 				},
 			},
 		];
@@ -129,7 +129,7 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 
 	const { tabs, activeTab } = useSelector(
 		(state: RootState) => {
-			const contexts = Object.keys(state.searchContexts).filter((ctx) => state.searchContexts[ctx].mode !== 'other');
+			const contexts = Object.keys(state.searchContexts).filter((ctx) => state.searchContexts[ctx].mode !== 'system');
 			const currentTab = state.system.activeSearchTab;
 
 			const tss = contexts.map((ctx) => {

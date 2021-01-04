@@ -11,7 +11,7 @@ import { ActiveModal } from '@appTypes/modalTypes';
 type Props = {
 	x: number;
 	y: number;
-}
+};
 
 type Actions = 'add' | 'delete' | 'rename' | 'mark-as-default' | 'move-selected' | 'move-all' | 'export-directory';
 
@@ -55,7 +55,7 @@ const SiderContent: React.FunctionComponent = () => {
 	const rootNode = useSelector((state: RootState) => state.favorites.rootNode);
 	const activeNodeKey = useSelector((state: RootState) => state.favorites.activeNodeKey);
 	const isCollapsed = useSelector((state: RootState) => state.system.isFavoritesDirectoryTreeCollapsed);
-	const posts = useSelector((state: RootState) => state.posts.posts.favorites);
+	const posts = useSelector((state: RootState) => state.searchContexts.favorites.posts);
 
 	const [selectedNodeKey, setSelectedNodeKey] = useState(0);
 	const [align, setAlign] = useState<[number, number]>([0, 0]);

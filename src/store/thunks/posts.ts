@@ -200,7 +200,7 @@ export const downloadSelectedPosts = createAsyncThunk<void, { context: PostsCont
 	'posts/downloadSelectedPosts',
 	async ({ context }, thunkApi): Promise<void> => {
 		const logger = getActionLogger(downloadSelectedPosts);
-		const posts = thunkApi.getState().posts.posts[context].filter((p) => p.selected);
+		const posts = thunkApi.getState().searchContexts[context].posts.filter((p) => p.selected);
 		if (posts.length === 0) {
 			logger.error('No posts selected');
 			throw new Error('No posts selected');
@@ -216,7 +216,7 @@ export const downloadAllPosts = createAsyncThunk<void, { context: PostsContext |
 	'posts/downloadAllPosts',
 	async ({ context }, thunkApi): Promise<void> => {
 		const logger = getActionLogger(downloadAllPosts);
-		const posts = thunkApi.getState().posts.posts[context];
+		const posts = thunkApi.getState().searchContexts[context].posts;
 		if (posts.length === 0) {
 			logger.error('No posts to download');
 			throw new Error('No posts to download');
@@ -296,14 +296,14 @@ export const blacklistPosts = createAsyncThunk<Post[], { context: PostsContext |
 export const blacklistAllPosts = createAsyncThunk<void, { context: PostsContext | string }, ThunkApi>(
 	'posts/blacklistAllPosts',
 	async ({ context }, thunkApi): Promise<void> => {
-		thunkApi.dispatch(blacklistPosts({ context, posts: thunkApi.getState().posts.posts[context] })); // TODO throw when no posts
+		thunkApi.dispatch(blacklistPosts({ context, posts: thunkApi.getState().searchContexts[context].posts })); // TODO throw when no posts
 	}
 );
 
 export const blacklistSelectedPosts = createAsyncThunk<void, { context: PostsContext | string }, ThunkApi>(
 	'posts/blacklistSelectedPosts',
 	async ({ context }, thunkApi): Promise<void> => {
-		const posts = thunkApi.getState().posts.posts[context].filter((post) => post.selected); // TODO throw when no posts
+		const posts = thunkApi.getState().searchContexts[context].posts.filter((post) => post.selected); // TODO throw when no posts
 		thunkApi.dispatch(blacklistPosts({ posts, context }));
 	}
 );

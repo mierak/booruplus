@@ -34,7 +34,7 @@ jest.mock('../../../src/util/imageIpcUtils', () => {
 	};
 });
 import { deleteImage } from '../../../src/util/imageIpcUtils';
-import { mPostsPostsState, mState } from '../../helpers/store.helper';
+import { mState } from '../../helpers/store.helper';
 jest.mock('../../../src/util/utils', () => {
 	const originalModule = jest.requireActual('../../../src/util/utils');
 	return {
@@ -328,10 +328,7 @@ describe('thunks/posts', () => {
 				mPost({ id: 3, selected: true }),
 				mPost({ id: 4, selected: false }),
 			];
-			const store = mockStore({
-				...initialState,
-				posts: { ...initialState.posts, posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }) },
-			});
+			const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 
 			// when
 			await store.dispatch(thunks.downloadSelectedPosts({ context: 'posts' }));
@@ -346,10 +343,7 @@ describe('thunks/posts', () => {
 		it('Throws error when there are no selected posts', async () => {
 			// given
 			const posts = [mPost({ id: 0, selected: false }), mPost({ id: 1, selected: false })];
-			const store = mockStore({
-				...initialState,
-				posts: { ...initialState.posts, posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }) },
-			});
+			const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 
 			// when
 			await store.dispatch(thunks.downloadSelectedPosts({ context: 'posts' }));
@@ -366,10 +360,7 @@ describe('thunks/posts', () => {
 		it('Gets all posts from state and dispatches downloadPost()', async () => {
 			// given
 			const posts = [mPost({ id: 0 }), mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
-			const store = mockStore({
-				...initialState,
-				posts: { ...initialState.posts, posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }) },
-			});
+			const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 
 			// when
 			await store.dispatch(thunks.downloadAllPosts({ context: 'posts' }));
@@ -384,11 +375,7 @@ describe('thunks/posts', () => {
 		it('Throws error when there are no posts in state', async () => {
 			// given
 			const posts: Post[] = [];
-			const store = mockStore({
-				...initialState,
-				posts: { ...initialState.posts, posts: mPostsPostsState({ posts, favorites: [], mostViewed: [] }) },
-			});
-
+			const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 			// when
 			await store.dispatch(thunks.downloadAllPosts({ context: 'posts' }));
 
@@ -429,10 +416,7 @@ describe('thunks/posts', () => {
 				mPost({ id: 3, selected: true }),
 				mPost({ id: 4, selected: false }),
 			];
-			const store = mockStore({
-				...initialState,
-				posts: { ...initialState.posts, posts: mPostsPostsState({ favorites: posts }) },
-			});
+			const store = mockStore(mState({ searchContexts: { favorites: { posts } } }));
 
 			// when
 			await store.dispatch(thunks.blacklistSelectedPosts({ context: 'favorites' }));
@@ -449,10 +433,7 @@ describe('thunks/posts', () => {
 		it('Gets all posts from state and dispatches blacklistPosts()', async () => {
 			// given
 			const posts = [mPost({ id: 0 }), mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
-			const store = mockStore({
-				...initialState,
-				posts: { ...initialState.posts, posts: mPostsPostsState({ mostViewed: posts }) },
-			});
+			const store = mockStore(mState({ searchContexts: { mostViewed: { posts } } }));
 
 			// when
 			await store.dispatch(thunks.blacklistAllPosts({ context: 'mostViewed' }));

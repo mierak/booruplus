@@ -10,9 +10,7 @@ export const setFullscreenLoadingMaskState = createAction<string | { message: st
 	'loadingState/setFullscreenLoadingMaskMessage'
 );
 
-export const initPostsContext = createAction<WithContext<Partial<SearchContext>>>(
-	'common/initPostsContext'
-);
+export const initPostsContext = createAction<WithContext<Partial<SearchContext>>>('common/initPostsContext');
 
 export const deletePostsContext = createAction<{ context: PostsContext | string }>('common/deletePostsContext');
 
@@ -39,10 +37,10 @@ export const exportPostsToDirectory = createAsyncThunk<
 		if ('context' in param) {
 			switch (param.type) {
 				case 'all':
-					posts = state.posts.posts[param.context];
+					posts = state.searchContexts[param.context].posts;
 					break;
 				case 'selected':
-					posts = state.posts.posts[param.context].filter((p) => p.selected);
+					posts = state.searchContexts[param.context].posts.filter((p) => p.selected);
 					break;
 			}
 		} else {

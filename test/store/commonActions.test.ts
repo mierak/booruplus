@@ -29,13 +29,7 @@ describe('store/commonActions', () => {
 			// given
 			const posts = [mPost({ id: 123 }), mPost({ id: 456 }), mPost({ id: 789 })];
 			const path = 'testpath';
-			const store = mockStore(
-				mState({
-					posts: {
-						posts: { posts, favorites: [] },
-					},
-				})
-			);
+			const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 			ipcInvokeSpy.mockResolvedValue(path);
 
 			// when
@@ -49,13 +43,7 @@ describe('store/commonActions', () => {
 			// given
 			const posts = [mPost({ id: 123, selected: true }), mPost({ id: 456, selected: true }), mPost({ id: 789 })];
 			const path = 'testpath';
-			const store = mockStore(
-				mState({
-					posts: {
-						posts: { posts, favorites: [] },
-					},
-				})
-			);
+			const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 			ipcInvokeSpy.mockResolvedValue(path);
 
 			// when

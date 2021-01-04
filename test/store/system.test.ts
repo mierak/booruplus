@@ -2,7 +2,8 @@ import { doDatabaseMock } from '../helpers/database.mock';
 doDatabaseMock();
 import reducer, { actions, initialState, SystemState } from '../../src/store/system';
 import { thunks } from '../../src/store/';
-import { createAction, createPendingAction } from '../helpers/test.helper';
+import { createAction, createPendingAction, mPost } from '../helpers/test.helper';
+import { mState } from '../helpers/store.helper';
 
 describe('store/system', () => {
 	describe('reducers', () => {
@@ -60,6 +61,18 @@ describe('store/system', () => {
 
 			// then
 			expect(result.isImageViewThumbnailsCollapsed).toBe(collapsed);
+		});
+		it('Sets the whole hovered post state', () => {
+			// given
+			const post = mPost();
+			const action = createAction(actions.setHoveredPost.type, { post, visible: true });
+			const state = mState().system;
+
+			// when
+			const result = reducer(state, action);
+
+			// then
+			expect(result.hoveredPost).toMatchObject({ post, visible: true });
 		});
 	});
 	describe('extraReducers', () => {

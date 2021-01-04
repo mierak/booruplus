@@ -2,6 +2,8 @@ import { mainReducer, store } from '.';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
+import type { Tag, Rating, Post } from '@appTypes/gelbooruTypes';
+
 export type RootState = ReturnType<typeof mainReducer>;
 
 export type AppThunk<T = void> = ThunkAction<Promise<T>, RootState, unknown, Action<string>>;
@@ -18,15 +20,13 @@ export type ThunkApi<Rejected = void> = {
 	rejectValue: Rejected;
 };
 
-import type { Tag, Rating } from '@appTypes/gelbooruTypes';
-
 export type View = 'searches' | 'image' | 'dashboard' | 'saved-searches' | 'favorites' | 'tag-list' | 'check-later';
 
 export type Sort = 'date-downloaded' | 'date-uploaded' | 'rating' | 'resolution' | 'date-updated' | 'none';
 
 export type SortOrder = 'asc' | 'desc';
 
-export type ContextMode = 'online' | 'offline' | 'other';
+export type ContextMode = 'online' | 'offline' | 'other' | 'system';
 
 export type OfflineOptions = {
 	blacklisted: boolean;
@@ -129,7 +129,8 @@ export type SearchContext = {
 	showVideos: boolean;
 	showImages: boolean;
 	showGifs: boolean;
-	disposable?: boolean;
+	posts: Post[];
+	selectedIndex?: number;
 };
 
 export type PostsContext = 'favorites' | 'mostViewed' | 'checkLaterQueue';

@@ -39,9 +39,9 @@ describe('layout/Layout', () => {
 		// given
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: {
-						checkLaterQueue: [mPost()],
+				searchContexts: {
+					checkLaterQueue: {
+						posts: [mPost()],
 					},
 				},
 			})
@@ -182,10 +182,8 @@ describe('layout/Layout', () => {
 		// given
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: {
-						checkLaterQueue: [mPost()],
-					},
+				searchContexts: {
+					checkLaterQueue: { posts: [mPost()] },
 				},
 			})
 		);

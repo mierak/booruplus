@@ -31,10 +31,10 @@ describe('FullSizeImage', () => {
 		// given
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: { posts, favorites: [] },
-					selectedIndices: {
-						posts: 2,
+				searchContexts: {
+					posts: {
+						posts: posts,
+						selectedIndex: 2,
 					},
 				},
 			})
@@ -54,9 +54,8 @@ describe('FullSizeImage', () => {
 		// given
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: { posts, favorites: [] },
-					selectedIndices: { posts: 0 },
+				searchContexts: {
+					posts: { posts, selectedIndex: 0 },
 				},
 			})
 		);
@@ -75,9 +74,8 @@ describe('FullSizeImage', () => {
 		// given
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: { posts, favorites: [] },
-					selectedIndices: { posts: 1 },
+				searchContexts: {
+					posts: { posts, selectedIndex: 1 },
 				},
 			})
 		);
@@ -97,10 +95,7 @@ describe('FullSizeImage', () => {
 		const activePostIndex = 1;
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: { favorites: posts },
-					selectedIndices: { favorites: activePostIndex },
-				},
+				searchContexts: { favorites: { posts, selectedIndex: activePostIndex } },
 			})
 		);
 

@@ -62,9 +62,9 @@ const StyledEmptyThumbnails = styled(EmptyThumbnails)`
 const FullSizeImage: React.FunctionComponent<Props> = ({ className, context }: Props) => {
 	const dispatch = useDispatch();
 
-	const index = useSelector((state: RootState) => state.posts.selectedIndices[context]);
+	const index = useSelector((state: RootState) => state.searchContexts[context].selectedIndex);
 	const post = useSelector(
-		(state: RootState) => (index !== undefined && state.posts.posts[context][index]) || undefined,
+		(state: RootState) => (index !== undefined && state.searchContexts[context].posts[index]) || undefined,
 		(first, second) => first?.id === second?.id
 	);
 

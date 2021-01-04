@@ -75,7 +75,7 @@ const MostViewedPosts: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
 
 	const mostViewedCount = useSelector((state: RootState) => state.settings.dashboard.mostViewedCount);
-	const mostViewedPosts = useSelector((state: RootState) => state.posts.posts.mostViewed);
+	const mostViewedPosts = useSelector((state: RootState) => state.searchContexts.mostViewed.posts);
 	const shouldLoad = useSelector((state: RootState) => state.settings.dashboard.loadMostViewedPosts);
 	const [thumbs, setThumbs] = useState<JSX.Element[]>([]);
 
@@ -88,8 +88,8 @@ const MostViewedPosts: React.FunctionComponent = () => {
 	const handleMostViewedImageClick = useCallback(
 		(post: Post): void => {
 			dispatch(
-				actions.posts.setActivePostIndex({
-					data: mostViewedPosts.findIndex((p) => p.id === post.id),
+				actions.searchContexts.updateContext({
+					data: { selectedIndex: mostViewedPosts.findIndex((p) => p.id === post.id) },
 					context: 'mostViewed',
 				})
 			);

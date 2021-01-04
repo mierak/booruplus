@@ -54,7 +54,7 @@ const HeaderMenu: React.FunctionComponent = () => {
 		dispatch(thunks.posts.blacklistSelectedPosts({ context }));
 	};
 	const clear = (): void => {
-		dispatch(actions.posts.setPosts({ context, data: [] }));
+		dispatch(actions.searchContexts.updateContext({ context, data: { posts: [] } }));
 		dispatch(actions.system.setActiveView('dashboard'));
 	};
 	return (
@@ -108,7 +108,7 @@ const CheckLaterQueue: React.FunctionComponent = () => {
 	};
 
 	const handleRemoveFromQueue = (post: Post): void => {
-		dispatch(actions.posts.removePosts({ context, data: post }));
+		dispatch(actions.searchContexts.removePosts({ context, data: post }));
 	};
 
 	const thumbnailActions: CardAction[] = [

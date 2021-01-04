@@ -89,8 +89,8 @@ describe('pages/Favorites', () => {
 					rootNode,
 					expandedKeys,
 				},
-				posts: {
-					posts: { posts: [], favorites: posts },
+				searchContexts: {
+					favorites: { posts },
 				},
 			})
 		);
@@ -183,9 +183,7 @@ describe('pages/Favorites', () => {
 					rootNode,
 					expandedKeys,
 				},
-				posts: {
-					posts: { posts: [], favorites: posts },
-				},
+				searchContexts: { favorites: { posts } },
 			})
 		);
 
@@ -218,9 +216,7 @@ describe('pages/Favorites', () => {
 					rootNode,
 					expandedKeys,
 				},
-				posts: {
-					posts: { favorites: posts, posts: [] },
-				},
+				searchContexts: { favorites: { posts } },
 			})
 		);
 		const notificationMock = jest.spyOn(utils, 'openNotificationWithIcon').mockImplementation();
@@ -263,9 +259,7 @@ describe('pages/Favorites', () => {
 					rootNode,
 					expandedKeys,
 				},
-				posts: {
-					posts: { posts: [], favorites: posts },
-				},
+				searchContexts: { favorites: { posts } },
 			})
 		);
 
@@ -311,9 +305,7 @@ describe('pages/Favorites', () => {
 					rootNode,
 					expandedKeys,
 				},
-				posts: {
-					posts: { posts: [], favorites: posts },
-				},
+				searchContexts: { favorites: { posts } },
 			})
 		);
 		const notificationMock = jest.spyOn(utils, 'openNotificationWithIcon').mockImplementation();
@@ -363,9 +355,7 @@ describe('pages/Favorites', () => {
 					expandedKeys,
 					activeNodeKey: 0,
 				},
-				posts: {
-					posts: { posts: [], favorites: posts },
-				},
+				searchContexts: { favorites: { posts } },
 			})
 		);
 		const notificationMock = jest.spyOn(utils, 'openNotificationWithIcon').mockImplementation();

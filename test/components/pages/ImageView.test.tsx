@@ -31,15 +31,8 @@ describe('pages/ImageView', () => {
 		];
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: { [context]: posts },
-				},
-				system: {
-					imageViewContext: context,
-				},
-				searchContexts: {
-					[context]: {},
-				},
+				system: { activeSearchTab: context },
+				searchContexts: { [context]: { posts } },
 			})
 		);
 

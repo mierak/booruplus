@@ -9,7 +9,7 @@ export const generateSearchContext = createAsyncThunk<string, void, ThunkApi>(
 	async (_, { getState }): Promise<string> => {
 		const logger = getActionLogger(generateSearchContext);
 		const currentContexts = Object.keys(getState().searchContexts).filter(
-			(ctx) => getState().searchContexts[ctx].mode !== 'other'
+			(ctx) => getState().searchContexts[ctx].mode !== 'system'
 		);
 
 		const lastTabNumber = Math.max(...currentContexts.map((ctx) => Number(ctx.match(/\d+/)?.[0] ?? 0)), 0);

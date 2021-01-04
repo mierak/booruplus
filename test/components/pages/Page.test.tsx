@@ -61,11 +61,6 @@ describe('pages/Dashboard', () => {
 				searchContexts: {
 					[context]: {},
 				},
-				posts: {
-					posts: {
-						[context]: [],
-					},
-				},
 			})
 		);
 
@@ -86,11 +81,6 @@ describe('pages/Dashboard', () => {
 				system: {
 					activeView: 'check-later',
 				},
-				posts: {
-					posts: {
-						checkLaterQueue: [],
-					},
-				},
 			})
 		);
 
@@ -110,9 +100,6 @@ describe('pages/Dashboard', () => {
 			mState({
 				system: {
 					activeView: 'image',
-				},
-				posts: {
-					posts: { posts: [], favorites: [] },
 				},
 			})
 		);

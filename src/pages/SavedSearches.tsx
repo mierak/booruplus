@@ -175,14 +175,13 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 		if (index >= 0) {
 			const context = unwrapResult(await dispatch(thunks.searchContexts.generateSearchContext()));
 			const data: Partial<SearchContext> = {
-				disposable: true,
 				mode: 'other',
 				selectedTags: record.tags,
 				excludedTags: record.excludedTags,
 				rating: record.rating,
 			};
 			dispatch(initPostsContext({ context, data }));
-			dispatch(actions.posts.setActivePostIndex({ data: index, context }));
+			dispatch(actions.searchContexts.updateContext({ data: { selectedIndex: index }, context }));
 			dispatch(thunks.posts.fetchPostsByIds({ context, ids: postIds }));
 		}
 	};

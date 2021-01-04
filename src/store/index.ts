@@ -6,7 +6,6 @@ import searchContextsReducer, {
 	actions as searchContexts,
 	initialState as searchContextsState,
 } from './searchContexts';
-import postsReducer, { actions as posts, initialState as postsInitialState } from './posts';
 import systemReducer, { actions as system, initialState as systemInitialState } from './system';
 import savedSearchesReducer, {
 	actions as savedSearches,
@@ -27,7 +26,6 @@ import * as allThunks from './thunks';
 
 export const mainReducer = combineReducers({
 	system: systemReducer,
-	posts: postsReducer,
 	savedSearches: savedSearchesReducer,
 	tags: tagsReducer,
 	searchContexts: searchContextsReducer,
@@ -41,7 +39,6 @@ export const mainReducer = combineReducers({
 
 export const initialState = {
 	system: systemInitialState,
-	posts: postsInitialState,
 	savedSearches: savedSearchesInitialState,
 	tags: tagsInitialState,
 	searchContexts: searchContextsState,
@@ -54,7 +51,6 @@ export const initialState = {
 };
 
 export const actions = {
-	posts,
 	system,
 	searchContexts,
 	savedSearches,

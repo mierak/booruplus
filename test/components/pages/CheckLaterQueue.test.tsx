@@ -53,8 +53,8 @@ describe('pages/CheckLaterQueue', () => {
 		];
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: { checkLaterQueue: posts },
+				searchContexts: {
+					checkLaterQueue: { posts },
 				},
 			})
 		);
@@ -83,8 +83,8 @@ describe('pages/CheckLaterQueue', () => {
 		];
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: { checkLaterQueue: posts },
+				searchContexts: {
+					checkLaterQueue: { posts },
 				},
 			})
 		);
@@ -100,7 +100,7 @@ describe('pages/CheckLaterQueue', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.posts.removePosts.type,
+			type: actions.searchContexts.removePosts.type,
 			payload: { context: 'checkLaterQueue', data: posts[1] },
 		});
 		expect(await screen.findAllByRole('img', { name: 'close' })).toHaveLength(5);
@@ -116,8 +116,8 @@ describe('pages/CheckLaterQueue', () => {
 		];
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: { checkLaterQueue: posts },
+				searchContexts: {
+					checkLaterQueue: { posts },
 				},
 			})
 		);
@@ -149,8 +149,8 @@ describe('pages/CheckLaterQueue', () => {
 		];
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: { checkLaterQueue: posts },
+				searchContexts: {
+					checkLaterQueue: { posts },
 				},
 			})
 		);
@@ -182,8 +182,8 @@ describe('pages/CheckLaterQueue', () => {
 		];
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: { checkLaterQueue: posts },
+				searchContexts: {
+					checkLaterQueue: { posts },
 				},
 			})
 		);
@@ -215,8 +215,8 @@ describe('pages/CheckLaterQueue', () => {
 		];
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: { checkLaterQueue: posts },
+				searchContexts: {
+					checkLaterQueue: { posts },
 				},
 			})
 		);
@@ -248,8 +248,8 @@ describe('pages/CheckLaterQueue', () => {
 		];
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: { checkLaterQueue: posts },
+				searchContexts: {
+					checkLaterQueue: { posts },
 				},
 			})
 		);
@@ -281,8 +281,8 @@ describe('pages/CheckLaterQueue', () => {
 		];
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: { checkLaterQueue: posts },
+				searchContexts: {
+					checkLaterQueue: { posts },
 				},
 			})
 		);
@@ -322,8 +322,8 @@ describe('pages/CheckLaterQueue', () => {
 		];
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: { checkLaterQueue: posts },
+				searchContexts: {
+					checkLaterQueue: { posts },
 				},
 			})
 		);
@@ -363,8 +363,8 @@ describe('pages/CheckLaterQueue', () => {
 		];
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: { checkLaterQueue: posts },
+				searchContexts: {
+					checkLaterQueue: { posts },
 				},
 			})
 		);
@@ -408,8 +408,8 @@ describe('pages/CheckLaterQueue', () => {
 		// then
 		const dispatchedActions = store.getActions();
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.posts.setPosts.type,
-			payload: { context: 'checkLaterQueue', data: [] },
+			type: actions.searchContexts.updateContext.type,
+			payload: { context: 'checkLaterQueue', data: { posts: [] } },
 		});
 		expect(dispatchedActions).toContainMatchingAction({ type: actions.system.setActiveView.type, payload: 'dashboard' });
 	});
@@ -424,8 +424,8 @@ describe('pages/CheckLaterQueue', () => {
 		];
 		const store = mockStore(
 			mState({
-				posts: {
-					posts: { checkLaterQueue: posts },
+				searchContexts: {
+					checkLaterQueue: { posts },
 				},
 			})
 		);

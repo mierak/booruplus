@@ -26,7 +26,7 @@ describe('thumbnails/PreviewImage', () => {
 		const post = mPost();
 		const store = mockStore(
 			mState({
-				posts: {
+				system: {
 					hoveredPost: {
 						post,
 						visible: true,
@@ -53,7 +53,7 @@ describe('thumbnails/PreviewImage', () => {
 		const post = mPost();
 		const store = mockStore(
 			mState({
-				posts: {
+				system: {
 					hoveredPost: {
 						post,
 						visible: true,
@@ -79,7 +79,7 @@ describe('thumbnails/PreviewImage', () => {
 		const post = mPost();
 		const store = mockStore(
 			mState({
-				posts: {
+				system: {
 					hoveredPost: {
 						post,
 						visible: true,
@@ -105,7 +105,7 @@ describe('thumbnails/PreviewImage', () => {
 		const post = mPost({image: 'test.webm'});
 		const store = mockStore(
 			mState({
-				posts: {
+				system: {
 					hoveredPost: {
 						post,
 						visible: true,

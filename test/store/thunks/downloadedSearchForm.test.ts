@@ -33,6 +33,7 @@ describe('thunks/offlineSearches', () => {
 				tagOptions: [],
 				selectedTags: [],
 				excludedTags: [],
+				posts: [],
 			};
 
 			// when

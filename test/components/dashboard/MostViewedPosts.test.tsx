@@ -27,7 +27,7 @@ describe('MostviewedPosts', () => {
 			mPost({ id: 3, viewCount: 3 }),
 			mPost({ id: 4, viewCount: 4 }),
 		];
-		const store = mockStore(mState({ posts: { posts: { mostViewed: posts } } }));
+		const store = mockStore(mState({ searchContexts: { mostViewed: { posts } } }));
 
 		// when
 		render(
@@ -54,7 +54,7 @@ describe('MostviewedPosts', () => {
 	it('Opens full size image when clicked and updates store', async () => {
 		// given
 		const posts = [mPost({ id: 0 }), mPost({ id: 1 }), mPost({ id: 2 }), mPost({ id: 3 }), mPost({ id: 4 })];
-		const store = mockStore(mState({ posts: { posts: { mostViewed: posts } } }));
+		const store = mockStore(mState({ searchContexts: { mostViewed: { posts } } }));
 		const postsIndexToClick = 2;
 
 		// when
@@ -78,8 +78,8 @@ describe('MostviewedPosts', () => {
 			payload: { view: 'image', context },
 		});
 		expect(dispatchedActions).toContainMatchingAction({
-			type: actions.posts.setActivePostIndex.type,
-			payload: { data: postsIndexToClick, context },
+			type: actions.searchContexts.updateContext.type,
+			payload: { data: { selectedIndex: postsIndexToClick }, context },
 		});
 		await waitFor(() =>
 			expect(
@@ -121,8 +121,14 @@ describe('MostviewedPosts', () => {
 	});
 	it('Renders downloaded icon', async () => {
 		// given
-		const posts = [mPost({ id: 0 }), mPost({ id: 1, downloaded: 1 }), mPost({ id: 2, downloaded: 1 }), mPost({ id: 3 }), mPost({ id: 4 })];
-		const store = mockStore(mState({ posts: { posts: { mostViewed: posts } } }));
+		const posts = [
+			mPost({ id: 0 }),
+			mPost({ id: 1, downloaded: 1 }),
+			mPost({ id: 2, downloaded: 1 }),
+			mPost({ id: 3 }),
+			mPost({ id: 4 }),
+		];
+		const store = mockStore(mState({ searchContexts: { mostViewed: { posts } } }));
 
 		// when
 		render(

@@ -17,13 +17,13 @@ type Info = {
 	node: EventDataNode;
 	selectedNodes: DataNode[];
 	nativeEvent: MouseEvent;
-}
+};
 
 type Props = {
 	treeData: TreeNode[] | undefined;
 	expandedKeys: string[];
 	data: AddToFavoritesModalProps | AddToFavoritesModalContextProps;
-}
+};
 
 const StyledDirectoryTree = styled(Tree.DirectoryTree)`
 	overflow: auto;
@@ -38,7 +38,7 @@ const AddtoFavoritesModal: React.FunctionComponent<Props> = (props) => {
 		if ('postsToFavorite' in props.data) {
 			return props.data.postsToFavorite;
 		} else {
-			const posts = state.posts.posts[props.data.context];
+			const posts = state.searchContexts[props.data.context].posts;
 			return props.data.type === 'all' ? posts : posts.filter((p) => p.selected);
 		}
 	});
