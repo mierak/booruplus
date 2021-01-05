@@ -250,6 +250,7 @@ describe('pages/SavedSearches', () => {
 		const context = unwrapResult(await store.dispatch(thunks.searchContexts.generateSearchContext()));
 		const data: Partial<SearchContext> = {
 			mode: 'other',
+			tabName: 'Saved Search',
 			selectedTags: savedSearches[0].tags,
 			excludedTags: savedSearches[0].excludedTags,
 			rating: savedSearches[0].rating,

@@ -38,7 +38,7 @@ const TaskProgress: React.FunctionComponent<Props> = (props: Props) => {
 
 	const handleOpen = async (): Promise<void> => {
 		const context = unwrapResult(await dispatch(thunks.searchContexts.generateSearchContext()));
-		dispatch(initPostsContext({ context: context, data: { mode: 'online' } }));
+		dispatch(initPostsContext({ context: context, data: { mode: 'other', tabName: 'Download' } }));
 		dispatch(thunks.posts.fetchPostsByIds({context, ids: task.postIds}));
 	};
 

@@ -12,12 +12,28 @@ jest.mock('lodash', () => {
 jest.mock('../src/globals', () => {
 	return {
 		globals: {
-			VERSION: '6.6.6'
-		}
+			VERSION: '6.6.6',
+		},
 	};
 });
 import { log } from './helpers/window.mock';
 (global as any).log = log;
+
+import {
+	deleteImageMock,
+	saveImageMock,
+	loadImageMock,
+	loadThumbnailMock,
+	saveThumbnailMock,
+} from './helpers/imageBus.mock';
+
+jest.mock('../src/util/imageIpcUtils', () => ({
+	loadImage: loadImageMock,
+	saveImage: saveImageMock,
+	deleteImage: deleteImageMock,
+	loadThumbnail: loadThumbnailMock,
+	saveThumbnail: saveThumbnailMock,
+}));
 
 expect.extend({
 	/**
@@ -59,7 +75,9 @@ expect.extend({
 				found = true;
 				break;
 			} else if (r.type === expected.type) {
-				foundSameTypeMessage = ` Found action with the same type: \r\n${JSON.stringify(r)}\r\nexpected:\r\n${JSON.stringify(expected)}`;
+				foundSameTypeMessage = ` Found action with the same type: \r\n${JSON.stringify(r)}\r\nexpected:\r\n${JSON.stringify(
+					expected
+				)}`;
 			}
 		}
 		return {

@@ -23,7 +23,11 @@ export const getSortOptionString = (options: PostSearchOptions): string => {
 	}
 };
 
-export const getPostsForTags = async (tags: string[], options: PostSearchOptions = {}, excludedTags?: string[]): Promise<Post[]> => {
+export const getPostsForTags = async (
+	tags: string[],
+	options: PostSearchOptions = {},
+	excludedTags?: string[]
+): Promise<Post[]> => {
 	const logger = getApiLogger('getPostsForTags');
 	//handle Optional params
 	if (!options.limit) options.limit = 100;
@@ -67,10 +71,10 @@ export const getPostById = async (id: number, apiKey?: string): Promise<Post> =>
 	}
 	logger.debug('Response', response.status, response.statusText);
 
-	const posts: Post[] = await response.json();
+	const posts: PostDto[] = await response.json();
 	if (posts.length < 1) throw new Error('No post found');
 
-	return posts[0];
+	return parsePost(posts[0]);
 };
 
 export const getTagsByNames = async (names: string[], apiKey?: string): Promise<Tag[]> => {

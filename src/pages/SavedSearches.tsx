@@ -176,6 +176,7 @@ const SavedSearches: React.FunctionComponent<Props> = (props: Props) => {
 			const context = unwrapResult(await dispatch(thunks.searchContexts.generateSearchContext()));
 			const data: Partial<SearchContext> = {
 				mode: 'other',
+				tabName: 'Saved Search',
 				selectedTags: record.tags,
 				excludedTags: record.excludedTags,
 				rating: record.rating,

@@ -335,6 +335,7 @@ describe('apiService', () => {
 			// then
 			if (!result) fail('Result post is undefined');
 			expect(result.id).toBe(1234);
+			expect(result.fileUrl).not.toBe(undefined);
 		});
 		it('Calls the correct endpoint without api key', async () => {
 			// given

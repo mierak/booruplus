@@ -20,7 +20,7 @@ type CellProps = {
 	onMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
 	onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
 	onMouseMove?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
-}
+};
 
 const Cell: React.FunctionComponent<CellProps> = (props) => {
 	const index = getIndexFromRowCol(props);
@@ -28,7 +28,7 @@ const Cell: React.FunctionComponent<CellProps> = (props) => {
 		return null;
 	}
 	return (
-		<div style={{ ...props.style, width: '100%' }}>
+		<div style={{ ...props.style, width: '100%', top: Number(props.style.top) + 10 }}>
 			<Thumbnail
 				context={props.context}
 				isScrolling={props.isScrolling}

@@ -28,7 +28,7 @@ const Container = styled.div`
 
 const StyledThumbnailsList = styled(ThumbnailsList)`
 	overflow: auto;
-	max-height: calc(100vh - 72px);
+	height: 100%;
 `;
 
 const StyledSpin = styled(Spin)`
@@ -44,6 +44,7 @@ const ThumbnailsListTabContent: React.FunctionComponent<{ context: PostsContext 
 	const dispatch = useDispatch<AppDispatch>();
 	const isFetchingPosts = useSelector((state: RootState) => state.loadingStates.isFetchingPosts);
 	const savedSearchId = useSelector((state: RootState) => state.searchContexts[context].savedSearchId);
+	const hasHeader = useSelector((state: RootState) => state.searchContexts[context].mode !== 'other');
 
 	if (isFetchingPosts) {
 		return <StyledSpin indicator={<LoadingOutlined style={{ fontSize: '64px' }} />} />;
@@ -116,7 +117,7 @@ const ThumbnailsListTabContent: React.FunctionComponent<{ context: PostsContext 
 			<StyledThumbnailsList
 				shouldShowLoadMoreButton
 				context={context}
-				hasHeader
+				hasHeader={hasHeader}
 				emptyDataLogoCentered={true}
 				actions={thumbnailActions}
 			/>
@@ -127,7 +128,7 @@ const ThumbnailsListTabContent: React.FunctionComponent<{ context: PostsContext 
 const Searches: React.FunctionComponent<Props> = (props: Props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const { tabs, activeTab } = useSelector(
+	const { tabs, activeTab, shouldRenderHeader } = useSelector(
 		(state: RootState) => {
 			const contexts = Object.keys(state.searchContexts).filter((ctx) => state.searchContexts[ctx].mode !== 'system');
 			const currentTab = state.system.activeSearchTab;
@@ -142,9 +143,19 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 			});
 
 			if (contexts.includes(currentTab)) {
-				return { tabs: tss, activeTab: currentTab };
+				const mode = state.searchContexts[currentTab].mode;
+				return {
+					tabs: tss,
+					activeTab: currentTab,
+					shouldRenderHeader: mode !== 'other',
+				};
 			} else {
-				return { tabs: tss, activeTab: contexts.length ? contexts[contexts.length - 1] : undefined };
+				const mode = contexts.length ? state.searchContexts[contexts[contexts.length - 1]] : 'other';
+				return {
+					tabs: tss,
+					activeTab: contexts.length ? contexts[contexts.length - 1] : undefined,
+					shouldRenderHeader: mode !== 'other',
+				};
 			}
 		},
 		(first, second) => {
@@ -157,6 +168,7 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 			key: 'reload',
 			title: 'Reload from first page',
 			icon: 'reload-outlined',
+			disabled: (_, mode) => mode === 'other',
 			onClick: (context, mode) => {
 				dispatch(actions.searchContexts.updateContext({ context, data: { page: 0 } }));
 				if (mode === 'online') {
@@ -170,6 +182,7 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 			key: 'rename',
 			title: 'Rename',
 			icon: 'dash-outlined',
+			disabled: (_, mode) => mode === 'other',
 			onClick: (context) => {
 				dispatch(actions.modals.showModal(ActiveModal.RENAME_TAB, { context }));
 			},
@@ -178,6 +191,7 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 			key: 'edit',
 			title: 'Edit search parameters',
 			icon: 'edit-outlined',
+			disabled: (_, mode) => mode === 'other',
 			onClick: (context) => {
 				dispatch(actions.modals.showModal(ActiveModal.SEARCH_FORM, { context }));
 			},
@@ -186,7 +200,7 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 			key: 'close',
 			title: 'Close',
 			icon: 'close-outlined',
-			disabled: tabs.length <= 1,
+			disabled: () => tabs.length <= 1,
 			onClick: (context) => {
 				dispatch(deletePostsContext({ context }));
 			},
@@ -222,7 +236,7 @@ const Searches: React.FunctionComponent<Props> = (props: Props) => {
 						}
 						style={{ height: '100vh' }}
 					>
-						<PageMenuHeader menu={<SearchResultsMenu context={tab.context} />} title='Image List' />
+						{shouldRenderHeader && <PageMenuHeader menu={<SearchResultsMenu context={tab.context} />} title='Image List' />}
 						<ThumbnailsListTabContent context={tab.context} />
 					</AntTabs.TabPane>
 				))}

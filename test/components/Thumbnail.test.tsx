@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { actions } from '../../src/store';
 import { RootState, AppDispatch } from '../../src/store/types';
@@ -161,6 +161,7 @@ describe('Thumbnail', () => {
 		fireEvent.click(screen.getByRole('img', { name: 'plus' }));
 
 		// then
+		await waitFor(() => expect(screen.getAllByRole('img', { name: 'loading' })).toHaveLength(1));
 		expect(screen.getByRole('img', { name: 'loading' })).not.toBeNull();
 		expect(onClick).toHaveBeenCalledTimes(1);
 		await screen.findByRole('img', { name: 'plus' });
@@ -243,7 +244,6 @@ describe('Thumbnail', () => {
 				tooltip: 'tooltip',
 			},
 		];
-		// const notificationSpy = jest.spyOn(utils, 'openNotificationWithIcon').mockImplementation();
 
 		// when
 		render(
@@ -255,6 +255,25 @@ describe('Thumbnail', () => {
 		// then
 		expect(screen.queryByRole('img', { name: 'plus' })).toBeNull();
 		expect(await screen.findByText('No Data')).not.toBeNull();
+	});
+	it('Renders spinner, calls thumbnailLoader and sets correct src', async () => {
+		// given
+		const index = 1;
+		const expectedSrc = 'asdftest1234';
+		const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
+		thumbnailLoaderMock.mockResolvedValue(expectedSrc);
+
+		// when
+		render(
+			<Provider store={store}>
+				<Thumbnail context='posts' index={index} />
+			</Provider>
+		);
+
+		// then
+		expect(screen.getByRole('img', { name: 'loading' })).toBeInTheDocument();
+		await waitForElementToBeRemoved(() => screen.getByRole('img', { name: 'loading' }));
+		expect(screen.getByTestId('thumbnail-image')).toHaveAttribute('src', expectedSrc);
 	});
 	describe('calls mouse listeners', () => {
 		it('onMouseEnter()', () => {

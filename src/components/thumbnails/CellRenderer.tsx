@@ -52,7 +52,7 @@ const CellRenderer = (cellProps: CellRendererProps): React.ReactElement => {
 
 	if (cellProps.columnIndex === 0 && cellProps.data.renderLoadMore) {
 		return (
-			<div style={{ ...cellProps.style, width: '100%', height: '30px' }}>
+			<div style={{ ...cellProps.style, width: '100%', height: '30px', top: Number(cellProps.style.top) + 10 }}>
 				<StyledLoadMoreButton context={cellProps.data.context} />
 			</div>
 		);

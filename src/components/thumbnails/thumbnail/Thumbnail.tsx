@@ -1,26 +1,18 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { CheckCircleTwoTone } from '@ant-design/icons';
 import { Card, Menu, Dropdown, Empty } from 'antd';
 
+import type { ThumbnailProps } from './types';
+import type { RootState, AppDispatch } from '@store/types';
+import type { ContextMenu } from '@appTypes/components';
+
 import { actions } from '@store';
-import { RootState, AppDispatch, PostsContext } from '@store/types';
-import { Post } from '@appTypes/gelbooruTypes';
-import { CardAction, ContextMenu } from '@appTypes/components';
-import { getThumbnailBorder, thumbnailLoader } from '@util/componentUtils';
+import { getThumbnailBorder } from '@util/componentUtils';
 import { getActions, getDummyActions } from './util';
 
-type Props = {
-	context: PostsContext | string;
-	index: number;
-	contextMenu?: ContextMenu[];
-	actions?: CardAction[];
-	isScrolling?: boolean;
-	onMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
-	onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
-	onMouseMove?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
-};
+import ThumbnailImage from './ThumbnailImage';
 
 type CardProps = {
 	$isActive: string;
@@ -31,7 +23,6 @@ type CardProps = {
 
 const StyledCard = styled(Card)<CardProps>`
 	cursor: pointer;
-
 	&& {
 		border: ${(props): string | undefined => getThumbnailBorder(props.$isActive, props.$theme, props.$selected)};
 		width: 195px;
@@ -53,14 +44,12 @@ const StyledImageContainer = styled.div`
 	padding: 10px;
 `;
 
-const StyledThumbnailImage = styled.img`
-	max-width: 175px;
-	max-height: 175px;
-`;
+const SelectedCheckMark = () => (
+	<CheckCircleTwoTone style={{ fontSize: '20px', position: 'absolute', top: '5px', right: '5px' }} />
+);
 
-const Thumbnail = (props: Props): React.ReactElement => {
+const Thumbnail = (props: ThumbnailProps): React.ReactElement => {
 	const dispatch = useDispatch<AppDispatch>();
-	const imageRef = React.useRef<HTMLImageElement>(null);
 
 	const activeView = useSelector((state: RootState) => state.system.activeView);
 	const post = useSelector((state: RootState) =>
@@ -68,28 +57,19 @@ const Thumbnail = (props: Props): React.ReactElement => {
 			? state.searchContexts[props.context].posts[props.index]
 			: undefined
 	);
-	const isActive = useSelector((state: RootState) => props.index === state.searchContexts[props.context].selectedIndex);
+	const isActive = useSelector((state: RootState) =>
+		(props.index === state.searchContexts[props.context].selectedIndex).toString()
+	);
 	const theme = useSelector((state: RootState) => state.settings.theme);
-	const downloadMissingImage = useSelector((state: RootState) => state.settings.downloadMissingImages);
-
-	useEffect(() => {
-		const ref = imageRef.current;
-		if (ref && post) {
-			let canceled = false;
-			const loader = thumbnailLoader(post, true);
-			loader.then((url) => {
-				if (!canceled) {
-					ref.src = url;
-				}
-			});
-
-			return (): void => {
-				canceled = true;
-			};
-		}
-	}, [dispatch, downloadMissingImage, post]);
 
 	if (!post) return <Empty />;
+
+	const bodyStyle = { height: '195px', width: '195px', padding: '0' };
+	const height = props.actions !== undefined ? '225px' : '197px';
+	const cardActions =
+		props.actions && !props.isScrolling
+			? getActions({ post, context: props.context, actions: props.actions })
+			: getDummyActions(theme);
 
 	const handleThumbnailClick = (event: React.MouseEvent): void => {
 		event.stopPropagation();
@@ -108,28 +88,16 @@ const Thumbnail = (props: Props): React.ReactElement => {
 	const renderThumbNail = (): React.ReactNode => {
 		return (
 			<StyledCard
-				bodyStyle={{ height: '195px', width: '195px', padding: '0' }}
-				$isActive={isActive.toString()}
+				bodyStyle={bodyStyle}
+				$isActive={isActive}
 				$theme={theme}
 				$selected={post.selected}
-				actions={
-					props.actions && !props.isScrolling
-						? getActions({ post, context: props.context, actions: props.actions })
-						: getDummyActions(theme)
-				}
-				$height={props.actions !== undefined ? '225px' : '197px'}
+				actions={cardActions}
+				$height={height}
 			>
-				<StyledImageContainer onClick={(event: React.MouseEvent): void => handleThumbnailClick(event)}>
-					{post.selected && (
-						<CheckCircleTwoTone style={{ fontSize: '20px', position: 'absolute', top: '5px', right: '5px' }} />
-					)}
-					<StyledThumbnailImage
-						ref={imageRef}
-						data-testid='thumbnail-image'
-						onMouseEnter={(e): void => props.onMouseEnter?.(e, post)}
-						onMouseLeave={(e): void => props.onMouseLeave?.(e, post)}
-						onMouseMove={(e): void => props.onMouseMove?.(e, post)}
-					></StyledThumbnailImage>
+				<StyledImageContainer onClick={handleThumbnailClick}>
+					{post.selected && <SelectedCheckMark />}
+					<ThumbnailImage {...props} />
 				</StyledImageContainer>
 			</StyledCard>
 		);

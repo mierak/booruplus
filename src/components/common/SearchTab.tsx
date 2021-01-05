@@ -33,58 +33,70 @@ const SearchTab: React.FunctionComponent<Props> = ({ mode, title, contextMenu, c
 	});
 	const icon = mode === 'online' ? <GlobalOutlined /> : mode === 'offline' ? <DisconnectOutlined /> : null;
 	const tabName = title ? title : selectedTags ? selectedTags[0]?.tag ?? 'New Tab' : 'New Tab';
-	const menu = (
+	const menu = context ? (
 		<Menu>
-			{contextMenu?.map((action) => (
-				<Menu.Item
-					disabled={action.disabled}
-					icon={getIcon(action.icon)}
-					key={action.key}
-					onClick={() => context && action.onClick(context, mode)}
-				>
-					{action.title}
-				</Menu.Item>
-			))}
+			{contextMenu?.map((action) => {
+				return (
+					<Menu.Item
+						disabled={action.disabled?.(context, mode)}
+						icon={getIcon(action.icon)}
+						key={action.key}
+						onClick={() => context && action.onClick(context, mode)}
+					>
+						{action.title}
+					</Menu.Item>
+				);
+			})}
 		</Menu>
+	) : (
+		<></>
 	);
 	const tooltip = hasTooltip && (
 		<>
-			<Row gutter={[8, 8]}>
-				<Col span={8}>Selected Tags:</Col>
-				<Col span={16}>
-					{selectedTags?.length
-						? selectedTags?.map((tag) => (
-								<Tag key={tag.id} color={getTagColor(tag.type)} style={{ marginBottom: '8px' }}>
-									{tag.tag}
-								</Tag>
-						  ))
-						: 'none'}
-				</Col>
-			</Row>
-			<Row gutter={[8, 8]}>
-				<Col span={8}>Excluded Tags:</Col>
-				<Col span={16}>
-					{excludedTags?.length
-						? excludedTags?.map((tag) => (
-								<Tag key={tag.id} color={getTagColor(tag.type)} style={{ marginBottom: '8px' }}>
-									{tag.tag}
-								</Tag>
-						  ))
-						: 'none'}
-				</Col>
-			</Row>
-			<Row gutter={[8, 8]}>
-				<Col span={8}>Page:</Col>
-				<Col span={16}>{page}</Col>
-			</Row>
-			<Row gutter={[8, 8]}>
-				<Col span={8}>Rating:</Col>
-				<Col span={16}>{rating}</Col>
-			</Row>
-			<Row gutter={[8, 8]}>
-				<Col span={8}>Mode:</Col>
-				<Col span={16}>{searchMode}</Col>
-			</Row>
+			{selectedTags && selectedTags.length > 0 && (
+				<Row gutter={[8, 8]}>
+					<Col span={8}>Selected Tags:</Col>
+					<Col span={16}>
+						{selectedTags?.length
+							? selectedTags?.map((tag) => (
+									<Tag key={tag.id} color={getTagColor(tag.type)} style={{ marginBottom: '8px' }}>
+										{tag.tag}
+									</Tag>
+							  ))
+							: 'none'}
+					</Col>
+				</Row>
+			)}
+			{excludedTags && excludedTags.length > 0 && (
+				<Row gutter={[8, 8]}>
+					<Col span={8}>Excluded Tags:</Col>
+					<Col span={16}>
+						{excludedTags?.length
+							? excludedTags?.map((tag) => (
+									<Tag key={tag.id} color={getTagColor(tag.type)} style={{ marginBottom: '8px' }}>
+										{tag.tag}
+									</Tag>
+							  ))
+							: 'none'}
+					</Col>
+				</Row>
+			)}
+			{mode !== 'other' && (
+				<>
+					<Row gutter={[8, 8]}>
+						<Col span={8}>Page:</Col>
+						<Col span={16}>{page}</Col>
+					</Row>
+					<Row gutter={[8, 8]}>
+						<Col span={8}>Rating:</Col>
+						<Col span={16}>{rating}</Col>
+					</Row>
+					<Row gutter={[8, 8]}>
+						<Col span={8}>Mode:</Col>
+						<Col span={16}>{searchMode}</Col>
+					</Row>
+				</>
+			)}
 		</>
 	);
 

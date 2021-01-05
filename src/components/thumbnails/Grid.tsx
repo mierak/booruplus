@@ -25,11 +25,11 @@ type Props = {
 	onCellMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
 	onCellMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
 	onCellMouseMove?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post) => void;
-}
+};
 
 type ContainerProps = {
 	headerHeight?: number;
-}
+};
 
 const Container = styled.div<ContainerProps>`
 	width: 100%;
@@ -37,39 +37,41 @@ const Container = styled.div<ContainerProps>`
 	height: ${(props): string => `calc(100% - ${props.headerHeight ?? 0}px)`};
 `;
 
-const innerElementType = forwardRef<HTMLDivElement, { style: CSSProperties; rest: unknown }>(({ style, ...rest }, ref) => {
-	const dispatch = useDispatch<AppDispatch>();
+const innerElementType = forwardRef<HTMLDivElement, { style: CSSProperties; rest: unknown }>(
+	({ style, ...rest }, ref) => {
+		const dispatch = useDispatch<AppDispatch>();
 
-	// Hack to get context out of itemData
-	const children: { props: { data: { context: PostsContext } } }[] =
-		(rest.children as { props: { data: { context: PostsContext } } }[]) ?? [];
-	const context = children[0]?.props?.data?.context ?? 'default';
+		// Hack to get context out of itemData
+		const children: { props: { data: { context: PostsContext } } }[] =
+			(rest.children as { props: { data: { context: PostsContext } } }[]) ?? [];
+		const context = children[0]?.props?.data?.context ?? 'default';
 
-	const onClick = (event: React.MouseEvent): void => {
-		if (!event.ctrlKey && !event.shiftKey) {
-			dispatch(actions.searchContexts.unselectAllPosts({ context: context }));
-		}
-	};
-	return (
-		<div
-			ref={ref}
-			style={{
-				...style,
-				height: `${parseFloat(style.height?.toString() ?? '') - 170}px`,
-				width: isNaN(parseInt(style.height?.toString() ?? '0')) ? '0px' : style.height,
-			}}
-			{...rest}
-			onClick={onClick}
-		/>
-	);
-});
+		const onClick = (event: React.MouseEvent): void => {
+			if (!event.ctrlKey && !event.shiftKey) {
+				dispatch(actions.searchContexts.unselectAllPosts({ context: context }));
+			}
+		};
+		return (
+			<div
+				ref={ref}
+				style={{
+					...style,
+					height: `${parseFloat(style.height?.toString() ?? '') - 170}px`,
+					width: isNaN(parseInt(style.height?.toString() ?? '0')) ? '0px' : style.height,
+				}}
+				{...rest}
+				onClick={onClick}
+			/>
+		);
+	}
+);
 innerElementType.displayName = 'innerElementType';
 
 const gridStyle: React.CSSProperties = {
 	overflowX: 'hidden',
 	marginLeft: '10px',
-	marginTop: '10px',
-	marginBottom: '10px',
+	// marginTop: '10px',
+	// marginBottom: '10px',
 	outline: 'none',
 };
 

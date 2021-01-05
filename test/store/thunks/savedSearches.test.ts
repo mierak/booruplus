@@ -13,6 +13,7 @@ import * as onlineSearchFormThunk from '../../../src/store/thunks/onlineSearches
 import * as downloadedSearchFormThunk from '../../../src/store/thunks/offlineSearches';
 import { mSavedSearch, mTag, mPost } from '../../helpers/test.helper';
 import { mState } from '../../helpers/store.helper';
+import { saveThumbnailMock } from '../../helpers/imageBus.mock';
 
 const mockStore = configureStore<RootState, AppDispatch>([thunk]);
 jest.mock('../../../src/service/apiService', () => {
@@ -93,6 +94,9 @@ describe('thunks/savedSearches', () => {
 				{ postId: post.id, blob },
 				{ postId: post2.id, blob },
 			]);
+			expect(saveThumbnailMock).toHaveBeenCalledTimes(2);
+			expect(mockedDb.posts.put).toBeCalledWith(post);
+			expect(mockedDb.posts.put).toBeCalledWith(post2);
 			expect(fetchMock.mock.calls.length).toBe(3);
 			expect(fetchMock.mock.calls[1][0]).toEqual(url);
 			expect(fetchMock.mock.calls[2][0]).toEqual(url2);

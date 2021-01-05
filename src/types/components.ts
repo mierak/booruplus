@@ -42,7 +42,7 @@ export type TabAction = {
 	key: string;
 	title: string;
 	icon: Icon;
-	disabled?: boolean;
+	disabled?: (context: string, mode: ContextMode) => boolean;
 	onClick: (context: string, mode: ContextMode) => void;
 };
 

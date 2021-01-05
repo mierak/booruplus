@@ -7,6 +7,7 @@ import type { Rating, SavedSearch, Tag, Post } from '@appTypes/gelbooruTypes';
 import { db } from '@db';
 import { getThumbnailUrl } from '@service/webService';
 import { getActionLogger } from '@util/logger';
+import { saveThumbnail } from '@util/imageIpcUtils';
 import { NoActiveSavedSearchError, SavedSearchAlreadyExistsError } from '@errors/savedSearchError';
 
 import { initPostsContext } from '../commonActions';
@@ -122,6 +123,8 @@ export const addPreviewsToSavedSearch = createAsyncThunk<
 			const previewUrl = getThumbnailUrl(post.directory, post.hash);
 			logger.debug('Creating blob from URL', previewUrl);
 			const blob = await (await fetch(previewUrl)).blob();
+			await saveThumbnail(post);
+			await db.posts.put(post);
 			return { blob, postId: post.id };
 		});
 

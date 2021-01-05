@@ -31,10 +31,10 @@ Object.defineProperty(window, 'URL', {
 	},
 });
 Object.defineProperty((global as any).window.HTMLMediaElement.prototype, 'play', {
-	get: function() {
+	get: function () {
 		return this._play ?? jest.fn();
 	},
-	set: function(value: any): void {
+	set: function (value: any): void {
 		this._play = value;
 	},
 });
@@ -48,24 +48,11 @@ import { doDatabaseMock } from '../helpers/database.mock';
 doDatabaseMock();
 
 import {
-	deleteImageMock,
-	saveImageMock,
-	loadImageMock,
-	loadThumbnailMock,
-	saveThumbnailMock,
 	thumbnailLoaderMock,
 	imageLoaderMock,
 	mostViewedLoaderMock,
 	previewLoaderMock,
 } from '../helpers/imageBus.mock';
-
-jest.mock('../../src/util/imageIpcUtils', () => ({
-	loadImage: loadImageMock,
-	saveImage: saveImageMock,
-	deleteImage: deleteImageMock,
-	loadThumbnail: loadThumbnailMock,
-	saveThumbnail: saveThumbnailMock,
-}));
 
 jest.mock('../../src/util/componentUtils', () => {
 	const orig = jest.requireActual('../../src/util/componentUtils');

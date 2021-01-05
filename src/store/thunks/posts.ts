@@ -6,7 +6,7 @@ import type { Post, PostSearchOptions, Tag } from '@appTypes/gelbooruTypes';
 
 import { db } from '@db';
 import * as api from '@service/apiService';
-import { deleteImage, saveImage } from '@util/imageIpcUtils';
+import { deleteImage, saveImage, saveThumbnail } from '@util/imageIpcUtils';
 import { delay } from '@util/utils';
 import { getActionLogger } from '@util/logger';
 import { thumbnailCache } from '@util/objectUrlCache';
@@ -73,7 +73,21 @@ export const fetchPostsByIds = createAsyncThunk<Post[], { context: PostsContext 
 		thumbnailCache.revokeAll();
 		const logger = getActionLogger(fetchPostsByIds);
 		logger.debug('Getting', ids.length, 'posts from DB');
-		return db.posts.getBulk(ids);
+		const postsFromDb = await db.posts.getBulk(ids);
+		const result = await Promise.all(
+			postsFromDb.map(async (post, index) => {
+				if (!post) {
+					const p = await api.getPostById(ids[index]);
+					await db.posts.put(p);
+					await saveThumbnail(p);
+					return p;
+				} else {
+					return post;
+				}
+			})
+		);
+
+		return result;
 	}
 );
 

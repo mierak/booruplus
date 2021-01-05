@@ -1,4 +1,5 @@
 import { mPost } from '../helpers/test.helper';
+jest.mock('../../src/util/imageIpcUtils', () => jest.requireActual('../../src/util/imageIpcUtils'));
 import { loadImage } from '../../src/util/imageIpcUtils';
 import { IpcInvokeChannels } from '../../src/types/processDto';
 
