@@ -37,7 +37,7 @@ const ControllableImage: React.FunctionComponent<Props> = ({ className, post, sh
 
 	const containerRef = useRef<HTMLDivElement>(null);
 	const viewportRef = useRef<HTMLCanvasElement>(null);
-	const renderer = useState<Renderer>(new Renderer())[0];
+	const [renderer] = useState<Renderer>(() => new Renderer());
 
 	const initViewport = useCallback(
 		(viewport: HTMLCanvasElement, container: HTMLDivElement): void => {
@@ -153,7 +153,7 @@ const ControllableImage: React.FunctionComponent<Props> = ({ className, post, sh
 			ro.observe(containerRef.current);
 
 			return (): void => {
-				renderer.removeListeners(); // TODO change to only add listeners once
+				renderer.removeListeners();
 				ro.disconnect();
 			};
 		}
@@ -167,17 +167,21 @@ const ControllableImage: React.FunctionComponent<Props> = ({ className, post, sh
 			let canceled = false;
 			const img = new Image();
 			img.onload = (): void => {
-				dispatch(actions.loadingStates.setFullImageLoading(false));
-				initViewport(viewport, container);
-				renderer.renderImage(img);
+				if (!canceled) {
+					dispatch(actions.loadingStates.setFullImageLoading(false));
+					initViewport(viewport, container);
+					renderer.renderImage(img);
+				}
 			};
 			img.onerror = (): void => {
-				dispatch(actions.loadingStates.setFullImageLoading(false));
-				openNotificationWithIcon(
-					'error',
-					'Image load failed',
-					'Could not load image. This could be caused by a network error or the image being deleted from the server.'
-				);
+				if (!canceled) {
+					dispatch(actions.loadingStates.setFullImageLoading(false));
+					openNotificationWithIcon(
+						'error',
+						'Image load failed',
+						'Could not load image. This could be caused by a network error or the image being deleted from the server.'
+					);
+				}
 			};
 			const loader = imageLoader(post, downloadMissingImage);
 			loader.then((url) => {
@@ -187,6 +191,7 @@ const ControllableImage: React.FunctionComponent<Props> = ({ className, post, sh
 			});
 			return (): void => {
 				canceled = true;
+				img.src = '';
 			};
 		}
 	}, [dispatch, downloadMissingImage, initViewport, post, renderer]);

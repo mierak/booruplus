@@ -72,6 +72,7 @@ const Video: React.FunctionComponent<Props> = ({ post, className, context }: Pro
 
 			return (): void => {
 				canceled = true;
+				source.setAttribute('src', '');
 			};
 		}
 	}, [dispatch, downloadMissingImage, post]);

@@ -80,6 +80,7 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 
 			return (): void => {
 				canceled = true;
+				ref.src = '';
 			};
 		}
 	}, [dispatch, downloadMissingImage, props.post]);
