@@ -186,7 +186,6 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 		}
 	};
 
-	console.log('render')
 	return (
 		<Container
 			ref={containerRef}
