@@ -6,7 +6,6 @@ import type { TreeNode } from '@store/types';
 export const addChildToNode = async (parentKey: number, title: string): Promise<number> => {
 	const parent = await db.favorites.get(parentKey);
 	if (parent) {
-		//TODO handle duplicate titles/keys
 		const newNode: FavoritesTreeNode = {
 			title,
 			childrenKeys: [],

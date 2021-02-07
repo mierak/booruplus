@@ -65,12 +65,6 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 		renderThumbnailList();
 	}, [activeDirectory, dispatch]);
 
-	useEffect(() => {
-		return (): void => {
-			dispatch(thunks.settings.saveSettings()); // TODO call only when sider width changes
-		};
-	}, [dispatch]);
-
 	const handleBlacklist = async (post: Post): Promise<void> => {
 		await dispatch(thunks.posts.blacklistPosts({ context, posts: [post] }));
 		await dispatch(thunks.favorites.removePostsFromActiveDirectory([post]));
@@ -168,6 +162,7 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 			newWidth = containerRef.current.clientWidth + containerOffsetX - event.clientX;
 		}
 		dispatch(actions.settings.setFavoritesSiderWidth(newWidth - 2));
+		dispatch(thunks.settings.saveSettings());
 
 		dividerRef.current.style.backgroundColor = '';
 		dividerRef.current.style.position = 'relative';
@@ -191,6 +186,7 @@ const Favorites: React.FunctionComponent<Props> = (props: Props) => {
 		}
 	};
 
+	console.log('render')
 	return (
 		<Container
 			ref={containerRef}
