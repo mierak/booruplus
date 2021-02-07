@@ -17,9 +17,13 @@ import {
 	formatPercentProgress,
 	postParser,
 	parseVersion,
+	withTimeout,
 } from '@util/utils';
 import { mTag } from '../helpers/test.helper';
 import { Post, PostDto, Rating, Tag } from '@appTypes/gelbooruTypes';
+import { enableFetchMocks } from 'jest-fetch-mock';
+
+enableFetchMocks();
 
 describe('utils/utils', () => {
 	describe('capitalize()', () => {
@@ -553,6 +557,38 @@ describe('utils/utils', () => {
 			// then
 			expect(result1).toBe(true);
 			expect(result2).toBe(false);
+		});
+	});
+	describe('withTimeout()', () => {
+		beforeEach(() => {
+			fetchMock.resetMocks();
+		});
+		it('Returns fetch response', async () => {
+			// given
+			fetchMock.mockResponse('res123');
+
+			// when
+			const result = await withTimeout(async (signal) => {
+				return fetch('', { signal });
+			});
+
+			// then
+			expect(await result.text()).toBe('res123');
+		});
+		it('Aborts request when timeout is reached', async () => {
+			// given
+			jest.useFakeTimers();
+			fetchMock.mockResponse('');
+
+			// when
+			await withTimeout(async (signal) => {
+				const r = fetch('', { signal });
+				jest.runAllTimers();
+				return r;
+			}, 1);
+
+			// then
+			expect(fetchMock.mock.calls[0][1]?.signal?.aborted).toBeTruthy();
 		});
 	});
 });

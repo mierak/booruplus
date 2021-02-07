@@ -21,7 +21,8 @@ export type Icon =
 	| 'reload-outlined'
 	| 'edit-outlined'
 	| 'dash-outlined'
-	| 'disconnected-outlined';
+	| 'disconnected-outlined'
+	| 'file-outlined';
 
 export type ContextMenu = {
 	title: string;

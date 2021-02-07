@@ -63,6 +63,14 @@ const Gif: React.FunctionComponent<Props> = (props: Props) => {
 			ref.onload = (): void => {
 				dispatch(actions.loadingStates.setFullImageLoading(false));
 			};
+			ref.onerror = (): void => {
+				dispatch(actions.loadingStates.setFullImageLoading(false));
+				openNotificationWithIcon(
+					'error',
+					'Image load failed',
+					'Could not load image. This could be caused by a network error or the image being deleted from the server.'
+				);
+			};
 			const loader = imageLoader(props.post, downloadMissingImage);
 			loader.then((url) => {
 				if (!canceled) {

@@ -139,8 +139,7 @@ export const validateApiKey = (key?: string): boolean => {
 };
 
 export const toAscii = (c: string): number => {
-	if (c.length > 1)
-		throw new Error('Cannot convert character to ASCII because supplied string has more than 1 character');
+	if (c.length > 1) throw new Error('Cannot convert character to ASCII because supplied string has more than 1 character');
 	return c.charCodeAt(0);
 };
 
@@ -221,10 +220,7 @@ type RowColFromIndexParams = {
 	index: number;
 	columns: number;
 };
-export const getRowColFromIndex = ({
-	index,
-	columns,
-}: RowColFromIndexParams): { rowIndex: number; columnIndex: number } => {
+export const getRowColFromIndex = ({ index, columns }: RowColFromIndexParams): { rowIndex: number; columnIndex: number } => {
 	return {
 		rowIndex: Math.floor(index / columns),
 		columnIndex: index % columns,
@@ -236,9 +232,7 @@ export const addThousandsSeparator = (number: number, separator?: string): strin
 };
 
 export const formatPercentProgress = (done: number, total: number): string => {
-	return `${addThousandsSeparator(Math.round(done / 1024 / 1024))} MB / ${addThousandsSeparator(
-		Math.round(total / 1024 / 1024)
-	)} MB`;
+	return `${addThousandsSeparator(Math.round(done / 1024 / 1024))} MB / ${addThousandsSeparator(Math.round(total / 1024 / 1024))} MB`;
 };
 
 type Version = {
@@ -257,6 +251,21 @@ const compareVersions = (v1: [number, number, number], v2: [number, number, numb
 		return v1[1] - v2[1];
 	}
 	return v1[2] - v2[2];
+};
+
+export const withTimeout = async <R extends unknown>(func: (signal: AbortSignal) => Promise<R>, timeout = 10000, fallback?: R): Promise<R> => {
+	const controller = new AbortController();
+	const timeoutId = setTimeout(() => controller.abort(), timeout);
+	try {
+		return await func(controller.signal);
+	} catch (err) {
+		if (fallback && err.name === 'AbortError') {
+			return fallback;
+		}
+		throw err;
+	} finally {
+		clearTimeout(timeoutId);
+	}
 };
 
 export const parseVersion = (version: string): Version => {

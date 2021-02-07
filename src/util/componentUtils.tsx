@@ -17,6 +17,7 @@ import {
 	EditOutlined,
 	DashOutlined,
 	DisconnectOutlined,
+	FileOutlined
 } from '@ant-design/icons';
 
 import { Icon } from '@appTypes/components';
@@ -62,6 +63,8 @@ export const getIcon = (icon: Icon, onClick?: (() => void) | undefined): React.R
 			return <EditOutlined onClick={onClick} />;
 		case 'dash-outlined':
 			return <DashOutlined onClick={onClick} />;
+		case 'file-outlined':
+			return <FileOutlined onClick={onClick} />;
 		case 'loading-outlined':
 			return <LoadingOutlined />;
 	}

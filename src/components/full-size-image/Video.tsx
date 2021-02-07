@@ -54,6 +54,14 @@ const Video: React.FunctionComponent<Props> = ({ post, className, context }: Pro
 			source.onload = (): void => {
 				dispatch(actions.loadingStates.setFullImageLoading(false));
 			};
+			source.onerror = (): void => {
+				dispatch(actions.loadingStates.setFullImageLoading(false));
+				openNotificationWithIcon(
+					'error',
+					'Video load failed',
+					'Could not load image. This could be caused by a network error or the image being deleted from the server.'
+				);
+			};
 			const loader = imageLoader(post, downloadMissingImage);
 			loader.then((result) => {
 				if (!canceled) {

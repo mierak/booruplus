@@ -98,6 +98,9 @@ const systemSlice = createSlice({
 		builder.addCase(thunks.tags.loadAllWithLimitAndOffset.fulfilled, (state) => {
 			state.isTagTableLoading = false;
 		});
+		builder.addCase(thunks.tags.loadAllWithLimitAndOffset.rejected, (state) => {
+			state.isTagTableLoading = false;
+		});
 		builder.addCase(thunks.tags.searchTagOnline.pending, (state) => {
 			state.activeView = 'searches';
 		});

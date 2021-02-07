@@ -1,7 +1,8 @@
 import { Post, PostDto, Tag, PostSearchOptions, ReleaseResponse } from '@appTypes/gelbooruTypes';
-import { delay, escapeTag, postParser } from '@util/utils';
+import { delay, escapeTag, postParser, withTimeout } from '@util/utils';
 import { GELBOORU_URL } from './webService';
 import { getApiLogger } from '@util/logger';
+import * as urlBuilder from './gelbooruUrlBuilder';
 
 export const GITHUB_LATEST_RELEASE_ENDPOINT = 'https://api.github.com/repos/mierak/booruplus/releases/latest';
 export const BASE_URL = `${GELBOORU_URL}/index.php?page=dapi&q=index&json=1`;
@@ -10,71 +11,52 @@ export const BASE_POST_URL = `${BASE_URL}&s=post`;
 
 const parsePost = postParser();
 
-export const getSortOptionString = (options: PostSearchOptions): string => {
-	if (!options.sort || !options.sortOrder) return '';
-
-	switch (options.sort) {
-		case 'date-updated':
-			return `sort:updated:${options.sortOrder}`;
-		case 'rating':
-			return `sort:rating:${options.sortOrder}`;
-		default:
-			return '';
-	}
-};
-
-export const getPostsForTags = async (
-	tags: string[],
-	options: PostSearchOptions = {},
-	excludedTags?: string[]
-): Promise<Post[]> => {
+export const getPostsForTags = async (tags: string[], options: PostSearchOptions = {}, excludedTags?: string[]): Promise<Post[]> => {
 	const logger = getApiLogger('getPostsForTags');
-	//handle Optional params
-	if (!options.limit) options.limit = 100;
-	if (options.rating && options.rating !== 'any') tags.push(`rating:${options.rating}`);
 
-	//construct API URL
-	let url = BASE_POST_URL;
-	options.apiKey && (url = url.concat(options.apiKey));
-	url = url.concat(`&limit=${options.limit}`);
-	if (options.page) url += `&pid=${options.page}`;
-	url = url.concat(`&tags=${tags.join(' ')}`);
+	const { apiKey, limit, page: pid, rating, sort, sortOrder } = options;
+	const urlParams = { tags, excludedTags, limit, pid, rating, sort, sortOrder, apiKey };
+	const url = urlBuilder.gelbooruUrlBuilder('post', urlParams);
 
-	if (excludedTags && excludedTags.length > 0) url = url.concat(` -${excludedTags.join(' -')}`);
+	try {
+		logger.debug('Request to url', apiKey ? url.replace(apiKey, '&api_key=REDACTED') : url);
 
-	if (options.sort && options.sortOrder) url = url.concat(' ' + getSortOptionString(options));
+		const response = (await withTimeout(async (signal) => {
+			const res = await fetch(url, { signal });
+			logger.debug('Response', res.status, res.statusText);
 
-	logger.debug('Calling API url', options.apiKey ? url.replace(options.apiKey, '&api_key=REDACTED') : url);
-	const response = await fetch(url);
-	if (!response.ok) {
-		logger.error(response.statusText);
-		throw new Error(response.statusText);
+			return res.json();
+		})) as PostDto[];
+
+		return response.map((postDto) => parsePost(postDto));
+	} catch (err) {
+		logger.error(err);
+		throw err;
 	}
-	logger.debug('Response', response.status, response.statusText);
-
-	const responsePosts: PostDto[] = await response.json();
-	const posts = responsePosts.map((postDto) => parsePost(postDto));
-	return posts;
 };
 
 export const getPostById = async (id: number, apiKey?: string): Promise<Post> => {
 	const logger = getApiLogger('getPostById');
-	let url = BASE_POST_URL;
-	apiKey && (url = url.concat(apiKey));
-	url = url.concat(`&id=${id}`);
 
-	logger.debug('Calling API url', apiKey ? url.replace(apiKey, '&api_key=REDACTED') : url);
-	const response = await fetch(url);
-	if (!response.ok) {
-		logger.error(response.statusText);
-		throw new Error(response.statusText);
+	const url = urlBuilder.gelbooruUrlBuilder('post', { id, apiKey });
+
+	try {
+		logger.debug('Calling API url', apiKey ? url.replace(apiKey, '&api_key=REDACTED') : url);
+
+		const response = (await withTimeout(async (signal) => {
+			const res = await fetch(url, { signal });
+			logger.debug('Response', res.status, res.statusText);
+
+			return res.json();
+		})) as PostDto[];
+
+		if (response.length < 1) throw new Error('No post found');
+
+		return parsePost(response[0]);
+	} catch (err) {
+		logger.error(err);
+		throw err;
 	}
-	logger.debug('Response', response.status, response.statusText);
-
-	const posts: PostDto[] = await response.json();
-	if (posts.length < 1) throw new Error('No post found');
-
-	return parsePost(posts[0]);
 };
 
 export const getTagsByNames = async (names: string[], apiKey?: string): Promise<Tag[]> => {
@@ -87,19 +69,17 @@ export const getTagsByNames = async (names: string[], apiKey?: string): Promise<
 
 	const tagsFromApi: Tag[][] = [];
 	for (const batch of batches) {
-		let url = BASE_TAG_URL;
-		apiKey && (url = url.concat(apiKey));
-		url = url.concat(`&names=${escapeTag(batch.join(' '))}`);
+		const url = urlBuilder.gelbooruUrlBuilder('tag', { names: batch, apiKey });
 
 		logger.debug('Calling API url', apiKey ? url.replace(apiKey, '&api_key=REDACTED') : url);
-		const response = await fetch(url);
-		if (!response.ok) {
-			logger.error(response.statusText);
-			throw new Error(response.statusText);
-		}
-		logger.debug('Response', response.status, response.statusText);
-		const tags: Tag[] = await response.json();
-		tagsFromApi.push(tags);
+		const response = (await withTimeout(async (signal) => {
+			const res = await fetch(url, { signal });
+			logger.debug('Response', res.status, res.statusText);
+
+			return res.json();
+		})) as Tag[];
+
+		tagsFromApi.push(response);
 		await delay(2000);
 	}
 
@@ -113,26 +93,30 @@ export const getTagsByPattern = async (pattern: string, apiKey?: string): Promis
 	url = url.concat(`&limit=30&name_pattern=%${escapeTag(pattern)}%`);
 
 	logger.debug('Calling API url', apiKey ? url.replace(apiKey, '&api_key=REDACTED') : url);
-	const response = await fetch(url);
-	if (!response.ok) {
-		logger.error(response.statusText);
-		throw new Error(response.statusText);
-	}
-	logger.debug('Response', response.status, response.statusText);
+	const response = (await withTimeout(async (signal) => {
+		const res = await fetch(url, { signal });
+		logger.debug('Response', res.status, res.statusText);
 
-	const tags: Tag[] = await response.json();
-	return tags;
+		return res.json();
+	})) as Tag[];
+
+	return response;
 };
 
 export const getLatestAppVersion = async (): Promise<ReleaseResponse | undefined> => {
 	try {
-		const response = await fetch(GITHUB_LATEST_RELEASE_ENDPOINT, {
-			headers: {
-				Accept: 'application/vnd.github.v3+json',
-			},
-		});
-		const json: ReleaseResponse = await response.json();
-		return json;
+		const response = (await withTimeout(async (signal) => {
+			const res = await fetch(GITHUB_LATEST_RELEASE_ENDPOINT, {
+				signal,
+				headers: {
+					Accept: 'application/vnd.github.v3+json',
+				},
+			});
+
+			return res.json();
+		})) as ReleaseResponse;
+
+		return response;
 	} catch (err) {
 		window.log.error('Error while checking for updates. Could not get releases.', err);
 	}

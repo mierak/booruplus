@@ -4,7 +4,8 @@
 - Added loader for each separate thumbnail
 - Saved Searches now show in tabs
 - BUG FIX: Fix scroll bar not appearing on Saved Searches page
-- BUG FIX: Fix post not being saved to db when adding it  as saved search preview
+- BUG FIX: Fix post not being saved to db when adding it as saved search preview
+- BUG FIX: Fixed several loaders not disappearing on network fail
 
 ## 0.2.0 - Now you are thinking with tabs - 1.1.2020
 - NEW FEATURE: Browser-like tabs for searches. You can now have multiple searches at once. Other features, like searching a specific tags or opening posts from download task now open in a new tab

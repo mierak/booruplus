@@ -171,6 +171,14 @@ const ControllableImage: React.FunctionComponent<Props> = ({ className, post, sh
 				initViewport(viewport, container);
 				renderer.renderImage(img);
 			};
+			img.onerror = (): void => {
+				dispatch(actions.loadingStates.setFullImageLoading(false));
+				openNotificationWithIcon(
+					'error',
+					'Image load failed',
+					'Could not load image. This could be caused by a network error or the image being deleted from the server.'
+				);
+			};
 			const loader = imageLoader(post, downloadMissingImage);
 			loader.then((url) => {
 				if (!canceled) {

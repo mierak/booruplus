@@ -2,7 +2,6 @@ import {
 	BASE_TAG_URL,
 	BASE_POST_URL,
 	getTagsByPattern,
-	getSortOptionString,
 	getPostById,
 	getTagsByNames,
 	getPostsForTags,
@@ -12,6 +11,7 @@ import { enableFetchMocks } from 'jest-fetch-mock';
 
 import * as utils from '../../src/util/utils';
 import { PostSearchOptions, Rating } from '@appTypes/gelbooruTypes';
+import { getSortOptionString } from '@service/gelbooruUrlBuilder';
 
 enableFetchMocks();
 
@@ -36,17 +36,6 @@ describe('apiService', () => {
 			fetchMock.mockResponseOnce(
 				'[{"id":"1673","tag":"legs_up","count":"27840","type":"tag","ambiguous":"0"},{"id":"6352","tag":"hitomaru","count":"667","type":"artist","ambiguous":"0"}]'
 			);
-		});
-		it('Throws error on fetch error', async () => {
-			// given
-			fetchMock.resetMocks();
-			fetchMock.mockResponseOnce('', { status: 404, statusText: 'Not Found' });
-			const pattern = 'test';
-
-			// when
-
-			// then
-			await expect(getTagsByPattern(pattern)).rejects.toThrow('Not Found');
 		});
 		it('Calls the correct endpoint with correct parameters', async () => {
 			// given
@@ -80,9 +69,7 @@ describe('apiService', () => {
 		it('Calls the correct endpoint with escaped tag', async () => {
 			// given
 			const pattern1 = 'test+test';
-			const expectedEndpoint1 = `https://gelbooru.com/index.php?page=dapi&q=index&json=1&s=tag&limit=30&name_pattern=%${utils.escapeTag(
-				pattern1
-			)}%`;
+			const expectedEndpoint1 = `https://gelbooru.com/index.php?page=dapi&q=index&json=1&s=tag&limit=30&name_pattern=%${utils.escapeTag(pattern1)}%`;
 
 			// when
 			await getTagsByPattern(pattern1);
@@ -113,21 +100,10 @@ describe('apiService', () => {
 					'"file_url":"https://img2.gelbooru.com/images/ef/f5/eff52c6a6a1c04f937a4d2d3f8a6db44.jpg","created_at":"Mon Jul 16 00:35:32 -0500 2007"}]'
 			);
 		});
-		it('Throws error on fetch error', async () => {
-			// given
-			fetchMock.resetMocks();
-			fetchMock.mockResponseOnce('', { status: 404, statusText: 'Not Found' });
-			const tags: string[] = ['1', '2', '3'];
-
-			// when
-
-			// then
-			await expect(getPostsForTags(tags)).rejects.toThrow('Not Found');
-		});
 		it('Correctly adds api key', async () => {
 			// given
 			const tags: string[] = ['1', '2', '3'];
-			const expected1 = `${BASE_POST_URL}${apiKey}&limit=100&tags=${tags.join(' ')}`;
+			const expected1 = encodeURI(`${BASE_POST_URL}&tags=${tags.join(' ')}${apiKey}`);
 
 			// when
 			await getPostsForTags(tags, { apiKey });
@@ -139,7 +115,7 @@ describe('apiService', () => {
 			// given
 			const tags: string[] = ['1', '2', '3'];
 			const excludedTags: string[] = ['4', '5', '6'];
-			const expected1 = `${BASE_POST_URL}&limit=100&tags=${tags.join(' ')} -${excludedTags.join(' -')}`;
+			const expected1 = encodeURI(`${BASE_POST_URL}&tags=${tags.join(' ')} -${excludedTags.join(' -')}`);
 
 			// when
 			await getPostsForTags(tags, {}, excludedTags);
@@ -151,7 +127,7 @@ describe('apiService', () => {
 			// given
 			const tags: string[] = ['1', '2', '3'];
 			const limit = 50;
-			const expected1 = `${BASE_POST_URL}&limit=${limit}&tags=${tags.join(' ')}`;
+			const expected1 = encodeURI(`${BASE_POST_URL}&limit=${limit}&tags=${tags.join(' ')}`);
 
 			// when
 			await getPostsForTags(tags, { limit });
@@ -163,7 +139,7 @@ describe('apiService', () => {
 			// given
 			const tags: string[] = ['1', '2', '3'];
 			const page = 5;
-			const expected1 = `${BASE_POST_URL}&limit=100&pid=${page}&tags=${tags.join(' ')}`;
+			const expected1 = encodeURI(`${BASE_POST_URL}&pid=${page}&tags=${tags.join(' ')}`);
 
 			// when
 			await getPostsForTags(tags, { page });
@@ -175,7 +151,7 @@ describe('apiService', () => {
 			// given
 			const tags: string[] = ['1', '2', '3'];
 			const page = 5;
-			const expected1 = `${BASE_POST_URL}&limit=100&pid=${page}&tags=${tags.join(' ')}`;
+			const expected1 = encodeURI(`${BASE_POST_URL}&pid=${page}&tags=${tags.join(' ')}`);
 
 			// when
 			await getPostsForTags(tags, { page });
@@ -187,7 +163,7 @@ describe('apiService', () => {
 			// given
 			const tags: string[] = ['1', '2', '3'];
 			const rating: Rating = 'explicit';
-			const expected1 = `${BASE_POST_URL}&limit=100&tags=${tags.join(' ')} rating:${rating}`;
+			const expected1 = encodeURI(`${BASE_POST_URL}&tags=${tags.join(' ')} rating:${rating}`);
 
 			// when
 			await getPostsForTags(tags, { rating });
@@ -203,7 +179,7 @@ describe('apiService', () => {
 				sortOrder: 'desc',
 			};
 			const sort = getSortOptionString(sortOpts);
-			const expected1 = `${BASE_POST_URL}&limit=100&tags=${tags.join(' ')} ${sort}`;
+			const expected1 = encodeURI(`${BASE_POST_URL}&tags=${tags.join(' ')} ${sort}`);
 
 			// when
 			await getPostsForTags(tags, sortOpts);
@@ -223,9 +199,9 @@ describe('apiService', () => {
 				rating: 'explicit',
 			};
 			const sort = getSortOptionString(sortOpts);
-			const expected1 = `${BASE_POST_URL}${apiKey}&limit=${sortOpts.limit}&pid=${sortOpts.page}&tags=${tags.join(
-				' '
-			)} rating:${sortOpts.rating} ${sort}`;
+			const expected1 = encodeURI(
+				`${BASE_POST_URL}&limit=${sortOpts.limit}&pid=${sortOpts.page}&tags=${tags.join(' ')} rating:${sortOpts.rating} ${sort}${apiKey}`
+			);
 
 			// when
 			await getPostsForTags(tags, sortOpts);
@@ -241,21 +217,10 @@ describe('apiService', () => {
 				'[{"id":"1673","tag":"legs_up","count":"27840","type":"tag","ambiguous":"0"},{"id":"6352","tag":"hitomaru","count":"667","type":"artist","ambiguous":"0"}]'
 			);
 		});
-		it('Throws error on fetch error', async () => {
-			// given
-			fetchMock.resetMocks();
-			fetchMock.mockResponseOnce('', { status: 404, statusText: 'Not Found' });
-			const tags: string[] = ['1', '2', '3'];
-
-			// when
-
-			// then
-			await expect(getTagsByNames(tags)).rejects.toThrow('Not Found');
-		});
 		it('Correctly adds api key', async () => {
 			// given
 			const tags: string[] = ['1', '2', '3'];
-			const expected1 = `${BASE_TAG_URL}${apiKey}&names=${tags.slice(0, 100).join(' ')}`;
+			const expected1 = encodeURI(`${BASE_TAG_URL}&names=${tags.slice(0, 100).join(' ')}${apiKey}`);
 
 			// when
 			await getTagsByNames(tags, apiKey);
@@ -269,7 +234,7 @@ describe('apiService', () => {
 			for (let i = 0; i < 500; i++) {
 				tags.push(i.toString());
 			}
-			const expected1 = `${BASE_TAG_URL}&names=${tags.slice(0, 100).join(' ')}`;
+			const expected1 = encodeURI(`${BASE_TAG_URL}&names=${tags.slice(0, 100).join(' ')}`);
 
 			// when
 			await getTagsByNames(tags);
@@ -302,17 +267,6 @@ describe('apiService', () => {
 					'"tags":"1girl barefoot feet legs pointy_ears sanokichi_(wankou) skull solo toes","width":490,' +
 					'"file_url":"https://img2.gelbooru.com/images/ef/f5/eff52c6a6a1c04f937a4d2d3f8a6db44.jpg","created_at":"Mon Jul 16 00:35:32 -0500 2007"}]'
 			);
-		});
-		it('Throws error on fetch error', async () => {
-			// given
-			fetchMock.resetMocks();
-			fetchMock.mockResponseOnce('', { status: 404, statusText: 'Not Found' });
-			const postId = 12345;
-
-			// when
-
-			// then
-			await expect(getPostById(postId)).rejects.toThrow('Not Found');
 		});
 		it('Throws error when no posts are found', async () => {
 			// given
@@ -351,7 +305,7 @@ describe('apiService', () => {
 		it('Correctly adds api key', async () => {
 			// given
 			const postId = 12345;
-			const expected = `${BASE_POST_URL}${apiKey}&id=${postId}`;
+			const expected = `${BASE_POST_URL}&id=${postId}${apiKey}`;
 
 			// when
 			await getPostById(postId, apiKey);
@@ -448,9 +402,7 @@ describe('apiService', () => {
 			const tagName = 'v0.1.1-TEST';
 			const body = 'testbody123';
 			const downloadUrl = 'someUrl.test.com';
-			fetchMock.mockResponseOnce(
-				JSON.stringify({ tag_name: tagName, body, assets: [{ browser_download_url: downloadUrl }] })
-			);
+			fetchMock.mockResponseOnce(JSON.stringify({ tag_name: tagName, body, assets: [{ browser_download_url: downloadUrl }] }));
 
 			// when
 			const result = await getLatestAppVersion();

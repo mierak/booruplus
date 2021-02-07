@@ -106,12 +106,24 @@ const loadingState = createSlice({
 			state.isSearchDisabled = false;
 			state.isFetchingPosts = false;
 		});
+		builder.addCase(thunks.offlineSearches.fetchPosts.rejected, (state) => {
+			state.isSearchDisabled = false;
+			state.isFetchingPosts = false;
+		});
+		builder.addCase(thunks.offlineSearches.fetchMorePosts.rejected, (state) => {
+			state.isSearchDisabled = false;
+			state.isFetchingPosts = false;
+		});
 		// Posts
 		builder.addCase(thunks.posts.fetchPostsByIds.pending, (state) => {
 			state.isSearchDisabled = true;
 			state.isFetchingPosts = true;
 		});
 		builder.addCase(thunks.posts.fetchPostsByIds.fulfilled, (state) => {
+			state.isSearchDisabled = false;
+			state.isFetchingPosts = false;
+		});
+		builder.addCase(thunks.posts.fetchPostsByIds.rejected, (state) => {
 			state.isSearchDisabled = false;
 			state.isFetchingPosts = false;
 		});
