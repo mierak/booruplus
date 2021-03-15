@@ -3,6 +3,7 @@ import { Task, Settings, TagHistory, TreeNode } from '@store/types';
 import { FavoritesTreeNode } from '../../src/db/types';
 import { getImageExtensionFromFilename } from '../../src/util/utils';
 import { AnyAction } from 'redux';
+import path from 'path';
 
 export const mTag = (tag?: Partial<Tag>): Tag => {
 	return {
@@ -22,7 +23,7 @@ export const mPost = (post?: Partial<Post>): Post => {
 		id: post?.id ?? 123,
 		createdAt: post?.createdAt ?? 1586435438,
 		directory: post?.directory ?? '34/9a',
-		fileUrl: post?.fileUrl ?? 'https://img2.gelbooru.com/images/34/9a/349ac255514baa60c23fcd25e4effa7e.jpg',
+		fileUrl: post?.fileUrl ?? path.join(__dirname, 'na.jpg'),
 		extension: post?.extension ?? ((post?.fileUrl && getImageExtensionFromFilename(post.fileUrl)) || 'jpg'),
 		hash: post?.hash ?? '349ac255514baa60c23fcd25e4effa7e',
 		height: post?.height ?? 3541,
@@ -36,7 +37,7 @@ export const mPost = (post?: Partial<Post>): Post => {
 		sampleWidth: post?.sampleWidth ?? 850,
 		score: post?.score ?? 0,
 		selected: post?.selected ?? false,
-		source: post?.source ?? 'https://fantia.jp/posts/318668',
+		source: post?.source ?? 'https://idk.nop/posts/318668',
 		tags: post?.tags ?? ['1girl', 'absurdres', 'all_fours', 'anus_peek', 'ass'],
 		viewCount: post?.viewCount ?? 0,
 		blacklisted: post?.blacklisted ?? 0,

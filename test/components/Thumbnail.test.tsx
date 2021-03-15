@@ -158,12 +158,13 @@ describe('Thumbnail', () => {
 				<Thumbnail context='posts' index={index} actions={cardActions} />
 			</Provider>
 		);
+		await waitForElementToBeRemoved(() => screen.getByRole('img', { name: 'loading' }));
 		fireEvent.click(screen.getByRole('img', { name: 'plus' }));
 
 		// then
-		await waitFor(() => expect(screen.getAllByRole('img', { name: 'loading' })).toHaveLength(1));
 		expect(screen.getByRole('img', { name: 'loading' })).not.toBeNull();
 		expect(onClick).toHaveBeenCalledTimes(1);
+		await waitForElementToBeRemoved(() => screen.getByRole('img', { name: 'loading' }));
 		await screen.findByRole('img', { name: 'plus' });
 	});
 	it('Renders action with popconfirm', async () => {
