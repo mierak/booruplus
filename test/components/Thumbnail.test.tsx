@@ -140,7 +140,7 @@ describe('Thumbnail', () => {
 		const store = mockStore(mState({ searchContexts: { posts: { posts } } }));
 		const onClick = jest.fn().mockResolvedValue(
 			new Promise((resolve) => {
-				setTimeout(resolve(null), 500);
+				window.setTimeout(() => resolve(null), 500);
 			})
 		);
 		const cardActions: utils.CardAction[] = [

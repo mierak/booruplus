@@ -10,10 +10,6 @@ export type AppThunk<T = void> = ThunkAction<Promise<T>, RootState, unknown, Act
 
 export type AppDispatch = typeof store.dispatch;
 
-export type RejectWithValue<V> = {
-	value: V;
-};
-
 export type ThunkApi<Rejected = void> = {
 	dispatch: AppDispatch;
 	state: RootState;

@@ -112,14 +112,14 @@ const ThumbnailsList: React.FunctionComponent<Props> = (props: Props) => {
 	};
 
 	const onMouseEnter = (_: React.MouseEvent<HTMLDivElement, MouseEvent>, post: Post): void => {
-		isMouseOver.current.timeout = setTimeout(() => {
+		isMouseOver.current.timeout = window.setTimeout(() => {
 			isMouseOver.current.value = true;
 			dispatch(actions.system.setHoveredPost({ post: post, visible: true }));
 		}, 500);
 	};
 
 	const onMouseLeave = (_: React.MouseEvent<HTMLDivElement, MouseEvent>, __: Post): void => {
-		isMouseOver.current.timeout && clearTimeout(isMouseOver.current.timeout);
+		isMouseOver.current.timeout && window.clearTimeout(isMouseOver.current.timeout);
 		if (isMouseOver.current.value) {
 			dispatch(actions.system.setHoveredPost({ post: undefined, visible: false }));
 			isMouseOver.current.value = false;

@@ -1,7 +1,7 @@
 import { createAsyncThunk, unwrapResult } from '@reduxjs/toolkit';
 import moment from 'moment';
 
-import type { PostsContext, SearchContext, ThunkApi, RejectWithValue } from '@store/types';
+import type { PostsContext, SearchContext, ThunkApi } from '@store/types';
 import type { Rating, SavedSearch, Tag, Post } from '@appTypes/gelbooruTypes';
 
 import { db } from '@db';
@@ -68,7 +68,7 @@ type NewSearchParams = {
 
 export const saveSearch = createAsyncThunk<SavedSearch, NewSearchParams, ThunkApi<SavedSearchAlreadyExistsError>>(
 	'savedSearches/save',
-	async (params, { rejectWithValue }): Promise<SavedSearch | RejectWithValue<SavedSearchAlreadyExistsError>> => {
+	async (params, { rejectWithValue }) => {
 		const logger = getActionLogger(saveSearch);
 		const result = await db.savedSearches.createAndSave(params.rating, params.tags, params.excludedTags);
 
@@ -113,7 +113,7 @@ export const addPreviewsToSavedSearch = createAsyncThunk<
 	ThunkApi<NoActiveSavedSearchError>
 >(
 	'savedSearches/addPreviewsToActiveSavedSearch',
-	async ({ posts, savedSearchId }, { rejectWithValue }): Promise<number | RejectWithValue<NoActiveSavedSearchError>> => {
+	async ({ posts, savedSearchId }, { rejectWithValue }) => {
 		const logger = getActionLogger(addPreviewsToSavedSearch);
 		if (savedSearchId === undefined) {
 			return rejectWithValue(new NoActiveSavedSearchError());

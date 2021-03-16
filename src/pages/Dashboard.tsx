@@ -11,10 +11,14 @@ import TagStatistic from '@components/dashboard/TagStatistic';
 
 type Props = {
 	className?: string;
-}
+};
 
 const Container = styled.div`
 	padding: 10px;
+`;
+
+const StyledRow = styled(Row)`
+	margin-bottom: 10px;
 `;
 
 const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
@@ -37,7 +41,7 @@ const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 
 	return (
 		<Container className={props.className}>
-			<Row gutter={[10, 10]}>
+			<StyledRow gutter={[10, 10]}>
 				<Col xs={6}>
 					<Card>
 						<Statistic title='Downloaded Posts' value={downloadedPostCount}></Statistic>
@@ -58,8 +62,8 @@ const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 						<Statistic title='Tags in Database' value={tagCount}></Statistic>
 					</Card>
 				</Col>
-			</Row>
-			<Row gutter={[10, 10]}>
+			</StyledRow>
+			<StyledRow gutter={[10, 10]}>
 				<Col xs={8}>
 					<RatingDistributionsChart />
 				</Col>
@@ -69,12 +73,12 @@ const Dashboard: React.FunctionComponent<Props> = (props: Props) => {
 				<Col xs={8}>
 					<TagStatistic title='Most Favorited Tags' type='most-favorited' />
 				</Col>
-			</Row>
-			<Row gutter={[10, 10]}>
+			</StyledRow>
+			<StyledRow gutter={[10, 10]}>
 				<Col span={24}>
 					<MostViewedPosts />
 				</Col>
-			</Row>
+			</StyledRow>
 		</Container>
 	);
 };

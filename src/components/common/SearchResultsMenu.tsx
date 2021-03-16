@@ -68,7 +68,7 @@ const SearchResultsMenu: React.FunctionComponent<Props> = ({ context }) => {
 	});
 
 	const handleDownloadWholeSearch = async (): Promise<void> => {
-		const m = showModal({
+		showModal({
 			title: 'Download?',
 			message:
 				'This will search for all posts with current parameters and then download them. This could take a while. Are you sure?',
@@ -78,11 +78,10 @@ const SearchResultsMenu: React.FunctionComponent<Props> = ({ context }) => {
 				dispatch(thunks.posts.downloadWholeSearch({ context }));
 			},
 		});
-		m.destroy();
 	};
 
 	const handleBlacklistAll = (): void => {
-		const m = showModal({
+		showModal({
 			title: 'Blacklist?',
 			message: 'All current posts will be blacklisted to. You will not see them anymore. Continue?',
 			cancelText: 'Cancel',
@@ -91,11 +90,10 @@ const SearchResultsMenu: React.FunctionComponent<Props> = ({ context }) => {
 				dispatch(thunks.posts.blacklistAllPosts({ context }));
 			},
 		});
-		m.destroy();
 	};
 
 	const handleBlacklistSelected = (): void => {
-		const m = showModal({
+		showModal({
 			title: 'Blacklist?',
 			message: 'Selected posts will be blacklisted to. You will not see them anymore. Continue?',
 			cancelText: 'Cancel',
@@ -104,7 +102,6 @@ const SearchResultsMenu: React.FunctionComponent<Props> = ({ context }) => {
 				dispatch(thunks.posts.blacklistSelectedPosts({ context }));
 			},
 		});
-		m.destroy();
 	};
 
 	const handleAddAllToFavorites = (): void => {
@@ -126,7 +123,7 @@ const SearchResultsMenu: React.FunctionComponent<Props> = ({ context }) => {
 	};
 
 	const handleDownloadAll = async (): Promise<void> => {
-		const m = showModal({
+		showModal({
 			title: 'Download?',
 			message: 'All current posts will be downloaded. Continue?',
 			cancelText: 'Cancel',
@@ -135,11 +132,10 @@ const SearchResultsMenu: React.FunctionComponent<Props> = ({ context }) => {
 				dispatch(thunks.posts.downloadAllPosts({ context }));
 			},
 		});
-		m.destroy();
 	};
 
 	const handleDownloadSelected = async (): Promise<void> => {
-		const m = showModal({
+		showModal({
 			title: 'Download?',
 			message: 'Selected posts will be downloaded. Continue?',
 			cancelText: 'Cancel',
@@ -148,11 +144,10 @@ const SearchResultsMenu: React.FunctionComponent<Props> = ({ context }) => {
 				dispatch(thunks.posts.downloadSelectedPosts({ context }));
 			},
 		});
-		m.destroy();
 	};
 
 	const handleSaveSearch = async (): Promise<void> => {
-		const m = showModal({
+		showModal({
 			title: 'Add search to Saved Searches?',
 			message: 'Current search with its parameters will be saved. Continue?',
 			cancelText: 'Cancel',
@@ -161,11 +156,10 @@ const SearchResultsMenu: React.FunctionComponent<Props> = ({ context }) => {
 				dispatch(thunks.savedSearches.saveSearch({ context, tags: selectedTags, excludedTags, rating }));
 			},
 		});
-		m.destroy();
 	};
 
 	const handleAddSelectedToPreviews = (): void => {
-		const m = showModal({
+		showModal({
 			title: 'Add previews?',
 			message: 'Selected posts will be added to the current Saved Search preview. Continue?',
 			cancelText: 'Cancel',
@@ -174,11 +168,10 @@ const SearchResultsMenu: React.FunctionComponent<Props> = ({ context }) => {
 				dispatch(thunks.savedSearches.addPreviewsToSavedSearch({ savedSearchId, posts: posts.filter((p) => p.selected) }));
 			},
 		});
-		m.destroy();
 	};
 
 	const handleAddAllToPreviews = (): void => {
-		const m = showModal({
+		showModal({
 			title: 'Add previews?',
 			message: 'All current posts will be added to the current Saved Search preview. Continue?',
 			cancelText: 'Cancel',
@@ -187,7 +180,6 @@ const SearchResultsMenu: React.FunctionComponent<Props> = ({ context }) => {
 				dispatch(thunks.savedSearches.addPreviewsToSavedSearch({ savedSearchId, posts }));
 			},
 		});
-		m.destroy();
 	};
 
 	const handleExportAll = (): void => {
