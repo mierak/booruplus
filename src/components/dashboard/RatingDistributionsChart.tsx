@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { Pie } from 'ant-design-pro/lib/Charts';
+import Pie from '@ant-design/charts/lib/pie';
 import { Card, Empty, Spin } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 
 import { thunks } from '@store';
 import { RootState, AppDispatch } from '@store/types';
+import { capitalize } from '@util/utils';
 
 const StyledRatingDistributionsCard = styled(Card)`
 	height: 100%;
@@ -33,25 +34,70 @@ const StyledSpinContainer = styled.div`
 	transform: translate(-50%, -50%);
 `;
 
-const StyledPie = styled(Pie)`
-	&& .pie-sub-title {
-		color: ${(props): string => (props.theme === 'dark' ? 'rgba(255, 255, 255, 0.85)' : '')};
-	}
-	&& .antd-pro-charts-pie-legendTitle {
-		color: ${(props): string => (props.theme === 'dark' ? 'rgba(255, 255, 255, 0.85)' : '')};
-	}
-	&& .antd-pro-charts-pie-percent {
-		color: ${(props): string => (props.theme === 'dark' ? 'rgba(255, 255, 255, 0.65)' : '')};
-	}
-	&& .antd-pro-charts-pie-value {
-		color: ${(props): string => (props.theme === 'dark' ? 'rgba(255, 255, 255, 0.85)' : '')};
-	}
-`;
+const titleFormatter = (record?: Record<string, unknown>): string => {
+	if (!record) return 'Total';
+
+	return `${record.type}`;
+};
+
+const calculateTotalInRecords = (data: Record<string, unknown>[]): number => {
+	return data.reduce((acc, val) => {
+		if (typeof val.value === 'number') {
+			return acc + val.value;
+		}
+		return acc;
+	}, 0);
+};
+
+const contentFormatter = (record: Record<string, unknown> | undefined, data?: Record<string, unknown>[]): string => {
+	if (!record && !data) return '';
+
+	if (!record) return data ? calculateTotalInRecords(data).toString() : '';
+
+	return `${record.value}`;
+};
+
+const titleStyle = {
+	style: {
+		fontSize: '1.35rem',
+	},
+	formatter: titleFormatter,
+};
+
+const contentStyle = {
+	fontSize: '1.2rem',
+	whiteSpace: 'pre-wrap',
+	overflow: 'hidden',
+	textOverflow: 'ellipsis',
+};
+
+const pieProps: Omit<React.ComponentProps<typeof Pie>, 'data'> = {
+	legend: { layout: 'vertical', position: 'right' },
+	colorField: 'type',
+	angleField: 'value',
+	height: 200,
+	radius: 0.9,
+	innerRadius: 0.75,
+	color: ['#a0d911', '#faad14', '#f5222d'],
+	statistic: {
+		title: {
+			style: titleStyle,
+			formatter: titleFormatter,
+		},
+		content: {
+			style: contentStyle,
+			formatter: contentFormatter,
+		},
+	},
+	interactions: [{ type: 'element-active' }, { type: 'pie-statistic-active' }],
+};
+
+const defaultCounts = { safe: 0, questionable: 0, explicit: 0 };
 
 const RatingDistributionsChart: React.FunctionComponent = () => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const theme = useSelector((state: RootState) => state.settings.theme);
+	const theme = useSelector((state: RootState) => state.settings.theme === 'light' ? 'default' : 'dark');
 	const shouldLoad = useSelector((state: RootState) => state.settings.dashboard.loadRatingDistributionChart);
 	const ratingCounts = useSelector((state: RootState) => state.dashboard.ratingCounts);
 	const isRatingDistributionChartLoading = useSelector((state: RootState) => state.loadingStates.isRatingDistributionChartLoading);
@@ -62,14 +108,12 @@ const RatingDistributionsChart: React.FunctionComponent = () => {
 		}
 	}, [dispatch, ratingCounts, shouldLoad]);
 
-	const ratingCountsData =
-		ratingCounts &&
-		Object.keys(ratingCounts).map((key) => {
-			return {
-				x: key,
-				y: ratingCounts[key],
-			};
-		});
+	const ratingCountsData = Object.entries(ratingCounts ?? defaultCounts).map(([key, value]) => {
+		return {
+			type: capitalize(key),
+			value: value,
+		};
+	});
 
 	const handleReload = (): void => {
 		dispatch(thunks.dashboard.fetchRatingCounts());
@@ -90,19 +134,7 @@ const RatingDistributionsChart: React.FunctionComponent = () => {
 		} else {
 			return (
 				<StyledRatingDistributionsCard title={title} size={size} extra={<ReloadOutlined onClick={handleReload} title='Reload' />}>
-					<StyledPie
-						hasLegend
-						title='Rating'
-						subTitle='Rating'
-						total={(): number => {
-							const total = (ratingCountsData && ratingCountsData.map((data) => data.y).reduce((acc, val) => (acc = acc + val))) || 0;
-							return total;
-						}}
-						height={200}
-						colors={['#a0d911', '#faad14', '#f5222d']}
-						data={ratingCountsData}
-						theme={theme}
-					/>
+					<Pie data={ratingCountsData} theme={theme} {...pieProps} />
 				</StyledRatingDistributionsCard>
 			);
 		}

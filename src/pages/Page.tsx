@@ -15,7 +15,6 @@ import Tags from './Tags';
 import Dashboard from './Dashboard';
 import Searches from './Searches';
 
-import 'ant-design-pro/dist/ant-design-pro.css';
 import '../css/index.css';
 import CheckLaterQueue from './CheckLaterQueue';
 import { parseVersion } from '@util/utils';

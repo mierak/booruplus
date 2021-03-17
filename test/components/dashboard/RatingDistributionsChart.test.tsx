@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { thunks } from '../../../src/store';
 import { RootState, AppDispatch } from '../../../src/store/types';
@@ -34,12 +34,9 @@ describe('RatingDistributionsChart', () => {
 				<RatingDistributionsChart />
 			</Provider>
 		);
-		await waitFor(() => screen.getByText('safe'));
 
 		// then
-		expect(screen.getByText('safe')).not.toBeNull();
-		expect(screen.getByText('explicit')).not.toBeNull();
-		expect(screen.getByText('questionable')).not.toBeNull();
+		expect(screen.getByText('Total')).not.toBeNull();
 		expect(screen.getByText('896')).not.toBeNull();
 	});
 	it('Loads data when mounted and shouldLoad is true', () => {
